@@ -1,14 +1,15 @@
 {
   "compilerOptions": {
     "target": "es5",
-    "module": "commonjs",
+    "module": "es2015",
     "lib": ["dom", "es2015"],
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "outDir": "./public/js"
+    "outDir": "public/js",
+    "moduleResolution": "node"
   },
-  "include": ["./public/js/*.ts"],
+  "include": ["public/js/*.ts"],
   "exclude": ["node_modules"]
 }
