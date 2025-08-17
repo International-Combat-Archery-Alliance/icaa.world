@@ -292,7 +292,7 @@ body.sidebar-open .content-overlay {
 }
 
 /* Other Sections */
-.hero-section, .about-section, .leadership-section, .sport-section, .contact-section, .communities-section, .events-section, .event-page, .rules-page, .news-page, .registration-section, .registrations-table-section, .event-registration-section {
+.hero-section, .about-section, .leadership-section.sport-section, .contact-section, .communities-section, .events-section, .event-page, .rules-page, .news-page, .registration-section, .registrations-table-section, .event-registration-section {
     padding: 4rem 0rem;
 }
 
@@ -478,7 +478,10 @@ body.sidebar-open .content-overlay {
     flex-wrap: wrap;
     justify-content: center;
     gap: 2rem;
+    max-width: 960px;
+    margin: 0 auto;
 }
+
 .leadership-intro{
     text-align: center;
     color:#FF5722;
