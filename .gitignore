@@ -24,7 +24,7 @@ lerna-debug.log*
 *.sublime-workspace
 .settings/
 .project
-images/
+
 
 # Operating System files
 .DS_Store
