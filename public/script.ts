@@ -124,37 +124,45 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Image Rotator for Homepage
-    const images: string[] = [
-        'images/Archery Photos/action-1.jpg',
-        'images/Archery Photos/action-2.jpg',
-        'images/Archery Photos/action-3.jpg',
-        'images/Archery Photos/action-4.jpg'
-    ];
+    
+    // Image Rotator for Homepage
+    const totalImages = 83;
+    const images: string[] = [];
+    for (let i = 1; i <= totalImages; i++) {
+        images.push(`images/Rotating Archery Photos/${i}.jpg`);
+    }
+
     let currentImageIndex: number = 0;
     const rotatorImg: HTMLImageElement | null = document.getElementById('rotator-img') as HTMLImageElement;
     const prevBtn: HTMLButtonElement | null = document.getElementById('prev-btn') as HTMLButtonElement;
     const nextBtn: HTMLButtonElement | null = document.getElementById('next-btn') as HTMLButtonElement;
 
-    function changeImage(direction: number): void {
-        if (!rotatorImg || images.length === 0) return;
+function changeImage(direction: number): void {
+    if (!rotatorImg || images.length === 0) return;
+    
+    rotatorImg.style.opacity = '0';
+    setTimeout(() => {
+        let newIndex: number;
+        if (direction === 0) {
+            newIndex = Math.floor(Math.random() * images.length);
+        } else {
+            newIndex = currentImageIndex + direction;
+            if (newIndex < 0) {
+                newIndex = images.length - 1;
+            } else if (newIndex >= images.length) {
+                newIndex = 0;
+            }
+        }
+        currentImageIndex = newIndex;
         
-        rotatorImg.style.opacity = '0';
-        setTimeout(() => {
-            currentImageIndex += direction;
-            if (currentImageIndex < 0) {
-                currentImageIndex = images.length - 1;
-            } else if (currentImageIndex >= images.length) {
-                currentImageIndex = 0;
-            }
-            
-            const newImageSrc: string | undefined = images[currentImageIndex];
-            if (newImageSrc) {
-                rotatorImg.src = newImageSrc;
-            }
-            
-            rotatorImg.style.opacity = '1';
-        }, 500);
-    }
+        const newImageSrc: string | undefined = images[currentImageIndex];
+        if (newImageSrc) {
+            rotatorImg.src = newImageSrc;
+        }
+        
+        rotatorImg.style.opacity = '1';
+    }, 500);
+}
 
     if (prevBtn) {
         prevBtn.addEventListener('click', () => {
@@ -169,9 +177,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Optional: Automatic rotation
-    //setInterval(() => {
-    //    changeImage(1);
-    // }, 5000); // Change image every 5 seconds
+    setInterval(() => {
+        changeImage(1);
+     }, 10000); // Change image every 5 seconds
 
     // Map Pin functionality (now interactive with Leaflet)
     

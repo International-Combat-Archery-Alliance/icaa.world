@@ -104,12 +104,12 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
     // Image Rotator for Homepage
-    var images = [
-        'images/Archery Photos/action-1.jpg',
-        'images/Archery Photos/action-2.jpg',
-        'images/Archery Photos/action-3.jpg',
-        'images/Archery Photos/action-4.jpg'
-    ];
+    // Image Rotator for Homepage
+    var totalImages = 83;
+    var images = [];
+    for (var i = 1; i <= totalImages; i++) {
+        images.push("images/Rotating Archery Photos/".concat(i, ".jpg"));
+    }
     var currentImageIndex = 0;
     var rotatorImg = document.getElementById('rotator-img');
     var prevBtn = document.getElementById('prev-btn');
@@ -119,13 +119,20 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         rotatorImg.style.opacity = '0';
         setTimeout(function () {
-            currentImageIndex += direction;
-            if (currentImageIndex < 0) {
-                currentImageIndex = images.length - 1;
+            var newIndex;
+            if (direction === 0) {
+                newIndex = Math.floor(Math.random() * images.length);
             }
-            else if (currentImageIndex >= images.length) {
-                currentImageIndex = 0;
+            else {
+                newIndex = currentImageIndex + direction;
+                if (newIndex < 0) {
+                    newIndex = images.length - 1;
+                }
+                else if (newIndex >= images.length) {
+                    newIndex = 0;
+                }
             }
+            currentImageIndex = newIndex;
             var newImageSrc = images[currentImageIndex];
             if (newImageSrc) {
                 rotatorImg.src = newImageSrc;
@@ -144,14 +151,18 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
     // Optional: Automatic rotation
-    //setInterval(() => {
-    //    changeImage(1);
-    // }, 5000); // Change image every 5 seconds
+    setInterval(function () {
+        changeImage(1);
+    }, 10000); // Change image every 5 seconds
     // Map Pin functionality (now interactive with Leaflet)
-    
     var mapDiv = document.getElementById('interactive-map');
     if (mapDiv) {
         var map_1 = L.map('interactive-map').setView([42.385, -71.018], 4);
+        map_1.whenReady(function () {
+            setTimeout(function () {
+                map_1.invalidateSize();
+            }, 1000);
+        });
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map_1);

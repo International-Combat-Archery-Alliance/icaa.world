@@ -29,10 +29,12 @@ body {
 
 .section-title {
     font-family: 'Montserrat', sans-serif;
-    font-size: 2.5rem;
+    font-size: 3.5rem;
     text-align: center;
     margin-bottom: 2rem;
     color: var(--electric-orange);
+    background-color: #0A1C4A;
+    width: 100%;
 }
 
 /* Sidebar Navigation */
@@ -116,11 +118,12 @@ body.sidebar-open .content-overlay {
     background: var(--navy-blue);
     color: var(--white);
     text-align: center;
-    padding: 4rem 1rem;
+    padding: 4rem 0rem;
     padding-top: 80px;
     display: flex;
     flex-direction: column;
     align-items: center;
+    align-content: center;
     background: linear-gradient(-45deg, var(--navy-blue), #1A3464, var(--navy-blue));
     background-size: 400% 400%;
     animation: pulseGradient 15s ease infinite;
@@ -151,6 +154,24 @@ body.sidebar-open .content-overlay {
     font-size: 1.2rem;
 }
 
+/* CTA Button */
+.cta-button {
+    display: block;
+    background-color: var(--electric-orange);
+    color: var(--white);
+    padding: 1rem 2rem;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 900;
+    font-size: 30px;
+    margin: 0 auto 2rem auto;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    text-align: center;
+}
+
+.cta-button:hover {
+    transform: scale(1.05);
+}
 /* Image Rotator */
 .image-rotator-container {
     position: relative;
@@ -166,7 +187,7 @@ body.sidebar-open .content-overlay {
     height: auto;
     display: block;
     opacity: 1;
-    transition: opacity 0.5s ease-in-out;
+    transition: opacity 3s ease-in-out;
 }
 
 .rotator-btn {
@@ -191,23 +212,7 @@ body.sidebar-open .content-overlay {
     right: 0;
 }
 
-/* CTA Button */
-.cta-button {
-    display: block;
-    background-color: var(--electric-orange);
-    color: var(--white);
-    padding: 1rem 3rem;
-    border-radius: 50px;
-    text-decoration: none;
-    font-weight: 700;
-    margin-top: 2rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-    text-align: center;
-}
 
-.cta-button:hover {
-    transform: scale(1.05);
-}
 
 /* News & Upcoming Events Grid */
 .events-news-grid {
@@ -279,7 +284,7 @@ body.sidebar-open .content-overlay {
 
 /* Other Sections */
 .about-section, .leadership-section, .sport-section, .contact-section, .communities-section, .events-section, .event-page, .rules-page, .news-page, .registration-section, .registrations-table-section, .event-registration-section {
-    padding: 4rem 1rem;
+    padding: 4rem 0rem;
 }
 
 .communities-section, .events-section, .rules-page, .registration-section, .registrations-table-section, .event-registration-section {
@@ -364,6 +369,7 @@ body.sidebar-open .content-overlay {
     border-radius: 50px;
     text-decoration: none;
     font-weight: 700;
+    font-size: 1.75em;
     margin: 0 auto 2rem auto;
     text-align: center;
 }
@@ -452,7 +458,14 @@ body.sidebar-open .content-overlay {
     justify-content: center;
     gap: 2rem;
 }
-
+.leadership-intro{
+    text-align: center;
+    color:#FF5722;
+    margin-bottom: 50px;
+    justify-content:space-evenly;
+    font-size: large;
+    text-wrap-mode: wrap;
+}
 .board-member {
     text-align: center;
     background-color: var(--white);
@@ -493,16 +506,19 @@ body.sidebar-open .content-overlay {
 .contact-section {
     background-color: var(--navy-blue);
     color: var(--white);
-    padding: 4rem 1rem;
+    padding: 4rem 2rem;
     text-align: center;
 }
-
+.contact-text{
+    text-align: center;
+}
 .contact-email {
     color: var(--electric-orange);
     text-decoration: none;
     font-size: 1.2rem;
     display: block;
     margin-bottom: 2rem;
+    text-align: center;
 }
 
 .contact-form {
@@ -586,13 +602,14 @@ footer {
 
 .social-links {
     display: flex;
-    gap: 1.5rem;
+    gap: 3.5rem;
 }
 
 .social-icon {
     width: 30px;
     height: 30px;
     transition: transform 0.3s ease-in-out;
+    border-radius: 30%;
 }
 
 .social-icon:hover {
@@ -749,6 +766,9 @@ footer {
     }
     .main-content {
         margin-left: 250px;
+    }
+    .main-content, footer {
+        margin-left: 250px; /* Aligns with the sidebar */
     }
     .hero-title {
         font-size: 4rem;
