@@ -25,6 +25,7 @@ body {
     max-width: 960px;
     margin: 0 auto;
     padding: 2rem 1rem;
+    align-items: center;
 }
 
 .section-title {
@@ -353,6 +354,12 @@ body.sidebar-open .content-overlay {
     margin-bottom: 0.25rem;
 }
 
+.event-page .content-wrapper {
+    align-items: center;
+    gap: 2rem;
+    text-align: center;
+}
+
 .community-links {
     margin-top: 1rem;
 }
@@ -380,12 +387,18 @@ body.sidebar-open .content-overlay {
     font-size: 1.75em;
     margin: 0 auto 2rem auto;
     text-align: center;
+    width: 100%;
+    max-width: 760px;
 }
 
 .event-register-btn-top:hover {
     transform: scale(1.05);
 }
 
+.event-page-logo{
+    max-width: 20em;
+    border-radius: 30%;
+}
 /* Maps Container */
 .map-container {
     max-width: 960px;
