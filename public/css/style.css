@@ -141,6 +141,7 @@ body.sidebar-open .content-overlay {
     font-family: 'Montserrat', sans-serif;
     font-size: 3rem;
     margin-bottom: 0.5rem;
+    text-align: center;
 }
 
 .hero-tagline {
@@ -192,7 +193,7 @@ body.sidebar-open .content-overlay {
 
 /* CTA Button */
 .cta-button {
-    display: inline-block;
+    display: block;
     background-color: var(--electric-orange);
     color: var(--white);
     padding: 1rem 3rem;
@@ -201,6 +202,7 @@ body.sidebar-open .content-overlay {
     font-weight: 700;
     margin-top: 2rem;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    text-align: center;
 }
 
 .cta-button:hover {
@@ -210,7 +212,7 @@ body.sidebar-open .content-overlay {
 /* News & Upcoming Events Grid */
 .events-news-grid {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     gap: 2rem;
     width: 100%;
     max-width: 960px;
@@ -325,6 +327,12 @@ body.sidebar-open .content-overlay {
     max-width: 100px;
     height: auto;
     margin-bottom: 1rem;
+}
+.event-logo, .community-logo-alt {
+    max-width: 100px;
+    height: auto;
+    margin-bottom: 1rem;
+    background-color: #0A1C4A;
 }
 
 .event-card h3, .community-card h3 {
@@ -462,7 +470,7 @@ body.sidebar-open .content-overlay {
 .bio-photo {
     width: 150px;
     height: 150px;
-    border-radius: 50%;
+    border-radius: 100%;
     object-fit: cover;
     margin-bottom: 1rem;
     transition: transform 0.3s ease-in-out;
@@ -731,13 +739,10 @@ footer {
 }
 
 /* Responsive Design */
-@media (max-width: 767px) {
-    .hero-title {
+@media (min-width: 768px) {
+	.hero-title {
         font-size: 2.5rem;
     }
-}
-
-@media (min-width: 768px) {
     .menu-toggle {
         display: none;
     }
