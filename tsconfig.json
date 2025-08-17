@@ -7,9 +7,9 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "outDir": "public/js",
+    "outDir": "./public/js",
+    "allowUmdGlobalAccess": true,
     "moduleResolution": "node"
   },
-  "include": ["public/js/*.ts"],
-  "exclude": ["node_modules"]
+  "include": ["public/script.ts"]
 }
