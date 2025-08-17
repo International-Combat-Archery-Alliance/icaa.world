@@ -1,5 +1,31 @@
-#Eclipse Specific Files
-.classpath
-.project
-.settings/
+# Dependency directories
+node_modules/
+dist/
+build/
+out/
 
+# Log files
+*.log
+npm-debug.log*
+yarn-debug.log*
+lerna-debug.log*
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDE and Editor files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+.settings/
+.project
+images/
+
+# Operating System files
+.DS_Store
+Thumbs.db
