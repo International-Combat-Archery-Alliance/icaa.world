@@ -3,6 +3,10 @@ document.addEventListener('DOMContentLoaded', function () {
     function toggleSidebar() {
         document.body.classList.toggle('sidebar-open');
     }
+    var menuToggleBtn = document.getElementById('menu-toggle-btn');
+    if (menuToggleBtn) {
+        menuToggleBtn.addEventListener('click', toggleSidebar);
+    }
     document.querySelectorAll('.sidebar-nav a').forEach(function (link) {
         link.addEventListener('click', function (e) {
             e.preventDefault();

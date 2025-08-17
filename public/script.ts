@@ -2,6 +2,10 @@ document.addEventListener('DOMContentLoaded', () => {
     function toggleSidebar(): void {
         document.body.classList.toggle('sidebar-open');
     }
+    const menuToggleBtn = document.getElementById('menu-toggle-btn');
+    if (menuToggleBtn) {
+        menuToggleBtn.addEventListener('click', toggleSidebar);
+    }
 
     document.querySelectorAll<HTMLAnchorElement>('.sidebar-nav a').forEach(link => {
         link.addEventListener('click', function(e: Event): void {
