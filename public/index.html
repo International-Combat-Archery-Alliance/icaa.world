@@ -5,7 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>International Combat Archery Alliance</title>
     <link rel="stylesheet" href="css/style.css">
-    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIINyA1+3xUf4h/FvEr6i0h9q6h9aQ1+uW1g="
+    crossorigin=""/>
+    <link rel="icon" type="image/png" href="images/logos/ICAA Logo.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
@@ -163,14 +166,8 @@
         <section id="our-communities" class="content-section communities-section">
             <h2 class="section-title">The Alliance</h2>
             <div class="map-container">
-                <img src="images/map.png" alt="Interactive map of communities" id="interactive-map">
-                <div class="map-pin" data-target="agb-card" style="top: 30%; left: 80%;"></div>
-                <div class="map-pin" data-target="ago-card" style="top: 0%; left: 0%;"></div>
-                <div class="map-pin" data-target="agd-card" style="top: 0%; left: 0%;"></div>
-                <div class="map-pin" data-target="cda-card" style="top: 0%; left: 0%;"></div>
-                <div class="map-pin" data-target="cdas-card" style="top: 0%; left: 0%;"></div>
-                <div class="map-pin" data-target="aa-card" style="top: 0%; left: 0%;"></div>
-            </div>
+    			<div id="interactive-map"></div>
+			</div>
             <div class="content-wrapper community-grid">
                 
                 <div id="agb-card" class="community-card">

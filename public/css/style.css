@@ -387,10 +387,8 @@ body.sidebar-open .content-overlay {
 #interactive-map {
     position: relative;
     width: 100%;
-    height: 100%;
-    background-image: url('images/Archery Photos/map.png');
-    background-size: cover;
-    background-position: center;
+    height: 400px; /* You can adjust this height */
+    border-radius: 8px;
 }
 
 .map-pin {
