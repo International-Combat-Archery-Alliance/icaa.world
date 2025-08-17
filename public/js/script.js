@@ -1,7 +1,4 @@
-
-
-
-import * as L from 'leaflet';
+"use strict";
 document.addEventListener('DOMContentLoaded', function () {
     function toggleSidebar() {
         document.body.classList.toggle('sidebar-open');
@@ -147,13 +144,14 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
     // Optional: Automatic rotation
-    // setInterval(() => {
-    //     changeImage(1);
+    //setInterval(() => {
+    //    changeImage(1);
     // }, 5000); // Change image every 5 seconds
     // Map Pin functionality (now interactive with Leaflet)
+    
     var mapDiv = document.getElementById('interactive-map');
     if (mapDiv) {
-        var map_1 = L.map('interactive-map').setView([43.6532, -79.3832], 4);
+        var map_1 = L.map('interactive-map').setView([42.385, -71.018], 4);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map_1);
