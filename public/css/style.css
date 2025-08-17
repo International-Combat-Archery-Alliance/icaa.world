@@ -136,8 +136,9 @@ body.sidebar-open .content-overlay {
 }
 
 .logo {
-    max-width: 150px;
+    max-width: 100px;
     margin-bottom: 1rem;
+    margin-left: 1.75em;
 }
 
 .hero-title {
@@ -159,14 +160,15 @@ body.sidebar-open .content-overlay {
     display: block;
     background-color: var(--electric-orange);
     color: var(--white);
-    padding: 1rem 2rem;
+    padding: 1rem 3rem;
     border-radius: 50px;
     text-decoration: none;
-    font-weight: 900;
-    font-size: 30px;
-    margin: 0 auto 2rem auto;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    font-weight: 700;
+    font-size: 1.75em;
+    margin: 1em auto 2rem auto;
     text-align: center;
+    width: 100%;
+    max-width: 760px;
 }
 
 .cta-button:hover {
@@ -175,7 +177,7 @@ body.sidebar-open .content-overlay {
 /* Image Rotator */
 .image-rotator-container {
     position: relative;
-    max-width: 800px;
+    max-width: 1000px;
     margin: 2rem auto;
     border-radius: 8px;
     overflow: hidden;
@@ -222,6 +224,7 @@ body.sidebar-open .content-overlay {
     width: 100%;
     max-width: 960px;
     margin: 2rem auto;
+    flex-wrap: wrap;
 }
 
 .news-updates-container, .upcoming-events-container {
@@ -229,6 +232,8 @@ body.sidebar-open .content-overlay {
     border-radius: 8px;
     padding: 1rem;
     color: var(--white);
+    width: 100%;
+    text-align: center;
 }
 
 .news-updates-container .news-title, .upcoming-events-container .events-title {
@@ -245,6 +250,7 @@ body.sidebar-open .content-overlay {
 
 .news-updates-container li {
     margin-bottom: 0.5rem;
+    border-bottom: 1px solid #848484;
 }
 
 .news-updates-container li a {
@@ -253,6 +259,7 @@ body.sidebar-open .content-overlay {
     font-size: 1rem;
     display: block;
     padding: 0.5rem 0;
+    
 }
 
 .news-updates-container li a:hover {
@@ -264,13 +271,13 @@ body.sidebar-open .content-overlay {
 .upcoming-events-container table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 1rem;
+    margin-top: 0.5rem;
 }
 
 .upcoming-events-container th, td {
-    padding: 0.75rem;
+    padding: 0.5rem;
     text-align: left;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    border-bottom: 1px solid #848484;
 }
 
 .upcoming-events-container a {
@@ -280,10 +287,11 @@ body.sidebar-open .content-overlay {
 
 .upcoming-events-container a:hover {
     text-decoration: underline;
+    color: var(--electric-orange);
 }
 
 /* Other Sections */
-.about-section, .leadership-section, .sport-section, .contact-section, .communities-section, .events-section, .event-page, .rules-page, .news-page, .registration-section, .registrations-table-section, .event-registration-section {
+.hero-section, .about-section, .leadership-section, .sport-section, .contact-section, .communities-section, .events-section, .event-page, .rules-page, .news-page, .registration-section, .registrations-table-section, .event-registration-section {
     padding: 4rem 0rem;
 }
 
@@ -774,7 +782,7 @@ footer {
         font-size: 4rem;
     }
     .logo {
-        max-width: 250px;
+        max-width: 150px;
     }
     .mission-vision {
         display: flex;
