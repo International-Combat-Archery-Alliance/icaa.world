@@ -41,7 +41,7 @@ const App = () => {
                 <nav id="sidebar" className="sidebar">
                     <ul className="sidebar-nav">
                         <div className="logo-container">
-                            <img src="public/images/logos/ICAA Logo transparent.png" alt="ICAA Logo" className="logo" />
+                            <img src="/images/logos/ICAA Logo transparent.png" alt="ICAA Logo" className="logo" />
                         </div>
                         <li><Link to="/" onClick={() => setSidebarOpen(false)}>Home</Link></li>
                         <li><Link to="/about-icaa" onClick={() => setSidebarOpen(false)}>About The ICAA</Link></li>
@@ -78,13 +78,13 @@ const App = () => {
                 <footer>
                     <div className="social-links">
                         <a href="https://www.youtube.com/@combatarcheryboston9136" target="_blank" rel="noopener noreferrer">
-                            <img src="images/logos/youtube.png" alt="YouTube" className="social-icon" />
+                            <img src="/images/logos/youtube.png" alt="YouTube" className="social-icon" />
                         </a>
                         <a href="https://x.com/yourhandle" target="_blank" rel="noopener noreferrer">
-                            <img src="images/logos/X.jfif" alt="X (formerly Twitter)" className="social-icon" />
+                            <img src="/images/logos/X.jfif" alt="X (formerly Twitter)" className="social-icon" />
                         </a>
                         <a href="https://www.instagram.com/yourprofile/" target="_blank" rel="noopener noreferrer">
-                            <img src="images/logos/instagram.jfif" alt="Instagram" className="social-icon" />
+                            <img src="/images/logos/instagram.jfif" alt="Instagram" className="social-icon" />
                         </a>
                     </div>
                     <p>&copy; 2025 International Combat Archery Alliance, Inc. All Rights Reserved.</p>

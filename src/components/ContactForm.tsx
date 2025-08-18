@@ -6,12 +6,29 @@ const ContactForm = () => {
     const [message, setMessage] = useState('');
     const [isSubmitted, setIsSubmitted] = useState(false);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        if (name && email && message) {
-            setIsSubmitted(true);
-        } else {
-            alert('Please fill in all fields.');
+
+        const form = e.currentTarget;
+        const formData = new FormData(form);
+
+        try {
+            // Replace 'YOUR_UNIQUE_ID' with your actual Formspree endpoint ID
+            const response = await fetch('https://formspree.io/f/xblkevky', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'Accept': 'application/json'
+                }
+            });
+
+            if (response.ok) {
+                setIsSubmitted(true); // Show your custom confirmation message
+            } else {
+                alert('There was an error sending your message. Please try again.');
+            }
+        } catch (error) {
+            alert('A network error occurred. Please check your connection and try again.');
         }
     };
 
@@ -27,9 +44,9 @@ const ContactForm = () => {
 
     return (
         <form id="contact-form" className="contact-form" onSubmit={handleSubmit}>
-            <input type="text" name="name" placeholder="Your Name" required value={name} onChange={e => setName(e.target.value)} />
-            <input type="email" name="email" placeholder="Your Email" required value={email} onChange={e => setEmail(e.target.value)} />
-            <textarea name="message" placeholder="Your Message" required value={message} onChange={e => setMessage(e.target.value)}></textarea>
+            <input type="text" name="name" placeholder="Your Name*" required value={name} onChange={e => setName(e.target.value)} />
+            <input type="email" name="email" placeholder="Your Email*" required value={email} onChange={e => setEmail(e.target.value)} />
+            <textarea name="message" placeholder="Your Message*" required value={message} onChange={e => setMessage(e.target.value)}></textarea>
             <button type="submit">Send Message</button>
         </form>
     );

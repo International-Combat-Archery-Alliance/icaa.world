@@ -461,8 +461,8 @@ body.sidebar-open .content-overlay {
     color: var(--white);
     border: none;
     padding: 1rem 2rem;
-    border-radius: 20%;
-    font-size: 2.5rem;
+    border-radius: 4px;
+    font-size: 1rem;
     cursor: pointer;
     text-decoration: none;
 }
@@ -611,7 +611,6 @@ body.sidebar-open .content-overlay {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     max-width: 600px;
     margin: 0 auto;
-    display: none;
 }
 
 .confirmation-message h3 {
