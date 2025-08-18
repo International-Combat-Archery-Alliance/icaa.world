@@ -10,9 +10,11 @@ const BostonPlayIns = () => {
                 <h2>Event Details</h2>
                 <p><strong>Date:</strong> September 6th, 2025</p>
                 <p><strong>Location:</strong> Archery Games Boston, Chelsea, MA</p>
-                <p>Details about the Boston Play Ins Tournament will be posted here.</p>
             </div>
             <Link to="/event-registration" className="event-register-btn-top">Register for this Event</Link>
+            <iframe src="https://docs.google.com/document/d/1HxQo-J4iBmIE0FXFiTCKTxAvU64bwb8GP3IOgj-GunU/preview"
+                    style={{ width: '100%', height: '500px', border:0 }}>
+            </iframe>
         </section>
     );
 };
