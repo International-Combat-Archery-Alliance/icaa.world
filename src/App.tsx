@@ -45,8 +45,8 @@ const App = () => {
                             <img src="images/logos/ICAA Logo transparent.png" alt="ICAA Logo" className="logo" />
                         </div>
                         <li><Link to="/" onClick={() => setSidebarOpen(false)}>Home</Link></li>
-                        <li><Link to="/about-icaa" onClick={() => setSidebarOpen(false)}>About the ICAA</Link></li>
-                        <li><Link to="/about-sport" onClick={() => setSidebarOpen(false)}>About the Sport</Link></li>
+                        <li><Link to="/about-icaa" onClick={() => setSidebarOpen(false)}>About The ICAA</Link></li>
+                        <li><Link to="/about-sport" onClick={() => setSidebarOpen(false)}>About The Sport</Link></li>
                         <li><Link to="/our-communities" onClick={() => setSidebarOpen(false)}>The Alliance</Link></li>
                         <li><Link to="/events" onClick={() => setSidebarOpen(false)}>Events</Link></li>
                         <li><Link to="/contact" onClick={() => setSidebarOpen(false)}>Contact Us</Link></li>

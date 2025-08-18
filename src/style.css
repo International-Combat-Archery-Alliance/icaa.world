@@ -789,16 +789,6 @@ footer {
     gap: 1rem;
 }
 
-.event-registration-form #team-fields {
-    display: none;
-    gap: 0;
-}
-
-.event-registration-form #free-agent-fields {
-    display: none;
-    gap: 0;
-}
-
 /* Responsive Design */
 @media (min-width: 768px) {
 	.hero-title {
