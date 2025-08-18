@@ -52,6 +52,11 @@ const Home = () => {
                         </thead>
                         <tbody>
                             <tr>
+                                <td><Link to="/events/boston-play-ins">Boston Play Ins Tournament</Link></td>
+                                <td>September 6th, 2025</td>
+                                <td>Archery Games Boston, Chelsea MA</td>
+                            </tr>
+                            <tr>
                                 <td><Link to="/events/boston-championship">Boston International Championship</Link></td>
                                 <td>October 25, 2025</td>
                                 <td>Archery Games Boston, Chelsea MA</td>
