@@ -42,7 +42,7 @@ const App = () => {
                 <nav id="sidebar" className="sidebar">
                     <ul className="sidebar-nav">
                         <div className="logo-container">
-                            <img src="images/logos/ICAA Logo transparent.png" alt="ICAA Logo" className="logo" />
+                            <img src="public/images/logos/ICAA Logo transparent.png" alt="ICAA Logo" className="logo" />
                         </div>
                         <li><Link to="/" onClick={() => setSidebarOpen(false)}>Home</Link></li>
                         <li><Link to="/about-icaa" onClick={() => setSidebarOpen(false)}>About The ICAA</Link></li>
