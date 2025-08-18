@@ -6,6 +6,10 @@
     --white: #ffffff;
 }
 
+html, body, #root {
+    height: 100%;
+}
+
 * {
     box-sizing: border-box;
     margin: 0;
@@ -19,6 +23,15 @@ body {
     color: var(--navy-blue);
     background-color: var(--light-gray);
     overflow-x: hidden;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.app-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
 
 .content-wrapper {
@@ -99,19 +112,12 @@ body.sidebar-open .content-overlay {
 .main-content {
     transition: margin-left 0.3s ease-in-out;
     max-width: 100%;
-    margin: 0 auto;
+    flex-grow: 1;
 }
 
 .content-section {
-    display: none;
-    padding-top: 80px;
-    opacity: 0;
-    transition: opacity 0.5s ease-in-out;
-}
-
-.content-section.active {
-    display: block;
     opacity: 1;
+    transition: opacity 0.5s ease-in-out;
 }
 
 /* Hero Section */
@@ -120,7 +126,6 @@ body.sidebar-open .content-overlay {
     color: var(--white);
     text-align: center;
     padding: 4rem 0rem;
-    padding-top: 80px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -292,7 +297,7 @@ body.sidebar-open .content-overlay {
 }
 
 /* Other Sections */
-.hero-section, .about-section, .leadership-section.sport-section, .contact-section, .communities-section, .events-section, .event-page, .rules-page, .news-page, .registration-section, .registrations-table-section, .event-registration-section {
+.hero-section {
     padding: 4rem 0rem;
 }
 
