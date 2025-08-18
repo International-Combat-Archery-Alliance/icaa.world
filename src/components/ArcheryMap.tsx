@@ -1,7 +1,6 @@
-import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import { LatLngTuple } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { useEffect } from 'react';
 
 const ArcheryMap = () => {
     const position = [42.385, -71.018] as LatLngTuple;
