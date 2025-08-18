@@ -5,11 +5,17 @@ const EventRegistration = () => {
     const [registrationType, setRegistrationType] = useState('');
     // Initialize state for 8 players in the roster
     const [roster, setRoster] = useState(Array.from({ length: 8 }, () => ({ name: '' })));
+    const [experienceLevel, setExperienceLevel] = useState('');
 
     const handleRosterChange = (index: number, event: ChangeEvent<HTMLInputElement>) => {
-        const newRoster = [...roster];
-        newRoster[index].name = event.target.value;
-        setRoster(newRoster);
+        const playerToUpdate = roster[index];
+
+        // This check ensures we don't try to modify an undefined array element.
+        if (playerToUpdate) {
+            playerToUpdate.name = event.target.value;
+            setRoster(roster);
+        }
+        setRoster(roster);
     };
 
     return (
@@ -86,7 +92,12 @@ const EventRegistration = () => {
                             <span className="error-message">This field is required</span>
 
                             <label htmlFor="free-agent-experience">Experience *</label>
-                            <textarea id="free-agent-experience" name="free_agent_experience" rows={5}></textarea>
+                            <select id="free-agent-experience" name="free_agent_experience" required value={experienceLevel} onChange={(e) => setExperienceLevel(e.target.value)}>
+                                <option value="">-- Select Experience Level --</option>
+                                <option value="novice">Novice(0-1 year)</option>
+                                <option value="intermediate">Intermediate(1-3 years)</option>
+                                <option value="expert">Advanced(3+ years)</option>
+                            </select>
                             <span className="error-message">This field is required</span>
                         </div>
                     )}
