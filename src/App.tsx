@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 
 // Import page components
 import Home from './pages/Home';
-import AboutICAA from './pages/AboutICAA';
+import AboutICAA from './pages/AboutICAA'
 import AboutSport from './pages/AboutSport';
 import OfficialRules from './pages/OfficialRules';
 import OurCommunities from './pages/OurCommunities';
@@ -19,7 +19,6 @@ import BostonChampionship from './pages/BostonChampionship';
 import Catch2026 from './pages/Catch2026';
 import Registration from './pages/Registration';
 import RegistrationsTablePage from './pages/RegistrationsTablePage';
-import Leadership from './pages/Leadership';
 import Contact from './pages/Contact';
 
 const App = () => {
@@ -50,7 +49,6 @@ const App = () => {
                         <li><Link to="/about-sport" onClick={() => setSidebarOpen(false)}>About the Sport</Link></li>
                         <li><Link to="/our-communities" onClick={() => setSidebarOpen(false)}>The Alliance</Link></li>
                         <li><Link to="/events" onClick={() => setSidebarOpen(false)}>Events</Link></li>
-                        <li><Link to="/leadership" onClick={() => setSidebarOpen(false)}>Our Leadership</Link></li>
                         <li><Link to="/contact" onClick={() => setSidebarOpen(false)}>Contact Us</Link></li>
                     </ul>
                 </nav>
@@ -75,7 +73,6 @@ const App = () => {
                         <Route path="/events/catch-2026" element={<Catch2026 />} />
                         <Route path="/registration" element={<Registration />} />
                         <Route path="/registrations-table" element={<RegistrationsTablePage />} />
-                        <Route path="/leadership" element={<Leadership />} />
                         <Route path="/contact" element={<Contact />} />
                     </Routes>
                 </main>
