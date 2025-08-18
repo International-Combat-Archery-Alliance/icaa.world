@@ -1,4 +1,3 @@
-import React from 'react';
 import ArcheryMap from '../components/ArcheryMap';
 
 const OurCommunities = () => {

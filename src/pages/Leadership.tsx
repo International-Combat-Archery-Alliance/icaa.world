@@ -1,4 +1,3 @@
-import React from 'react';
 import BoardMember from '../components/BoardMember';
 
 const Leadership = () => {
