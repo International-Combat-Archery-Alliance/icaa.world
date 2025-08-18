@@ -98,6 +98,23 @@ body {
     transition: visibility 0s, opacity 0.3s ease-in-out;
 }
 
+/* Menu Toggle Button (Hamburger Icon) */
+.menu-toggle {
+    display: block; /* Visible on mobile by default */
+    position: fixed;
+    z-index: 1000; /* Ensure it's above other content */
+    top: 5%;
+    right: 90%;
+    transform: translateY(-50%);
+    background: var(--navy-blue);
+    color: var(--white);
+    border: 2px solid var(--white);
+    border-radius: 8px;
+    padding: 0.5rem 0.75rem;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
 /* Class to show sidebar and overlay */
 body.sidebar-open .sidebar {
     transform: translateX(0);
