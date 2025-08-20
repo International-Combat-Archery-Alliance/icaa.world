@@ -37,7 +37,9 @@ export interface paths {
                     content: {
                         "application/json": {
                             data: components["schemas"]["Event"][];
+                            /** @example Y29uZ3JhdHMsIHlvdSBmb3VuZCB0aGUgZWFzdGVyIGVnZw== */
                             cursor?: string;
+                            /** @example true */
                             hasNextPage: boolean;
                         };
                     };
@@ -145,7 +147,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["Event"];
+                        "application/json": {
+                            event: components["schemas"]["Event"];
+                        };
                     };
                 };
                 /** @description Bad request. */
@@ -185,7 +189,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/events/{id}/registration": {
+    "/events/{eventId}/register": {
         parameters: {
             query?: never;
             header?: never;
@@ -204,7 +208,7 @@ export interface paths {
                 header?: never;
                 path: {
                     /** @description ID of the event */
-                    id: string;
+                    eventId: string;
                 };
                 cookie?: never;
             };
@@ -221,7 +225,45 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["Registration"];
+                        "application/json": {
+                            registration: components["schemas"]["Registration"];
+                        };
+                    };
+                };
+                /** @description Bad request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not allowed to register. */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Event is not found to register with */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Someone is already signed up under this email */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
                     };
                 };
                 /** @description Unknown server error. */
@@ -241,91 +283,253 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/events/{eventId}/registrations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get all registrations for an event
+         * @description Get all registrations for an event
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description Cursor of where to start from */
+                    cursor?: string;
+                    /** @description Max amount of registrations to fetch */
+                    limit?: number;
+                };
+                header?: never;
+                path: {
+                    /** @description ID of the event */
+                    eventId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description A list of registrations. */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: components["schemas"]["Registration"][];
+                            /** @example 54321 */
+                            cursor?: string;
+                            /** @example true */
+                            hasNextPage: boolean;
+                        };
+                    };
+                };
+                /** @description Bad request. */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unknown server error. */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
         Event: {
-            /** Format: uuid */
+            /**
+             * Format: uuid
+             * @example 00000000-0000-0000-0000-000000000000
+             */
             readonly id: string;
+            /** @example 1 */
+            readonly version: number;
+            /** @example ICAA Cup 2025 */
             name: string;
             location: components["schemas"]["Location"];
-            /** Format: date-time */
+            /**
+             * Format: date-time
+             * @example 2025-08-19T18:46:53.185Z
+             */
             startTime: string;
-            /** Format: date-time */
+            /**
+             * Format: date-time
+             * @example 2025-08-19T22:00:00.000Z
+             */
             endTime: string;
-            /** Format: date-time */
+            /**
+             * Format: date-time
+             * @example 2025-08-17T23:59:59.000Z
+             */
             registrationCloseTime: string;
             registrationTypes: components["schemas"]["RegistrationType"][];
             allowedTeamSizeRange: components["schemas"]["Range"];
             signUpStats: components["schemas"]["SignUpStats"];
+            /** @example https://docs.google.com/document/d/adsffafsafsadfd/view */
+            rulesDocLink?: string;
         };
         SignUpStats: {
-            readonly numTeams: number;
-            readonly numRosteredPlayers: number;
-            readonly numTotalPlayers: number;
+            /** @example 10 */
+            numTeams: number;
+            /** @example 50 */
+            numRosteredPlayers: number;
+            /** @example 55 */
+            numTotalPlayers: number;
         };
         Registration: components["schemas"]["IndividualRegistration"] | components["schemas"]["TeamRegistration"];
         IndividualRegistration: {
-            /** Format: uuid */
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            registrationType: "ByIndividual";
+            /**
+             * Format: uuid
+             * @example 00000000-0000-0000-0000-000000000000
+             */
             readonly id: string;
-            /** Format: uuid */
+            /** @example 1 */
+            readonly version: number;
+            /**
+             * Format: uuid
+             * @example 00000000-0000-0000-0000-000000000000
+             */
             readonly eventId: string;
-            /** Format: date-time */
+            /**
+             * Format: date-time
+             * @example 2025-08-19T18:46:53.185Z
+             */
             readonly registeredAt: string;
-            /** Format: email */
+            /**
+             * Format: email
+             * @example jane.doe@example.com
+             */
             email: string;
+            /** @example Anytown, USA */
             homeCity: string;
             playerInfo: components["schemas"]["PlayerInfo"];
             experience: components["schemas"]["ExperienceLevel"];
+            /** @example true */
             readonly paid: boolean;
         };
         TeamRegistration: {
-            /** Format: uuid */
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            registrationType: "ByTeam";
+            /**
+             * Format: uuid
+             * @example 00000000-0000-0000-0000-000000000000
+             */
             readonly id: string;
-            /** Format: uuid */
+            /** @example 1 */
+            readonly version: number;
+            /**
+             * Format: uuid
+             * @example 00000000-0000-0000-0000-000000000000
+             */
             readonly eventId: string;
-            /** Format: date-time */
+            /**
+             * Format: date-time
+             * @example 2025-08-19T18:46:53.185Z
+             */
             readonly registeredAt: string;
+            /** @example The Fighting Mongooses */
             teamName: string;
+            /** @example Anytown, USA */
             homeCity: string;
-            /** Format: email */
+            /**
+             * Format: email
+             * @example captain@example.com
+             */
             captainEmail: string;
             players: components["schemas"]["PlayerInfo"][];
+            /** @example true */
             readonly paid: boolean;
         };
         PlayerInfo: {
+            /** @example Jane */
             firstName: string;
+            /** @example Doe */
             lastName: string;
         };
         Location: {
+            /** @example Anytown Community Center */
             name: string;
             address: components["schemas"]["Address"];
         };
         Address: {
-            /** @description Street address */
+            /**
+             * @description Street address
+             * @example 123 Main St
+             */
             street: string;
-            /** @description City or town */
+            /**
+             * @description City or town
+             * @example Anytown
+             */
             city: string;
-            /** @description State or province */
+            /**
+             * @description State or province
+             * @example CA
+             */
             state: string;
-            /** @description Postal code */
+            /**
+             * @description Postal code
+             * @example 90210
+             */
             postalCode: string;
-            /** @description Country */
+            /**
+             * @description Country
+             * @example USA
+             */
             country: string;
         };
         Range: {
+            /** @example 1 */
             min: number;
+            /** @example 5 */
             max: number;
         };
-        /** @enum {string} */
+        /**
+         * @example ByIndividual
+         * @enum {string}
+         */
         RegistrationType: "ByIndividual" | "ByTeam";
-        /** @enum {string} */
+        /**
+         * @example Intermediate
+         * @enum {string}
+         */
         ExperienceLevel: "Novice" | "Intermediate" | "Advanced";
         /** @enum {string} */
-        ErrorCode: "InternalError" | "LimitOutOfBounds" | "InvalidCursor" | "NotFound" | "EmptyBody";
+        ErrorCode: "InternalError" | "LimitOutOfBounds" | "InvalidCursor" | "NotFound" | "EmptyBody" | "InvalidBody" | "AlreadyExists" | "RegistrationClosed" | "InputValidationError" | "AuthError";
         Error: {
+            /** @example InternalError */
             code: components["schemas"]["ErrorCode"];
+            /** @example An unexpected error occurred. */
             message: string;
         };
     };

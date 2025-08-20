@@ -32,14 +32,14 @@ const OurCommunities = () => {
                 </a>
 
                 <a id="cda-card" href="https://combatdarchers.ca/en/combat-archery/" className="community-card" target="_blank" rel="noopener noreferrer">
-                    <img src="images/logos/Combat d' Archers.png" alt="Combat d'Archers Logo" className="community-logo-alt" />
-                    <h3>Combat d'Archers</h3>
+                    <img src="images/logos/Combat d' Archers.png" alt="Combat d&apos;Archers Logo" className="community-logo-alt" />
+                    <h3>Combat d&apos;Archers</h3>
                     <p>Montréal, QC, Canada</p>
                 </a>
 
                 <a id="cdas-card" href="https://combatdarcherssherbrooke.ca/en/booking-combat-archery/" className="community-card" target="_blank" rel="noopener noreferrer">
-                    <img src="images/logos/Combat d' Archers.png" alt="Combat d'Archers Sherbrooke Logo" className="community-logo-alt" />
-                    <h3>Combat d'Archers Sherbrooke</h3>
+                    <img src="images/logos/Combat d' Archers.png" alt="Combat d&apos;Archers Sherbrooke Logo" className="community-logo-alt" />
+                    <h3>Combat d&apos;Archers Sherbrooke</h3>
                     <p>Sherbrooke, QC, Canada</p>
                 </a>
 

@@ -27,7 +27,7 @@ const ContactForm = () => {
             } else {
                 alert('There was an error sending your message. Please try again.');
             }
-        } catch (error) {
+        } catch {
             alert('A network error occurred. Please check your connection and try again.');
         }
     };

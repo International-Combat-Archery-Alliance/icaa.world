@@ -46,7 +46,7 @@ const EventRegistration = () => {
                             <input type="text" id="team-name" name="team_name" />
                             <span className="error-message">This field is required</span>
 
-                            <label htmlFor="team-email">Captain's Email *</label>
+                            <label htmlFor="team-email">Captain&apos;s Email *</label>
                             <input type="text" id="team-email" name="team-email" />
                             <span className="error-message">This field is required</span>
 

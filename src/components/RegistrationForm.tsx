@@ -57,7 +57,7 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({ onRegister }) => {
             message: message || 'N/A'
         };
 
-        let registrations = JSON.parse(localStorage.getItem('icaa_registrations') || '[]');
+        const registrations = JSON.parse(localStorage.getItem('icaa_registrations') || '[]');
         registrations.push(newRegistration);
         localStorage.setItem('icaa_registrations', JSON.stringify(registrations));
 
