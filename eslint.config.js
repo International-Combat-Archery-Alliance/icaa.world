@@ -2,6 +2,7 @@ import globals from 'globals';
 import tseslint from 'typescript-eslint';
 import pluginReact from 'eslint-plugin-react';
 import eslintConfigPrettier from 'eslint-config-prettier';
+import pluginPrettier from 'eslint-plugin-prettier';
 
 export default [
   {
@@ -20,7 +21,11 @@ export default [
     },
   },
   {
+    plugins: {
+      prettier: pluginPrettier,
+    },
     rules: {
+      ...pluginPrettier.configs.recommended.rules,
       'react/react-in-jsx-scope': 'off',
       'react/jsx-no-target-blank': 'off',
     },
