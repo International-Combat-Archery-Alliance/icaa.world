@@ -20,6 +20,7 @@ import RegistrationsTablePage from './pages/RegistrationsTablePage';
 import Contact from './pages/Contact';
 import { EventQueryClientProvider } from './context/eventQueryClientContext';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { EventsV2 } from './pages/EventsV2';
 
 const App = () => {
   const queryClient = new QueryClient();
@@ -104,6 +105,7 @@ const App = () => {
                 <Route path="/official-rules" element={<OfficialRules />} />
                 <Route path="/our-communities" element={<OurCommunities />} />
                 <Route path="/events" element={<Events />} />
+                <Route path="/events2" element={<EventsV2 />} />
                 <Route
                   path="/event-registration"
                   element={<EventRegistration />}

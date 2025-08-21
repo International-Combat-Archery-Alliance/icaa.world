@@ -1,7 +1,7 @@
-import { createContext, useContext, useMemo, ReactNode } from 'react';
+import { createContext, useContext, useMemo, type ReactNode } from 'react';
 import createFetchClient from 'openapi-fetch';
-import createClient, { OpenapiQueryClient } from 'openapi-react-query';
-import { paths } from '../events/v1';
+import createClient, { type OpenapiQueryClient } from 'openapi-react-query';
+import type { paths } from '@/events/v1';
 
 // Create the context with a null default value
 const EventQueryClientContext = createContext<OpenapiQueryClient<paths> | null>(

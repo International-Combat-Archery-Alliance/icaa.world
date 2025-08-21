@@ -1,5 +1,5 @@
 import { useEventQueryClient } from '../context/eventQueryClientContext';
-import { paths } from '../events/v1';
+import type { paths } from '@/events/v1';
 
 export function useGetEvent(eventId: string) {
   const client = useEventQueryClient();
