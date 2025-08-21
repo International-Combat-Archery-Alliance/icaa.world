@@ -18,8 +18,12 @@ import Catch2026 from './pages/events/Catch2026';
 import Registration from './pages/Registration';
 import RegistrationsTablePage from './pages/RegistrationsTablePage';
 import Contact from './pages/Contact';
+import { EventQueryClientProvider } from './context/eventQueryClientContext';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 const App = () => {
+  const queryClient = new QueryClient();
+
   const [isSidebarOpen, setSidebarOpen] = useState(false);
 
   const toggleSidebar = () => {
@@ -35,131 +39,144 @@ const App = () => {
   }, [isSidebarOpen]);
 
   return (
-    <Router>
-      <div className="app-container">
-        <nav id="sidebar" className="sidebar">
-          <ul className="sidebar-nav">
-            <div className="logo-container">
-              <img
-                src="/images/logos/ICAA Logo transparent.png"
-                alt="ICAA Logo"
-                className="logo"
-              />
-            </div>
-            <li>
-              <Link to="/" onClick={() => setSidebarOpen(false)}>
-                Home
-              </Link>
-            </li>
-            <li>
-              <Link to="/about-icaa" onClick={() => setSidebarOpen(false)}>
-                About The ICAA
-              </Link>
-            </li>
-            <li>
-              <Link to="/about-sport" onClick={() => setSidebarOpen(false)}>
-                About The Sport
-              </Link>
-            </li>
-            <li>
-              <Link to="/our-communities" onClick={() => setSidebarOpen(false)}>
-                The Alliance
-              </Link>
-            </li>
-            <li>
-              <Link to="/events" onClick={() => setSidebarOpen(false)}>
-                Events
-              </Link>
-            </li>
-            <li>
-              <Link to="/contact" onClick={() => setSidebarOpen(false)}>
-                Contact Us
-              </Link>
-            </li>
-          </ul>
-        </nav>
-        <div className="content-overlay"></div>
-        <button
-          className="menu-toggle"
-          id="menu-toggle-btn"
-          onClick={toggleSidebar}
-        >
-          ☰
-        </button>
+    <QueryClientProvider client={queryClient}>
+      <EventQueryClientProvider>
+        <Router>
+          <div className="app-container">
+            <nav id="sidebar" className="sidebar">
+              <ul className="sidebar-nav">
+                <div className="logo-container">
+                  <img
+                    src="/images/logos/ICAA Logo transparent.png"
+                    alt="ICAA Logo"
+                    className="logo"
+                  />
+                </div>
+                <li>
+                  <Link to="/" onClick={() => setSidebarOpen(false)}>
+                    Home
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/about-icaa" onClick={() => setSidebarOpen(false)}>
+                    About The ICAA
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/about-sport" onClick={() => setSidebarOpen(false)}>
+                    About The Sport
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/our-communities"
+                    onClick={() => setSidebarOpen(false)}
+                  >
+                    The Alliance
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/events" onClick={() => setSidebarOpen(false)}>
+                    Events
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/contact" onClick={() => setSidebarOpen(false)}>
+                    Contact Us
+                  </Link>
+                </li>
+              </ul>
+            </nav>
+            <div className="content-overlay"></div>
+            <button
+              className="menu-toggle"
+              id="menu-toggle-btn"
+              onClick={toggleSidebar}
+            >
+              ☰
+            </button>
 
-        <main className="main-content">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/about-icaa" element={<AboutICAA />} />
-            <Route path="/about-sport" element={<AboutSport />} />
-            <Route path="/official-rules" element={<OfficialRules />} />
-            <Route path="/our-communities" element={<OurCommunities />} />
-            <Route path="/events" element={<Events />} />
-            <Route path="/event-registration" element={<EventRegistration />} />
-            <Route path="/news/icaa-partners" element={<NewsItem1 />} />
-            <Route path="/news/new-rules" element={<NewsItem2 />} />
-            <Route
-              path="/news/boston-championship-recap"
-              element={<NewsItem3 />}
-            />
-            <Route path="/events/boston-play-ins" element={<BostonPlayIns />} />
-            <Route
-              path="/events/boston-championship"
-              element={<BostonChampionship />}
-            />
-            <Route path="/events/catch-2026" element={<Catch2026 />} />
-            <Route path="/registration" element={<Registration />} />
-            <Route
-              path="/registrations-table"
-              element={<RegistrationsTablePage />}
-            />
-            <Route path="/contact" element={<Contact />} />
-          </Routes>
-        </main>
+            <main className="main-content">
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/about-icaa" element={<AboutICAA />} />
+                <Route path="/about-sport" element={<AboutSport />} />
+                <Route path="/official-rules" element={<OfficialRules />} />
+                <Route path="/our-communities" element={<OurCommunities />} />
+                <Route path="/events" element={<Events />} />
+                <Route
+                  path="/event-registration"
+                  element={<EventRegistration />}
+                />
+                <Route path="/news/icaa-partners" element={<NewsItem1 />} />
+                <Route path="/news/new-rules" element={<NewsItem2 />} />
+                <Route
+                  path="/news/boston-championship-recap"
+                  element={<NewsItem3 />}
+                />
+                <Route
+                  path="/events/boston-play-ins"
+                  element={<BostonPlayIns />}
+                />
+                <Route
+                  path="/events/boston-championship"
+                  element={<BostonChampionship />}
+                />
+                <Route path="/events/catch-2026" element={<Catch2026 />} />
+                <Route path="/registration" element={<Registration />} />
+                <Route
+                  path="/registrations-table"
+                  element={<RegistrationsTablePage />}
+                />
+                <Route path="/contact" element={<Contact />} />
+              </Routes>
+            </main>
 
-        <footer>
-          <div className="social-links">
-            <a
-              href="https://www.youtube.com/@combatarcheryboston9136"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <img
-                src="/images/logos/youtube.png"
-                alt="YouTube"
-                className="social-icon"
-              />
-            </a>
-            <a
-              href="https://x.com/yourhandle"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <img
-                src="/images/logos/X.jfif"
-                alt="X (formerly Twitter)"
-                className="social-icon"
-              />
-            </a>
-            <a
-              href="https://www.instagram.com/yourprofile/"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <img
-                src="/images/logos/instagram.jfif"
-                alt="Instagram"
-                className="social-icon"
-              />
-            </a>
+            <footer>
+              <div className="social-links">
+                <a
+                  href="https://www.youtube.com/@combatarcheryboston9136"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <img
+                    src="/images/logos/youtube.png"
+                    alt="YouTube"
+                    className="social-icon"
+                  />
+                </a>
+                <a
+                  href="https://x.com/yourhandle"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <img
+                    src="/images/logos/X.jfif"
+                    alt="X (formerly Twitter)"
+                    className="social-icon"
+                  />
+                </a>
+                <a
+                  href="https://www.instagram.com/yourprofile/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <img
+                    src="/images/logos/instagram.jfif"
+                    alt="Instagram"
+                    className="social-icon"
+                  />
+                </a>
+              </div>
+              <p>
+                &copy; 2025 International Combat Archery Alliance, Inc. All
+                Rights Reserved.
+              </p>
+            </footer>
           </div>
-          <p>
-            &copy; 2025 International Combat Archery Alliance, Inc. All Rights
-            Reserved.
-          </p>
-        </footer>
-      </div>
-    </Router>
+        </Router>
+      </EventQueryClientProvider>
+    </QueryClientProvider>
   );
 };
 

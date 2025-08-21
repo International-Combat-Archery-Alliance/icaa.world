@@ -4,7 +4,7 @@
  */
 
 export interface paths {
-  '/events': {
+  '/v1/events': {
     parameters: {
       query?: never;
       header?: never;
@@ -118,7 +118,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/events/{id}': {
+  '/v1/events/{id}': {
     parameters: {
       query?: never;
       header?: never;
@@ -189,7 +189,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/events/{eventId}/register': {
+  '/v1/events/{eventId}/register': {
     parameters: {
       query?: never;
       header?: never;
@@ -283,7 +283,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/events/{eventId}/registrations': {
+  '/v1/events/{eventId}/registrations': {
     parameters: {
       query?: never;
       header?: never;
