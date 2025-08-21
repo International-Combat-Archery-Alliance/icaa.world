@@ -390,6 +390,7 @@ td {
   max-width: 100px;
   height: auto;
   margin-bottom: 1rem;
+  display: inline-block;
 }
 .event-logo,
 .community-logo-alt {
