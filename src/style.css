@@ -1,3 +1,5 @@
+@import 'tailwindcss';
+
 /* General & Typography */
 :root {
   --navy-blue: #0a1c4a;
