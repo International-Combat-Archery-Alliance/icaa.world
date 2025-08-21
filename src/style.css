@@ -179,6 +179,7 @@ body.sidebar-open .content-overlay {
   max-width: 100px;
   margin-bottom: 1rem;
   margin-left: 1.75em;
+  display: inline-block;
 }
 
 .hero-title {
@@ -396,6 +397,7 @@ td {
   height: auto;
   margin-bottom: 1rem;
   background-color: #0a1c4a;
+  display: inline-block;
 }
 
 .event-card h3,
@@ -448,6 +450,7 @@ td {
 .event-page-logo {
   max-width: 20em;
   border-radius: 30%;
+  display: inline-block;
 }
 /* Maps Container */
 .map-container {
@@ -844,6 +847,7 @@ footer {
   }
   .logo {
     max-width: 150px;
+    display: inline-block;
   }
   .mission-vision {
     display: flex;
