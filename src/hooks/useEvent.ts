@@ -1,5 +1,7 @@
 import { useEventQueryClient } from '../context/eventQueryClientContext';
-import type { paths } from '@/events/v1';
+import type { paths, components } from '@/events/v1';
+
+export type Event = components['schemas']['Event'];
 
 export function useGetEvent(eventId: string) {
   const client = useEventQueryClient();
@@ -32,4 +34,10 @@ export function useGetEvents(limit: number = 10) {
       initialPageParam: null,
     },
   );
+}
+
+export function useRegisterForEvent() {
+  const client = useEventQueryClient();
+
+  return client.useMutation('post', '/v1/events/{eventId}/register');
 }

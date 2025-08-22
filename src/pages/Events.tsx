@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useGetEvents } from '../hooks/useEvent';
+import { useGetEvents, type Event } from '../hooks/useEvent';
 import {
   Card,
   CardContent,
@@ -14,8 +14,7 @@ import { tz } from '@date-fns/tz';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import Dinero, { type Currency } from 'dinero.js';
-
-type Event = components['schemas']['Event'];
+import { Link } from 'react-router-dom';
 
 export default function Events() {
   const { data, isPending, isFetching, error, refetch } = useGetEvents();
@@ -121,12 +120,18 @@ function EventCard({ event, className }: { event: Event; className?: string }) {
       <CardFooter>
         <div className="flex flex-col w-full gap-2">
           {byIndividualOpt !== undefined ? (
-            <Button>
-              Free Agent Sign Up ({formatMoney(byIndividualOpt.price)})
+            <Button asChild>
+              <Link to={`/events/${event.id}/register-free-agent`}>
+                Free Agent Sign Up ({formatMoney(byIndividualOpt.price)})
+              </Link>
             </Button>
           ) : null}
           {byTeamOpt !== undefined ? (
-            <Button>Team Sign Up ({formatMoney(byTeamOpt.price)})</Button>
+            <Button asChild>
+              <Link to={`/events/${event.id}/register-team`}>
+                Team Sign Up ({formatMoney(byTeamOpt.price)})
+              </Link>
+            </Button>
           ) : null}
         </div>
       </CardFooter>

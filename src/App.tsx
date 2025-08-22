@@ -20,6 +20,8 @@ import RegistrationsTablePage from './pages/RegistrationsTablePage';
 import Contact from './pages/Contact';
 import { EventQueryClientProvider } from './context/eventQueryClientContext';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import EventRegistrationFreeAgent from './pages/EventRegistrationFreeAgent';
+import EventRegistrationTeam from './pages/EventRegistrationTeam';
 
 const App = () => {
   const queryClient = new QueryClient();
@@ -104,6 +106,14 @@ const App = () => {
                 <Route path="/official-rules" element={<OfficialRules />} />
                 <Route path="/our-communities" element={<OurCommunities />} />
                 <Route path="/events" element={<Events />} />
+                <Route
+                  path="/events/:eventId/register-free-agent"
+                  element={<EventRegistrationFreeAgent />}
+                />
+                <Route
+                  path="/events/:eventId/register-team"
+                  element={<EventRegistrationTeam />}
+                />
                 <Route
                   path="/event-registration"
                   element={<EventRegistration />}
