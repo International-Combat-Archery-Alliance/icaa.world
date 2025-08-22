@@ -18,21 +18,30 @@ import Dinero, { type Currency } from 'dinero.js';
 type Event = components['schemas']['Event'];
 
 export function EventsV2() {
-  const { data, isPending, isFetching, error, hasNextPage } = useGetEvents();
+  const { data, isPending, isFetching, error, refetch } = useGetEvents();
 
   // TODO: eventually support paginating through multiple pages
-  const [pageNum, setPageNum] = useState(0);
+  const [pageNum] = useState(0);
 
   return (
     <>
       <h2 className="section-title">Events</h2>
       <div className="px-4 pb-4">
-        <div className="flex flex-wrap gap-4">
-          <EventContent
-            events={data?.pages[0].data}
-            isFetching={isPending || isFetching}
+        {error ? (
+          <ErrorMessage
+            mainMessage="Error Loading Events"
+            subMessage="Failed to load events. Please try again later."
+            refetch={refetch}
           />
-        </div>
+        ) : (
+          <div className="flex flex-wrap gap-4">
+            <EventContent
+              events={data?.pages[pageNum].data}
+              isFetching={isPending || isFetching}
+              refetch={refetch}
+            />
+          </div>
+        )}
       </div>
     </>
   );
@@ -41,21 +50,26 @@ export function EventsV2() {
 function EventContent({
   events,
   isFetching,
+  refetch,
 }: {
   events: Event[] | undefined;
   isFetching: boolean;
+  refetch: () => void;
 }) {
   if (isFetching) {
     return Array.from({ length: 6 }).map((_, i) => (
-      <Skeleton
-        key={i}
-        className="h-[285px] w-full md:max-w-[375px] rounded-xl"
-      />
+      <EventCardSkeleton key={i} />
     ));
   }
 
   if (events === undefined || events.length === 0) {
-    return <div>No events found, check back later!</div>;
+    return (
+      <ErrorMessage
+        mainMessage="No events found!"
+        subMessage="We don't have any events to sign up for right now, please check back later!"
+        refetch={refetch}
+      />
+    );
   }
 
   return events?.map((event) => (
@@ -117,6 +131,54 @@ function EventCard({ event, className }: { event: Event; className?: string }) {
         </div>
       </CardFooter>
     </Card>
+  );
+}
+
+function EventCardSkeleton() {
+  return (
+    <Card className="flex-grow w-full md:max-w-[375px]">
+      <CardHeader>
+        <Skeleton className="h-24 w-24 justify-self-center mb-2 rounded-xl" />
+        <CardTitle>
+          <Skeleton className="w-3/4 h-4" />
+        </CardTitle>
+        <CardDescription>
+          <div className="flex flex-col gap-1">
+            <Skeleton className="w-1/2 h-2" />
+            <Skeleton className="w-1/2 h-2" />
+          </div>
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="flex flex-col gap-2">
+          <Skeleton className="w-3/4 h-2" />
+          <Skeleton className="h-10" />
+        </div>
+      </CardContent>
+      <CardFooter>
+        <div className="flex flex-col gap-2 w-full">
+          <Skeleton className="h-10" />
+        </div>
+      </CardFooter>
+    </Card>
+  );
+}
+
+function ErrorMessage({
+  mainMessage,
+  subMessage,
+  refetch,
+}: {
+  mainMessage: string;
+  subMessage: string;
+  refetch: () => void;
+}) {
+  return (
+    <div className="text-center p-8">
+      <h3 className="text-lg font-semibold text-red-600 mb-2">{mainMessage}</h3>
+      <p className="text-gray-600 mb-4">{subMessage} </p>
+      <Button onClick={() => refetch()}>Retry</Button>
+    </div>
   );
 }
 
