@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 // Import page components
 import Home from './pages/Home';
 import AboutICAA from './pages/AboutICAA';
-import AboutSport from './pages/AboutSport';
+import { AboutSport } from './pages/AboutSport';
 import OfficialRules from './pages/OfficialRules';
 import OurCommunities from './pages/OurCommunities';
 import Events from './pages/Events';
