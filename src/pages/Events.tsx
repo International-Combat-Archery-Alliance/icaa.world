@@ -73,7 +73,7 @@ function EventContent({
 
   return events?.map((event) => (
     <EventCard
-      className="flex-grow md:max-w-[375px]"
+      className="flex-grow lg:max-w-[375px]"
       key={event.id}
       event={event}
     />
@@ -141,7 +141,7 @@ function EventCard({ event, className }: { event: Event; className?: string }) {
 
 function EventCardSkeleton() {
   return (
-    <Card className="flex-grow w-full md:max-w-[375px]">
+    <Card className="flex-grow w-full lg:max-w-[375px]">
       <CardHeader>
         <Skeleton className="h-24 w-24 justify-self-center mb-2 rounded-xl" />
         <CardTitle>
