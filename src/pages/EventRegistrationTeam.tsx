@@ -5,8 +5,5 @@ export default function EventRegistrationTeam() {
   const { eventId } = useParams();
   const { data } = useGetEvent(eventId!);
   
-  //i pureley did this just to get link to push
-  return(
-    data
-  )
+  return
 }

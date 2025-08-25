@@ -127,3 +127,5 @@ export function AboutSport() {
     </section>
   );
 }
+
+export default AboutSport;

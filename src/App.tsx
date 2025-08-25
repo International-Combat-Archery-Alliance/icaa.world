@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 // Import page components
 import Home from './pages/Home';
 import AboutICAA from './pages/AboutICAA';
-import { AboutSport } from './pages/AboutSport';
+import AboutSport from './pages/AboutSport';
 import OfficialRules from './pages/OfficialRules';
 import OurCommunities from './pages/OurCommunities';
 import Events from './pages/Events';
@@ -18,6 +18,7 @@ import Catch2026 from './pages/events/Catch2026';
 import Registration from './pages/Registration';
 import RegistrationsTablePage from './pages/RegistrationsTablePage';
 import Contact from './pages/Contact';
+import AdminPage from './pages/Admin';
 import { EventQueryClientProvider } from './context/eventQueryClientContext';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import EventRegistrationFreeAgent from './pages/EventRegistrationFreeAgent';
@@ -87,6 +88,11 @@ const App = () => {
                     Contact Us
                   </Link>
                 </li>
+                <li>
+                  <Link to="/admin" onClick={() => setSidebarOpen(false)}>
+                    Admin
+                  </Link>
+                </li>
               </ul>
             </nav>
             <div className="content-overlay"></div>
@@ -112,7 +118,7 @@ const App = () => {
                 />
                 <Route
                   path="/events/:eventId/register-team"
-                  element={<EventRegistrationTeam />}
+                  element={<EventRegistrationFreeAgent />}
                 />
                 <Route
                   path="/event-registration"
@@ -139,6 +145,7 @@ const App = () => {
                   element={<RegistrationsTablePage />}
                 />
                 <Route path="/contact" element={<Contact />} />
+                 <Route path="/admin" element={<AdminPage />} />
               </Routes>
             </main>
 
