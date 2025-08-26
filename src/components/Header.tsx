@@ -1,5 +1,6 @@
 import { GoogleLogin } from '@react-oauth/google';
 import { useLocation } from 'react-router-dom';
+import Login from './Login';
 
 const routeToHeaderMap: Record<string, string> = {
   '/about-icaa': 'About The ICAA',
@@ -57,11 +58,7 @@ export default function Header() {
         <h2 className="font-['Montserrat', sans-serif] text-6xl text-center text-(--electric-orange)">
           {headerText}
         </h2>
-        <GoogleLogin
-          type="icon"
-          shape="circle"
-          onSuccess={(credentialResponse) => console.log(credentialResponse)}
-        />
+        <Login />
       </div>
     </header>
   );
