@@ -6,9 +6,6 @@ const NewsItem2 = () => {
       <Link to="/" className="back-btn">
         ← Back to Home
       </Link>
-      <h2 className="section-title">
-        New Official Rules to be Announced for 2026 Season
-      </h2>
       <div className="content-wrapper">
         <p>
           Full article about the upcoming rule changes will be displayed here.

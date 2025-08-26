@@ -74,16 +74,6 @@ body {
   align-items: center;
 }
 
-.section-title {
-  font-family: 'Montserrat', sans-serif;
-  font-size: 3.5rem;
-  text-align: center;
-  margin-bottom: 2rem;
-  color: var(--electric-orange);
-  background-color: #0a1c4a;
-  width: 100%;
-}
-
 /* Sidebar Navigation */
 .sidebar {
   height: 100%;

@@ -11,7 +11,6 @@ import { Button } from '@/components/ui/button';
 export function AboutSport() {
   return (
     <section id="about-sport" className="content-section">
-      <h2 className="section-title">The Sport: Combat Archery</h2>
       <Accordion
         type="multiple"
         className="w-full max-w-screen-lg mx-auto p-15"

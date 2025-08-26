@@ -6,7 +6,6 @@ const OurCommunities = () => {
       id="our-communities"
       className="content-section communities-section"
     >
-      <h2 className="section-title">The Alliance</h2>
       <ArcheryMap />
       <div className="content-wrapper community-grid">
         <div id="agb-card" className="community-card">

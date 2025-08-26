@@ -7,7 +7,6 @@ const Registration = () => {
       id="registration-section"
       className="content-section registration-section"
     >
-      <h2 className="section-title">Registration</h2>
       <div className="content-wrapper">
         <RegistrationForm onRegister={() => {}} />
         <div className="registrations-link">
