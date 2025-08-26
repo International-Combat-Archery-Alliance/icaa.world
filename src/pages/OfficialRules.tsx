@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const OfficialRules = () => {
   return (
@@ -9,9 +10,11 @@ const OfficialRules = () => {
       <h2 className="section-title">Official Rules</h2>
       <div className="content-wrapper">
         <iframe
-          src="https://docs.google.com/document/d/1ecAYQTKbrq_xMKBJ2ky7EXz5aRrURq6Jws6GPK-e4AI/preview"
+          src="https://docs.google.com/document/d/1UQARbdHDrR-kp2McV8XVorGUNOv5apeYAGWnvZlbQaY/preview"
           style={{ width: '100%', height: '750px', border: 0 }}
-        ></iframe>
+        >
+          <Skeleton className="h-[285px] w-full md:max-w-[375px] rounded-xl" />
+        </iframe>
       </div>
     </section>
   );
