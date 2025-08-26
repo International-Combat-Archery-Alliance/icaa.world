@@ -31,7 +31,6 @@ const EventRegistration = () => {
       <Link to="/events" className="back-btn">
         ← Back to Events
       </Link>
-      <h2 className="section-title">Event Registration</h2>
       <div className="content-wrapper">
         <form id="event-registration-form" className="event-registration-form">
           <label htmlFor="event-select">Event Name *</label>

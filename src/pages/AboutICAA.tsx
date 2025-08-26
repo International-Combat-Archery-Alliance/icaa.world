@@ -3,7 +3,6 @@ import BoardMember from '../components/BoardMember';
 const Leadership = () => {
   return (
     <section id="leadership-section" className="content-section">
-      <h2 className="section-title">About The ICAA</h2>
       <div className="content-wrapper">
         <div className="leadership-intro">
           <p>

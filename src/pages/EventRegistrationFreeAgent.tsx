@@ -27,12 +27,9 @@ export default function EventRegistrationFreeAgent() {
   const { data } = useGetEvent(eventId!);
 
   return (
-    <>
-      <h2 className="section-title">Event Registration</h2>
-      <div className="px-4 pb-4">
-        {data ? <FreeAgentForm event={data.event} /> : null}
-      </div>
-    </>
+    <div className="px-4 py-4">
+      {data ? <FreeAgentForm event={data.event} /> : null}
+    </div>
   );
 }
 

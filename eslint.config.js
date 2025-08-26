@@ -7,9 +7,19 @@ import pluginQuery from '@tanstack/eslint-plugin-query';
 
 export default [
   {
-    ignores: ['dist/**', 'src/components/ui/**'],
+    ignores: [
+      'node_modules/**',
+      'dist/**',
+      'src/components/ui/**',
+      '.vite/**',
+      'public/**',
+      'build/**',
+      'coverage/**',
+      '**/*.d.ts',
+    ],
   },
   {
+    files: ['**/*.{js,jsx,ts,tsx}'],
     languageOptions: { globals: globals.browser },
   },
   ...pluginQuery.configs['flat/recommended'],

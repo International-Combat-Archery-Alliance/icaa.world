@@ -7,7 +7,6 @@ const OfficialRules = () => {
       <Link to="/about-sport" className="back-btn">
         ← Back to About the Sport
       </Link>
-      <h2 className="section-title">Official Rules</h2>
       <div className="content-wrapper">
         <iframe
           src="https://docs.google.com/document/d/1UQARbdHDrR-kp2McV8XVorGUNOv5apeYAGWnvZlbQaY/preview"

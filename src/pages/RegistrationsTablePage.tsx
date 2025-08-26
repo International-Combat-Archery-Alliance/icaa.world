@@ -10,7 +10,6 @@ const RegistrationsTablePage = () => {
       <Link to="/registration" className="back-btn">
         ← Back to Registration
       </Link>
-      <h2 className="section-title">Registrations</h2>
       <div className="content-wrapper">
         <RegistrationsTable />
       </div>

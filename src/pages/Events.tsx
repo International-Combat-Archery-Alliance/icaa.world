@@ -23,24 +23,21 @@ export default function Events() {
   const [pageNum] = useState(0);
 
   return (
-    <>
-      <h2 className="section-title">Events</h2>
-      <div className="px-4 pb-4">
-        {error ? (
-          <ErrorMessage
-            mainMessage="Error Loading Events"
-            subMessage="Failed to load events. Please try again later."
-            refetch={refetch}
-          />
-        ) : (
-          <EventContent
-            events={data?.pages[pageNum].data}
-            isFetching={isPending || isFetching}
-            refetch={refetch}
-          />
-        )}
-      </div>
-    </>
+    <div className="px-4 pb-4">
+      {error ? (
+        <ErrorMessage
+          mainMessage="Error Loading Events"
+          subMessage="Failed to load events. Please try again later."
+          refetch={refetch}
+        />
+      ) : (
+        <EventContent
+          events={data?.pages[pageNum].data}
+          isFetching={isPending || isFetching}
+          refetch={refetch}
+        />
+      )}
+    </div>
   );
 }
 

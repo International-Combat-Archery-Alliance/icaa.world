@@ -6,7 +6,6 @@ const BostonPlayIns = () => {
       <Link to="/events" className="back-btn">
         ← Back to Events
       </Link>
-      <h2 className="section-title">Boston Play Ins Tournament</h2>
       <div className="content-wrapper">
         <img src="/images/logos/boston 2025.png" className="event-page-logo" />
         <h2>Event Details</h2>
