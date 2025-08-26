@@ -6,7 +6,7 @@
     "preview": "vite preview",
     "test:ts": "tsc --noEmit",
     "codegen": "openapi-typescript https://raw.githubusercontent.com/International-Combat-Archery-Alliance/event-registration/refs/heads/main/spec/api.yaml -o ./src/events/v1.d.ts",
-    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "lint": "eslint . --report-unused-disable-directives --max-warnings 0",
     "lint:fix": "bun lint --fix",
     "format": "prettier --write .",
     "prepare": "husky"
