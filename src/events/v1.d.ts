@@ -4,7 +4,7 @@
  */
 
 export interface paths {
-  '/events': {
+  '/v1/events': {
     parameters: {
       query?: never;
       header?: never;
@@ -118,7 +118,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/events/{id}': {
+  '/v1/events/{id}': {
     parameters: {
       query?: never;
       header?: never;
@@ -189,7 +189,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/events/{eventId}/register': {
+  '/v1/events/{eventId}/register': {
     parameters: {
       query?: never;
       header?: never;
@@ -283,7 +283,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/events/{eventId}/registrations': {
+  '/v1/events/{eventId}/registrations': {
     parameters: {
       query?: never;
       header?: never;
@@ -384,11 +384,16 @@ export interface components {
        * @example 2025-08-17T23:59:59.000Z
        */
       registrationCloseTime: string;
-      registrationTypes: components['schemas']['RegistrationType'][];
+      registrationOptions: components['schemas']['EventRegistrationOption'][];
       allowedTeamSizeRange: components['schemas']['Range'];
       signUpStats: components['schemas']['SignUpStats'];
       /** @example https://docs.google.com/document/d/adsffafsafsadfd/view */
       rulesDocLink?: string;
+      /**
+       * @description A file name that exists in the UI assets to use as the logo.
+       * @example boston-tournament.jpg
+       */
+      imageName?: string;
     };
     SignUpStats: {
       /** @example 10 */
@@ -515,6 +520,22 @@ export interface components {
       min: number;
       /** @example 5 */
       max: number;
+    };
+    Money: {
+      /**
+       * Format: iso-4217
+       * @example USD`
+       */
+      currency: string;
+      /**
+       * @description Minor units of money (i.e. 100 == $1 in USD)
+       * @example 100
+       */
+      amount: number;
+    };
+    EventRegistrationOption: {
+      registrationType: components['schemas']['RegistrationType'];
+      price: components['schemas']['Money'];
     };
     /**
      * @example ByIndividual
