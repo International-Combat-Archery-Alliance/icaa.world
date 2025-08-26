@@ -1,4 +1,4 @@
-import * as React from "react"
+import * as React from 'react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -9,21 +9,21 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
-import { Button, buttonVariants } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+} from '@/components/ui/alert-dialog';
+import { Button, buttonVariants } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+} from '@/components/ui/select';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover"
+} from '@/components/ui/popover';
 import {
   Table,
   TableBody,
@@ -31,65 +31,65 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
+} from '@/components/ui/table';
 
 export interface Registration {
-  id: string
-  eventName: string
-  registrationType: "Free Agent" | "Team"
-  name: string
-  homeCity: string
-  email: string
-  paid: boolean
-  experience?: string
-  roster?: string[]
+  id: string;
+  eventName: string;
+  registrationType: 'Free Agent' | 'Team';
+  name: string;
+  homeCity: string;
+  email: string;
+  paid: boolean;
+  experience?: string;
+  roster?: string[];
 }
 
 interface EventRegistrationTableProps {
-  registrations: Registration[]
+  registrations: Registration[];
 }
 
 const EventRegistrationTable: React.FC<EventRegistrationTableProps> = ({
   registrations,
 }) => {
-  const [editingRowId, setEditingRowId] = React.useState<string | null>(null)
+  const [editingRowId, setEditingRowId] = React.useState<string | null>(null);
   const [editedRegistration, setEditedRegistration] =
-    React.useState<Registration | null>(null)
+    React.useState<Registration | null>(null);
 
   const handleEditClick = (registration: Registration) => {
-    setEditingRowId(registration.id)
-    setEditedRegistration({ ...registration })
-  }
+    setEditingRowId(registration.id);
+    setEditedRegistration({ ...registration });
+  };
 
   const handleCancelClick = () => {
-    setEditingRowId(null)
-    setEditedRegistration(null)
-  }
+    setEditingRowId(null);
+    setEditedRegistration(null);
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!editedRegistration) return
-    const { name, value } = e.target
-    setEditedRegistration({ ...editedRegistration, [name]: value })
-  }
+    if (!editedRegistration) return;
+    const { name, value } = e.target;
+    setEditedRegistration({ ...editedRegistration, [name]: value });
+  };
 
   const handleSelectChange = (name: string, value: string) => {
-    if (!editedRegistration) return
-    setEditedRegistration({ ...editedRegistration, [name]: value })
-  }
+    if (!editedRegistration) return;
+    setEditedRegistration({ ...editedRegistration, [name]: value });
+  };
 
   const handlePaidChange = (value: string) => {
-    if (!editedRegistration) return
-    setEditedRegistration({ ...editedRegistration, paid: value === "true" })
-  }
+    if (!editedRegistration) return;
+    setEditedRegistration({ ...editedRegistration, paid: value === 'true' });
+  };
 
   const handleSubmit = () => {
-    if (!editedRegistration) return
+    if (!editedRegistration) return;
     // In a real app, you'd call a prop to update the data source, e.g.:
     // onUpdateRegistration(editedRegistration);
-    console.log("Submitting changes:", editedRegistration)
-    setEditingRowId(null)
-    setEditedRegistration(null)
-  }
+    console.log('Submitting changes:', editedRegistration);
+    setEditingRowId(null);
+    setEditedRegistration(null);
+  };
 
   return (
     <Table>
@@ -101,13 +101,17 @@ const EventRegistrationTable: React.FC<EventRegistrationTableProps> = ({
           <TableHead>Email</TableHead>
           <TableHead>Paid</TableHead>
           <TableHead>Experience / Roster</TableHead>
-          <TableHead><span className="sr-only">Edit</span></TableHead>
-          <TableHead><span className="sr-only">Delete</span></TableHead>
+          <TableHead>
+            <span className="sr-only">Edit</span>
+          </TableHead>
+          <TableHead>
+            <span className="sr-only">Delete</span>
+          </TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
         {registrations.map((registration) => {
-          const isEditing = editingRowId === registration.id
+          const isEditing = editingRowId === registration.id;
           return (
             <TableRow key={registration.id}>
               {isEditing && editedRegistration ? (
@@ -117,7 +121,7 @@ const EventRegistrationTable: React.FC<EventRegistrationTableProps> = ({
                     <Select
                       value={editedRegistration.registrationType}
                       onValueChange={(value) =>
-                        handleSelectChange("registrationType", value)
+                        handleSelectChange('registrationType', value)
                       }
                     >
                       <SelectTrigger className="w-[120px]">
@@ -166,10 +170,10 @@ const EventRegistrationTable: React.FC<EventRegistrationTableProps> = ({
                     </Select>
                   </TableCell>
                   <TableCell>
-                    {editedRegistration.registrationType === "Free Agent" ? (
+                    {editedRegistration.registrationType === 'Free Agent' ? (
                       <Input
                         name="experience"
-                        value={editedRegistration.experience ?? ""}
+                        value={editedRegistration.experience ?? ''}
                         onChange={handleInputChange}
                         placeholder="Experience"
                       />
@@ -215,11 +219,11 @@ const EventRegistrationTable: React.FC<EventRegistrationTableProps> = ({
                   <TableCell>{registration.name}</TableCell>
                   <TableCell>{registration.homeCity}</TableCell>
                   <TableCell>{registration.email}</TableCell>
-                  <TableCell>{registration.paid ? "Paid" : "Unpaid"}</TableCell>
+                  <TableCell>{registration.paid ? 'Paid' : 'Unpaid'}</TableCell>
                   <TableCell>
-                    {registration.registrationType === "Free Agent" ? (
-                      <span>{registration.experience ?? "N/A"}</span>
-                    ) : registration.registrationType === "Team" &&
+                    {registration.registrationType === 'Free Agent' ? (
+                      <span>{registration.experience ?? 'N/A'}</span>
+                    ) : registration.registrationType === 'Team' &&
                       registration.roster &&
                       registration.roster.length > 0 ? (
                       <Popover>
@@ -242,7 +246,7 @@ const EventRegistrationTable: React.FC<EventRegistrationTableProps> = ({
                         </PopoverContent>
                       </Popover>
                     ) : (
-                      "N/A"
+                      'N/A'
                     )}
                   </TableCell>
                   <TableCell>
@@ -273,7 +277,7 @@ const EventRegistrationTable: React.FC<EventRegistrationTableProps> = ({
                           <AlertDialogCancel>Cancel</AlertDialogCancel>
                           <AlertDialogAction
                             className={buttonVariants({
-                              variant: "destructive",
+                              variant: 'destructive',
                             })}
                           >
                             Delete
@@ -285,11 +289,11 @@ const EventRegistrationTable: React.FC<EventRegistrationTableProps> = ({
                 </>
               )}
             </TableRow>
-          )
+          );
         })}
       </TableBody>
     </Table>
-  )
-}
+  );
+};
 
-export default EventRegistrationTable
+export default EventRegistrationTable;

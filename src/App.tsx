@@ -145,7 +145,7 @@ const App = () => {
                   element={<RegistrationsTablePage />}
                 />
                 <Route path="/contact" element={<Contact />} />
-                 <Route path="/admin" element={<AdminPage />} />
+                <Route path="/admin" element={<AdminPage />} />
               </Routes>
             </main>
 

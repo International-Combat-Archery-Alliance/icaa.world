@@ -33,13 +33,11 @@ export default function Events() {
             refetch={refetch}
           />
         ) : (
-          <div className="flex flex-wrap gap-4">
-            <EventContent
-              events={data?.pages[pageNum].data}
-              isFetching={isPending || isFetching}
-              refetch={refetch}
-            />
-          </div>
+          <EventContent
+            events={data?.pages[pageNum].data}
+            isFetching={isPending || isFetching}
+            refetch={refetch}
+          />
         )}
       </div>
     </>
@@ -71,13 +69,17 @@ function EventContent({
     );
   }
 
-  return events?.map((event) => (
-    <EventCard
-      className="flex-grow lg:max-w-[375px]"
-      key={event.id}
-      event={event}
-    />
-  ));
+  return (
+    <div className="flex flex-wrap gap-4">
+      {events?.map((event) => (
+        <EventCard
+          className="flex-grow lg:max-w-[375px]"
+          key={event.id}
+          event={event}
+        />
+      ))}
+    </div>
+  );
 }
 
 function EventCard({ event, className }: { event: Event; className?: string }) {

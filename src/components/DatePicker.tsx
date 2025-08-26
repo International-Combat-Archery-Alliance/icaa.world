@@ -1,18 +1,18 @@
-import * as React from "react"
-import { ChevronDownIcon } from "lucide-react"
+import * as React from 'react';
+import { ChevronDownIcon } from 'lucide-react';
 
-import { Button } from "@/components/ui/button"
-import { Calendar } from "@/components/ui/calendar"
+import { Button } from '@/components/ui/button';
+import { Calendar } from '@/components/ui/calendar';
 
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover"
+} from '@/components/ui/popover';
 
 export function DatePicker() {
-  const [open, setOpen] = React.useState(false)
-  const [date, setDate] = React.useState<Date | undefined>(undefined)
+  const [open, setOpen] = React.useState(false);
+  const [date, setDate] = React.useState<Date | undefined>(undefined);
 
   return (
     <div className="flex flex-col gap-3">
@@ -23,7 +23,7 @@ export function DatePicker() {
             id="date"
             className="w-48 justify-between font-normal"
           >
-            {date ? date.toLocaleDateString() : "Select date"}
+            {date ? date.toLocaleDateString() : 'Select date'}
             <ChevronDownIcon />
           </Button>
         </PopoverTrigger>
@@ -33,12 +33,12 @@ export function DatePicker() {
             selected={date}
             captionLayout="dropdown"
             onSelect={(date) => {
-              setDate(date)
-              setOpen(false)
+              setDate(date);
+              setOpen(false);
             }}
           />
         </PopoverContent>
       </Popover>
     </div>
-  )
+  );
 }
