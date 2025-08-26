@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useGetEvents, type Event } from '../hooks/useEvent';
 import {
   Card,
@@ -53,10 +53,18 @@ function EventContent({
   isFetching: boolean;
   refetch: () => void;
 }) {
+  const CardGrid = ({ children }: { children: React.ReactNode[] }) => (
+    <div className="flex flex-wrap gap-4">{children}</div>
+  );
+
   if (isFetching) {
-    return Array.from({ length: 6 }).map((_, i) => (
-      <EventCardSkeleton key={i} />
-    ));
+    return (
+      <CardGrid>
+        {Array.from({ length: 6 }).map((_, i) => (
+          <EventCardSkeleton key={i} />
+        ))}
+      </CardGrid>
+    );
   }
 
   if (events === undefined || events.length === 0) {
@@ -70,7 +78,7 @@ function EventContent({
   }
 
   return (
-    <div className="flex flex-wrap gap-4">
+    <CardGrid>
       {events?.map((event) => (
         <EventCard
           className="flex-grow lg:max-w-[375px]"
@@ -78,7 +86,7 @@ function EventContent({
           event={event}
         />
       ))}
-    </div>
+    </CardGrid>
   );
 }
 
