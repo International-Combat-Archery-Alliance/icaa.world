@@ -20,6 +20,19 @@ const routeToHeaderMap: Record<string, string> = {
   '/contact': 'Contact Us',
 };
 
+function getHeaderTextForParameterizedRoute(pathname: string): string | null {
+  // Handle event registration routes
+  if (pathname.match(/^\/events\/[^\/]+\/register-free-agent$/)) {
+    return 'Free Agent Registration';
+  }
+
+  if (pathname.match(/^\/events\/[^\/]+\/register-team$/)) {
+    return 'Team Registration';
+  }
+
+  return null;
+}
+
 export default function Header() {
   const location = useLocation();
 
@@ -28,7 +41,9 @@ export default function Header() {
     return null;
   }
 
-  const headerText = routeToHeaderMap[location.pathname];
+  const headerText =
+    routeToHeaderMap[location.pathname] ||
+    getHeaderTextForParameterizedRoute(location.pathname);
 
   if (!headerText) {
     return null;
