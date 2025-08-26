@@ -26,41 +26,43 @@ const Leadership = () => {
             accessible sport.
           </p>
         </div>
-        <BoardMember
-          name="Cameron Cardwell"
-          title="President/Chair"
-          email="cameron.cardwell@icaa.world"
-          headshot="images/headshots/Cameron.jpg"
-          actionshot="images/action shots/Cameron.jpg"
-        />
-        <BoardMember
-          name="Andrew Mellen"
-          title="Clerk"
-          email="andrew.mellen@icaa.world"
-          headshot="images/headshots/Andrew.jpeg"
-          actionshot="images/action shots/Andrew.jpg"
-        />
-        <BoardMember
-          name="Kyle Best"
-          title="Treasurer"
-          email="kyle.best@icaa.world"
-          headshot="images/headshots/Kyle.jpg"
-          actionshot="images/action shots/Kyle.jpg"
-        />
-        <BoardMember
-          name="Timothy Ahong"
-          title="International Representative"
-          email="timothy.ahong@icaa.world"
-          headshot="images/headshots/Tim.png"
-          actionshot="images/action shots/Tim_2.jpg"
-        />
-        <BoardMember
-          name="Yousef Hariri"
-          title="Community & Mission Ambassador"
-          email="yousef.hariri@icaa.world"
-          headshot="images/headshots/Yousef.jpg"
-          actionshot="images/action shots/Yousef.jpg"
-        />
+        <div className="flex flex-wrap justify-center">
+          <BoardMember
+            name="Cameron Cardwell"
+            title="President/Chair"
+            email="cameron.cardwell@icaa.world"
+            headshot="images/headshots/Cameron.jpg"
+            actionshot="images/action shots/Cameron.jpg"
+          />
+          <BoardMember
+            name="Andrew Mellen"
+            title="Clerk"
+            email="andrew.mellen@icaa.world"
+            headshot="images/headshots/Andrew.jpeg"
+            actionshot="images/action shots/Andrew.jpg"
+          />
+          <BoardMember
+            name="Kyle Best"
+            title="Treasurer"
+            email="kyle.best@icaa.world"
+            headshot="images/headshots/Kyle.jpg"
+            actionshot="images/action shots/Kyle.jpg"
+          />
+          <BoardMember
+            name="Timothy Ahong"
+            title="Director"
+            email="timothy.ahong@icaa.world"
+            headshot="images/headshots/Tim.png"
+            actionshot="images/action shots/Tim_2.jpg"
+          />
+          <BoardMember
+            name="Yousef Hariri"
+            title="Director"
+            email="yousef.hariri@icaa.world"
+            headshot="images/headshots/Yousef.jpg"
+            actionshot="images/action shots/Yousef.jpg"
+          />
+        </div>
       </div>
     </section>
   );
