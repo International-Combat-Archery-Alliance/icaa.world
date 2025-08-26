@@ -118,7 +118,7 @@ const App = () => {
                 />
                 <Route
                   path="/events/:eventId/register-team"
-                  element={<EventRegistrationFreeAgent />}
+                  element={<EventRegistrationTeam />}
                 />
                 <Route
                   path="/event-registration"

@@ -16,7 +16,6 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
@@ -31,7 +30,6 @@ import {
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
@@ -74,10 +72,12 @@ const mockRegistrations: Registration[] = [
 ];
 
 export function AdminPage() {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const eventNames = React.useMemo(
     () => [...new Set(mockRegistrations.map((reg) => reg.eventName))],
     [],
   );
+
   {
     /* TODO:
     -Load Event Info when event selected/load button submitted in Edit Event and View Registration

@@ -7,7 +7,7 @@ import pluginQuery from '@tanstack/eslint-plugin-query';
 
 export default [
   {
-    ignores: ['dist/**'],
+    ignores: ['dist/**', 'src/components/ui/**'],
   },
   {
     languageOptions: { globals: globals.browser },
