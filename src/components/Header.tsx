@@ -18,6 +18,7 @@ const routeToHeaderMap: Record<string, string> = {
   '/registration': 'Registration',
   '/registrations-table': 'Registrations',
   '/contact': 'Contact Us',
+  '/admin': 'Admin',
 };
 
 function getHeaderTextForParameterizedRoute(pathname: string): string | null {
