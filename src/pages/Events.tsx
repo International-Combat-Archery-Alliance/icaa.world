@@ -23,7 +23,7 @@ export default function Events() {
   const [pageNum] = useState(0);
 
   return (
-    <div className="px-4 pb-4">
+    <div className="px-4 py-4">
       {error ? (
         <ErrorMessage
           mainMessage="Error Loading Events"
@@ -51,7 +51,7 @@ function EventContent({
   refetch: () => void;
 }) {
   const CardGrid = ({ children }: { children: React.ReactNode[] }) => (
-    <div className="flex flex-wrap gap-4">{children}</div>
+    <div className="flex flex-wrap gap-2 justify-evenly">{children}</div>
   );
 
   if (isFetching) {
