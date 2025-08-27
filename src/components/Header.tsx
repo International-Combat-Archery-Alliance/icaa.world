@@ -53,12 +53,11 @@ export default function Header() {
   return (
     <header>
       {/* ml is for the sidebar, can be removed if the sidebar is refactored */}
-      <div className="md:ml-[250px] py-4 px-2 flex justify-between items-center bg-[#0a1c4a]">
+      <div className="md:ml-[250px] py-4 px-2 flex justify-center items-center bg-[#0a1c4a]">
         <div></div>
         <h2 className="font-['Montserrat', sans-serif] text-6xl text-center text-(--electric-orange)">
           {headerText}
         </h2>
-        <Login />
       </div>
     </header>
   );
