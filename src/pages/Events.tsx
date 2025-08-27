@@ -89,6 +89,7 @@ function EventContent({
 
 function EventCard({ event, className }: { event: Event; className?: string }) {
   const date = parseISO(event.startTime);
+  const closeRegDate = parseISO(event.registrationCloseTime);
 
   const byIndividualOpt = event.registrationOptions.find(
     (e) => e.registrationType === 'ByIndividual',
@@ -124,23 +125,24 @@ function EventCard({ event, className }: { event: Event; className?: string }) {
           <Button variant="secondary">Rules</Button>
         </div>
       </CardContent>
-      <CardFooter>
-        <div className="flex flex-col w-full gap-2">
-          {byIndividualOpt !== undefined ? (
-            <Button asChild>
-              <Link to={`/events/${event.id}/register-free-agent`}>
-                Free Agent Sign Up ({formatMoney(byIndividualOpt.price)})
-              </Link>
-            </Button>
-          ) : null}
-          {byTeamOpt !== undefined ? (
-            <Button asChild>
-              <Link to={`/events/${event.id}/register-team`}>
-                Team Sign Up ({formatMoney(byTeamOpt.price)})
-              </Link>
-            </Button>
-          ) : null}
-        </div>
+      <CardFooter className="flex flex-col items-stretch gap-2">
+        {byIndividualOpt !== undefined ? (
+          <Button asChild>
+            <Link to={`/events/${event.id}/register-free-agent`}>
+              Free Agent Sign Up ({formatMoney(byIndividualOpt.price)})
+            </Link>
+          </Button>
+        ) : null}
+        {byTeamOpt !== undefined ? (
+          <Button asChild>
+            <Link to={`/events/${event.id}/register-team`}>
+              Team Sign Up ({formatMoney(byTeamOpt.price)})
+            </Link>
+          </Button>
+        ) : null}
+        <p className="text-center text-sm text-muted-foreground pt-2">
+          Registration Closes: {format(closeRegDate, 'eeee MMMM do, yyyy')}
+        </p>
       </CardFooter>
     </Card>
   );
