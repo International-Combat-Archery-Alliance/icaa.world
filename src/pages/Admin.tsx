@@ -86,7 +86,6 @@ export function AdminPage() {
   }
   return (
     <section id="admin" className="admin-section">
-      <h2 className="section-title">Admin Page</h2>
       <Tabs
         defaultValue="create-event"
         className="w-full max-w-screen-lg mx-auto p-15"

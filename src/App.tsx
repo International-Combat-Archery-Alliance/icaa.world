@@ -25,6 +25,7 @@ import EventRegistrationFreeAgent from './pages/EventRegistrationFreeAgent';
 import EventRegistrationTeam from './pages/EventRegistrationTeam';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import Header from './components/Header';
+import Login from './components/Login';
 
 const App = () => {
   const queryClient = new QueryClient();
@@ -49,7 +50,7 @@ const App = () => {
         <GoogleOAuthProvider clientId="1008624351875-q36btbijttq83bogn9f8a4srgji0g3qg.apps.googleusercontent.com">
           <Router>
             <div className="app-container">
-              <nav id="sidebar" className="sidebar">
+              <nav id="sidebar" className="sidebar flex flex-col">
                 <ul className="sidebar-nav">
                   <div className="logo-container">
                     <img
@@ -103,6 +104,9 @@ const App = () => {
                     </Link>
                   </li>
                 </ul>
+                <div className="mt-auto p-4">
+                  <Login />
+                </div>
               </nav>
               <div className="content-overlay"></div>
               <button
