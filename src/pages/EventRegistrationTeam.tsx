@@ -1,5 +1,5 @@
 import { useGetEvent, useRegisterForEvent, type Event } from '@/hooks/useEvent';
-import { useForm, useFieldArray  } from 'react-hook-form';
+import { useForm, useFieldArray } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useParams, useNavigate } from 'react-router-dom';
@@ -28,12 +28,11 @@ import { useState } from 'react';
 import { EventDetailsCard } from '@/components/EventRegDetailsCard';
 import { Trash2 } from 'lucide-react';
 
-
 export default function EventRegistrationTeam() {
   const { eventId } = useParams();
   const { data } = useGetEvent(eventId!);
 
-   return (
+  return (
     <div className="px-4 py-4">
       {data ? <TeamForm event={data.event} /> : null}
     </div>
@@ -47,69 +46,65 @@ function TeamForm({ event }: { event: Event }) {
   const playerSchema = z.object({
     firstName: z.string().min(1, 'First name is required.'),
     lastName: z.string().min(1, 'Last name is required.'),
-
   });
 
-
   const formSchema = z.object({
-    captainEmail: z.string().email({ message: 'A valid captain email is required.' }),
+    captainEmail: z
+      .string()
+      .email({ message: 'A valid captain email is required.' }),
     homeCity: z.string().min(3, {
       message: 'Home city must be at least 3 characters.',
     }),
     teamName: z
-        .string()
-        .min(1, {
-          message: 'Team name must be 1-50 characters',
-        })
-        .max(50, { message: 'Team name must be 1-50 characters' }),
-    
-    players: z.array(playerSchema)
-      .min(event.allowedTeamSizeRange.min, {message:`At least ${event.allowedTeamSizeRange.min} player(s) are required.`})
-      .max(event.allowedTeamSizeRange.max, {message: `Maximum of ${event.allowedTeamSizeRange.max} players allowed.`})
+      .string()
+      .min(1, {
+        message: 'Team name must be 1-50 characters',
+      })
+      .max(50, { message: 'Team name must be 1-50 characters' }),
 
+    players: z
+      .array(playerSchema)
+      .min(event.allowedTeamSizeRange.min, {
+        message: `At least ${event.allowedTeamSizeRange.min} player(s) are required.`,
+      })
+      .max(event.allowedTeamSizeRange.max, {
+        message: `Maximum of ${event.allowedTeamSizeRange.max} players allowed.`,
+      }),
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      captainEmail: '',
-      teamName: '',
-      homeCity: '',
-      players: Array.from({ length: event.allowedTeamSizeRange.min || 1 }, () => ({
-        firstName: '',
-        lastName: '',
-      })),
-    }
   });
 
-    const { fields, append, remove } = useFieldArray({
+  const { fields, append, remove } = useFieldArray({
     control: form.control,
     name: 'players',
   });
 
- const teamName = form.watch('teamName');
+  const teamName = form.watch('teamName');
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    mutate({
-      params: {
-        path: {
-          eventId: event.id,
+    mutate(
+      {
+        params: {
+          path: {
+            eventId: event.id,
+          },
+        },
+        body: {
+          registrationType: 'ByTeam',
+          captainEmail: values.captainEmail,
+          teamName: values.teamName,
+          homeCity: values.homeCity,
+          players: values.players,
+        } as components['schemas']['TeamRegistration'],
+      },
+      {
+        onSuccess: () => {
+          setShowSuccessDialog(true);
+          form.reset();
         },
       },
-      body: {
-        registrationType: 'ByTeam',
-        captainEmail: values.captainEmail,
-        teamName :values.teamName,
-        homeCity: values.homeCity,
-        players: values.players
-      } as components['schemas']['TeamRegistration'],
-    },
-    {
-      onSuccess: () => {
-        setShowSuccessDialog(true);
-        form.reset();
-      },
-    },
-  );
+    );
   };
   return (
     <>
@@ -131,7 +126,7 @@ function TeamForm({ event }: { event: Event }) {
                 name="captainEmail"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Captain's Email</FormLabel>
+                    <FormLabel>Captain Email</FormLabel>
                     <FormControl>
                       <Input {...field} className="bg-white" />
                     </FormControl>
@@ -171,14 +166,21 @@ function TeamForm({ event }: { event: Event }) {
               <div>
                 <FormLabel>Player Roster ({fields.length})</FormLabel>
                 {fields.map((field, index) => (
-                  <div key={field.id} className="flex items-start gap-4 p-4 border rounded-lg">
+                  <div
+                    key={field.id}
+                    className="flex items-start gap-4 p-4 border rounded-lg"
+                  >
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 flex-grow">
                       <FormField
                         control={form.control}
                         name={`players.${index}.firstName`}
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>{index === 0 ? "Captain's First Name" : 'First Name'}</FormLabel>
+                            <FormLabel>
+                              {index === 0
+                                ? "Captain's First Name"
+                                : 'First Name'}
+                            </FormLabel>
                             <FormControl>
                               <Input {...field} className="bg-white" />
                             </FormControl>
@@ -191,7 +193,11 @@ function TeamForm({ event }: { event: Event }) {
                         name={`players.${index}.lastName`}
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>{index === 0 ? "Captain's Last Name" : 'Last Name'}</FormLabel>
+                            <FormLabel>
+                              {index === 0
+                                ? "Captain's Last Name"
+                                : 'Last Name'}
+                            </FormLabel>
                             <FormControl>
                               <Input {...field} className="bg-white" />
                             </FormControl>
@@ -207,7 +213,6 @@ function TeamForm({ event }: { event: Event }) {
                       size="icon"
                       onClick={() => remove(index)}
                       disabled={fields.length <= event.allowedTeamSizeRange.min}
-
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
@@ -220,9 +225,10 @@ function TeamForm({ event }: { event: Event }) {
                 >
                   Add Player
                 </Button>
-                  <FormMessage>
-                    {form.formState.errors.players?.message || form.formState.errors.players?.root?.message}
-                  </FormMessage>
+                <FormMessage>
+                  {form.formState.errors.players?.message ||
+                    form.formState.errors.players?.root?.message}
+                </FormMessage>
               </div>
               <Button type="submit" disabled={isPending}>
                 {isPending ? 'Submitting...' : 'Submit'}

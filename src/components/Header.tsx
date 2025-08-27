@@ -1,5 +1,4 @@
 import { useLocation } from 'react-router-dom';
-import Login from './Login';
 
 const routeToHeaderMap: Record<string, string> = {
   '/about-icaa': 'About The ICAA',

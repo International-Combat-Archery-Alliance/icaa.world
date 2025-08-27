@@ -50,7 +50,7 @@ function FreeAgentForm({ event }: { event: Event }) {
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
   const navigate = useNavigate();
 
-  const experienceOptions = ['Novice', 'Intermediate', 'Advanced'];
+  const experienceOptions = ['Novice', 'Intermediate', 'Advanced'] as const;
 
   const formSchema = z.object({
     email: z.email({ error: 'Email is required.' }),
@@ -71,12 +71,9 @@ function FreeAgentForm({ event }: { event: Event }) {
         })
         .max(50, { error: 'Last name must be 1-50 characters' }),
     }),
-    // TODO: I'd ideally like to get this from the type in events/v1.d.ts but I can't figure out how to get that to work
-    experience: z
-      .enum(experienceOptions, {
-        error: 'Experience is required.',
-      })
-      .refine((val): val is components['schemas']['ExperienceLevel'] => true),
+    experience: z.enum(experienceOptions, {
+      error: 'Experience is required.',
+    }),
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -84,28 +81,29 @@ function FreeAgentForm({ event }: { event: Event }) {
   });
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    mutate({
-      params: {
-        path: {
-          eventId: event.id,
+    mutate(
+      {
+        params: {
+          path: {
+            eventId: event.id,
+          },
+        },
+        // TODO: this has a type error since I'm not passing the readonly properties, I want to not have to cast this to fix that eventually
+        body: {
+          registrationType: 'ByIndividual',
+          email: values.email,
+          experience: values.experience,
+          homeCity: values.homeCity,
+          playerInfo: values.playerInfo,
+        } as components['schemas']['IndividualRegistration'],
+      },
+      {
+        onSuccess: () => {
+          setShowSuccessDialog(true);
+          form.reset();
         },
       },
-      // TODO: this has a type error since I'm not passing the readonly properties, I want to not have to cast this to fix that eventually
-      body: {
-        registrationType: 'ByIndividual',
-        email: values.email,
-        experience: values.experience,
-        homeCity: values.homeCity,
-        playerInfo: values.playerInfo,
-      } as components['schemas']['IndividualRegistration'],
-    },
-    {
-      onSuccess: () => {
-        setShowSuccessDialog(true);
-        form.reset();
-      },
-    },
-  );
+    );
   };
   return (
     <>
