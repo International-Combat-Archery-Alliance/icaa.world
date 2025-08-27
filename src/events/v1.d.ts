@@ -57,7 +57,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/v1/events": {
+    "/events/v1": {
         parameters: {
             query?: never;
             header?: never;
@@ -171,7 +171,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/v1/events/{id}": {
+    "/events/v1/{id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -242,7 +242,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/v1/events/{eventId}/register": {
+    "/events/v1/{eventId}/register": {
         parameters: {
             query?: never;
             header?: never;
@@ -336,7 +336,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/v1/events/{eventId}/registrations": {
+    "/events/v1/{eventId}/registrations": {
         parameters: {
             query?: never;
             header?: never;

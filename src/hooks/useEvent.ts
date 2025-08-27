@@ -6,7 +6,7 @@ export type Event = components['schemas']['Event'];
 export function useGetEvent(eventId: string) {
   const client = useEventQueryClient();
 
-  return client.useQuery('get', '/v1/events/{id}', {
+  return client.useQuery('get', '/events/v1/{id}', {
     params: {
       path: { id: eventId },
     },
@@ -18,7 +18,7 @@ export function useGetEvents(limit: number = 10) {
 
   return client.useInfiniteQuery(
     'get',
-    '/v1/events',
+    '/events/v1',
     {
       params: {
         query: {
@@ -29,7 +29,7 @@ export function useGetEvents(limit: number = 10) {
     },
     {
       getNextPageParam: (
-        lastPage: paths['/v1/events']['get']['responses']['200']['content']['application/json'],
+        lastPage: paths['/events/v1']['get']['responses']['200']['content']['application/json'],
       ) => lastPage.cursor,
       initialPageParam: null,
     },
@@ -39,5 +39,5 @@ export function useGetEvents(limit: number = 10) {
 export function useRegisterForEvent() {
   const client = useEventQueryClient();
 
-  return client.useMutation('post', '/v1/events/{eventId}/register');
+  return client.useMutation('post', '/events/v1/{eventId}/register');
 }
