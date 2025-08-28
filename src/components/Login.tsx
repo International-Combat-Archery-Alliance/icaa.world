@@ -49,12 +49,11 @@ function SignedIn({
         </Avatar>
       </PopoverTrigger>
       <PopoverContent
-        side="right"
-        align="end"
-        alignOffset={32}
+        side="top"
+        align="start"
         className="z-60 flex justify-center w-48"
       >
-        <Button>Log out</Button>
+        <Button className="w-full">Log out</Button>
       </PopoverContent>
     </Popover>
   );
