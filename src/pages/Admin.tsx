@@ -384,6 +384,7 @@ function CreateEventForm() {
 
     mutate(
       {
+        credentials: 'include',
         body: {
           allowedTeamSizeRange: values.teamSizes,
           endTime: endTime,
