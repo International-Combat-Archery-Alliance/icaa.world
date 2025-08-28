@@ -341,7 +341,10 @@ function CreateEventForm() {
     }),
     priceInfo: z
       .object({
-        freeAgentPrice: z.number().min(0, 'Price cannot be negative.').optional(),
+        freeAgentPrice: z
+          .number()
+          .min(0, 'Price cannot be negative.')
+          .optional(),
         teamPrice: z.number().min(0, 'Price cannot be negative.').optional(),
         currency: z.string().min(1, 'Currency is required.'),
       })
@@ -353,7 +356,6 @@ function CreateEventForm() {
           path: ['freeAgentPrice'], // Display error on the first price field
         },
       ),
-
 
     eventDate: z.string().min(1, 'Event date is required.'),
     eventStartTime: z.string().regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, {
@@ -390,7 +392,8 @@ function CreateEventForm() {
     const endTime = new Date(`${eventDate}T${eventEndTime}`).toISOString();
     const closeTime = new Date(`${regCloseDate}T${regCloseTime}`).toISOString();
 
-        const registrationOptions: components['schemas']['EventRegistrationOption'][] = [];
+    const registrationOptions: components['schemas']['EventRegistrationOption'][] =
+      [];
 
     if (values.priceInfo.freeAgentPrice !== undefined) {
       registrationOptions.push({
@@ -411,7 +414,6 @@ function CreateEventForm() {
         },
       });
     }
-
 
     mutate(
       {
