@@ -1,5 +1,5 @@
-import { useLoginUserInfo } from '@/hooks/useLogin';
 import ProtectedRoute from './ProtectedRoute';
+import { useUserInfo } from '@/context/userInfoContext';
 
 export interface AdminOnlyRouteProps {
   children: React.ReactNode;
@@ -10,11 +10,11 @@ export default function AdminOnlyRoute({
   children,
   redirectTo = '/',
 }: AdminOnlyRouteProps) {
-  const { data } = useLoginUserInfo();
+  const { userInfo } = useUserInfo();
 
   return (
     <ProtectedRoute
-      isAuthenticated={data?.isAdmin ?? false}
+      isAuthenticated={userInfo?.isAdmin ?? false}
       redirectTo={redirectTo}
     >
       <>{children}</>

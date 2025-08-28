@@ -15,7 +15,11 @@ export interface paths {
         put?: never;
         /** Logs in and returns the auth cookie */
         post: operations["PostLoginGoogle"];
-        delete?: never;
+        /**
+         * Logs the user out
+         * @description For cookie based auth, deletes the cookie, effectively logging the user out.
+         */
+        delete: operations["DeleteLoginGoogle"];
         options?: never;
         head?: never;
         patch?: never;
@@ -54,6 +58,7 @@ export interface components {
             expiresAt: string;
             isAdmin: boolean;
             profilePicURL: string;
+            userEmail: string;
         };
     };
     responses: never;
@@ -98,6 +103,26 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["Error"];
                 };
+            };
+        };
+    };
+    DeleteLoginGoogle: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description User logged out */
+            200: {
+                headers: {
+                    /** @description Tells the browser to delete the cookie. */
+                    "Set-Cookie"?: string;
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
