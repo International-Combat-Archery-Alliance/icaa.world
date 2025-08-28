@@ -8,13 +8,12 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import type { components } from '@/api/events-v1';
 import { format, parseISO } from 'date-fns';
 import { tz } from '@date-fns/tz';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import Dinero, { type Currency } from 'dinero.js';
 import { Link } from 'react-router-dom';
+import { formatMoney } from '@/api/money';
 
 export default function Events() {
   const { data, isPending, isFetching, error, refetch } = useGetEvents();
@@ -194,11 +193,4 @@ function ErrorMessage({
       <Button onClick={() => refetch()}>Retry</Button>
     </div>
   );
-}
-
-function formatMoney(money: components['schemas']['Money']): string {
-  return Dinero({
-    amount: money.amount,
-    currency: money.currency as Currency,
-  }).toFormat();
 }
