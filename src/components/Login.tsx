@@ -9,7 +9,6 @@ import {
 } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
 import { useUserInfo } from '@/context/userInfoContext';
-import { useState } from 'react';
 
 export default function Login() {
   const { mutate } = useLogin();
@@ -44,11 +43,10 @@ function SignedIn({
   refetchUserInfo: () => void;
 }) {
   const { mutate: logoutMutate, isPending } = useLogout();
-  const [open, setOpen] = useState(false);
 
   return (
-    <Popover open={open}>
-      <PopoverTrigger onClick={() => setOpen(!open)} asChild>
+    <Popover>
+      <PopoverTrigger asChild>
         <Avatar className="ring-2 ring-primary">
           <AvatarImage
             src={userInfo?.profilePicURL}
