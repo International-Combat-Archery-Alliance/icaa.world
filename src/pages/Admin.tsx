@@ -321,8 +321,8 @@ function CreateEventForm() {
 
   const formSchema = z.object({
     teamSizes: z.object({
-      max: z.number().min(1, 'Max team size is required.'),
-      min: z.number().min(1, 'Min team size is required.'),
+      max: z.number().int().min(1, 'Max team size must be at least 1.'),
+      min: z.number().int().min(1, 'Min team size must be at least 1.'),
     }),
     locationInfo: z.object({
       address: z.object({
@@ -340,8 +340,8 @@ function CreateEventForm() {
       message: 'Please use HH:MM format',
     }),
     priceInfo: z.object({
-      freeAgentPrice: z.number().min(1, 'Free agent price is required.'),
-      teamPrice: z.number().min(1, 'Team price is required.'),
+      freeAgentPrice: z.number().min(0, 'Price cannot be negative.'),
+      teamPrice: z.number().min(0, 'Price cannot be negative.'),
       currency: z.string().min(1, 'Currency is required.'),
     }),
 
@@ -353,8 +353,8 @@ function CreateEventForm() {
       message: 'Please use HH:MM format',
     }),
 
-    eventRules: z.string(),
-    eventLogo: z.string(),
+    eventRules: z.string().optional(),
+    eventLogo: z.string().optional(),
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -362,6 +362,11 @@ function CreateEventForm() {
   });
 
   const eventName = form.watch('eventName');
+
+  const onFormError = (errors: any) => {
+    console.error('Form validation failed:', errors);
+    alert('Please check the form for errors. More details in the console.');
+  };
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     const {
@@ -374,6 +379,8 @@ function CreateEventForm() {
     const startTime = new Date(`${eventDate}T${eventStartTime}`).toISOString();
     const endTime = new Date(`${eventDate}T${eventEndTime}`).toISOString();
     const closeTime = new Date(`${regCloseDate}T${regCloseTime}`).toISOString();
+
+    console.log(values);
 
     mutate(
       {
@@ -409,6 +416,10 @@ function CreateEventForm() {
           setShowSuccessDialog(true);
           form.reset();
         },
+        onError: (error) => {
+          console.error('Event creation failed:', error);
+          alert(`Error: ${error.message}`);
+        },
       },
     );
   };
@@ -423,7 +434,7 @@ function CreateEventForm() {
         <CardContent className="grid gap-6">
           <Form {...form}>
             <form
-              onSubmit={form.handleSubmit(onSubmit)}
+              onSubmit={form.handleSubmit(onSubmit, onFormError)}
               className="flex flex-col gap-8 w-full"
             >
               <FormField
@@ -433,7 +444,7 @@ function CreateEventForm() {
                   <FormItem>
                     <FormLabel>Event Name</FormLabel>
                     <FormControl>
-                      <Input {...field} type="text" className="bg-white" />
+                      <Input {...field} className="bg-white" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -524,6 +535,19 @@ function CreateEventForm() {
                 />
               </div>
               <div className="grid gap-3">
+                <FormField
+                  control={form.control}
+                  name="locationInfo.name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Location Name (Venue)</FormLabel>
+                      <FormControl>
+                        <Input {...field} type="text" className="bg-white" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
                 <div className="flex gap-3">
                   <FormField
                     control={form.control}
@@ -602,7 +626,12 @@ function CreateEventForm() {
                     <FormItem>
                       <FormLabel>Free Agent Price</FormLabel>
                       <FormControl>
-                        <Input {...field} type="number" className="bg-white" />
+                        <Input
+                          {...field}
+                          type="number"
+                          className="bg-white"
+                          onChange={(e) => field.onChange(e.target.value === '' ? undefined : +e.target.value)}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -615,7 +644,12 @@ function CreateEventForm() {
                     <FormItem>
                       <FormLabel>Team Price</FormLabel>
                       <FormControl>
-                        <Input {...field} type="number" className="bg-white" />
+                        <Input
+                          {...field}
+                          type="number"
+                          className="bg-white"
+                          onChange={(e) => field.onChange(e.target.value === '' ? undefined : +e.target.value)}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -643,7 +677,12 @@ function CreateEventForm() {
                     <FormItem>
                       <FormLabel>Min Team Size</FormLabel>
                       <FormControl>
-                        <Input {...field} type="number" className="bg-white" />
+                        <Input
+                          {...field}
+                          type="number"
+                          className="bg-white"
+                          onChange={(e) => field.onChange(e.target.value === '' ? undefined : +e.target.value)}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -656,7 +695,12 @@ function CreateEventForm() {
                     <FormItem>
                       <FormLabel>Max Team Size</FormLabel>
                       <FormControl>
-                        <Input {...field} type="number" className="bg-white" />
+                        <Input
+                          {...field}
+                          type="number"
+                          className="bg-white"
+                          onChange={(e) => field.onChange(e.target.value === '' ? undefined : +e.target.value)}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -689,7 +733,7 @@ function CreateEventForm() {
                   </FormItem>
                 )}
               />
-              <Button type="submit" disabled={isPending}>
+              <Button type='submit' disabled={isPending}>
                 {isPending ? 'Submitting...' : 'Submit'}
               </Button>
             </form>
