@@ -1,6 +1,7 @@
 import type { Event } from '@/hooks/useEvent';
 import { Card, CardContent } from '@/components/ui/card';
 import { format, parseISO } from 'date-fns';
+import { formatMoney } from '@/api/money';
 
 interface EventDetailsCardProps {
   event: Event;
@@ -47,14 +48,13 @@ export function EventDetailsCard({ event }: EventDetailsCardProps) {
           </p>
           {byIndividualOpt && (
             <p>
-              <strong>Free Agent Price:</strong> {byIndividualOpt.price.amount}{' '}
-              {byIndividualOpt.price.currency}
+              <strong>Free Agent Price:</strong>{' '}
+              {formatMoney(byIndividualOpt.price)}
             </p>
           )}
           {byTeamOpt && (
             <p>
-              <strong>Team Price:</strong> {byTeamOpt.price.amount}{' '}
-              {byTeamOpt.price.currency}
+              <strong>Team Price:</strong> {formatMoney(byTeamOpt.price)}
             </p>
           )}
         </div>
