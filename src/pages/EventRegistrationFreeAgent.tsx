@@ -33,6 +33,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useState } from 'react';
 import { EventDetailsCard } from '@/components/EventRegDetailsCard';
+import Turnstile, { useTurnstile } from 'react-turnstile';
 
 export default function EventRegistrationFreeAgent() {
   const { eventId } = useParams();
@@ -49,6 +50,7 @@ function FreeAgentForm({ event }: { event: Event }) {
   const { mutate, isPending } = useRegisterForEvent();
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
   const navigate = useNavigate();
+  const turnstile = useTurnstile();
 
   const experienceOptions = ['Novice', 'Intermediate', 'Advanced'] as const;
 
@@ -201,6 +203,13 @@ function FreeAgentForm({ event }: { event: Event }) {
                       <FormMessage />
                     </FormItem>
                   )}
+                />
+              </div>
+              <div className="flex justify-center">
+                <Turnstile
+                  theme="light"
+                  sitekey="3x00000000000000000000FF"
+                  onVerify={(v) => console.log(v)}
                 />
               </div>
               <Button type="submit" disabled={isPending}>
