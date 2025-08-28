@@ -1,5 +1,5 @@
 import type { components } from '@/api/login';
-import { useLogin, useLoginUserInfo } from '@/hooks/useLogin';
+import { useLogin, useLogout } from '@/hooks/useLogin';
 import { GoogleLogin } from '@react-oauth/google';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
@@ -8,24 +8,29 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
+import { useUserInfo } from '@/context/userInfoContext';
+import { useState } from 'react';
 
 export default function Login() {
   const { mutate } = useLogin();
-  const { data: userInfo, isSuccess } = useLoginUserInfo();
+  const { userInfo, isSuccess, refetchUserInfo } = useUserInfo();
 
   return isSuccess ? (
-    <SignedIn userInfo={userInfo} />
+    <SignedIn userInfo={userInfo} refetchUserInfo={refetchUserInfo} />
   ) : (
     <GoogleLogin
       type="icon"
       shape="circle"
       onSuccess={(credentialResponse) =>
-        mutate({
-          credentials: 'include',
-          body: {
-            googleJWT: credentialResponse.credential ?? '',
+        mutate(
+          {
+            credentials: 'include',
+            body: {
+              googleJWT: credentialResponse.credential ?? '',
+            },
           },
-        })
+          { onSuccess: refetchUserInfo },
+        )
       }
     />
   );
@@ -33,13 +38,17 @@ export default function Login() {
 
 function SignedIn({
   userInfo,
+  refetchUserInfo,
 }: {
   userInfo: components['schemas']['UserInfo'] | undefined;
+  refetchUserInfo: () => void;
 }) {
-  console.log(userInfo?.profilePicURL);
+  const { mutate: logoutMutate, isPending } = useLogout();
+  const [open, setOpen] = useState(false);
+
   return (
-    <Popover>
-      <PopoverTrigger asChild>
+    <Popover open={open}>
+      <PopoverTrigger onClick={() => setOpen(!open)} asChild>
         <Avatar className="ring-2 ring-primary">
           <AvatarImage
             src={userInfo?.profilePicURL}
@@ -51,9 +60,21 @@ function SignedIn({
       <PopoverContent
         side="top"
         align="start"
-        className="z-60 flex justify-center w-48"
+        className="z-60 flex flex-col gap-4 text-center justify-center w-64"
       >
-        <Button className="w-full">Log out</Button>
+        <div className="font-bold">{userInfo?.userEmail}</div>
+        <Button
+          className="w-full"
+          disabled={isPending}
+          onClick={() => {
+            logoutMutate(
+              { credentials: 'include' },
+              { onSuccess: refetchUserInfo },
+            );
+          }}
+        >
+          Log out
+        </Button>
       </PopoverContent>
     </Popover>
   );
