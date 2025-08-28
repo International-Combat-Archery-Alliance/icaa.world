@@ -5,7 +5,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "test:ts": "tsc --noEmit",
-    "codegen": "openapi-typescript https://raw.githubusercontent.com/International-Combat-Archery-Alliance/event-registration/refs/heads/main/spec/api.yaml -o ./src/events/v1.d.ts",
+    "codegen": "openapi-typescript https://api.icaa.world/events/openapi.json -o ./src/api/events-v1.d.ts; openapi-typescript https://api.icaa.world/login/openapi.json -o ./src/api/login.d.ts",
     "lint": "eslint . --report-unused-disable-directives --max-warnings 0",
     "lint:fix": "bun lint --fix",
     "format": "prettier --write .",

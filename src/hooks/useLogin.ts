@@ -1,7 +1,7 @@
-import { useEventQueryClient } from '@/context/eventQueryClientContext';
+import { useLoginQueryClient } from '@/context/loginQueryClientContext';
 
 export default function useLogin() {
-  const client = useEventQueryClient();
+  const client = useLoginQueryClient();
 
-  return client.useMutation('post', '/google/login');
+  return client.useMutation('post', '/login/google');
 }

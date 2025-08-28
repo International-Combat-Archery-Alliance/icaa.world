@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useParams, useNavigate } from 'react-router-dom';
-import type { components } from '@/events/v1';
+import type { components } from '@/api/events-v1';
 import {
   AlertDialog,
   AlertDialogAction,
