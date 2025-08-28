@@ -1,5 +1,5 @@
 import { useEventQueryClient } from '../context/eventQueryClientContext';
-import type { paths, components } from '@/events/v1';
+import type { paths, components } from '@/api/events-v1';
 
 export type Event = components['schemas']['Event'];
 
