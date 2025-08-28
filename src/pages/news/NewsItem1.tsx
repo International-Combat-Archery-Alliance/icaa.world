@@ -43,11 +43,11 @@ const NewsItem1 = () => {
           <p>
             The excitement begins with the{' '}
             <span className="font-semibold">2025 Boston Play Ins</span>, held at
-            Archery Games Boston in Chelsea, MA, on Saturday, September 6th. Over
-            the course of four hours, five Boston-based
-            teams will battle for just three coveted qualifying spots in next
-            month’s international competition, which will feature top teams from
-            all around North America. The Play Ins promise a day packed with
+            Archery Games Boston in Chelsea, MA, on Saturday, September 6th.
+            Over the course of four hours, five Boston-based teams will battle
+            for just three coveted qualifying spots in next month’s
+            international competition, which will feature top teams from all
+            around North America. The Play Ins promise a day packed with
             fast-paced action, fierce rivalries, and community spirit,
             showcasing the best combat archers in the Boston area. Whether
             you’re a seasoned player, a sports enthusiast looking for something

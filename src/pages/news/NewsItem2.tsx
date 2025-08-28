@@ -22,13 +22,13 @@ const NewsItem2 = () => {
             release the official rulebook for competitive tournament play. This
             comprehensive document outlines the standardized regulations that
             will govern all ICAA-sanctioned events, ensuring fair and consistent
-            competition for all athletes. This rulebook covers the Tournament Gameplay Rules
-            , such as the fundamentals of the game and getting hit and catches, to how the neutral zones work.
-            This rulebook does not include the specific tournament, match, or round formats as that will
-            be specific to each individual event.
-             We encourage all players, organizers, and fans to
-            familiarize themselves with these rules as we prepare for the
-            upcoming season of combat archery.
+            competition for all athletes. This rulebook covers the Tournament
+            Gameplay Rules , such as the fundamentals of the game and getting
+            hit and catches, to how the neutral zones work. This rulebook does
+            not include the specific tournament, match, or round formats as that
+            will be specific to each individual event. We encourage all players,
+            organizers, and fans to familiarize themselves with these rules as
+            we prepare for the upcoming season of combat archery.
           </p>
 
           <iframe
