@@ -8,7 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import type { components } from '@/events/v1';
+import type { components } from '@/api/events-v1';
 import { format, parseISO } from 'date-fns';
 import { tz } from '@date-fns/tz';
 import { Button } from '@/components/ui/button';
