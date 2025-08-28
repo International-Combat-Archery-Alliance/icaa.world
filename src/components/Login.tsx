@@ -1,4 +1,4 @@
-import useLogin from '@/hooks/useLogin';
+import { useLogin } from '@/hooks/useLogin';
 import { GoogleLogin } from '@react-oauth/google';
 
 export default function Login() {
