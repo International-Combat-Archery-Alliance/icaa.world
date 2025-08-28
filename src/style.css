@@ -85,7 +85,7 @@ body {
   padding-top: 60px;
   transition: transform 0.3s ease-in-out;
   transform: translateX(-250px);
-  z-index: 999;
+  z-index: 50;
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
 }
 
