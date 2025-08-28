@@ -339,11 +339,21 @@ function CreateEventForm() {
     regCloseTime: z.string().regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, {
       message: 'Please use HH:MM format',
     }),
-    priceInfo: z.object({
-      freeAgentPrice: z.number().min(0, 'Price cannot be negative.'),
-      teamPrice: z.number().min(0, 'Price cannot be negative.'),
-      currency: z.string().min(1, 'Currency is required.'),
-    }),
+    priceInfo: z
+      .object({
+        freeAgentPrice: z.number().min(0, 'Price cannot be negative.').optional(),
+        teamPrice: z.number().min(0, 'Price cannot be negative.').optional(),
+        currency: z.string().min(1, 'Currency is required.'),
+      })
+      .refine(
+        (data) =>
+          data.freeAgentPrice !== undefined || data.teamPrice !== undefined,
+        {
+          message: 'At least one price (Free Agent or Team) is required.',
+          path: ['freeAgentPrice'], // Display error on the first price field
+        },
+      ),
+
 
     eventDate: z.string().min(1, 'Event date is required.'),
     eventStartTime: z.string().regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, {
@@ -380,7 +390,28 @@ function CreateEventForm() {
     const endTime = new Date(`${eventDate}T${eventEndTime}`).toISOString();
     const closeTime = new Date(`${regCloseDate}T${regCloseTime}`).toISOString();
 
-    console.log(values);
+        const registrationOptions: components['schemas']['EventRegistrationOption'][] = [];
+
+    if (values.priceInfo.freeAgentPrice !== undefined) {
+      registrationOptions.push({
+        registrationType: 'ByIndividual',
+        price: {
+          currency: values.priceInfo.currency,
+          amount: values.priceInfo.freeAgentPrice,
+        },
+      });
+    }
+
+    if (values.priceInfo.teamPrice !== undefined) {
+      registrationOptions.push({
+        registrationType: 'ByTeam',
+        price: {
+          currency: values.priceInfo.currency,
+          amount: values.priceInfo.teamPrice,
+        },
+      });
+    }
+
 
     mutate(
       {
@@ -392,22 +423,7 @@ function CreateEventForm() {
           location: values.locationInfo,
           name: values.eventName,
           registrationCloseTime: closeTime,
-          registrationOptions: [
-            {
-              registrationType: 'ByIndividual',
-              price: {
-                currency: values.priceInfo.currency,
-                amount: values.priceInfo.freeAgentPrice,
-              },
-            },
-            {
-              registrationType: 'ByTeam',
-              price: {
-                currency: values.priceInfo.currency,
-                amount: values.priceInfo.teamPrice,
-              },
-            },
-          ],
+          registrationOptions: registrationOptions,
           rulesDocLink: values.eventRules,
           startTime: startTime,
         } as components['schemas']['Event'],
