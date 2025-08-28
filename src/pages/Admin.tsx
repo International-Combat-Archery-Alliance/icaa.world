@@ -630,7 +630,13 @@ function CreateEventForm() {
                           {...field}
                           type="number"
                           className="bg-white"
-                          onChange={(e) => field.onChange(e.target.value === '' ? undefined : +e.target.value)}
+                          onChange={(e) =>
+                            field.onChange(
+                              e.target.value === ''
+                                ? undefined
+                                : +e.target.value,
+                            )
+                          }
                         />
                       </FormControl>
                       <FormMessage />
@@ -648,7 +654,13 @@ function CreateEventForm() {
                           {...field}
                           type="number"
                           className="bg-white"
-                          onChange={(e) => field.onChange(e.target.value === '' ? undefined : +e.target.value)}
+                          onChange={(e) =>
+                            field.onChange(
+                              e.target.value === ''
+                                ? undefined
+                                : +e.target.value,
+                            )
+                          }
                         />
                       </FormControl>
                       <FormMessage />
@@ -681,7 +693,13 @@ function CreateEventForm() {
                           {...field}
                           type="number"
                           className="bg-white"
-                          onChange={(e) => field.onChange(e.target.value === '' ? undefined : +e.target.value)}
+                          onChange={(e) =>
+                            field.onChange(
+                              e.target.value === ''
+                                ? undefined
+                                : +e.target.value,
+                            )
+                          }
                         />
                       </FormControl>
                       <FormMessage />
@@ -699,7 +717,13 @@ function CreateEventForm() {
                           {...field}
                           type="number"
                           className="bg-white"
-                          onChange={(e) => field.onChange(e.target.value === '' ? undefined : +e.target.value)}
+                          onChange={(e) =>
+                            field.onChange(
+                              e.target.value === ''
+                                ? undefined
+                                : +e.target.value,
+                            )
+                          }
                         />
                       </FormControl>
                       <FormMessage />
@@ -733,7 +757,7 @@ function CreateEventForm() {
                   </FormItem>
                 )}
               />
-              <Button type='submit' disabled={isPending}>
+              <Button type="submit" disabled={isPending}>
                 {isPending ? 'Submitting...' : 'Submit'}
               </Button>
             </form>
