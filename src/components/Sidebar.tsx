@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Login from '@/components/Login';
-import { useLoginUserInfo } from '@/hooks/useLogin';
+import { useUserInfo } from '@/context/userInfoContext';
 
 export default function Sidebar() {
-  const { data: userInfo } = useLoginUserInfo();
+  const { userInfo, isSuccess } = useUserInfo();
 
   const [isSidebarOpen, setSidebarOpen] = useState(false);
 
@@ -61,7 +61,7 @@ export default function Sidebar() {
               Contact Us
             </Link>
           </li>
-          {userInfo?.isAdmin ? (
+          {isSuccess && userInfo?.isAdmin ? (
             <li>
               <Link to="/admin" onClick={() => setSidebarOpen(false)}>
                 Admin
