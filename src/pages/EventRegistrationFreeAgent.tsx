@@ -88,7 +88,6 @@ function FreeAgentForm({ event }: { event: Event }) {
   });
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    console.log(values);
     mutate(
       {
         params: {

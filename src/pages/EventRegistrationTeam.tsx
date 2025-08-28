@@ -27,6 +27,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useState } from 'react';
 import { EventDetailsCard } from '@/components/EventRegDetailsCard';
 import { Trash2 } from 'lucide-react';
+import { TurnstileFormField } from '@/components/TurnstileFormField';
 
 export default function EventRegistrationTeam() {
   const { eventId } = useParams();
@@ -49,9 +50,7 @@ function TeamForm({ event }: { event: Event }) {
   });
 
   const formSchema = z.object({
-    captainEmail: z
-      .string()
-      .email({ message: 'A valid captain email is required.' }),
+    captainEmail: z.email({ message: 'A valid captain email is required.' }),
     homeCity: z.string().min(3, {
       message: 'Home city must be at least 3 characters.',
     }),
@@ -70,6 +69,9 @@ function TeamForm({ event }: { event: Event }) {
       .max(event.allowedTeamSizeRange.max, {
         message: `Maximum of ${event.allowedTeamSizeRange.max} players allowed.`,
       }),
+    turnstileToken: z
+      .string()
+      .min(1, { message: "You must verify you're human" }),
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -230,6 +232,7 @@ function TeamForm({ event }: { event: Event }) {
                     form.formState.errors.players?.root?.message}
                 </FormMessage>
               </div>
+              <TurnstileFormField form={form} fieldName="turnstileToken" />
               <Button type="submit" disabled={isPending}>
                 {isPending ? 'Submitting...' : 'Submit'}
               </Button>
