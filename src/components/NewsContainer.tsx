@@ -1,0 +1,60 @@
+import { Link } from 'react-router-dom';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+
+import { Newspaper } from 'lucide-react';
+
+const newsItems = [
+  {
+    id: 'icaa-launch',
+    to: '/news/icaa-launch',
+    title: 'ICAA to Launch with Inaugural Boston Play Ins',
+    date: 'August 1, 2024',
+    excerpt:
+      'The ICAA is proud to announce its official launch with the first-ever Boston Play Ins Tournament this fall.',
+  },
+  {
+    id: 'rules',
+    to: '/news/rules',
+    title: 'Official Tournament Rules Announced!',
+    date: 'August 27, 2025',
+    excerpt:
+      'The official rulebook for competitive tournament play has been released, outlining standardized regulations for all ICAA-sanctioned events.',
+  },
+];
+
+const NewsContainer = () => {
+  return (
+    <Card className="flex h-full flex-col">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2 text-2xl">
+          <Newspaper className="h-6 w-6 text-primary" />
+          <span>Latest News</span>
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="grid flex-grow gap-4">
+        {newsItems.map((item) => (
+          <Link
+            key={item.id}
+            to={item.to}
+            className="group grid gap-1 rounded-lg p-3 transition-colors hover:bg-muted/50"
+          >
+            <p className="text-sm text-muted-foreground">{item.date}</p>
+            <h4 className="font-semibold group-hover:text-primary">
+              {item.title}
+            </h4>
+            <p className="text-sm text-muted-foreground line-clamp-2">
+              {item.excerpt}
+            </p>
+          </Link>
+        ))}
+      </CardContent>
+    </Card>
+  );
+};
+
+export default NewsContainer;
