@@ -1,4 +1,4 @@
-import React from 'react';
+import { useState } from 'react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -11,7 +11,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-
+import { useCreateEvent } from '@/hooks/useEvent';
 import {
   Card,
   CardContent,
@@ -24,6 +24,8 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { DatePicker } from '@/components/DatePicker';
 import { Button, buttonVariants } from '@/components/ui/button';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 import {
   Select,
@@ -37,6 +39,17 @@ import {
 import EventRegistrationTable, {
   type Registration,
 } from '@/components/EventRegistrationTable';
+import { useForm } from 'react-hook-form';
+
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
+import type { components } from '@/events/v1';
 
 const mockRegistrations: Registration[] = [
   {
@@ -72,18 +85,6 @@ const mockRegistrations: Registration[] = [
 ];
 
 export function AdminPage() {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const eventNames = React.useMemo(
-    () => [...new Set(mockRegistrations.map((reg) => reg.eventName))],
-    [],
-  );
-
-  {
-    /* TODO:
-    -Load Event Info when event selected/load button submitted in Edit Event and View Registration
-    -Update Select Event info with list of events in DB 
-    -Add a way to edit Registration Info*/
-  }
   return (
     <section id="admin" className="admin-section">
       <Tabs
@@ -105,155 +106,7 @@ export function AdminPage() {
           </TabsTrigger>
         </TabsList>
         <TabsContent value="create-event">
-          <Card>
-            <CardHeader>
-              <CardTitle>Create Event</CardTitle>
-              <CardDescription>
-                {' '}
-                Enter the Events information to create an event
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="grid gap-6">
-              <div className="grid gap-3">
-                <Label htmlFor="event-name">Event Name</Label>
-                <Input
-                  id="event-name"
-                  type="text"
-                  className="bg-white max-w-md"
-                />
-              </div>
-              <div className="grid gap-3">
-                <Label htmlFor="event-date">Event Date</Label>
-                <DatePicker></DatePicker>
-              </div>
-
-              <div className="grid gap-3">
-                <Label htmlFor="event-start">Event Start/Stop Time</Label>
-                <div className="flex gap-3">
-                  <Input
-                    id="event-start"
-                    placeholder={'Start Time'}
-                    type="text"
-                    className="bg-white max-w-50"
-                  />
-                  <Input
-                    id="event-stop"
-                    placeholder={'Stop Time'}
-                    type="text"
-                    className="bg-white max-w-50"
-                  />
-                </div>
-              </div>
-
-              <div className="grid gap-3">
-                <Label htmlFor="event-address">Event Address</Label>
-                <div className="flex gap-3">
-                  <Input
-                    id="event-address"
-                    placeholder={'Street Address'}
-                    type="text"
-                    className="bg-white max-w-sm"
-                  />
-                  <Input
-                    id="event-city"
-                    placeholder={'City'}
-                    type="text"
-                    className="bg-white max-w-45"
-                  />
-                </div>
-                <div className="flex gap-3">
-                  <Input
-                    id="event-state"
-                    placeholder={'State/Province'}
-                    type="text"
-                    className="bg-white max-w-47"
-                  />
-                  <Input
-                    id="event-country"
-                    placeholder={'Country'}
-                    type="text"
-                    className="bg-white max-w-46"
-                  />
-                  <Input
-                    id="event-zip"
-                    placeholder={'Zip Code'}
-                    type="text"
-                    className="bg-white max-w-45"
-                  />
-                </div>
-              </div>
-              <div className="grid gap-3">
-                <Label htmlFor="free-agent-price">Event Prices</Label>
-                <div className="flex gap-3">
-                  <Input
-                    id="free-agent-price"
-                    placeholder={'Free Agent Price'}
-                    type="text"
-                    className="bg-white max-w-40"
-                  />
-                  <Input
-                    id="team-price"
-                    placeholder={'Team Price'}
-                    type="text"
-                    className="bg-white max-w-40"
-                  />
-                </div>
-              </div>
-              <div className="grid gap-3">
-                <Label htmlFor="team-min">Team Sizes</Label>
-                <div className="flex gap-3">
-                  <Input
-                    id="team-min"
-                    placeholder={'Min Team Size'}
-                    type="text"
-                    className="bg-white max-w-30"
-                  />
-                  <Input
-                    id="team-max"
-                    placeholder={'Max Team Size'}
-                    type="text"
-                    className="bg-white max-w-30"
-                  />
-                </div>
-              </div>
-              <div className="grid gap-3">
-                <Label htmlFor="event-rules">Event Rules</Label>
-                <Input
-                  id="event-rules"
-                  placeholder={'Document Link'}
-                  type="text"
-                  className="bg-white max-w-xl"
-                />
-              </div>
-              <div className="grid gap-3">
-                <Label htmlFor="event-image">Event Logo</Label>
-                <Input
-                  id="event-image"
-                  type="file"
-                  className="bg-white max-w-xl"
-                />
-              </div>
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button id="submit-event" type="button">
-                    Create Event
-                  </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      Are you sure you would like to create this event?
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction>Create Event</AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-            </CardContent>
-          </Card>
+          <CreateEventForm />
         </TabsContent>
         <TabsContent value="edit-event">
           <Card>
@@ -459,6 +312,404 @@ export function AdminPage() {
         </TabsContent>
       </Tabs>
     </section>
+  );
+}
+
+function CreateEventForm() {
+  const { mutate, isPending } = useCreateEvent();
+  const [showSuccessDialog, setShowSuccessDialog] = useState(false);
+
+  const formSchema = z.object({
+    teamSizes: z.object({
+      max: z.number().min(1, 'Max team size is required.'),
+      min: z.number().min(1, 'Min team size is required.'),
+    }),
+    locationInfo: z.object({
+      address: z.object({
+        city: z.string().min(1, 'Event city is required.'),
+        country: z.string().min(1, 'Event country is required.'),
+        postalCode: z.string().min(1, 'Event zip is required.'),
+        state: z.string().min(1, 'Event state is required.'),
+        street: z.string().min(1, 'Event Street is required.'),
+      }),
+      name: z.string().min(1, 'Event name is required.'),
+    }),
+    eventName: z.string().min(1, 'Event name is required.'),
+    regCloseDate: z.string().min(1, 'Registration close date is required.'),
+    regCloseTime: z.string().regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, {
+      message: 'Please use HH:MM format',
+    }),
+    priceInfo: z.object({
+      freeAgentPrice: z.number().min(1, 'Free agent price is required.'),
+      teamPrice: z.number().min(1, 'Team price is required.'),
+      currency: z.string().min(1, 'Currency is required.'),
+    }),
+
+    eventDate: z.string().min(1, 'Event date is required.'),
+    eventStartTime: z.string().regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, {
+      message: 'Please use HH:MM format',
+    }),
+    eventEndTime: z.string().regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, {
+      message: 'Please use HH:MM format',
+    }),
+
+    eventRules: z.string(),
+    eventLogo: z.string(),
+  });
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+  });
+
+  const eventName = form.watch('eventName');
+
+  const onSubmit = (values: z.infer<typeof formSchema>) => {
+    const {
+      eventDate,
+      eventStartTime,
+      eventEndTime,
+      regCloseDate,
+      regCloseTime,
+    } = values;
+    const startTime = new Date(`${eventDate}T${eventStartTime}`).toISOString();
+    const endTime = new Date(`${eventDate}T${eventEndTime}`).toISOString();
+    const closeTime = new Date(`${regCloseDate}T${regCloseTime}`).toISOString();
+
+    mutate(
+      {
+        body: {
+          allowedTeamSizeRange: values.teamSizes,
+          endTime: endTime,
+          imageName: values.eventLogo,
+          location: values.locationInfo,
+          name: values.eventName,
+          registrationCloseTime: closeTime,
+          registrationOptions: [
+            {
+              registrationType: 'ByIndividual',
+              price: {
+                currency: values.priceInfo.currency,
+                amount: values.priceInfo.freeAgentPrice,
+              },
+            },
+            {
+              registrationType: 'ByTeam',
+              price: {
+                currency: values.priceInfo.currency,
+                amount: values.priceInfo.teamPrice,
+              },
+            },
+          ],
+          rulesDocLink: values.eventRules,
+          startTime: startTime,
+        } as components['schemas']['Event'],
+      },
+      {
+        onSuccess: () => {
+          setShowSuccessDialog(true);
+          form.reset();
+        },
+      },
+    );
+  };
+  return (
+    <>
+      <Card className="w-full max-w-screen-lg mx-auto p-15">
+        <CardHeader>
+          <CardTitle className="text-center font-bold text-2xl">
+            Create Event
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-6">
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="flex flex-col gap-8 w-full"
+            >
+              <FormField
+                control={form.control}
+                name="eventName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Event Name</FormLabel>
+                    <FormControl>
+                      <Input {...field} type="text" className="bg-white" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="eventDate"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Event Date</FormLabel>
+                    <FormControl>
+                      <Input {...field} type="date" className="bg-white" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <div className="md:flex md:gap-4">
+                <FormField
+                  control={form.control}
+                  name="regCloseDate"
+                  render={({ field }) => (
+                    <FormItem className="flex-grow">
+                      <FormLabel>Registration Close Date</FormLabel>
+                      <FormControl>
+                        <Input {...field} type="date" className="bg-white" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="regCloseTime"
+                  render={({ field }) => (
+                    <FormItem className="flex-grow">
+                      <FormLabel>Registration Close Time</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          type="text"
+                          placeholder="HH:MM"
+                          className="bg-white"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <div className="md:flex md:gap-4">
+                <FormField
+                  control={form.control}
+                  name="eventStartTime"
+                  render={({ field }) => (
+                    <FormItem className="flex-grow">
+                      <FormLabel>Event Start Time</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          type="text"
+                          placeholder="HH:MM"
+                          className="bg-white"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="eventEndTime"
+                  render={({ field }) => (
+                    <FormItem className="flex-grow">
+                      <FormLabel>Event End Time</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          type="text"
+                          placeholder="HH:MM"
+                          className="bg-white"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <div className="grid gap-3">
+                <div className="flex gap-3">
+                  <FormField
+                    control={form.control}
+                    name="locationInfo.address.street"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Street Address</FormLabel>
+                        <FormControl>
+                          <Input {...field} type="text" className="bg-white" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="locationInfo.address.city"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>City</FormLabel>
+                        <FormControl>
+                          <Input {...field} type="text" className="bg-white" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                <div className="flex gap-3">
+                  <FormField
+                    control={form.control}
+                    name="locationInfo.address.state"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>State/Prov</FormLabel>
+                        <FormControl>
+                          <Input {...field} type="text" className="bg-white" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="locationInfo.address.country"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Country</FormLabel>
+                        <FormControl>
+                          <Input {...field} type="text" className="bg-white" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="locationInfo.address.postalCode"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Zip Code</FormLabel>
+                        <FormControl>
+                          <Input {...field} className="bg-white" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+              <div className="flex gap-3">
+                <FormField
+                  control={form.control}
+                  name="priceInfo.freeAgentPrice"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Free Agent Price</FormLabel>
+                      <FormControl>
+                        <Input {...field} type="number" className="bg-white" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="priceInfo.teamPrice"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Team Price</FormLabel>
+                      <FormControl>
+                        <Input {...field} type="number" className="bg-white" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="priceInfo.currency"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Currency</FormLabel>
+                      <FormControl>
+                        <Input {...field} className="bg-white" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <div className="flex gap-3">
+                <FormField
+                  control={form.control}
+                  name="teamSizes.min"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Min Team Size</FormLabel>
+                      <FormControl>
+                        <Input {...field} type="number" className="bg-white" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="teamSizes.max"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Max Team Size</FormLabel>
+                      <FormControl>
+                        <Input {...field} type="number" className="bg-white" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <FormField
+                control={form.control}
+                name="eventRules"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Event Rules (link)</FormLabel>
+                    <FormControl>
+                      <Input {...field} className="bg-white" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="eventLogo"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Event Logo Name</FormLabel>
+                    <FormControl>
+                      <Input {...field} className="bg-white" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <Button type="submit" disabled={isPending}>
+                {isPending ? 'Submitting...' : 'Submit'}
+              </Button>
+            </form>
+          </Form>
+        </CardContent>
+      </Card>
+      <AlertDialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Registration Successful!</AlertDialogTitle>
+            <AlertDialogDescription>
+              {eventName} has been created
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction>OK</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }
 
