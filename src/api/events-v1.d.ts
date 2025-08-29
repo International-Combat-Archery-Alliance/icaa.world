@@ -125,7 +125,7 @@ export interface components {
             message: string;
         };
         /** @enum {string} */
-        ErrorCode: "InternalError" | "LimitOutOfBounds" | "InvalidCursor" | "NotFound" | "EmptyBody" | "InvalidBody" | "AlreadyExists" | "RegistrationClosed" | "InputValidationError" | "AuthError";
+        ErrorCode: "InternalError" | "LimitOutOfBounds" | "InvalidCursor" | "NotFound" | "EmptyBody" | "InvalidBody" | "AlreadyExists" | "RegistrationClosed" | "InputValidationError" | "AuthError" | "CaptchaInvalid";
         Event: {
             allowedTeamSizeRange: components["schemas"]["Range"];
             /**
@@ -390,7 +390,10 @@ export interface operations {
     PostEventsV1EventIdRegister: {
         parameters: {
             query?: never;
-            header?: never;
+            header: {
+                /** @description Cloudflare turnstile CAPTCHA */
+                "cf-turnstile-response": string;
+            };
             path: {
                 /** @description ID of the event */
                 eventId: string;
