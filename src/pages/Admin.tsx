@@ -51,8 +51,6 @@ import {
 } from '@/components/ui/form';
 import type { components } from '@/api/events-v1';
 
-
-
 const mockRegistrations: Registration[] = [
   {
     id: 'reg001',
@@ -452,7 +450,7 @@ function CreateEventForm() {
             Create Event
           </CardTitle>
         </CardHeader>
-        
+
         <CardContent className="grid gap-6">
           <Form {...form}>
             <form
