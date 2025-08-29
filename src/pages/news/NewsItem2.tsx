@@ -13,7 +13,7 @@ const NewsItem2 = () => {
           <h1 className="text-3xl md:text-4xl font-bold text-primary mb-2 text-balance">
             Rules Announced for Official Tournament Play!
           </h1>
-          <p className="text-sm text-muted-foreground">August 27, 2025</p>
+          <p className="text-sm text-muted-foreground">August 30, 2025</p>
         </header>
 
         <div className="flex flex-col gap-6 text-lg text-justify">
