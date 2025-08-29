@@ -8,7 +8,7 @@ const newsItems = [
     id: 'icaa-launch',
     to: '/news/icaa-launch',
     title: 'ICAA to Launch with Inaugural Boston Play Ins',
-    date: 'August 1, 2024',
+    date: 'August 30, 2025',
     excerpt:
       'The ICAA is proud to announce its official launch with the first-ever Boston Play Ins Tournament this fall.',
   },
@@ -16,7 +16,7 @@ const newsItems = [
     id: 'rules',
     to: '/news/rules',
     title: 'Official Tournament Rules Announced!',
-    date: 'August 27, 2025',
+    date: 'August 30, 2025',
     excerpt:
       'The official rulebook for competitive tournament play has been released, outlining standardized regulations for all ICAA-sanctioned events.',
   },
