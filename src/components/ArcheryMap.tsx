@@ -1,15 +1,18 @@
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import type { LatLngTuple } from 'leaflet';
+
+// We need all of this leaflet stuff to make the icons actually work
+// Thank you to this goat: https://willschenk.com/labnotes/2024/leaflet_markers_with_vite_build/
 import 'leaflet/dist/leaflet.css';
 
 import L from 'leaflet';
-L.Marker.prototype.setIcon(
-  L.icon({
-    iconRetinaUrl: '/images/leaflet/marker-icon-2x.png',
-    iconUrl: '/images/leaflet/marker-icon.png',
-    shadowUrl: '/images/leaflet/marker-shadow.png',
-  }),
-);
+import markerIconUrl from 'leaflet/dist/images/marker-icon.png';
+import markerIconRetinaUrl from 'leaflet/dist/images/marker-icon-2x.png';
+import markerShadowUrl from 'leaflet/dist/images/marker-shadow.png';
+L.Icon.Default.prototype.options.iconUrl = markerIconUrl;
+L.Icon.Default.prototype.options.iconRetinaUrl = markerIconRetinaUrl;
+L.Icon.Default.prototype.options.shadowUrl = markerShadowUrl;
+L.Icon.Default.imagePath = '';
 
 const ArcheryMap = () => {
   const position = [42.385, -71.018] as LatLngTuple;
