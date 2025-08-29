@@ -47,3 +47,34 @@ export function useCreateEvent() {
 
   return client.useMutation('post', '/events/v1');
 }
+
+export function useGetRegistrations(
+  eventId: string | undefined,
+  limit: number = 10,
+) {
+  const client = useEventQueryClient();
+
+  return client.useInfiniteQuery(
+    'get',
+    '/events/v1/{eventId}/registrations',
+    {
+      credentials: 'include',
+      params: {
+        query: {
+          limit,
+          cursor: undefined,
+        },
+        path: {
+          eventId: eventId!,
+        },
+      },
+    },
+    {
+      enabled: !!eventId,
+      getNextPageParam: (
+        lastPage: paths['/events/v1/{eventId}/registrations']['get']['responses']['200']['content']['application/json'],
+      ) => lastPage.cursor,
+      initialPageParam: null,
+    },
+  );
+}

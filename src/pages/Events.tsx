@@ -121,7 +121,17 @@ function EventCard({ event, className }: { event: Event; className?: string }) {
             {format(date, 'eeee MMMM do, yyyy')} at{' '}
             {format(date, 'h:mm a', { in: tz('UTC') })}
           </div>
-          <Button variant="secondary">Rules</Button>
+          {event.rulesDocLink && (
+            <Button variant="secondary" asChild>
+              <a
+                href={event.rulesDocLink}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Rules
+              </a>
+            </Button>
+          )}
         </div>
       </CardContent>
       <CardFooter className="flex flex-col items-stretch gap-2">
