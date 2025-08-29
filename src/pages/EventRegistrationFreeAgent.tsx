@@ -23,6 +23,7 @@ import {
 } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { EventDetailsCard } from '@/components/EventRegDetailsCard';
+import { TurnstileFormField } from '@/components/TurnstileFormField';
 
 export default function EventRegistrationFreeAgent() {
   const { eventId } = useParams();
@@ -62,10 +63,16 @@ function FreeAgentForm({ event }: { event: Event }) {
     experience: z.enum(experienceOptions, {
       error: 'Experience is required.',
     }),
+    turnstileToken: z
+      .string()
+      .min(1, { message: "You must verify you're human" }),
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
+    defaultValues: {
+      turnstileToken: '',
+    },
   });
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
@@ -74,6 +81,9 @@ function FreeAgentForm({ event }: { event: Event }) {
         params: {
           path: {
             eventId: event.id,
+          },
+          header: {
+            'cf-turnstile-response': values.turnstileToken,
           },
         },
         // TODO: this has a type error since I'm not passing the readonly properties, I want to not have to cast this to fix that eventually
@@ -198,6 +208,7 @@ function FreeAgentForm({ event }: { event: Event }) {
                   )}
                 />
               </div>
+              <TurnstileFormField form={form} fieldName="turnstileToken" />
               <Button type="submit" disabled={isPending}>
                 {isPending ? 'Submitting...' : 'Submit'}
               </Button>
