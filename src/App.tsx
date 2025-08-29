@@ -5,15 +5,7 @@ import Home from './pages/Home';
 import AboutICAA from './pages/AboutICAA';
 import AboutSport from './pages/AboutSport';
 import OfficialRules from './pages/OfficialRules';
-import OurCommunities from './pages/OurCommunities';
 import Events from './pages/Events';
-import EventRegistration from './pages/EventRegistration';
-import NewsItem1 from './pages/news/NewsItem1';
-import NewsItem2 from './pages/news/NewsItem2';
-import NewsItem3 from './pages/news/NewsItem3';
-import BostonPlayIns from './pages/events/BostonPlayIns';
-import BostonChampionship from './pages/events/BostonChampionship';
-import Catch2026 from './pages/events/Catch2026';
 import Registration from './pages/Registration';
 import RegistrationsTablePage from './pages/RegistrationsTablePage';
 import Contact from './pages/Contact';
@@ -52,10 +44,10 @@ const App = () => {
                         path="/official-rules"
                         element={<OfficialRules />}
                       />
-                      <Route
+                      {/*<Route
                         path="/our-communities"
                         element={<OurCommunities />}
-                      />
+                      />*/}
                       <Route path="/events" element={<Events />} />
                       <Route
                         path="/events/:eventId/register-free-agent"
@@ -64,31 +56,6 @@ const App = () => {
                       <Route
                         path="/events/:eventId/register-team"
                         element={<EventRegistrationTeam />}
-                      />
-                      <Route
-                        path="/event-registration"
-                        element={<EventRegistration />}
-                      />
-                      <Route
-                        path="/news/icaa-partners"
-                        element={<NewsItem1 />}
-                      />
-                      <Route path="/news/new-rules" element={<NewsItem2 />} />
-                      <Route
-                        path="/news/boston-championship-recap"
-                        element={<NewsItem3 />}
-                      />
-                      <Route
-                        path="/events/boston-play-ins"
-                        element={<BostonPlayIns />}
-                      />
-                      <Route
-                        path="/events/boston-championship"
-                        element={<BostonChampionship />}
-                      />
-                      <Route
-                        path="/events/catch-2026"
-                        element={<Catch2026 />}
                       />
                       <Route path="/registration" element={<Registration />} />
                       <Route
@@ -106,7 +73,6 @@ const App = () => {
                       />
                     </Routes>
                   </main>
-
                   <footer>
                     <div className="social-links">
                       <a
