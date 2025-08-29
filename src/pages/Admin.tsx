@@ -278,7 +278,7 @@ export function AdminPage() {
 
 function CreateEventForm() {
   const { mutate, isPending } = useCreateEvent();
-  const [showSuccessDialog, setShowSuccessDialog] = useState(false);
+  const [successDialogEventName, setSuccessDialogEventName] = useState('');
 
   const formSchema = z.object({
     teamSizes: z.object({
@@ -334,8 +334,6 @@ function CreateEventForm() {
     resolver: zodResolver(formSchema),
   });
 
-  const eventName = form.watch('eventName');
-
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     const {
       eventDate,
@@ -388,7 +386,7 @@ function CreateEventForm() {
       },
       {
         onSuccess: () => {
-          setShowSuccessDialog(true);
+          setSuccessDialogEventName(values.eventName);
           form.reset();
         },
         onError: (error) => {
@@ -740,12 +738,17 @@ function CreateEventForm() {
           </Form>
         </CardContent>
       </Card>
-      <AlertDialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog}>
+      <AlertDialog
+        open={successDialogEventName !== ''}
+        onOpenChange={(open) => {
+          if (!open) setSuccessDialogEventName('');
+        }}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Registration Successful!</AlertDialogTitle>
             <AlertDialogDescription>
-              {eventName} has been created
+              {successDialogEventName} has been created
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
