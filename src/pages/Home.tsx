@@ -1,5 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import NewsContainer from '@/components/NewsContainer';
+import { Button } from '@/components/ui/button';
+import UpcomingEventsContainer from '@/components/UpcomingEventsContainer';
 
 const Home = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -23,86 +26,46 @@ const Home = () => {
 
   return (
     <header id="hero-section" className="content-section active">
-      <h1 className="hero-title">International Combat Archery Alliance</h1>
-      <p className="hero-tagline">
+      <h1 className="text-balance text-center text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl">
+        International <span className="text-primary">Combat Archery</span>{' '}
+        Alliance
+      </h1>
+      <p className="mx-auto mt-4 max-w-3xl text-center text-lg text-muted-foreground md:text-xl">
         Building a global alliance for the sport of Combat Archery.
       </p>
-      <Link to="/registration" className="cta-button">
-        Join the Alliance
-      </Link>
-      <div className="image-rotator-container">
-        <button id="prev-btn" className="rotator-btn" onClick={changeImage}>
-          ❮
-        </button>
-        <img
-          id="rotator-img"
-          src={images[currentImageIndex]}
-          alt="Rotating image of combat archery"
-          className="rotator-img"
-        />
-        <button id="next-btn" className="rotator-btn" onClick={changeImage}>
-          ❯
-        </button>
+      <div className="mt-6 flex justify-center">
+        <Button asChild size="lg" className="px-8 text-lg">
+          <Link to="/registration">Join the Alliance</Link>
+        </Button>
       </div>
-      <div className="events-news-grid">
-        <div className="news-updates-container">
-          <h3 className="news-title">Latest News</h3>
-          <ul>
-            <li>
-              <Link to="/news/icaa-partners">
-                ICAA Partners with Top Combat Archery Gear Company
-              </Link>
-            </li>
-            <li>
-              <Link to="/news/new-rules">
-                New Official Rules to be Announced for 2026 Season
-              </Link>
-            </li>
-            <li>
-              <Link to="/news/boston-championship-recap">
-                Boston International Championship: Recap and Results
-              </Link>
-            </li>
-          </ul>
+      {/* On mobile: Image Rotator is first. On large screens: News | Rotator | Events */}
+      <div className="mt-8 grid grid-cols-1 items-start gap-y-8 px-4 lg:grid-cols-5 lg:gap-x-6">
+        {/* Left Column: News */}
+        <div className="order-2 lg:col-span-1 lg:order-1">
+          <NewsContainer />
         </div>
-        <div className="upcoming-events-container">
-          <h3 className="events-title">Upcoming Events</h3>
-          <table>
-            <thead>
-              <tr>
-                <th>Event Name</th>
-                <th>Date</th>
-                <th>Location</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>
-                  <Link to="/events/boston-play-ins">
-                    Boston Play Ins Tournament
-                  </Link>
-                </td>
-                <td>September 6th, 2025</td>
-                <td>Archery Games Boston, Chelsea MA</td>
-              </tr>
-              <tr>
-                <td>
-                  <Link to="/events/boston-championship">
-                    Boston International Championship
-                  </Link>
-                </td>
-                <td>October 25, 2025</td>
-                <td>Archery Games Boston, Chelsea MA</td>
-              </tr>
-              <tr>
-                <td>
-                  <Link to="/events/catch-2026">C.A.T.C.H. 2026</Link>
-                </td>
-                <td>June 2026</td>
-                <td>Location TBD</td>
-              </tr>
-            </tbody>
-          </table>
+
+        {/* Center Column: Image Rotator */}
+        <div className="order-1 lg:col-span-3 lg:order-2">
+          <div className="image-rotator-container">
+            <button id="prev-btn" className="rotator-btn" onClick={changeImage}>
+              ❮
+            </button>
+            <img
+              id="rotator-img"
+              src={images[currentImageIndex]}
+              alt="Rotating image of combat archery"
+              className="rotator-img"
+            />
+            <button id="next-btn" className="rotator-btn" onClick={changeImage}>
+              ❯
+            </button>
+          </div>
+        </div>
+
+        {/* Right Column: Events */}
+        <div className="order-3 lg:col-span-1 lg:order-3">
+          <UpcomingEventsContainer />
         </div>
       </div>
     </header>

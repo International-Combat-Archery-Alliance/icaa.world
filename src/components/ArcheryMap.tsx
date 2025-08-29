@@ -1,5 +1,6 @@
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import type { LatLngTuple } from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 
 import L from 'leaflet';
 L.Marker.prototype.setIcon(
