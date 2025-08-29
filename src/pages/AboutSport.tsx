@@ -13,7 +13,7 @@ export function AboutSport() {
     <section id="about-sport" className="content-section">
       <Accordion
         type="multiple"
-        className="w-full max-w-screen-lg mx-auto p-15"
+        className="w-full max-w-screen-lg mx-auto p-8 md:p-15"
         defaultValue={['summary']}
       >
         <AccordionItem value="summary">
@@ -49,18 +49,20 @@ export function AboutSport() {
             The Basic Rules
           </AccordionTrigger>
           <AccordionContent className="flex flex-col gap-4 text-justify text-lg">
-            <li>There are 6 players per team on the field</li>
-            <li>If you get hit with an arrow you are eliminated</li>
-            <li>
-              You revive a teammate by:
-              <li className="ml-8">Catching an arrow</li>
-              <li className="ml-8">Knocking out a Revive Target</li>
-              <li className="ml-8">Hitting the Jailbreak Gong</li>
-            </li>
-            <li>
-              Teams earn score for either fully eliminating a team or by having
-              more players alive at the end of the round timer{' '}
-            </li>
+            <div>
+              <li>There are 6 players per team on the field</li>
+              <li>If you get hit with an arrow you are eliminated</li>
+              <li>
+                You revive a teammate by:
+                <li className="ml-8">Catching an arrow</li>
+                <li className="ml-8">Knocking out a Revive Target</li>
+                <li className="ml-8">Hitting the Jailbreak Gong</li>
+              </li>
+              <li>
+                Teams earn score for either fully eliminating a team or by
+                having more players alive at the end of the round timer{' '}
+              </li>
+            </div>
 
             <Button className="self-center text-xl" asChild>
               <Link to="/official-rules">Full Official Rules</Link>
