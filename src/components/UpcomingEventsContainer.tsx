@@ -11,8 +11,9 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Link } from 'react-router-dom';
 import { CalendarDays } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
-const UpcomingEventsContainer = () => {
+const UpcomingEventsContainer = ({ className }: { className?: string }) => {
   const { data, isPending, error } = useGetEvents();
   const events = data?.pages.flatMap((page) => page.data);
 
@@ -25,7 +26,7 @@ const UpcomingEventsContainer = () => {
     .slice(0, 2);
 
   return (
-    <Card className="flex h-full flex-col">
+    <Card className={cn('flex h-full flex-col', className)}>
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-2xl">
           <CalendarDays className="h-6 w-6 text-primary" />
