@@ -94,6 +94,9 @@ function FreeAgentForm({ event }: { event: Event }) {
           path: {
             eventId: event.id,
           },
+          header: {
+            'cf-turnstile-response': values.turnstileToken,
+          },
         },
         // TODO: this has a type error since I'm not passing the readonly properties, I want to not have to cast this to fix that eventually
         body: {

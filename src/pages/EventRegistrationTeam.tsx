@@ -91,6 +91,9 @@ function TeamForm({ event }: { event: Event }) {
           path: {
             eventId: event.id,
           },
+          header: {
+            'cf-turnstile-response': values.turnstileToken,
+          },
         },
         body: {
           registrationType: 'ByTeam',
