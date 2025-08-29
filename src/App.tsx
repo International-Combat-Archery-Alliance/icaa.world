@@ -6,6 +6,8 @@ import AboutICAA from './pages/AboutICAA';
 import AboutSport from './pages/AboutSport';
 import OfficialRules from './pages/OfficialRules';
 import Events from './pages/Events';
+import NewsItem1 from './pages/news/NewsItem1';
+import NewsItem2 from './pages/news/NewsItem2';
 import Registration from './pages/Registration';
 import RegistrationsTablePage from './pages/RegistrationsTablePage';
 import Contact from './pages/Contact';
@@ -71,6 +73,8 @@ const App = () => {
                           </AdminOnlyRoute>
                         }
                       />
+                      <Route path="/news/icaa-launch" element={<NewsItem1 />} />
+                      <Route path="/news/rules" element={<NewsItem2 />} />
                     </Routes>
                   </main>
                   <footer>
@@ -86,6 +90,7 @@ const App = () => {
                           className="social-icon"
                         />
                       </a>
+                      {/*
                       <a
                         href="https://x.com/yourhandle"
                         target="_blank"
@@ -108,6 +113,7 @@ const App = () => {
                           className="social-icon"
                         />
                       </a>
+                      */}
                     </div>
                     <p>
                       &copy; 2025 International Combat Archery Alliance, Inc.

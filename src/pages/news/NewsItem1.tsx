@@ -13,7 +13,7 @@ const NewsItem1 = () => {
             ICAA Announces Official Launch with Inaugural Boston Play Ins
             Tournament
           </h1>
-          <p className="text-sm text-muted-foreground">August 1, 2024</p>
+          <p className="text-sm text-muted-foreground">August 30, 2025</p>
         </header>
 
         <img

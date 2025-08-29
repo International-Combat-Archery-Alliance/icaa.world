@@ -22,7 +22,7 @@ const UpcomingEventsContainer = () => {
       (a, b) =>
         new Date(a.startTime).getTime() - new Date(b.startTime).getTime(),
     )
-    .slice(0, 3);
+    .slice(0, 2);
 
   return (
     <Card className="flex h-full flex-col">
@@ -47,11 +47,7 @@ const UpcomingEventsContainer = () => {
           <p className="text-center text-red-600 p-4">Error loading events.</p>
         ) : upcomingEvents && upcomingEvents.length > 0 ? (
           upcomingEvents.map((event) => (
-            <Link
-              key={event.id}
-              to={`/events/${event.id}`}
-              className="group grid gap-1 rounded-lg p-3 transition-colors hover:bg-muted/50"
-            >
+            <div key={event.id} className="grid gap-1 rounded-lg p-3">
               <p className="text-sm text-muted-foreground">
                 {format(new Date(event.startTime), 'MMMM d, yyyy')}
               </p>
@@ -63,7 +59,7 @@ const UpcomingEventsContainer = () => {
                   {`${event.location.name} - ${event.location.address.city}, ${event.location.address.state}`}
                 </p>
               )}
-            </Link>
+            </div>
           ))
         ) : (
           <p className="text-center text-muted-foreground p-4">

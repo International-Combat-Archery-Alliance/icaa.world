@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+//import { Link } from 'react-router-dom';
 import NewsContainer from '@/components/NewsContainer';
-import { Button } from '@/components/ui/button';
+//import { Button } from '@/components/ui/button';
 import UpcomingEventsContainer from '@/components/UpcomingEventsContainer';
 
 const Home = () => {
@@ -33,13 +33,15 @@ const Home = () => {
       <p className="mx-auto mt-4 max-w-3xl text-center text-lg text-muted-foreground md:text-xl">
         Building a global alliance for the sport of Combat Archery.
       </p>
+      {/*
       <div className="mt-6 flex justify-center">
         <Button asChild size="lg" className="px-8 text-lg">
           <Link to="/registration">Join the Alliance</Link>
         </Button>
       </div>
+      */}
       {/* On mobile: Image Rotator is first. On large screens: News | Rotator | Events */}
-      <div className="mt-8 grid grid-cols-1 items-start gap-y-8 px-4 lg:grid-cols-5 lg:gap-x-6">
+      <div className="mt-8 grid grid-cols-1 items-start gap-y-8 px-25 xl:grid-cols-5 xl:gap-x-6">
         {/* Left Column: News */}
         <div className="order-2 lg:col-span-1 lg:order-1">
           <NewsContainer />
