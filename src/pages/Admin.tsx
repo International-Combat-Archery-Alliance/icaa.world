@@ -11,7 +11,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useCreateEvent, useGetEvents } from '@/hooks/useEvent';
+import { useCreateEvent, useGetEvent, useGetEvents } from '@/hooks/useEvent';
 import {
   Card,
   CardContent,
@@ -50,6 +50,7 @@ import type { components } from '@/api/events-v1';
 import EventRegistrationTable from '@/components/EventRegistrationTable';
 import { formatISO, parse } from 'date-fns';
 import { tz } from '@date-fns/tz';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export function AdminPage() {
   const [eventId, setEventId] = useState<string | undefined>(undefined);
@@ -58,7 +59,7 @@ export function AdminPage() {
     <section id="admin" className="admin-section">
       <Tabs
         defaultValue="create-event"
-        className="w-full max-w-screen-lg mx-auto p-15"
+        className="w-full max-w-screen-lg mx-auto p-6 lg:p-15"
       >
         <TabsList>
           <TabsTrigger value="create-event" className="text-xl text-primary">
@@ -266,6 +267,7 @@ export function AdminPage() {
               <div className="grid gap-6">
                 <SelectEvent setEventId={setEventId} />
 
+                <SignUpInfoCards eventId={eventId} />
                 <EventRegistrationTable eventId={eventId} />
               </div>
             </CardContent>
@@ -779,6 +781,60 @@ function SelectEvent({ setEventId }: { setEventId: (v: string) => void }) {
         </SelectGroup>
       </SelectContent>
     </Select>
+  );
+}
+
+function SignUpInfoCards({ eventId }: { eventId: string | undefined }) {
+  const { data, isLoading } = useGetEvent(eventId);
+  const event = data?.event;
+
+  if (isLoading) {
+    return (
+      <div className="grid gap-2 grid-flow-col">
+        {Array.from({ length: 3 }).map((_, i) => (
+          <Card key={i}>
+            <CardHeader>
+              <CardTitle>
+                <Skeleton className="w-full h-4" />
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Skeleton className="w-1/4 h-2" />
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    );
+  }
+
+  if (event === undefined) {
+    return null;
+  }
+
+  return (
+    <div className="grid gap-2 grid-flow-row md:grid-flow-col">
+      <Card>
+        <CardHeader>
+          <CardTitle>Total players</CardTitle>
+        </CardHeader>
+        <CardContent>{event.signUpStats.numTotalPlayers}</CardContent>
+      </Card>
+      <Card>
+        <CardHeader>
+          <CardTitle>Teams signed up</CardTitle>
+        </CardHeader>
+        <CardContent>{event.signUpStats.numTeams}</CardContent>
+      </Card>
+      <Card>
+        <CardHeader>
+          <CardTitle>Free agents</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {event.signUpStats.numTotalPlayers -
+            event.signUpStats.numRosteredPlayers}
+        </CardContent>
+      </Card>
+    </div>
   );
 }
 
