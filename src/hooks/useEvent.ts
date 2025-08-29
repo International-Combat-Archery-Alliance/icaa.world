@@ -41,3 +41,9 @@ export function useRegisterForEvent() {
 
   return client.useMutation('post', '/events/v1/{eventId}/register');
 }
+
+export function useCreateEvent() {
+  const client = useEventQueryClient();
+
+  return client.useMutation('post', '/events/v1');
+}
