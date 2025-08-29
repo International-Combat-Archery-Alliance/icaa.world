@@ -22,6 +22,7 @@ import { LoginQueryClientProvider } from './context/loginQueryClientContext';
 import AdminOnlyRoute from './components/auth/AdminOnlyRoute';
 import Sidebar from './components/Sidebar';
 import { UserInfoContextProvider } from './context/userInfoContext';
+import OurCommunities from './pages/OurCommunities';
 
 const App = () => {
   const queryClient = new QueryClient();
@@ -46,10 +47,14 @@ const App = () => {
                         path="/official-rules"
                         element={<OfficialRules />}
                       />
-                      {/*<Route
+                      <Route
                         path="/our-communities"
-                        element={<OurCommunities />}
-                      />*/}
+                        element={
+                          <AdminOnlyRoute>
+                            <OurCommunities />
+                          </AdminOnlyRoute>
+                        }
+                      />
                       <Route path="/events" element={<Events />} />
                       <Route
                         path="/events/:eventId/register-free-agent"
