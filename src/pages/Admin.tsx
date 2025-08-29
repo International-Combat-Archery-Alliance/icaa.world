@@ -48,6 +48,8 @@ import {
 } from '@/components/ui/form';
 import type { components } from '@/api/events-v1';
 import EventRegistrationTable from '@/components/EventRegistrationTable';
+import { formatISO, parse } from 'date-fns';
+import { tz } from '@date-fns/tz';
 
 export function AdminPage() {
   const [eventId, setEventId] = useState<string | undefined>(undefined);
@@ -342,9 +344,11 @@ function CreateEventForm() {
       regCloseDate,
       regCloseTime,
     } = values;
-    const startTime = new Date(`${eventDate}T${eventStartTime}`).toISOString();
-    const endTime = new Date(`${eventDate}T${eventEndTime}`).toISOString();
-    const closeTime = new Date(`${regCloseDate}T${regCloseTime}`).toISOString();
+    console.log(values);
+    const startTime = datetimeInputToISO(eventDate, eventStartTime);
+    const endTime = datetimeInputToISO(eventDate, eventEndTime);
+    const closeTime = datetimeInputToISO(regCloseDate, regCloseTime);
+    console.log(startTime, endTime, closeTime);
 
     const registrationOptions: components['schemas']['EventRegistrationOption'][] =
       [];
@@ -775,6 +779,13 @@ function SelectEvent({ setEventId }: { setEventId: (v: string) => void }) {
       </SelectContent>
     </Select>
   );
+}
+
+function datetimeInputToISO(date: string, time: string): string {
+  const parsed = parse(`${date} ${time}`, 'yyyy-MM-dd HH:mm', new Date(), {
+    in: tz('UTC'),
+  });
+  return formatISO(parsed);
 }
 
 export default AdminPage;
