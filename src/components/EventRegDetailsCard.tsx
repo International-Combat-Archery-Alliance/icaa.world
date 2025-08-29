@@ -24,15 +24,13 @@ export function EventDetailsCard({ event }: EventDetailsCardProps) {
 
   return (
     <Card className="w-full max-w-screen-lg mx-auto mb-8">
-      <CardContent className="flex gap-20">
-        {event.imageName && (
-          <img
-            src={'\\public\\images\\logos\\ICAA Logo.png'}
-            alt={`${event.name} logo`}
-            className="w-3xs rounded-md object-cover"
-          />
-        )}
-        <div className="grid">
+      <CardContent className="flex flex-col md:flex-row items-center gap-6 p-6">
+        <img
+          src={'/images/logos/ICAA Logo.png'}
+          alt={`${event.name} logo`}
+          className="w-32 h-32 rounded-md object-cover flex-shrink-0"
+        />
+        <div className="grid gap-1 text-center md:text-left">
           <p>
             <strong>Event:</strong> {event.name}
           </p>
