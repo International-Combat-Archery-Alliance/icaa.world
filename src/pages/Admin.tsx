@@ -11,7 +11,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useCreateEvent } from '@/hooks/useEvent';
+import { useCreateEvent, useGetEvents } from '@/hooks/useEvent';
 import {
   Card,
   CardContent,
@@ -36,9 +36,6 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
-import EventRegistrationTable, {
-  type Registration,
-} from '@/components/EventRegistrationTable';
 import { useForm } from 'react-hook-form';
 
 import {
@@ -50,41 +47,11 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import type { components } from '@/api/events-v1';
-
-const mockRegistrations: Registration[] = [
-  {
-    id: 'reg001',
-    eventName: 'Summer Showdown 2024',
-    registrationType: 'Free Agent',
-    name: 'John Doe',
-    homeCity: 'New York',
-    email: 'john.doe@example.com',
-    paid: true,
-    experience: 'Beginner',
-  },
-  {
-    id: 'reg002',
-    eventName: 'Summer Showdown 2024',
-    registrationType: 'Team',
-    name: 'Team Fireball',
-    homeCity: 'Los Angeles',
-    email: 'jane.smith@example.com',
-    paid: true,
-    roster: ['Cam', 'Andrew', 'Peter', 'John', 'Bob', 'Joe'],
-  },
-  {
-    id: 'reg003',
-    eventName: 'Winter Classic 2025',
-    registrationType: 'Free Agent',
-    name: 'Peter Jones',
-    homeCity: 'Chicago',
-    email: 'peter.jones@example.com',
-    paid: false,
-    experience: 'Intermediate',
-  },
-];
+import EventRegistrationTable from '@/components/EventRegistrationTable';
 
 export function AdminPage() {
+  const [eventId, setEventId] = useState<string | undefined>(undefined);
+
   return (
     <section id="admin" className="admin-section">
       <Tabs
@@ -116,7 +83,7 @@ export function AdminPage() {
             </CardHeader>
             <CardContent className="grid gap-6">
               <div className="flex gap-3">
-                <SelectEvent />
+                <SelectEvent setEventId={setEventId} />
                 <Button id="load-event_info" className="max-w-24" type="submit">
                   Load Event
                 </Button>
@@ -295,17 +262,9 @@ export function AdminPage() {
             </CardHeader>
             <CardContent>
               <div className="grid gap-6">
-                <div className="flex gap-3">
-                  <SelectEvent />
-                  <Button
-                    id="load-event_info"
-                    className="max-w-24"
-                    type="submit"
-                  >
-                    Load Event
-                  </Button>
-                </div>
-                <EventRegistrationTable registrations={mockRegistrations} />
+                <SelectEvent setEventId={setEventId} />
+
+                <EventRegistrationTable eventId={eventId} />
               </div>
             </CardContent>
           </Card>
@@ -796,16 +755,22 @@ function CreateEventForm() {
   );
 }
 
-function SelectEvent() {
+function SelectEvent({ setEventId }: { setEventId: (v: string) => void }) {
+  // TODO: need to handle pagination
+  const { data: events } = useGetEvents();
+
   return (
-    <Select>
+    <Select onValueChange={(v) => setEventId(v)}>
       <SelectTrigger className="w-[180px]">
         <SelectValue placeholder="Select an Event" />
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>
-          <SelectItem value="event-1">Event 1</SelectItem>
-          <SelectItem value="event-2">Event 2</SelectItem>
+          {events?.pages[0].data.map((v) => (
+            <SelectItem key={v.id} value={v.id}>
+              {v.name}
+            </SelectItem>
+          ))}
         </SelectGroup>
       </SelectContent>
     </Select>
