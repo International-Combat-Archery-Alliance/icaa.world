@@ -34,19 +34,23 @@ const NewsContainer = ({ className }: { className?: string }) => {
       </CardHeader>
       <CardContent className="grid flex-grow gap-4">
         {newsItems.map((item) => (
-          <Link
-            key={item.id}
-            to={item.to}
-            className="group grid gap-1 rounded-lg p-3 transition-colors hover:bg-muted/50"
-          >
-            <p className="text-sm text-muted-foreground">{item.date}</p>
-            <h4 className="font-semibold group-hover:text-primary">
-              {item.title}
-            </h4>
-            <p className="text-sm text-muted-foreground line-clamp-2">
-              {item.excerpt}
-            </p>
-          </Link>
+          <div key={item.id}>
+            <Link
+              to={item.to}
+              className="group grid gap-1 rounded-lg transition-colors hover:bg-muted/50"
+            >
+              <p className="text-sm text-muted-foreground">{item.date}</p>
+              <h4 className="font-semibold group-hover:text-primary">
+                {item.title}
+              </h4>
+              {/* Need the wrapper dive for the line clamp to work correctly for some reason */}
+              <div>
+                <p className="text-sm text-muted-foreground line-clamp-2">
+                  {item.excerpt}
+                </p>
+              </div>
+            </Link>
+          </div>
         ))}
       </CardContent>
     </Card>
