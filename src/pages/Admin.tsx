@@ -375,11 +375,6 @@ function CreateEventForm() {
 
   const eventName = form.watch('eventName');
 
-  const onFormError = (errors: any) => {
-    console.error('Form validation failed:', errors);
-    alert('Please check the form for errors. More details in the console.');
-  };
-
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     const {
       eventDate,
@@ -454,7 +449,7 @@ function CreateEventForm() {
         <CardContent className="grid gap-6">
           <Form {...form}>
             <form
-              onSubmit={form.handleSubmit(onSubmit, onFormError)}
+              onSubmit={form.handleSubmit(onSubmit)}
               className="flex flex-col gap-8 w-full"
             >
               <FormField
