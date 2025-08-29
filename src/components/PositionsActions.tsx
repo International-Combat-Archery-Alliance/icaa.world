@@ -17,7 +17,7 @@ const Positions: React.FC<PositionProps> = ({
   const [isHovered, setIsHovered] = useState(false);
 
   return (
-    <Card className="w-full flex flex-row items-center p-4 gap-6">
+    <Card className="w-full flex flex-col md:flex-row items-center p-4 gap-6">
       <img
         width="150"
         src={
