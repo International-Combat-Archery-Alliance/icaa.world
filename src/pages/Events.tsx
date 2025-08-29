@@ -118,7 +118,7 @@ function EventCard({ event, className }: { event: Event; className?: string }) {
       <CardContent>
         <div className="flex flex-col">
           <div>
-            {format(date, 'eeee MMMM do, yyyy')} at{' '}
+            {format(date, 'eeee MMMM do, yyyy', { in: tz('UTC') })} at{' '}
             {format(date, 'h:mm a', { in: tz('UTC') })}
           </div>
           {event.rulesDocLink && (
@@ -150,7 +150,8 @@ function EventCard({ event, className }: { event: Event; className?: string }) {
           </Button>
         ) : null}
         <p className="text-center text-sm text-muted-foreground pt-2">
-          Registration Closes: {format(closeRegDate, 'eeee MMMM do, yyyy')}
+          Registration Closes:{' '}
+          {format(closeRegDate, 'eeee MMMM do, yyyy', { in: tz('UTC') })}
         </p>
       </CardFooter>
     </Card>
