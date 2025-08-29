@@ -49,7 +49,9 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import type { components } from '@/events/v1';
+import type { components } from '@/api/events-v1';
+
+
 
 const mockRegistrations: Registration[] = [
   {
@@ -400,7 +402,7 @@ function CreateEventForm() {
         registrationType: 'ByIndividual',
         price: {
           currency: values.priceInfo.currency,
-          amount: values.priceInfo.freeAgentPrice,
+          amount: values.priceInfo.freeAgentPrice * 100,
         },
       });
     }
@@ -410,7 +412,7 @@ function CreateEventForm() {
         registrationType: 'ByTeam',
         price: {
           currency: values.priceInfo.currency,
-          amount: values.priceInfo.teamPrice,
+          amount: values.priceInfo.teamPrice * 100,
         },
       });
     }
@@ -450,6 +452,7 @@ function CreateEventForm() {
             Create Event
           </CardTitle>
         </CardHeader>
+        
         <CardContent className="grid gap-6">
           <Form {...form}>
             <form

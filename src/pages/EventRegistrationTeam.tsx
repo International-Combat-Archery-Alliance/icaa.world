@@ -2,17 +2,8 @@ import { useGetEvent, useRegisterForEvent, type Event } from '@/hooks/useEvent';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import type { components } from '@/api/events-v1';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
 import {
   Form,
   FormControl,
@@ -24,7 +15,6 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useState } from 'react';
 import { EventDetailsCard } from '@/components/EventRegDetailsCard';
 import { Trash2 } from 'lucide-react';
 
@@ -41,8 +31,6 @@ export default function EventRegistrationTeam() {
 
 function TeamForm({ event }: { event: Event }) {
   const { mutate, isPending } = useRegisterForEvent();
-  const [showSuccessDialog, setShowSuccessDialog] = useState(false);
-  const navigate = useNavigate();
   const playerSchema = z.object({
     firstName: z.string().min(1, 'First name is required.'),
     lastName: z.string().min(1, 'Last name is required.'),
@@ -81,7 +69,6 @@ function TeamForm({ event }: { event: Event }) {
     name: 'players',
   });
 
-  const teamName = form.watch('teamName');
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     mutate(
       {
@@ -100,8 +87,17 @@ function TeamForm({ event }: { event: Event }) {
       },
       {
         onSuccess: () => {
-          setShowSuccessDialog(true);
+          // On successful registration, redirect to the external payment link
+          window.open(
+            'https://buy.stripe.com/dRm8wOgPAadxeFt5Ofco002',
+            '_blank',
+          );
+          // Reset the form on the original page after opening the payment link
           form.reset();
+        },
+        onError: (error) => {
+          console.error('Registration failed:', error);
+          alert(`Registration failed: ${error.message}`);
         },
       },
     );
@@ -164,64 +160,77 @@ function TeamForm({ event }: { event: Event }) {
               </div>
 
               <div>
-                <FormLabel>Player Roster ({fields.length})</FormLabel>
-                {fields.map((field, index) => (
-                  <div
-                    key={field.id}
-                    className="flex items-start gap-4 p-4 border rounded-lg"
-                  >
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 flex-grow">
-                      <FormField
-                        control={form.control}
-                        name={`players.${index}.firstName`}
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>
-                              {index === 0
-                                ? "Captain's First Name"
-                                : 'First Name'}
-                            </FormLabel>
-                            <FormControl>
-                              <Input {...field} className="bg-white" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name={`players.${index}.lastName`}
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>
-                              {index === 0
-                                ? "Captain's Last Name"
-                                : 'Last Name'}
-                            </FormLabel>
-                            <FormControl>
-                              <Input {...field} className="bg-white" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                    <Button
-                      type="button"
-                      variant="destructive"
-                      className="mt-8"
-                      size="icon"
-                      onClick={() => remove(index)}
-                      disabled={fields.length <= event.allowedTeamSizeRange.min}
+                <div className="mb-4">
+                  <FormLabel>Player Roster ({fields.length})</FormLabel>
+                  <p className="text-sm text-muted-foreground">
+                    This event requires a team of at least{' '}
+                    {event.allowedTeamSizeRange.min} and at most{' '}
+                    {event.allowedTeamSizeRange.max} players.
+                  </p>
+                </div>
+                <div className="space-y-4">
+                  {fields.map((field, index) => (
+                    <div
+                      key={field.id}
+                      className="flex items-start gap-4 p-4 border rounded-lg"
                     >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                ))}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 flex-grow">
+                        <FormField
+                          control={form.control}
+                          name={`players.${index}.firstName`}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>
+                                {index === 0
+                                  ? "Captain's First Name"
+                                  : 'First Name'}
+                              </FormLabel>
+                              <FormControl>
+                                <Input {...field} className="bg-white" />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name={`players.${index}.lastName`}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>
+                                {index === 0
+                                  ? "Captain's Last Name"
+                                  : 'Last Name'}
+                              </FormLabel>
+                              <FormControl>
+                                <Input {...field} className="bg-white" />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        className="mt-8"
+                        size="icon"
+                        onClick={() => remove(index)}
+                        disabled={
+                          fields.length <= event.allowedTeamSizeRange.min
+                        }
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
                 <Button
                   type="button"
                   variant="outline"
+                  className="mt-4"
                   onClick={() => append({ firstName: '', lastName: '' })}
+                  disabled={fields.length >= event.allowedTeamSizeRange.max}
                 >
                   Add Player
                 </Button>
@@ -237,21 +246,6 @@ function TeamForm({ event }: { event: Event }) {
           </Form>
         </CardContent>
       </Card>
-      <AlertDialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Registration Successful!</AlertDialogTitle>
-            <AlertDialogDescription>
-              The {teamName} have been successfully registered for {event.name}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogAction onClick={() => navigate(`/events`)}>
-              OK
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </>
   );
 }

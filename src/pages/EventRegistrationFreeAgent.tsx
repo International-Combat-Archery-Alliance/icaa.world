@@ -2,17 +2,8 @@ import { useGetEvent, useRegisterForEvent, type Event } from '@/hooks/useEvent';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import type { components } from '@/api/events-v1';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
 import {
   Form,
   FormControl,
@@ -31,7 +22,6 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useState } from 'react';
 import { EventDetailsCard } from '@/components/EventRegDetailsCard';
 
 export default function EventRegistrationFreeAgent() {
@@ -47,8 +37,6 @@ export default function EventRegistrationFreeAgent() {
 
 function FreeAgentForm({ event }: { event: Event }) {
   const { mutate, isPending } = useRegisterForEvent();
-  const [showSuccessDialog, setShowSuccessDialog] = useState(false);
-  const navigate = useNavigate();
 
   const experienceOptions = ['Novice', 'Intermediate', 'Advanced'] as const;
 
@@ -99,8 +87,15 @@ function FreeAgentForm({ event }: { event: Event }) {
       },
       {
         onSuccess: () => {
-          setShowSuccessDialog(true);
+          window.open(
+            'https://buy.stripe.com/dRm8wOgPA0CXgNB4Kbco003',
+            '_blank',
+          );
           form.reset();
+        },
+        onError: (error) => {
+          console.error('Registration failed:', error);
+          alert(`Registration failed: ${error.message}`);
         },
       },
     );
@@ -210,21 +205,6 @@ function FreeAgentForm({ event }: { event: Event }) {
           </Form>
         </CardContent>
       </Card>
-      <AlertDialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Registration Successful!</AlertDialogTitle>
-            <AlertDialogDescription>
-              You have been successfully registered for {event.name}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogAction onClick={() => navigate(`/events/${event.id}`)}>
-              OK
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </>
   );
 }
