@@ -9,8 +9,6 @@ import Events from './pages/Events';
 import NewsItem1 from './pages/news/NewsItem1';
 import NewsItem2 from './pages/news/NewsItem2';
 import NewsItem3 from './pages/news/NewsItem3';
-import Registration from './pages/Registration';
-import RegistrationsTablePage from './pages/RegistrationsTablePage';
 import Contact from './pages/Contact';
 import AdminPage from './pages/Admin';
 import { EventQueryClientProvider } from './context/eventQueryClientContext';
@@ -69,11 +67,6 @@ const App = () => {
                       <Route
                         path="/events/:eventId/register-team"
                         element={<EventRegistrationTeam />}
-                      />
-                      <Route path="/registration" element={<Registration />} />
-                      <Route
-                        path="/registrations-table"
-                        element={<RegistrationsTablePage />}
                       />
                       <Route path="/contact" element={<Contact />} />
                       <Route
