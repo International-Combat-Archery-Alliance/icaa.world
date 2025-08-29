@@ -2,17 +2,8 @@ import { useGetEvent, useRegisterForEvent, type Event } from '@/hooks/useEvent';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useParams, useNavigate } from 'react-router-dom';
-import type { components } from '@/events/v1';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
+import { useParams } from 'react-router-dom';
+import type { components } from '@/api/events-v1';
 import {
   Form,
   FormControl,
@@ -31,8 +22,8 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useState } from 'react';
 import { EventDetailsCard } from '@/components/EventRegDetailsCard';
+import { TurnstileFormField } from '@/components/TurnstileFormField';
 
 export default function EventRegistrationFreeAgent() {
   const { eventId } = useParams();
@@ -47,8 +38,6 @@ export default function EventRegistrationFreeAgent() {
 
 function FreeAgentForm({ event }: { event: Event }) {
   const { mutate, isPending } = useRegisterForEvent();
-  const [showSuccessDialog, setShowSuccessDialog] = useState(false);
-  const navigate = useNavigate();
 
   const experienceOptions = ['Novice', 'Intermediate', 'Advanced'] as const;
 
@@ -74,10 +63,16 @@ function FreeAgentForm({ event }: { event: Event }) {
     experience: z.enum(experienceOptions, {
       error: 'Experience is required.',
     }),
+    turnstileToken: z
+      .string()
+      .min(1, { message: "You must verify you're human" }),
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
+    defaultValues: {
+      turnstileToken: '',
+    },
   });
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
@@ -86,6 +81,9 @@ function FreeAgentForm({ event }: { event: Event }) {
         params: {
           path: {
             eventId: event.id,
+          },
+          header: {
+            'cf-turnstile-response': values.turnstileToken,
           },
         },
         // TODO: this has a type error since I'm not passing the readonly properties, I want to not have to cast this to fix that eventually
@@ -99,8 +97,15 @@ function FreeAgentForm({ event }: { event: Event }) {
       },
       {
         onSuccess: () => {
-          setShowSuccessDialog(true);
+          window.open(
+            'https://buy.stripe.com/dRm8wOgPA0CXgNB4Kbco003',
+            '_blank',
+          );
           form.reset();
+        },
+        onError: (error) => {
+          console.error('Registration failed:', error);
+          alert(`Registration failed: ${error.message}`);
         },
       },
     );
@@ -203,6 +208,7 @@ function FreeAgentForm({ event }: { event: Event }) {
                   )}
                 />
               </div>
+              <TurnstileFormField form={form} fieldName="turnstileToken" />
               <Button type="submit" disabled={isPending}>
                 {isPending ? 'Submitting...' : 'Submit'}
               </Button>
@@ -210,21 +216,6 @@ function FreeAgentForm({ event }: { event: Event }) {
           </Form>
         </CardContent>
       </Card>
-      <AlertDialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Registration Successful!</AlertDialogTitle>
-            <AlertDialogDescription>
-              You have been successfully registered for {event.name}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogAction onClick={() => navigate(`/events/${event.id}`)}>
-              OK
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </>
   );
 }
