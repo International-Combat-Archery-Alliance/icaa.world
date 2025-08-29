@@ -344,11 +344,9 @@ function CreateEventForm() {
       regCloseDate,
       regCloseTime,
     } = values;
-    console.log(values);
     const startTime = datetimeInputToISO(eventDate, eventStartTime);
     const endTime = datetimeInputToISO(eventDate, eventEndTime);
     const closeTime = datetimeInputToISO(regCloseDate, regCloseTime);
-    console.log(startTime, endTime, closeTime);
 
     const registrationOptions: components['schemas']['EventRegistrationOption'][] =
       [];
