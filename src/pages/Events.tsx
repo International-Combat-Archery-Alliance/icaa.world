@@ -102,7 +102,7 @@ function EventCard({ event, className }: { event: Event; className?: string }) {
       <CardHeader>
         {event.imageName ? (
           <img
-            src={`images/logos/${event.imageName}`}
+            src={`/images/logos/${event.imageName}`}
             alt="Boston International Championship Logo"
             className="event-logo justify-self-center"
           />

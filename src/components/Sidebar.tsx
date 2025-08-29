@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Login from '@/components/Login';
 import { useUserInfo } from '@/context/userInfoContext';
+import { useSwipeGesture } from '@/hooks/useSwipeGesture';
 
 export default function Sidebar() {
   const { userInfo, isSuccess } = useUserInfo();
@@ -11,6 +12,22 @@ export default function Sidebar() {
   const toggleSidebar = () => {
     setSidebarOpen(!isSidebarOpen);
   };
+
+  const openSidebar = () => {
+    setSidebarOpen(true);
+  };
+
+  const closeSidebar = () => {
+    setSidebarOpen(false);
+  };
+
+  // Add swipe gesture support
+  useSwipeGesture({
+    onSwipeRight: openSidebar,
+    onSwipeLeft: isSidebarOpen ? closeSidebar : undefined,
+    minSwipeDistance: 100,
+    maxStartDistance: 50,
+  });
 
   useEffect(() => {
     if (isSidebarOpen) {
@@ -75,7 +92,11 @@ export default function Sidebar() {
           <Login />
         </div>
       </nav>
-      <div className="content-overlay"></div>
+      {/* Swipe indicator - only visible on touch devices */}
+      <div className="fixed left-0 top-0 w-2.5 h-full bg-orange-500/10 z-40 pointer-events-none opacity-100 hover:opacity-0 transition-opacity duration-200" />
+
+      {/* Add click handler to overlay to close sidebar */}
+      <div className="content-overlay" onClick={closeSidebar}></div>
       <button
         className="menu-toggle"
         id="menu-toggle-btn"

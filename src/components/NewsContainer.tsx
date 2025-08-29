@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 import { Newspaper } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 const newsItems = [
   {
@@ -22,9 +23,9 @@ const newsItems = [
   },
 ];
 
-const NewsContainer = () => {
+const NewsContainer = ({ className }: { className?: string }) => {
   return (
-    <Card className="flex h-full flex-col">
+    <Card className={cn('flex h-full flex-col', className)}>
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-2xl">
           <Newspaper className="h-6 w-6 text-primary" />
