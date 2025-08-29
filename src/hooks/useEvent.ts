@@ -3,14 +3,19 @@ import type { paths, components } from '@/api/events-v1';
 
 export type Event = components['schemas']['Event'];
 
-export function useGetEvent(eventId: string) {
+export function useGetEvent(eventId: string | undefined) {
   const client = useEventQueryClient();
 
-  return client.useQuery('get', '/events/v1/{id}', {
-    params: {
-      path: { id: eventId },
+  return client.useQuery(
+    'get',
+    '/events/v1/{id}',
+    {
+      params: {
+        path: { id: eventId! },
+      },
     },
-  });
+    { enabled: !!eventId },
+  );
 }
 
 export function useGetEvents(limit: number = 10) {
