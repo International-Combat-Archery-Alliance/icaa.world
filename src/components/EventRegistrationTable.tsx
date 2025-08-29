@@ -32,6 +32,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { useGetRegistrations } from '@/hooks/useEvent';
 
 export interface Registration {
   id: string;
@@ -45,21 +46,19 @@ export interface Registration {
   roster?: string[];
 }
 
-interface EventRegistrationTableProps {
-  registrations: Registration[];
-}
-
-const EventRegistrationTable: React.FC<EventRegistrationTableProps> = ({
-  registrations,
+const EventRegistrationTable = ({
+  eventId,
+}: {
+  eventId: string | undefined;
 }) => {
   const [editingRowId, setEditingRowId] = React.useState<string | null>(null);
   const [editedRegistration, setEditedRegistration] =
     React.useState<Registration | null>(null);
 
-  const handleEditClick = (registration: Registration) => {
+  /* const handleEditClick = (registration: Registration) => {
     setEditingRowId(registration.id);
     setEditedRegistration({ ...registration });
-  };
+  }; */
 
   const handleCancelClick = () => {
     setEditingRowId(null);
@@ -91,6 +90,10 @@ const EventRegistrationTable: React.FC<EventRegistrationTableProps> = ({
     setEditedRegistration(null);
   };
 
+  const { data } = useGetRegistrations(eventId);
+  // TODO: need to deal with pagination
+  const registrations = data?.pages[0].data;
+
   return (
     <Table>
       <TableHeader>
@@ -101,16 +104,10 @@ const EventRegistrationTable: React.FC<EventRegistrationTableProps> = ({
           <TableHead>Email</TableHead>
           <TableHead>Paid</TableHead>
           <TableHead>Experience / Roster</TableHead>
-          <TableHead>
-            <span className="sr-only">Edit</span>
-          </TableHead>
-          <TableHead>
-            <span className="sr-only">Delete</span>
-          </TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
-        {registrations.map((registration) => {
+        {registrations?.map((registration) => {
           const isEditing = editingRowId === registration.id;
           return (
             <TableRow key={registration.id}>
@@ -215,17 +212,29 @@ const EventRegistrationTable: React.FC<EventRegistrationTableProps> = ({
               ) : (
                 <>
                   {/* View Row */}
-                  <TableCell>{registration.registrationType}</TableCell>
-                  <TableCell>{registration.name}</TableCell>
+                  <TableCell>
+                    {registration.registrationType === 'ByIndividual'
+                      ? 'Free Agent'
+                      : 'Team'}
+                  </TableCell>
+                  <TableCell>
+                    {registration.registrationType === 'ByIndividual'
+                      ? `${registration.playerInfo.firstName} ${registration.playerInfo.lastName}`
+                      : registration.teamName}
+                  </TableCell>
                   <TableCell>{registration.homeCity}</TableCell>
-                  <TableCell>{registration.email}</TableCell>
+                  <TableCell>
+                    {registration.registrationType === 'ByIndividual'
+                      ? registration.email
+                      : registration.captainEmail}
+                  </TableCell>
                   <TableCell>{registration.paid ? 'Paid' : 'Unpaid'}</TableCell>
                   <TableCell>
-                    {registration.registrationType === 'Free Agent' ? (
+                    {registration.registrationType === 'ByIndividual' ? (
                       <span>{registration.experience ?? 'N/A'}</span>
-                    ) : registration.registrationType === 'Team' &&
-                      registration.roster &&
-                      registration.roster.length > 0 ? (
+                    ) : registration.registrationType === 'ByTeam' &&
+                      registration.players &&
+                      registration.players.length > 0 ? (
                       <Popover>
                         <PopoverTrigger asChild>
                           <Button variant="outline">View Roster</Button>
@@ -233,12 +242,12 @@ const EventRegistrationTable: React.FC<EventRegistrationTableProps> = ({
                         <PopoverContent className="w-auto p-4">
                           <div className="grid gap-2">
                             <p className="text-sm font-bold text-muted-foreground">
-                              {registration.name} Roster
+                              {registration.teamName} Roster
                             </p>
                             <ul className="grid gap-1 text-sm list-inside">
-                              {registration.roster.map((player, index) => (
+                              {registration.players.map((player, index) => (
                                 <li key={`${registration.id}-player-${index}`}>
-                                  {player}
+                                  {player.firstName} {player.lastName}
                                 </li>
                               ))}
                             </ul>
@@ -250,11 +259,7 @@ const EventRegistrationTable: React.FC<EventRegistrationTableProps> = ({
                     )}
                   </TableCell>
                   <TableCell>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleEditClick(registration)}
-                    >
+                    <Button variant="outline" size="sm">
                       Edit
                     </Button>
                   </TableCell>
