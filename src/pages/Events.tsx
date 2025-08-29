@@ -8,7 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { format, parseISO } from 'date-fns';
+import { format, parseISO, isAfter } from 'date-fns';
 import { tz } from '@date-fns/tz';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -88,14 +88,6 @@ function EventContent({
 
 function EventCard({ event, className }: { event: Event; className?: string }) {
   const date = parseISO(event.startTime);
-  const closeRegDate = parseISO(event.registrationCloseTime);
-
-  const byIndividualOpt = event.registrationOptions.find(
-    (e) => e.registrationType === 'ByIndividual',
-  );
-  const byTeamOpt = event.registrationOptions.find(
-    (e) => e.registrationType === 'ByTeam',
-  );
 
   return (
     <Card className={className}>
@@ -135,26 +127,51 @@ function EventCard({ event, className }: { event: Event; className?: string }) {
         </div>
       </CardContent>
       <CardFooter className="flex flex-col items-stretch gap-2">
-        {byIndividualOpt !== undefined ? (
-          <Button asChild>
-            <Link to={`/events/${event.id}/register-free-agent`}>
-              Free Agent Sign Up ({formatMoney(byIndividualOpt.price)})
-            </Link>
-          </Button>
-        ) : null}
-        {byTeamOpt !== undefined ? (
-          <Button asChild>
-            <Link to={`/events/${event.id}/register-team`}>
-              Team Sign Up ({formatMoney(byTeamOpt.price)})
-            </Link>
-          </Button>
-        ) : null}
-        <p className="text-center text-sm text-muted-foreground pt-2">
-          Registration Closes:{' '}
-          {format(closeRegDate, 'eeee MMMM do, yyyy', { in: tz('UTC') })}
-        </p>
+        <SignUpSection event={event} />
       </CardFooter>
     </Card>
+  );
+}
+
+function SignUpSection({ event }: { event: Event }) {
+  const byIndividualOpt = event.registrationOptions.find(
+    (e) => e.registrationType === 'ByIndividual',
+  );
+  const byTeamOpt = event.registrationOptions.find(
+    (e) => e.registrationType === 'ByTeam',
+  );
+
+  if (isAfter(new Date(), parseISO(event.registrationCloseTime))) {
+    return (
+      <Button variant="secondary" disabled>
+        Sign ups are closed
+      </Button>
+    );
+  }
+
+  return (
+    <>
+      {byIndividualOpt !== undefined ? (
+        <Button asChild>
+          <Link to={`/events/${event.id}/register-free-agent`}>
+            Free Agent Sign Up ({formatMoney(byIndividualOpt.price)})
+          </Link>
+        </Button>
+      ) : null}
+      {byTeamOpt !== undefined ? (
+        <Button asChild>
+          <Link to={`/events/${event.id}/register-team`}>
+            Team Sign Up ({formatMoney(byTeamOpt.price)})
+          </Link>
+        </Button>
+      ) : null}
+      <p className="text-center text-sm text-muted-foreground pt-2">
+        Registration Closes:{' '}
+        {format(parseISO(event.registrationCloseTime), 'eeee MMMM do, yyyy', {
+          in: tz('UTC'),
+        })}
+      </p>
+    </>
   );
 }
 
