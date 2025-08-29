@@ -47,11 +47,11 @@ export default function Sidebar() {
             </Link>
           </li>
           {isSuccess && userInfo?.isAdmin ? (
-          <li>
-            <Link to="/our-communities" onClick={() => setSidebarOpen(false)}>
-              The Alliance
-            </Link>
-          </li>
+            <li>
+              <Link to="/our-communities" onClick={() => setSidebarOpen(false)}>
+                The Alliance
+              </Link>
+            </li>
           ) : null}
           <li>
             <Link to="/events" onClick={() => setSidebarOpen(false)}>

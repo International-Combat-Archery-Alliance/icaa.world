@@ -47,10 +47,7 @@ const UpcomingEventsContainer = () => {
           <p className="text-center text-red-600 p-4">Error loading events.</p>
         ) : upcomingEvents && upcomingEvents.length > 0 ? (
           upcomingEvents.map((event) => (
-            <div
-              key={event.id}
-              className="grid gap-1 rounded-lg p-3"
-            >
+            <div key={event.id} className="grid gap-1 rounded-lg p-3">
               <p className="text-sm text-muted-foreground">
                 {format(new Date(event.startTime), 'MMMM d, yyyy')}
               </p>
