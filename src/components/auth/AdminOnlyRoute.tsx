@@ -10,11 +10,11 @@ export default function AdminOnlyRoute({
   children,
   redirectTo = '/',
 }: AdminOnlyRouteProps) {
-  const { userInfo } = useUserInfo();
+  const { userInfo, isSuccess } = useUserInfo();
 
   return (
     <ProtectedRoute
-      isAuthenticated={userInfo?.isAdmin ?? false}
+      isAuthenticated={isSuccess && (userInfo?.isAdmin ?? false)}
       redirectTo={redirectTo}
     >
       <>{children}</>
