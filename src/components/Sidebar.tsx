@@ -92,8 +92,6 @@ export default function Sidebar() {
           <Login />
         </div>
       </nav>
-      {/* Swipe indicator - only visible on touch devices */}
-      <div className="fixed left-0 top-0 w-2.5 h-full bg-orange-500/10 z-40 pointer-events-none opacity-100 hover:opacity-0 transition-opacity duration-200" />
 
       {/* Add click handler to overlay to close sidebar */}
       <div className="content-overlay" onClick={closeSidebar}></div>
