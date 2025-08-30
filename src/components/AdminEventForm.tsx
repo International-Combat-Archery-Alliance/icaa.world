@@ -16,7 +16,14 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import type { MutateOptions } from '@tanstack/react-query';
 import { format, formatISO, parse, parseISO } from 'date-fns';
 import { tz } from '@date-fns/tz';
-import { Money } from 'ts-money';
+import { Currencies, Money } from 'ts-money';
+import {
+  Select,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+} from './ui/select';
 
 export enum AdminEventMode {
   CREATE,
@@ -467,7 +474,22 @@ export function AdminEventForm({
               <FormItem>
                 <FormLabel>Currency</FormLabel>
                 <FormControl>
-                  <Input {...field} className="bg-white" />
+                  <Select
+                    onValueChange={field.onChange}
+                    value={field.value}
+                    defaultValue="USD"
+                  >
+                    <SelectTrigger className="w-32 bg-white">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Object.keys(Currencies).map((c) => (
+                        <SelectItem key={c} value={c}>
+                          {c}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </FormControl>
                 <FormMessage />
               </FormItem>
