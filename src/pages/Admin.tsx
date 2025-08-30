@@ -3,16 +3,18 @@ import { useTitle } from 'react-use';
 import {
   AlertDialog,
   AlertDialogAction,
-  AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useCreateEvent, useGetEvent, useGetEvents } from '@/hooks/useEvent';
+import {
+  useGetEvent,
+  useGetEvents,
+  useUpdateEventDataAfterMutate,
+} from '@/hooks/useEvent';
 import {
   Card,
   CardContent,
@@ -20,13 +22,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
-import { DatePicker } from '@/components/DatePicker';
-import { Button, buttonVariants } from '@/components/ui/button';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
 
 import {
   Select,
@@ -37,21 +32,9 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
-import { useForm } from 'react-hook-form';
-
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
-import type { components } from '@/api/events-v1';
 import EventRegistrationTable from '@/components/EventRegistrationTable';
-import { formatISO, parse } from 'date-fns';
-import { tz } from '@date-fns/tz';
 import { Skeleton } from '@/components/ui/skeleton';
+import { AdminEventForm, AdminEventMode } from '@/components/AdminEventForm';
 
 export function AdminPage() {
   useTitle('Admin Panel - ICAA');
@@ -82,180 +65,7 @@ export function AdminPage() {
           <CreateEventForm />
         </TabsContent>
         <TabsContent value="edit-event">
-          <Card>
-            <CardHeader>
-              <CardTitle>Edit Event</CardTitle>
-              <CardDescription> Select the event to edit</CardDescription>
-            </CardHeader>
-            <CardContent className="grid gap-6">
-              <div className="flex gap-3">
-                <SelectEvent setEventId={setEventId} />
-                <Button id="load-event_info" className="max-w-24" type="submit">
-                  Load Event
-                </Button>
-              </div>
-              <div className="grid gap-3">
-                <Label htmlFor="event-date">Event Date</Label>
-                <DatePicker></DatePicker>
-              </div>
-
-              <div className="grid gap-3">
-                <Label htmlFor="event-start">Event Start/Stop Time</Label>
-                <div className="flex gap-3">
-                  <Input
-                    id="event-start"
-                    placeholder={'Start Time'}
-                    type="text"
-                    className="bg-white max-w-50"
-                  />
-                  <Input
-                    id="event-stop"
-                    placeholder={'Stop Time'}
-                    type="text"
-                    className="bg-white max-w-50"
-                  />
-                </div>
-              </div>
-
-              <div className="grid gap-3">
-                <Label htmlFor="event-address">Event Address</Label>
-                <div className="flex gap-3">
-                  <Input
-                    id="event-address"
-                    placeholder={'Street Address'}
-                    type="text"
-                    className="bg-white max-w-sm"
-                  />
-                  <Input
-                    id="event-city"
-                    placeholder={'City'}
-                    type="text"
-                    className="bg-white max-w-45"
-                  />
-                </div>
-                <div className="flex gap-3">
-                  <Input
-                    id="event-state"
-                    placeholder={'State/Province'}
-                    type="text"
-                    className="bg-white max-w-47"
-                  />
-                  <Input
-                    id="event-country"
-                    placeholder={'Country'}
-                    type="text"
-                    className="bg-white max-w-46"
-                  />
-                  <Input
-                    id="event-zip"
-                    placeholder={'Zip Code'}
-                    type="text"
-                    className="bg-white max-w-45"
-                  />
-                </div>
-              </div>
-              <div className="grid gap-3">
-                <Label htmlFor="free-agent-price">Event Prices</Label>
-                <div className="flex gap-3">
-                  <Input
-                    id="free-agent-price"
-                    placeholder={'Free Agent Price'}
-                    type="text"
-                    className="bg-white max-w-40"
-                  />
-                  <Input
-                    id="team-price"
-                    placeholder={'Team Price'}
-                    type="text"
-                    className="bg-white max-w-40"
-                  />
-                </div>
-              </div>
-              <div className="grid gap-3">
-                <Label htmlFor="team-min">Team Sizes</Label>
-                <div className="flex gap-3">
-                  <Input
-                    id="team-min"
-                    placeholder={'Min Team Size'}
-                    type="text"
-                    className="bg-white max-w-30"
-                  />
-                  <Input
-                    id="team-max"
-                    placeholder={'Max Team Size'}
-                    type="text"
-                    className="bg-white max-w-30"
-                  />
-                </div>
-              </div>
-              <div className="grid gap-3">
-                <Label htmlFor="event-rules">Event Rules</Label>
-                <Input
-                  id="event-rules"
-                  placeholder={'Document Link'}
-                  type="text"
-                  className="bg-white max-w-xl"
-                />
-              </div>
-              <div className="grid gap-3">
-                <Label htmlFor="event-image">Event Logo</Label>
-                <Input
-                  id="event-image"
-                  type="file"
-                  className="bg-white max-w-xl"
-                />
-              </div>
-              <div className="flex gap-6">
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button id="edit-event" type="button">
-                      Edit Event
-                    </Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        Are you sure you would like to edit this event?
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction>Edit Event</AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button
-                      id="delete-event"
-                      variant={'destructive'}
-                      type="button"
-                    >
-                      Delete Event
-                    </Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        Are you sure you would like to delete this event? This
-                        action cannot be undone.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction
-                        className={buttonVariants({ variant: 'destructive' })}
-                      >
-                        Delete Event
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-              </div>
-            </CardContent>
-          </Card>
+          <UpdateEventForm />
         </TabsContent>
         <TabsContent value="view-registration">
           <Card>
@@ -282,125 +92,8 @@ export function AdminPage() {
 }
 
 function CreateEventForm() {
-  const { mutate, isPending } = useCreateEvent();
   const [successDialogEventName, setSuccessDialogEventName] = useState('');
 
-  const formSchema = z.object({
-    teamSizes: z.object({
-      max: z.number().int().min(1, 'Max team size must be at least 1.'),
-      min: z.number().int().min(1, 'Min team size must be at least 1.'),
-    }),
-    locationInfo: z.object({
-      address: z.object({
-        city: z.string().min(1, 'Event city is required.'),
-        country: z.string().min(1, 'Event country is required.'),
-        postalCode: z.string().min(1, 'Event zip is required.'),
-        state: z.string().min(1, 'Event state is required.'),
-        street: z.string().min(1, 'Event Street is required.'),
-      }),
-      name: z.string().min(1, 'Event name is required.'),
-    }),
-    eventName: z.string().min(1, 'Event name is required.'),
-    regCloseDate: z.string().min(1, 'Registration close date is required.'),
-    regCloseTime: z.string().regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, {
-      message: 'Please use HH:MM format',
-    }),
-    priceInfo: z
-      .object({
-        freeAgentPrice: z
-          .number()
-          .min(0, 'Price cannot be negative.')
-          .optional(),
-        teamPrice: z.number().min(0, 'Price cannot be negative.').optional(),
-        currency: z.string().min(1, 'Currency is required.'),
-      })
-      .refine(
-        (data) =>
-          data.freeAgentPrice !== undefined || data.teamPrice !== undefined,
-        {
-          message: 'At least one price (Free Agent or Team) is required.',
-          path: ['freeAgentPrice'], // Display error on the first price field
-        },
-      ),
-
-    eventDate: z.string().min(1, 'Event date is required.'),
-    eventStartTime: z.string().regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, {
-      message: 'Please use HH:MM format',
-    }),
-    eventEndTime: z.string().regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, {
-      message: 'Please use HH:MM format',
-    }),
-
-    eventRules: z.string().optional(),
-    eventLogo: z.string().optional(),
-  });
-
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-  });
-
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    const {
-      eventDate,
-      eventStartTime,
-      eventEndTime,
-      regCloseDate,
-      regCloseTime,
-    } = values;
-    const startTime = datetimeInputToISO(eventDate, eventStartTime);
-    const endTime = datetimeInputToISO(eventDate, eventEndTime);
-    const closeTime = datetimeInputToISO(regCloseDate, regCloseTime);
-
-    const registrationOptions: components['schemas']['EventRegistrationOption'][] =
-      [];
-
-    if (values.priceInfo.freeAgentPrice !== undefined) {
-      registrationOptions.push({
-        registrationType: 'ByIndividual',
-        price: {
-          currency: values.priceInfo.currency,
-          amount: values.priceInfo.freeAgentPrice * 100,
-        },
-      });
-    }
-
-    if (values.priceInfo.teamPrice !== undefined) {
-      registrationOptions.push({
-        registrationType: 'ByTeam',
-        price: {
-          currency: values.priceInfo.currency,
-          amount: values.priceInfo.teamPrice * 100,
-        },
-      });
-    }
-
-    mutate(
-      {
-        credentials: 'include',
-        body: {
-          allowedTeamSizeRange: values.teamSizes,
-          endTime: endTime,
-          imageName: values.eventLogo,
-          location: values.locationInfo,
-          name: values.eventName,
-          registrationCloseTime: closeTime,
-          registrationOptions: registrationOptions,
-          rulesDocLink: values.eventRules,
-          startTime: startTime,
-        } as components['schemas']['Event'],
-      },
-      {
-        onSuccess: () => {
-          setSuccessDialogEventName(values.eventName);
-          form.reset();
-        },
-        onError: (error) => {
-          console.error('Event creation failed:', error);
-          alert(`Error: ${error.message}`);
-        },
-      },
-    );
-  };
   return (
     <>
       <Card className="w-full max-w-screen-lg mx-auto p-15">
@@ -411,336 +104,10 @@ function CreateEventForm() {
         </CardHeader>
 
         <CardContent className="grid gap-6">
-          <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(onSubmit)}
-              className="flex flex-col gap-8 w-full"
-            >
-              <FormField
-                control={form.control}
-                name="eventName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Event Name</FormLabel>
-                    <FormControl>
-                      <Input {...field} className="bg-white" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="eventDate"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Event Date</FormLabel>
-                    <FormControl>
-                      <Input {...field} type="date" className="bg-white" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <div className="md:flex md:gap-4">
-                <FormField
-                  control={form.control}
-                  name="regCloseDate"
-                  render={({ field }) => (
-                    <FormItem className="flex-grow">
-                      <FormLabel>Registration Close Date</FormLabel>
-                      <FormControl>
-                        <Input {...field} type="date" className="bg-white" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="regCloseTime"
-                  render={({ field }) => (
-                    <FormItem className="flex-grow">
-                      <FormLabel>Registration Close Time</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          type="text"
-                          placeholder="HH:MM"
-                          className="bg-white"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-              <div className="md:flex md:gap-4">
-                <FormField
-                  control={form.control}
-                  name="eventStartTime"
-                  render={({ field }) => (
-                    <FormItem className="flex-grow">
-                      <FormLabel>Event Start Time</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          type="text"
-                          placeholder="HH:MM"
-                          className="bg-white"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="eventEndTime"
-                  render={({ field }) => (
-                    <FormItem className="flex-grow">
-                      <FormLabel>Event End Time</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          type="text"
-                          placeholder="HH:MM"
-                          className="bg-white"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-              <div className="grid gap-3">
-                <FormField
-                  control={form.control}
-                  name="locationInfo.name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Location Name (Venue)</FormLabel>
-                      <FormControl>
-                        <Input {...field} type="text" className="bg-white" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <div className="flex gap-3">
-                  <FormField
-                    control={form.control}
-                    name="locationInfo.address.street"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Street Address</FormLabel>
-                        <FormControl>
-                          <Input {...field} type="text" className="bg-white" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="locationInfo.address.city"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>City</FormLabel>
-                        <FormControl>
-                          <Input {...field} type="text" className="bg-white" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-                <div className="flex gap-3">
-                  <FormField
-                    control={form.control}
-                    name="locationInfo.address.state"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>State/Prov</FormLabel>
-                        <FormControl>
-                          <Input {...field} type="text" className="bg-white" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="locationInfo.address.country"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Country</FormLabel>
-                        <FormControl>
-                          <Input {...field} type="text" className="bg-white" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="locationInfo.address.postalCode"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Zip Code</FormLabel>
-                        <FormControl>
-                          <Input {...field} className="bg-white" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-              </div>
-              <div className="flex gap-3">
-                <FormField
-                  control={form.control}
-                  name="priceInfo.freeAgentPrice"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Free Agent Price</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          type="number"
-                          className="bg-white"
-                          onChange={(e) =>
-                            field.onChange(
-                              e.target.value === ''
-                                ? undefined
-                                : +e.target.value,
-                            )
-                          }
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="priceInfo.teamPrice"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Team Price</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          type="number"
-                          className="bg-white"
-                          onChange={(e) =>
-                            field.onChange(
-                              e.target.value === ''
-                                ? undefined
-                                : +e.target.value,
-                            )
-                          }
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="priceInfo.currency"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Currency</FormLabel>
-                      <FormControl>
-                        <Input {...field} className="bg-white" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-              <div className="flex gap-3">
-                <FormField
-                  control={form.control}
-                  name="teamSizes.min"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Min Team Size</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          type="number"
-                          className="bg-white"
-                          onChange={(e) =>
-                            field.onChange(
-                              e.target.value === ''
-                                ? undefined
-                                : +e.target.value,
-                            )
-                          }
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="teamSizes.max"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Max Team Size</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          type="number"
-                          className="bg-white"
-                          onChange={(e) =>
-                            field.onChange(
-                              e.target.value === ''
-                                ? undefined
-                                : +e.target.value,
-                            )
-                          }
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-              <FormField
-                control={form.control}
-                name="eventRules"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Event Rules (link)</FormLabel>
-                    <FormControl>
-                      <Input {...field} className="bg-white" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="eventLogo"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Event Logo Name</FormLabel>
-                    <FormControl>
-                      <Input {...field} className="bg-white" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <Button type="submit" disabled={isPending}>
-                {isPending ? 'Submitting...' : 'Submit'}
-              </Button>
-            </form>
-          </Form>
+          <AdminEventForm
+            onSuccess={(v) => setSuccessDialogEventName(v.name)}
+            mode={AdminEventMode.CREATE}
+          />
         </CardContent>
       </Card>
       <AlertDialog
@@ -751,7 +118,7 @@ function CreateEventForm() {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Registration Successful!</AlertDialogTitle>
+            <AlertDialogTitle>Event Creation Successful!</AlertDialogTitle>
             <AlertDialogDescription>
               {successDialogEventName} has been created
             </AlertDialogDescription>
@@ -762,6 +129,53 @@ function CreateEventForm() {
         </AlertDialogContent>
       </AlertDialog>
     </>
+  );
+}
+
+function UpdateEventForm() {
+  const [eventId, setEventId] = useState<string | undefined>(undefined);
+  const [successDialogEventName, setSuccessDialogEventName] = useState('');
+
+  const { data } = useGetEvent(eventId);
+
+  const updateEventCache = useUpdateEventDataAfterMutate();
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Edit Event</CardTitle>
+        <CardDescription> Select the event to edit</CardDescription>
+      </CardHeader>
+      <CardContent className="grid gap-6">
+        <SelectEvent setEventId={setEventId} />
+        <AdminEventForm
+          mode={AdminEventMode.EDIT}
+          onSuccess={(v) => {
+            updateEventCache(v);
+            setSuccessDialogEventName(v.name);
+          }}
+          editData={data?.event}
+        />
+        <AlertDialog
+          open={successDialogEventName !== ''}
+          onOpenChange={(open) => {
+            if (!open) setSuccessDialogEventName('');
+          }}
+        >
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Event Update Successful!</AlertDialogTitle>
+              <AlertDialogDescription>
+                {successDialogEventName} has been updated
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogAction>OK</AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </CardContent>
+    </Card>
   );
 }
 
@@ -839,13 +253,6 @@ function SignUpInfoCards({ eventId }: { eventId: string | undefined }) {
       </Card>
     </div>
   );
-}
-
-function datetimeInputToISO(date: string, time: string): string {
-  const parsed = parse(`${date} ${time}`, 'yyyy-MM-dd HH:mm', new Date(), {
-    in: tz('UTC'),
-  });
-  return formatISO(parsed);
 }
 
 export default AdminPage;
