@@ -85,7 +85,11 @@ export interface paths {
         delete?: never;
         options?: never;
         head?: never;
-        patch?: never;
+        /**
+         * Update an event
+         * @description Update an event by id
+         */
+        patch: operations["PatchEventsV1Id"];
         trace?: never;
     };
 }
@@ -530,6 +534,63 @@ export interface operations {
         requestBody?: never;
         responses: {
             /** @description The event */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        event: components["schemas"]["Event"];
+                    };
+                };
+            };
+            /** @description Bad request. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Event not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Unknown server error. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    PatchEventsV1Id: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description ID of the event */
+                id: string;
+            };
+            cookie?: never;
+        };
+        /** @description Event to be updated */
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Event"];
+            };
+        };
+        responses: {
+            /** @description The updated event */
             200: {
                 headers: {
                     [name: string]: unknown;

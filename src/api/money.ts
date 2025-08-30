@@ -1,9 +1,8 @@
-import Dinero, { type Currency } from 'dinero.js';
 import type { components } from './events-v1';
+import { Money } from 'ts-money';
 
 export function formatMoney(money: components['schemas']['Money']): string {
-  return Dinero({
-    amount: money.amount,
-    currency: money.currency as Currency,
-  }).toFormat();
+  const m = new Money(money.amount, money.currency);
+  // TODO: this assumes currency symbol is alwasy first which doesn't work for all currencies
+  return `${m.getCurrencyInfo().symbol}${m.toString()}`;
 }
