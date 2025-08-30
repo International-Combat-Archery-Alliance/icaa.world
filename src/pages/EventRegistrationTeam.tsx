@@ -1,3 +1,4 @@
+import { useTitle } from 'react-use';
 import { useGetEvent, useRegisterForEvent, type Event } from '@/hooks/useEvent';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { z } from 'zod';
@@ -20,6 +21,8 @@ import { Trash2 } from 'lucide-react';
 import { TurnstileFormField } from '@/components/TurnstileFormField';
 
 export default function EventRegistrationTeam() {
+  useTitle('Team Registration - ICAA');
+
   const { eventId } = useParams();
   const { data } = useGetEvent(eventId!);
 

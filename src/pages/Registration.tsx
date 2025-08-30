@@ -1,7 +1,10 @@
+import { useTitle } from 'react-use';
 import { Link } from 'react-router-dom';
 import RegistrationForm from '../components/RegistrationForm';
 
 const Registration = () => {
+  useTitle('Registration - ICAA');
+
   return (
     <section
       id="registration-section"

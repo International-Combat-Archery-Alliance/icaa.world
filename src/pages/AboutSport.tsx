@@ -1,3 +1,4 @@
+import { useTitle } from 'react-use';
 import {
   Accordion,
   AccordionContent,
@@ -9,6 +10,8 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 
 export function AboutSport() {
+  useTitle('About Combat Archery - ICAA');
+
   return (
     <section id="about-sport" className="content-section">
       <Accordion
