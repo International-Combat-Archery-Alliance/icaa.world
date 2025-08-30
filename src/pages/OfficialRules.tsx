@@ -13,7 +13,9 @@ const OfficialRules = () => {
       <div className="content-wrapper">
         <iframe
           src="https://docs.google.com/document/d/e/2PACX-1vTVdQN1TKuKVl7-kmhAAf8ZbHB90Sn3jhUUJovUBioi-H6lcqvkhKiMahgwYipgv0hBEl93ixTMQtFt/pub?embedded=true"
-          style={{ width: '100%', height: '750px', border: 0 }}
+          width="100%"
+          height="750"
+          className="bg-white border-0"
         >
           <Skeleton className="h-[285px] w-full md:max-w-[375px] rounded-xl" />
         </iframe>

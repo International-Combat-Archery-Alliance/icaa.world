@@ -36,7 +36,9 @@ const NewsItem2 = () => {
 
           <iframe
             src="https://docs.google.com/document/d/e/2PACX-1vTVdQN1TKuKVl7-kmhAAf8ZbHB90Sn3jhUUJovUBioi-H6lcqvkhKiMahgwYipgv0hBEl93ixTMQtFt/pub?embedded=true"
-            className="w-full h-[750px] border-0"
+            height="750"
+            width="100%"
+            className="bg-white border-0"
           >
             <Skeleton className="h-full w-full rounded-xl" />
           </iframe>
