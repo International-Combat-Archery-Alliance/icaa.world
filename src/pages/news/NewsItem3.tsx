@@ -1,6 +1,9 @@
+import { useTitle } from 'react-use';
 import { Link } from 'react-router-dom';
 
 const NewsItem3 = () => {
+  useTitle('Tournament Results - ICAA News');
+
   return (
     <section id="news-item-3" className="content-section news-page">
       <Link to="/" className="back-btn">

@@ -1,8 +1,11 @@
+import { useTitle } from 'react-use';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const NewsItem2 = () => {
+  useTitle('Official Tournament Rules - ICAA News');
+
   return (
     <section id="news-item-2" className="content-section news-page">
       <Link to="/" className="back-btn">
@@ -32,7 +35,7 @@ const NewsItem2 = () => {
           </p>
 
           <iframe
-            src="https://docs.google.com/document/d/1UQARbdHDrR-kp2McV8XVorGUNOv5apeYAGWnvZlbQaY/preview"
+            src="https://docs.google.com/document/d/e/2PACX-1vTVdQN1TKuKVl7-kmhAAf8ZbHB90Sn3jhUUJovUBioi-H6lcqvkhKiMahgwYipgv0hBEl93ixTMQtFt/pub?embedded=true"
             className="w-full h-[750px] border-0"
           >
             <Skeleton className="h-full w-full rounded-xl" />

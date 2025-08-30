@@ -1,6 +1,9 @@
+import { useTitle } from 'react-use';
 import ContactForm from '../components/ContactForm';
 
 const Contact = () => {
+  useTitle('Contact Us - ICAA');
+
   return (
     <section id="contact" className="content-section">
       <div className="content-wrapper">

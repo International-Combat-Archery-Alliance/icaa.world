@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTitle } from 'react-use';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -53,6 +54,8 @@ import { tz } from '@date-fns/tz';
 import { Skeleton } from '@/components/ui/skeleton';
 
 export function AdminPage() {
+  useTitle('Admin Panel - ICAA');
+
   const [eventId, setEventId] = useState<string | undefined>(undefined);
 
   return (
