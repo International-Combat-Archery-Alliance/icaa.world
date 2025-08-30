@@ -1,7 +1,10 @@
+import { useTitle } from 'react-use';
 import { Link } from 'react-router-dom';
 import RegistrationsTable from '../components/RegistrationsTable';
 
 const RegistrationsTablePage = () => {
+  useTitle('Registrations Table - ICAA');
+
   return (
     <section
       id="registrations-table-section"

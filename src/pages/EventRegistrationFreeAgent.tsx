@@ -1,3 +1,4 @@
+import { useTitle } from 'react-use';
 import { useGetEvent, useRegisterForEvent, type Event } from '@/hooks/useEvent';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -26,6 +27,8 @@ import { EventDetailsCard } from '@/components/EventRegDetailsCard';
 import { TurnstileFormField } from '@/components/TurnstileFormField';
 
 export default function EventRegistrationFreeAgent() {
+  useTitle('Free Agent Registration - ICAA');
+
   const { eventId } = useParams();
   const { data } = useGetEvent(eventId!);
 

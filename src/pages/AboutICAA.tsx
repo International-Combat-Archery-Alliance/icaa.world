@@ -1,6 +1,9 @@
+import { useTitle } from 'react-use';
 import BoardMember from '../components/BoardMember';
 
 const Leadership = () => {
+  useTitle('About ICAA - International Combat Archery Alliance');
+
   return (
     <section id="leadership-section" className="content-section">
       <div className="content-wrapper">

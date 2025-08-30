@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTitle } from 'react-use';
 import { useGetEvents, type Event } from '../hooks/useEvent';
 import {
   Card,
@@ -16,6 +17,8 @@ import { Link } from 'react-router-dom';
 import { formatMoney } from '@/api/money';
 
 export default function Events() {
+  useTitle('Events - ICAA');
+
   const { data, isPending, isFetching, error, refetch } = useGetEvents();
 
   // TODO: eventually support paginating through multiple pages

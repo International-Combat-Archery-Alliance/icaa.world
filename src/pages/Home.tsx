@@ -1,10 +1,13 @@
 import { useState, useEffect } from 'react';
+import { useTitle } from 'react-use';
 //import { Link } from 'react-router-dom';
 import NewsContainer from '@/components/NewsContainer';
 //import { Button } from '@/components/ui/button';
 import UpcomingEventsContainer from '@/components/UpcomingEventsContainer';
 
 const Home = () => {
+  useTitle('ICAA - International Combat Archery Alliance');
+
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const totalImages = 65;
   const images = [];
