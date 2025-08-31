@@ -9,7 +9,10 @@
     "lint": "eslint . --report-unused-disable-directives --max-warnings 0",
     "lint:fix": "bun lint --fix",
     "format": "prettier --write .",
-    "prepare": "husky"
+    "prepare": "husky",
+    "run-login-service": "cd ../login && make local",
+    "run-event-service": "cd ../event-registration && make local",
+    "run-all-backend": "concurrently \"bun run-login-service\" \"bun run-event-service\""
   },
   "devDependencies": {
     "@eslint/js": "^9.33.0",
@@ -18,6 +21,7 @@
     "@types/leaflet": "^1.9.20",
     "@typescript-eslint/eslint-plugin": "^8.40.0",
     "@typescript-eslint/parser": "^8.40.0",
+    "concurrently": "^9.2.1",
     "eslint": "^9.33.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-jsx-a11y": "^6.10.2",
