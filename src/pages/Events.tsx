@@ -122,7 +122,7 @@ function EventCard({ event, className }: { event: Event; className?: string }) {
             {format(date, 'h:mm a', { in: tz('UTC') })}
           </div>
           {event.rulesDocLink && (
-            <Button variant="secondary" asChild className="mt-2 w-fit">
+            <Button variant="secondary" asChild className="mt-2">
               <a
                 href={`/docs/${event.rulesDocLink}`}
                 target="_blank"
