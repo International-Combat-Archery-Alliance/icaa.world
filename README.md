@@ -44,8 +44,11 @@ bun install
 ### Development
 
 ```bash
-# Start the development server
+# Start only the frontend
 bun run dev
+
+# ALTERNATIVE: Start frontend and all backend services
+bun full-dev
 
 # The site will be available at http://localhost:5173
 ```
@@ -71,6 +74,7 @@ bun run preview
 - `bun run format` - Format code with Prettier
 - `bun run codegen` - Generate TypeScript types from OpenAPI spec
 - `bun run run-all-backend` - Run both login and event services concurrently. Assumes that the other repos are cloned one directory up.
+- `bun full-dev` - Runs both frontend and backend services.
 
 ## Project Structure
 
