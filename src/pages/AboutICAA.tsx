@@ -17,16 +17,16 @@ const Leadership = () => {
         <div className="mission-vision">
           <h3>Our Mission</h3>
           <p>
-            Our mission of the ICAA is to foster the growth of Combat Archery as
-            a growing sport through the development of athletes, community
-            events, tournaments, competitive leagues, and more.
+            Our mission of the ICAA  is to foster the growth of Combat Archery 
+            as a growing sport through the development of athletes, community events, 
+            tournaments, competitive leagues, and more.
           </p>
           <h3>Our Vision</h3>
           <p>
             {' '}
-            Our vision is to be the central, trusted hub for Combat Archery,
-            fostering its growth from a niche hobby into a recognized,
-            accessible sport.
+            Our vision is to be the central, trusted hub for competetive Combat Archery.
+            Coordinating and running local, regional, and international events. 
+            Having one unified voice for the competetive world of Combat Archery.
           </p>
         </div>
         <div className="flex flex-wrap justify-center">

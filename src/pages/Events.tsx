@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useTitle } from 'react-use';
 import { useGetEvents, type Event } from '../hooks/useEvent';
 import {
   Card,
@@ -9,7 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { format, parseISO, isAfter } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 import { tz } from '@date-fns/tz';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -17,8 +16,6 @@ import { Link } from 'react-router-dom';
 import { formatMoney } from '@/api/money';
 
 export default function Events() {
-  useTitle('Events - ICAA');
-
   const { data, isPending, isFetching, error, refetch } = useGetEvents();
 
   // TODO: eventually support paginating through multiple pages
@@ -91,13 +88,21 @@ function EventContent({
 
 function EventCard({ event, className }: { event: Event; className?: string }) {
   const date = parseISO(event.startTime);
+  const closeRegDate = parseISO(event.registrationCloseTime);
+
+  const byIndividualOpt = event.registrationOptions.find(
+    (e) => e.registrationType === 'ByIndividual',
+  );
+  const byTeamOpt = event.registrationOptions.find(
+    (e) => e.registrationType === 'ByTeam',
+  );
 
   return (
     <Card className={className}>
       <CardHeader>
         {event.imageName ? (
           <img
-            src={`/images/logos/${event.imageName}`}
+            src={`images/logos/${event.imageName}`}
             alt="Boston International Championship Logo"
             className="event-logo justify-self-center"
           />
@@ -113,13 +118,13 @@ function EventCard({ event, className }: { event: Event; className?: string }) {
       <CardContent>
         <div className="flex flex-col">
           <div>
-            {format(date, 'eeee MMMM do, yyyy', { in: tz('UTC') })} at{' '}
+            {format(date, 'eeee MMMM do, yyyy')} at{' '}
             {format(date, 'h:mm a', { in: tz('UTC') })}
           </div>
           {event.rulesDocLink && (
-            <Button variant="secondary" asChild>
+            <Button variant="secondary" asChild className="mt-2 w-fit">
               <a
-                href={event.rulesDocLink}
+                href={`/docs/${event.rulesDocLink}`}
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -130,51 +135,25 @@ function EventCard({ event, className }: { event: Event; className?: string }) {
         </div>
       </CardContent>
       <CardFooter className="flex flex-col items-stretch gap-2">
-        <SignUpSection event={event} />
+        {byIndividualOpt !== undefined ? (
+          <Button asChild>
+            <Link to={`/events/${event.id}/register-free-agent`}>
+              Free Agent Sign Up ({formatMoney(byIndividualOpt.price)})
+            </Link>
+          </Button>
+        ) : null}
+        {byTeamOpt !== undefined ? (
+          <Button asChild>
+            <Link to={`/events/${event.id}/register-team`}>
+              Team Sign Up ({formatMoney(byTeamOpt.price)})
+            </Link>
+          </Button>
+        ) : null}
+        <p className="text-center text-sm text-muted-foreground pt-2">
+          Registration Closes: {format(closeRegDate, 'eeee MMMM do, yyyy')}
+        </p>
       </CardFooter>
     </Card>
-  );
-}
-
-function SignUpSection({ event }: { event: Event }) {
-  const byIndividualOpt = event.registrationOptions.find(
-    (e) => e.registrationType === 'ByIndividual',
-  );
-  const byTeamOpt = event.registrationOptions.find(
-    (e) => e.registrationType === 'ByTeam',
-  );
-
-  if (isAfter(new Date(), parseISO(event.registrationCloseTime))) {
-    return (
-      <Button variant="secondary" disabled>
-        Sign ups are closed
-      </Button>
-    );
-  }
-
-  return (
-    <>
-      {byIndividualOpt !== undefined ? (
-        <Button asChild>
-          <Link to={`/events/${event.id}/register-free-agent`}>
-            Free Agent Sign Up ({formatMoney(byIndividualOpt.price)})
-          </Link>
-        </Button>
-      ) : null}
-      {byTeamOpt !== undefined ? (
-        <Button asChild>
-          <Link to={`/events/${event.id}/register-team`}>
-            Team Sign Up ({formatMoney(byTeamOpt.price)})
-          </Link>
-        </Button>
-      ) : null}
-      <p className="text-center text-sm text-muted-foreground pt-2">
-        Registration Closes:{' '}
-        {format(parseISO(event.registrationCloseTime), 'eeee MMMM do, yyyy', {
-          in: tz('UTC'),
-        })}
-      </p>
-    </>
   );
 }
 
