@@ -1,6 +1,9 @@
+import { useTitle } from 'react-use';
 import ArcheryMap from '../components/ArcheryMap';
 
 const OurCommunities = () => {
+  useTitle('Our Communities - ICAA');
+
   return (
     <section
       id="our-communities"

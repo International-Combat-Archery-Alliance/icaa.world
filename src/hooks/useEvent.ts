@@ -1,16 +1,22 @@
+import { useQueryClient } from '@tanstack/react-query';
 import { useEventQueryClient } from '../context/eventQueryClientContext';
 import type { paths, components } from '@/api/events-v1';
 
 export type Event = components['schemas']['Event'];
 
-export function useGetEvent(eventId: string) {
+export function useGetEvent(eventId: string | undefined) {
   const client = useEventQueryClient();
 
-  return client.useQuery('get', '/events/v1/{id}', {
-    params: {
-      path: { id: eventId },
+  return client.useQuery(
+    'get',
+    '/events/v1/{id}',
+    {
+      params: {
+        path: { id: eventId! },
+      },
     },
-  });
+    { enabled: !!eventId },
+  );
 }
 
 export function useGetEvents(limit: number = 10) {
@@ -34,6 +40,41 @@ export function useGetEvents(limit: number = 10) {
       initialPageParam: null,
     },
   );
+}
+
+export function useUpdateEventDataAfterMutate() {
+  const tanstackClient = useQueryClient();
+
+  return (event: Event) => {
+    // TODO: I would love to not need to manually figure out query keys for this
+    // https://github.com/openapi-ts/openapi-typescript/issues/1806
+    tanstackClient.setQueryData(
+      ['get', '/events/v1/{id}', { params: { path: { id: event.id } } }],
+      (old: { event: Event }) => {
+        return {
+          event: {
+            ...old,
+            ...event,
+          },
+        };
+      },
+    );
+    tanstackClient.setQueryData(
+      ['get', '/events/v1', { params: { query: { limit: 10 } } }],
+      (oldEvents: {
+        pageParams: string[];
+        pages: paths['/events/v1']['get']['responses']['200']['content']['application/json'][];
+      }) => {
+        return {
+          ...oldEvents,
+          pages: oldEvents.pages.map((page) => ({
+            ...page,
+            data: page.data.map((v) => (v.id === event.id ? event : v)),
+          })),
+        };
+      },
+    );
+  };
 }
 
 export function useRegisterForEvent() {
@@ -77,4 +118,10 @@ export function useGetRegistrations(
       initialPageParam: null,
     },
   );
+}
+
+export function useUpdateEvent() {
+  const client = useEventQueryClient();
+
+  return client.useMutation('patch', '/events/v1/{id}');
 }

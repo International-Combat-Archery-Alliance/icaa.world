@@ -1,8 +1,11 @@
+import { useTitle } from 'react-use';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const NewsItem2 = () => {
+  useTitle('Official Tournament Rules - ICAA News');
+
   return (
     <section id="news-item-2" className="content-section news-page">
       <Link to="/" className="back-btn">
@@ -13,7 +16,7 @@ const NewsItem2 = () => {
           <h1 className="text-3xl md:text-4xl font-bold text-primary mb-2 text-balance">
             Rules Announced for Official Tournament Play!
           </h1>
-          <p className="text-sm text-muted-foreground">August 27, 2025</p>
+          <p className="text-sm text-muted-foreground">August 30, 2025</p>
         </header>
 
         <div className="flex flex-col gap-6 text-lg text-justify">
@@ -32,8 +35,10 @@ const NewsItem2 = () => {
           </p>
 
           <iframe
-            src="https://docs.google.com/document/d/1UQARbdHDrR-kp2McV8XVorGUNOv5apeYAGWnvZlbQaY/preview"
-            className="w-full h-[750px] border-0"
+            src="https://docs.google.com/document/d/e/2PACX-1vTVdQN1TKuKVl7-kmhAAf8ZbHB90Sn3jhUUJovUBioi-H6lcqvkhKiMahgwYipgv0hBEl93ixTMQtFt/pub?embedded=true"
+            height="750"
+            width="100%"
+            className="bg-white border-0"
           >
             <Skeleton className="h-full w-full rounded-xl" />
           </iframe>

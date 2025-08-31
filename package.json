@@ -59,7 +59,6 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
-    "dinero.js": "^1.9.1",
     "leaflet": "^1.9.4",
     "lucide-react": "^0.540.0",
     "openai-fetch": "^3.4.2",
@@ -72,8 +71,10 @@
     "react-leaflet": "^5.0.0",
     "react-router-dom": "^7.8.1",
     "react-turnstile": "^1.1.4",
+    "react-use": "^17.6.0",
     "tailwind-merge": "^3.3.1",
     "tailwindcss": "^4.1.12",
+    "ts-money": "^0.4.8",
     "vite": "^7.1.2",
     "zod": "^4.1.3"
   }

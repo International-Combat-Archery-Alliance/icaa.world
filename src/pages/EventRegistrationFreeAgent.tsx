@@ -1,3 +1,4 @@
+import { useTitle } from 'react-use';
 import { useGetEvent, useRegisterForEvent, type Event } from '@/hooks/useEvent';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -26,6 +27,8 @@ import { EventDetailsCard } from '@/components/EventRegDetailsCard';
 import { TurnstileFormField } from '@/components/TurnstileFormField';
 
 export default function EventRegistrationFreeAgent() {
+  useTitle('Free Agent Registration - ICAA');
+
   const { eventId } = useParams();
   const { data } = useGetEvent(eventId!);
 
@@ -113,7 +116,7 @@ function FreeAgentForm({ event }: { event: Event }) {
   return (
     <>
       <EventDetailsCard event={event} />
-      <Card className="w-full max-w-screen-lg mx-auto p-15">
+      <Card className="w-full max-w-screen-lg mx-auto lg:p-15">
         <CardHeader>
           <CardTitle className="text-center font-bold text-2xl">
             Free Agent Registration
@@ -138,7 +141,7 @@ function FreeAgentForm({ event }: { event: Event }) {
                   </FormItem>
                 )}
               />
-              <div className="md:flex md:gap-4">
+              <div className="flex flex-col gap-4 lg:flex-row">
                 <FormField
                   control={form.control}
                   name="playerInfo.firstName"
@@ -166,7 +169,7 @@ function FreeAgentForm({ event }: { event: Event }) {
                   )}
                 />
               </div>
-              <div className="md:flex md:gap-4">
+              <div className="flex flex-col gap-4 lg:flex-row">
                 <FormField
                   control={form.control}
                   name="homeCity"

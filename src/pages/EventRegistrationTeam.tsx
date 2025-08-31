@@ -1,3 +1,4 @@
+import { useTitle } from 'react-use';
 import { useGetEvent, useRegisterForEvent, type Event } from '@/hooks/useEvent';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { z } from 'zod';
@@ -20,6 +21,8 @@ import { Trash2 } from 'lucide-react';
 import { TurnstileFormField } from '@/components/TurnstileFormField';
 
 export default function EventRegistrationTeam() {
+  useTitle('Team Registration - ICAA');
+
   const { eventId } = useParams();
   const { data } = useGetEvent(eventId!);
 
@@ -110,7 +113,7 @@ function TeamForm({ event }: { event: Event }) {
   return (
     <>
       <EventDetailsCard event={event} />
-      <Card className="w-full max-w-screen-lg mx-auto p-15">
+      <Card className="w-full max-w-screen-lg mx-auto lg:p-15">
         <CardHeader>
           <CardTitle className="text-center font-bold text-2xl">
             Team Registration
@@ -135,7 +138,7 @@ function TeamForm({ event }: { event: Event }) {
                   </FormItem>
                 )}
               />
-              <div className="md:flex md:gap-4">
+              <div className="flex flex-col gap-4 lg:flex-row">
                 <FormField
                   control={form.control}
                   name="teamName"

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Login from '@/components/Login';
 import { useUserInfo } from '@/context/userInfoContext';
+import { useSwipeGesture } from '@/hooks/useSwipeGesture';
 
 export default function Sidebar() {
   const { userInfo, isSuccess } = useUserInfo();
@@ -11,6 +12,22 @@ export default function Sidebar() {
   const toggleSidebar = () => {
     setSidebarOpen(!isSidebarOpen);
   };
+
+  const openSidebar = () => {
+    setSidebarOpen(true);
+  };
+
+  const closeSidebar = () => {
+    setSidebarOpen(false);
+  };
+
+  // Add swipe gesture support
+  useSwipeGesture({
+    onSwipeRight: openSidebar,
+    onSwipeLeft: isSidebarOpen ? closeSidebar : undefined,
+    minSwipeDistance: 100,
+    maxStartDistance: 50,
+  });
 
   useEffect(() => {
     if (isSidebarOpen) {
@@ -46,11 +63,13 @@ export default function Sidebar() {
               About The Sport
             </Link>
           </li>
-          <li>
-            <Link to="/our-communities" onClick={() => setSidebarOpen(false)}>
-              The Alliance
-            </Link>
-          </li>
+          {isSuccess && userInfo?.isAdmin ? (
+            <li>
+              <Link to="/our-communities" onClick={() => setSidebarOpen(false)}>
+                The Alliance
+              </Link>
+            </li>
+          ) : null}
           <li>
             <Link to="/events" onClick={() => setSidebarOpen(false)}>
               Events
@@ -73,7 +92,9 @@ export default function Sidebar() {
           <Login />
         </div>
       </nav>
-      <div className="content-overlay"></div>
+
+      {/* Add click handler to overlay to close sidebar */}
+      <div className="content-overlay" onClick={closeSidebar}></div>
       <button
         className="menu-toggle"
         id="menu-toggle-btn"

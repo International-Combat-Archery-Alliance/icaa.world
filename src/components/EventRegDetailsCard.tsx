@@ -2,18 +2,21 @@ import type { Event } from '@/hooks/useEvent';
 import { Card, CardContent } from '@/components/ui/card';
 import { format, parseISO } from 'date-fns';
 import { formatMoney } from '@/api/money';
+import { tz } from '@date-fns/tz';
 
 interface EventDetailsCardProps {
   event: Event;
 }
 
 export function EventDetailsCard({ event }: EventDetailsCardProps) {
-  const formattedDate = format(
-    parseISO(event.startTime),
-    'eeee, MMMM dd, yyyy',
-  );
-  const formattedStartTime = format(new Date(event.startTime), 'p');
-  const formattedEndTime = format(new Date(event.endTime), 'p');
+  const startTime = parseISO(event.startTime);
+  const formattedDate = format(startTime, 'eeee, MMMM dd, yyyy', {
+    in: tz('UTC'),
+  });
+  const formattedStartTime = format(startTime, 'p', { in: tz('UTC') });
+  const formattedEndTime = format(parseISO(event.endTime), 'p', {
+    in: tz('UTC'),
+  });
   const dateString = ` ${formattedDate} at ${formattedStartTime} to ${formattedEndTime}`;
   const byIndividualOpt = event.registrationOptions.find(
     (e) => e.registrationType === 'ByIndividual',
@@ -25,11 +28,13 @@ export function EventDetailsCard({ event }: EventDetailsCardProps) {
   return (
     <Card className="w-full max-w-screen-lg mx-auto mb-8">
       <CardContent className="flex flex-col md:flex-row items-center gap-6 p-6">
-        <img
-          src={'/images/logos/ICAA Logo.png'}
-          alt={`${event.name} logo`}
-          className="w-32 h-32 rounded-md object-cover flex-shrink-0"
-        />
+        {event.imageName && (
+          <img
+            src={`/images/logos/${event.imageName}`}
+            alt={`${event.name} logo`}
+            className="w-32 h-32 rounded-md object-contain flex-shrink-0"
+          />
+        )}
         <div className="grid gap-1 text-center md:text-left">
           <p>
             <strong>Event:</strong> {event.name}

@@ -6,6 +6,8 @@ import AboutICAA from './pages/AboutICAA';
 import AboutSport from './pages/AboutSport';
 import OfficialRules from './pages/OfficialRules';
 import Events from './pages/Events';
+import NewsItem1 from './pages/news/NewsItem1';
+import NewsItem2 from './pages/news/NewsItem2';
 import Registration from './pages/Registration';
 import RegistrationsTablePage from './pages/RegistrationsTablePage';
 import Contact from './pages/Contact';
@@ -20,6 +22,7 @@ import { LoginQueryClientProvider } from './context/loginQueryClientContext';
 import AdminOnlyRoute from './components/auth/AdminOnlyRoute';
 import Sidebar from './components/Sidebar';
 import { UserInfoContextProvider } from './context/userInfoContext';
+import OurCommunities from './pages/OurCommunities';
 
 const App = () => {
   const queryClient = new QueryClient();
@@ -44,10 +47,14 @@ const App = () => {
                         path="/official-rules"
                         element={<OfficialRules />}
                       />
-                      {/*<Route
+                      <Route
                         path="/our-communities"
-                        element={<OurCommunities />}
-                      />*/}
+                        element={
+                          <AdminOnlyRoute>
+                            <OurCommunities />
+                          </AdminOnlyRoute>
+                        }
+                      />
                       <Route path="/events" element={<Events />} />
                       <Route
                         path="/events/:eventId/register-free-agent"
@@ -71,6 +78,8 @@ const App = () => {
                           </AdminOnlyRoute>
                         }
                       />
+                      <Route path="/news/icaa-launch" element={<NewsItem1 />} />
+                      <Route path="/news/rules" element={<NewsItem2 />} />
                     </Routes>
                   </main>
                   <footer>
@@ -86,6 +95,7 @@ const App = () => {
                           className="social-icon"
                         />
                       </a>
+                      {/*
                       <a
                         href="https://x.com/yourhandle"
                         target="_blank"
@@ -108,6 +118,7 @@ const App = () => {
                           className="social-icon"
                         />
                       </a>
+                      */}
                     </div>
                     <p>
                       &copy; 2025 International Combat Archery Alliance, Inc.
