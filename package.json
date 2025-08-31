@@ -2,6 +2,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "full-dev": "concurrently \"bun dev\" \"bun run-all-backend\"",
     "build": "vite build",
     "preview": "vite preview",
     "test:ts": "tsc --noEmit",
