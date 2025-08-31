@@ -56,7 +56,7 @@ export function AboutSport() {
               <li>There are 6 players per team on the field</li>
               <li>If you get hit with an arrow you are eliminated</li>
               <li>
-                You revive a teammate by:
+                You can revive a teammate by:
                 <li className="ml-8">Catching an arrow</li>
                 <li className="ml-8">Knocking out a Revive Target</li>
                 <li className="ml-8">Hitting the Jailbreak Gong</li>
