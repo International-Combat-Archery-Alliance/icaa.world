@@ -70,6 +70,7 @@ bun run preview
 - `bun run lint:fix` - Fix ESLint issues automatically
 - `bun run format` - Format code with Prettier
 - `bun run codegen` - Generate TypeScript types from OpenAPI spec
+- `bun run run-all-backend` - Run both login and event services concurrently. Assumes that the other repos are cloned one directory up.
 
 ## Project Structure
 
