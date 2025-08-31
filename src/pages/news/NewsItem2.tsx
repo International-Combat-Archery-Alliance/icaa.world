@@ -35,12 +35,12 @@ const NewsItem2 = () => {
           </p>
 
           <iframe
-            src="https://docs.google.com/document/d/e/2PACX-1vTVdQN1TKuKVl7-kmhAAf8ZbHB90Sn3jhUUJovUBioi-H6lcqvkhKiMahgwYipgv0hBEl93ixTMQtFt/pub?embedded=true"
-            height="750"
+            src="\public\docs\2000 - OFFICIAL ICAA GAMEPLAY RULES.pdf"
             width="100%"
+            height="750"
             className="bg-white border-0"
           >
-            <Skeleton className="h-full w-full rounded-xl" />
+            <Skeleton className="h-[750px] w-full rounded-xl" />
           </iframe>
           <p>
             For inquiries, please contact{' '}

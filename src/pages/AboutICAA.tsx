@@ -24,9 +24,10 @@ const Leadership = () => {
           <h3>Our Vision</h3>
           <p>
             {' '}
-            Our vision is to be the central, trusted hub for Combat Archery,
-            fostering its growth from a niche hobby into a recognized,
-            accessible sport.
+            Our vision is to be the central, trusted hub for competetive Combat
+            Archery. Coordinating and running local, regional, and international
+            events. Having one unified voice for the competetive world of Combat
+            Archery.
           </p>
         </div>
         <div className="flex flex-wrap justify-center">

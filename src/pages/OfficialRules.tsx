@@ -10,14 +10,14 @@ const OfficialRules = () => {
       <Link to="/about-sport" className="back-btn">
         ← Back to About the Sport
       </Link>
-      <div className="content-wrapper">
+      <div className="content-wrapper max-w-screen-lg mx-auto py-4 sm:px-4 md:px-6">
         <iframe
-          src="https://docs.google.com/document/d/e/2PACX-1vTVdQN1TKuKVl7-kmhAAf8ZbHB90Sn3jhUUJovUBioi-H6lcqvkhKiMahgwYipgv0hBEl93ixTMQtFt/pub?embedded=true"
+          src="\public\docs\2000 - OFFICIAL ICAA GAMEPLAY RULES.pdf"
           width="100%"
           height="750"
           className="bg-white border-0"
         >
-          <Skeleton className="h-[285px] w-full md:max-w-[375px] rounded-xl" />
+          <Skeleton className="h-[750px] w-full rounded-xl" />
         </iframe>
       </div>
     </section>
