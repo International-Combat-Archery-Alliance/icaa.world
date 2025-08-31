@@ -35,7 +35,7 @@ const NewsItem2 = () => {
           </p>
 
           <iframe
-            src="\public\docs\2000 - OFFICIAL ICAA GAMEPLAY RULES.pdf"
+            src="/docs/2000 - OFFICIAL ICAA GAMEPLAY RULES.pdf"
             width="100%"
             height="750"
             className="bg-white border-0"
