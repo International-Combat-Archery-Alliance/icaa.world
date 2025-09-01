@@ -84,8 +84,8 @@ export function AboutSport() {
                 make up the composition of a team:
               </p>
               <li>
-                A more aggresive team may consist of 4 Forwards and 1 Rear Guard
-                and 1 Centerback
+                A more aggressive team may consist of 4 Forwards and 1 Rear
+                Guard and 1 Centerback
               </li>
               <li>
                 While a more passive, catching style team could consist of 2
@@ -93,7 +93,7 @@ export function AboutSport() {
               </li>
             </p>
             <p className="text-lg">
-              There are *endless* possibilites for team compositions. Try out
+              There are *endless* possibilities for team compositions. Try out
               different styles to find what fits you the best!
             </p>
             <Positions
@@ -121,7 +121,7 @@ export function AboutSport() {
             <Positions
               position="Flex"
               description="The Flex can do it all. They can interchange between providing pressure on the front lines, to picking off their opponents from
-                        the saftey of cover, or to be the one to revive their entire team. Just remember the saying 'jack of all trades...master of none' "
+                        the safety of cover, or to be the one to revive their entire team. Just remember the saying 'jack of all trades...master of none' "
               icon="Flex"
               actionshot="Flex"
             />
