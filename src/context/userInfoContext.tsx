@@ -11,7 +11,7 @@ export enum AuthStatus {
 function isUserInfoExpired(
   userInfo: components['schemas']['UserInfo'] | undefined,
 ): boolean {
-  if (!userInfo?.expiresAt) return true;
+  if (userInfo === undefined) return true;
 
   const expirationDate = new Date(userInfo.expiresAt);
   const now = new Date();
@@ -24,10 +24,9 @@ export interface UserInfoContextValues {
   isSuccess: boolean;
   isError: boolean;
   isLoading: boolean;
-  setCachedUserInfo: (
-    info: components['schemas']['UserInfo'] | undefined,
-  ) => void;
-  setAuthStatus: (status: AuthStatus | undefined) => void;
+  setCachedUserInfo: (info: components['schemas']['UserInfo']) => void;
+  deleteCachedUserInfo: () => void;
+  setAuthStatus: (status: AuthStatus) => void;
 }
 
 const UserInfoContext = createContext<UserInfoContextValues | null>(null);
@@ -37,26 +36,24 @@ export const UserInfoContextProvider = ({
 }: {
   children: ReactNode;
 }) => {
-  const [cachedUserInfo, setCachedUserInfo] = useLocalStorage<
-    components['schemas']['UserInfo'] | undefined
-  >('userInfo', undefined);
-  const [authStatus, setAuthStatus] = useLocalStorage<AuthStatus | undefined>(
-    'authStatus',
-    undefined,
-  );
+  const [cachedUserInfo, setCachedUserInfo, deleteCachedUserInfo] =
+    useLocalStorage<components['schemas']['UserInfo']>('userInfo');
+  const [authStatus, setAuthStatus] = useLocalStorage<AuthStatus>('authStatus');
 
   // Check if cached user info is expired and clear it if so
   useEffect(() => {
     if (cachedUserInfo && isUserInfoExpired(cachedUserInfo)) {
-      setCachedUserInfo(undefined);
-      setAuthStatus(undefined);
+      deleteCachedUserInfo();
+      setAuthStatus(AuthStatus.UNAUTHENTICATED);
     }
-  }, [cachedUserInfo, setCachedUserInfo, setAuthStatus]);
+  }, [cachedUserInfo, deleteCachedUserInfo, setAuthStatus]);
 
   const shouldFetchFromAPI =
     authStatus === undefined ||
+    authStatus === null ||
     (authStatus === AuthStatus.AUTHENTICATED && !cachedUserInfo) ||
-    isUserInfoExpired(cachedUserInfo);
+    (authStatus === AuthStatus.AUTHENTICATED &&
+      isUserInfoExpired(cachedUserInfo));
 
   const {
     data: apiUserInfo,
@@ -72,7 +69,17 @@ export const UserInfoContextProvider = ({
       setCachedUserInfo(apiUserInfo);
       setAuthStatus(AuthStatus.AUTHENTICATED);
     }
-  }, [apiIsSuccess, apiUserInfo, setCachedUserInfo]);
+    if (apiIsError) {
+      deleteCachedUserInfo();
+      setAuthStatus(AuthStatus.UNAUTHENTICATED);
+    }
+  }, [
+    apiIsSuccess,
+    apiIsError,
+    apiUserInfo,
+    setCachedUserInfo,
+    deleteCachedUserInfo,
+  ]);
 
   const userInfo = cachedUserInfo || apiUserInfo;
   const isSuccess = authStatus === AuthStatus.AUTHENTICATED && !!userInfo;
@@ -90,6 +97,7 @@ export const UserInfoContextProvider = ({
         isLoading,
         setCachedUserInfo,
         setAuthStatus,
+        deleteCachedUserInfo,
       }}
     >
       {children}
