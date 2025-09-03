@@ -8,8 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { format, parseISO } from 'date-fns';
-import { tz } from '@date-fns/tz';
+import { DateTime } from 'luxon';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Link } from 'react-router-dom';
@@ -87,8 +86,8 @@ function EventContent({
 }
 
 function EventCard({ event, className }: { event: Event; className?: string }) {
-  const date = parseISO(event.startTime);
-  const closeRegDate = parseISO(event.registrationCloseTime);
+  const date = DateTime.fromISO(event.startTime);
+  const closeRegDate = DateTime.fromISO(event.registrationCloseTime);
 
   const byIndividualOpt = event.registrationOptions.find(
     (e) => e.registrationType === 'ByIndividual',
@@ -118,8 +117,10 @@ function EventCard({ event, className }: { event: Event; className?: string }) {
       <CardContent>
         <div className="flex flex-col">
           <div>
-            {format(date, 'eeee MMMM do, yyyy')} at{' '}
-            {format(date, 'h:mm a', { in: tz('UTC') })}
+            {date.toLocaleString({
+              ...DateTime.DATETIME_FULL,
+              weekday: 'long',
+            })}
           </div>
           {event.rulesDocLink && (
             <Button variant="secondary" asChild className="mt-2">
@@ -150,7 +151,7 @@ function EventCard({ event, className }: { event: Event; className?: string }) {
           </Button>
         ) : null}
         <p className="text-center text-sm text-muted-foreground pt-2">
-          Registration Closes: {format(closeRegDate, 'eeee MMMM do, yyyy')}
+          Registration Closes: {closeRegDate.toLocaleString(DateTime.DATE_HUGE)}
         </p>
       </CardFooter>
     </Card>

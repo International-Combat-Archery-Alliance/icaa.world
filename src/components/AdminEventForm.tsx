@@ -14,8 +14,6 @@ import { Input } from './ui/input';
 import { Button } from './ui/button';
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { MutateOptions } from '@tanstack/react-query';
-import { format, formatISO, parse, parseISO } from 'date-fns';
-import { tz } from '@date-fns/tz';
 import { Currencies, Money } from 'ts-money';
 import {
   Select,
@@ -24,6 +22,7 @@ import {
   SelectValue,
   SelectContent,
 } from './ui/select';
+import { DateTime, IANAZone } from 'luxon';
 
 export enum AdminEventMode {
   CREATE,
@@ -41,6 +40,14 @@ export function AdminEventForm({
 }) {
   const { mutate: createMutate, isPending: createIsPending } = useCreateEvent();
   const { mutate: editMutate, isPending: editIsPending } = useUpdateEvent();
+
+  const timeZones = Intl.supportedValuesOf('timeZone').map((t) => ({
+    name: t,
+    offset: IANAZone.create(t).formatOffset(
+      DateTime.now().toSeconds(),
+      'short',
+    ),
+  }));
 
   const isPending = createIsPending || editIsPending;
 
@@ -92,6 +99,7 @@ export function AdminEventForm({
     eventEndTime: z.string().regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, {
       message: 'Please use HH:MM format',
     }),
+    eventTimeZone: z.string().min(1, 'Event time zone is required.'),
 
     eventRules: z.string().optional(),
     eventLogo: z.string().optional(),
@@ -106,26 +114,16 @@ export function AdminEventForm({
     resolver: zodResolver(formSchema),
     values: editData && {
       id: editData?.id,
-      eventDate: format(
-        parseISO(editData.startTime, { in: tz('UTC') }),
-        'yyyy-MM-dd',
-      ),
-      eventStartTime: format(
-        parseISO(editData.startTime, { in: tz('UTC') }),
+      eventDate: DateTime.fromISO(editData.startTime).toISODate()!,
+      eventStartTime: DateTime.fromISO(editData.startTime).toFormat('HH:mm')!,
+      eventEndTime: DateTime.fromISO(editData.endTime).toFormat('HH:mm')!,
+      eventTimeZone: DateTime.fromISO(editData.startTime).zoneName!,
+      regCloseDate: DateTime.fromISO(
+        editData.registrationCloseTime,
+      ).toISODate()!,
+      regCloseTime: DateTime.fromISO(editData.registrationCloseTime).toFormat(
         'HH:mm',
-      ),
-      eventEndTime: format(
-        parseISO(editData.endTime, { in: tz('UTC') }),
-        'HH:mm',
-      ),
-      regCloseDate: format(
-        parseISO(editData.registrationCloseTime, { in: tz('UTC') }),
-        'yyyy-MM-dd',
-      ),
-      regCloseTime: format(
-        parseISO(editData.registrationCloseTime, { in: tz('UTC') }),
-        'HH:mm',
-      ),
+      )!,
       eventName: editData.name,
       locationInfo: editData.location,
       priceInfo: {
@@ -154,10 +152,19 @@ export function AdminEventForm({
       eventEndTime,
       regCloseDate,
       regCloseTime,
+      eventTimeZone,
     } = values;
-    const startTime = datetimeInputToISO(eventDate, eventStartTime);
-    const endTime = datetimeInputToISO(eventDate, eventEndTime);
-    const closeTime = datetimeInputToISO(regCloseDate, regCloseTime);
+    const startTime = datetimeInputToISO(
+      eventDate,
+      eventStartTime,
+      eventTimeZone,
+    );
+    const endTime = datetimeInputToISO(eventDate, eventEndTime, eventTimeZone);
+    const closeTime = datetimeInputToISO(
+      regCloseDate,
+      regCloseTime,
+      eventTimeZone,
+    );
 
     const registrationOptions: components['schemas']['EventRegistrationOption'][] =
       [];
@@ -337,6 +344,30 @@ export function AdminEventForm({
               </FormItem>
             )}
           />
+          <FormField
+            control={form.control}
+            name="eventTimeZone"
+            render={({ field }) => (
+              <FormItem className="flex-grow">
+                <FormLabel>Timezone</FormLabel>
+                <FormControl>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <SelectTrigger className="w-64 bg-white">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {timeZones.map((t) => (
+                        <SelectItem key={t.name} value={t.name}>
+                          {t.name} ({t.offset})
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
         </div>
         <div className="grid gap-3">
           <FormField
@@ -474,11 +505,7 @@ export function AdminEventForm({
               <FormItem>
                 <FormLabel>Currency</FormLabel>
                 <FormControl>
-                  <Select
-                    onValueChange={field.onChange}
-                    value={field.value}
-                    defaultValue="USD"
-                  >
+                  <Select onValueChange={field.onChange} value={field.value}>
                     <SelectTrigger className="w-32 bg-white">
                       <SelectValue />
                     </SelectTrigger>
@@ -577,11 +604,14 @@ export function AdminEventForm({
 }
 
 // TODO: move this to utils package
-function datetimeInputToISO(date: string, time: string): string {
-  const parsed = parse(`${date} ${time}`, 'yyyy-MM-dd HH:mm', new Date(), {
-    in: tz('UTC'),
-  });
-  return formatISO(parsed);
+function datetimeInputToISO(
+  date: string,
+  time: string,
+  timezone: string,
+): string {
+  return DateTime.fromFormat(`${date} ${time}`, 'yyyy-MM-dd HH:mm', {
+    zone: timezone,
+  }).toISO()!;
 }
 
 function getMoneyAmount(

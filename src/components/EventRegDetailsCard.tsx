@@ -1,23 +1,17 @@
 import type { Event } from '@/hooks/useEvent';
 import { Card, CardContent } from '@/components/ui/card';
-import { format, parseISO } from 'date-fns';
 import { formatMoney } from '@/api/money';
-import { tz } from '@date-fns/tz';
+import { DateTime } from 'luxon';
 
 interface EventDetailsCardProps {
   event: Event;
 }
 
 export function EventDetailsCard({ event }: EventDetailsCardProps) {
-  const startTime = parseISO(event.startTime);
-  const formattedDate = format(startTime, 'eeee, MMMM dd, yyyy', {
-    in: tz('UTC'),
-  });
-  const formattedStartTime = format(startTime, 'p', { in: tz('UTC') });
-  const formattedEndTime = format(parseISO(event.endTime), 'p', {
-    in: tz('UTC'),
-  });
-  const dateString = ` ${formattedDate} at ${formattedStartTime} to ${formattedEndTime}`;
+  const startTime = DateTime.fromISO(event.startTime);
+  const endTime = DateTime.fromISO(event.endTime);
+  const dateString = `${startTime.toLocaleString(DateTime.DATE_HUGE)} at ${startTime.toLocaleString(DateTime.TIME_SIMPLE)} to ${endTime.toLocaleString({ ...DateTime.TIME_WITH_SHORT_OFFSET, second: undefined })}`;
+
   const byIndividualOpt = event.registrationOptions.find(
     (e) => e.registrationType === 'ByIndividual',
   );
