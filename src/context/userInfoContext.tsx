@@ -8,13 +8,26 @@ export enum AuthStatus {
   UNAUTHENTICATED = 'unauthenticated',
 }
 
+function isUserInfoExpired(
+  userInfo: components['schemas']['UserInfo'] | undefined,
+): boolean {
+  if (!userInfo?.expiresAt) return true;
+
+  const expirationDate = new Date(userInfo.expiresAt);
+  const now = new Date();
+
+  return now >= expirationDate;
+}
+
 export interface UserInfoContextValues {
   userInfo: components['schemas']['UserInfo'] | undefined;
   isSuccess: boolean;
   isError: boolean;
   isLoading: boolean;
-  setCachedUserInfo: (info: components['schemas']['UserInfo'] | null) => void;
-  setAuthStatus: (status: AuthStatus | null) => void;
+  setCachedUserInfo: (
+    info: components['schemas']['UserInfo'] | undefined,
+  ) => void;
+  setAuthStatus: (status: AuthStatus | undefined) => void;
 }
 
 const UserInfoContext = createContext<UserInfoContextValues | null>(null);
@@ -25,16 +38,25 @@ export const UserInfoContextProvider = ({
   children: ReactNode;
 }) => {
   const [cachedUserInfo, setCachedUserInfo] = useLocalStorage<
-    components['schemas']['UserInfo'] | null
-  >('userInfo', null);
-  const [authStatus, setAuthStatus] = useLocalStorage<AuthStatus | null>(
+    components['schemas']['UserInfo'] | undefined
+  >('userInfo', undefined);
+  const [authStatus, setAuthStatus] = useLocalStorage<AuthStatus | undefined>(
     'authStatus',
-    null,
+    undefined,
   );
 
+  // Check if cached user info is expired and clear it if so
+  useEffect(() => {
+    if (cachedUserInfo && isUserInfoExpired(cachedUserInfo)) {
+      setCachedUserInfo(undefined);
+      setAuthStatus(undefined);
+    }
+  }, [cachedUserInfo, setCachedUserInfo, setAuthStatus]);
+
   const shouldFetchFromAPI =
-    authStatus === null ||
-    (authStatus === AuthStatus.AUTHENTICATED && !cachedUserInfo);
+    authStatus === undefined ||
+    (authStatus === AuthStatus.AUTHENTICATED && !cachedUserInfo) ||
+    isUserInfoExpired(cachedUserInfo);
 
   const {
     data: apiUserInfo,
@@ -48,6 +70,7 @@ export const UserInfoContextProvider = ({
   useEffect(() => {
     if (apiIsSuccess && apiUserInfo) {
       setCachedUserInfo(apiUserInfo);
+      setAuthStatus(AuthStatus.AUTHENTICATED);
     }
   }, [apiIsSuccess, apiUserInfo, setCachedUserInfo]);
 
