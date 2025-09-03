@@ -1,12 +1,24 @@
 import { useLoginQueryClient } from '@/context/loginQueryClientContext';
+import { AuthStatus, useUserInfo } from '@/context/userInfoContext';
 
 export function useLogin() {
   const client = useLoginQueryClient();
 
-  return client.useMutation('post', '/login/google');
+  const { setCachedUserInfo, setAuthStatus } = useUserInfo();
+
+  return client.useMutation('post', '/login/google', {
+    onSuccess: (data) => {
+      setCachedUserInfo(data);
+      setAuthStatus(AuthStatus.AUTHENTICATED);
+    },
+    onError: () => {
+      setAuthStatus(AuthStatus.UNAUTHENTICATED);
+      setCachedUserInfo(undefined);
+    },
+  });
 }
 
-export function useLoginUserInfo() {
+export function useLoginUserInfo(options?: { enabled?: boolean }) {
   const client = useLoginQueryClient();
 
   return client.useQuery(
@@ -22,6 +34,7 @@ export function useLoginUserInfo() {
         }
         return true;
       },
+      enabled: options?.enabled,
     },
   );
 }
@@ -29,5 +42,12 @@ export function useLoginUserInfo() {
 export function useLogout() {
   const client = useLoginQueryClient();
 
-  return client.useMutation('delete', '/login/google');
+  const { setCachedUserInfo, setAuthStatus } = useUserInfo();
+
+  return client.useMutation('delete', '/login/google', {
+    onSuccess: () => {
+      setCachedUserInfo(undefined);
+      setAuthStatus(AuthStatus.UNAUTHENTICATED);
+    },
+  });
 }
