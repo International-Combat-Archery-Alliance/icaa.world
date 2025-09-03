@@ -93,7 +93,9 @@ export interface operations {
                     "Set-Cookie"?: string;
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["UserInfo"];
+                };
             };
             /** @description Unauthorized. */
             401: {

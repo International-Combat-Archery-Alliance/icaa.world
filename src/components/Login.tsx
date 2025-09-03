@@ -12,24 +12,21 @@ import { useUserInfo } from '@/context/userInfoContext';
 
 export default function Login() {
   const { mutate } = useLogin();
-  const { userInfo, isSuccess, refetchUserInfo } = useUserInfo();
+  const { userInfo, isSuccess } = useUserInfo();
 
   return isSuccess ? (
-    <SignedIn userInfo={userInfo} refetchUserInfo={refetchUserInfo} />
+    <SignedIn userInfo={userInfo} />
   ) : (
     <GoogleLogin
       type="icon"
       shape="circle"
       onSuccess={(credentialResponse) =>
-        mutate(
-          {
-            credentials: 'include',
-            body: {
-              googleJWT: credentialResponse.credential ?? '',
-            },
+        mutate({
+          credentials: 'include',
+          body: {
+            googleJWT: credentialResponse.credential ?? '',
           },
-          { onSuccess: refetchUserInfo },
-        )
+        })
       }
     />
   );
@@ -37,10 +34,8 @@ export default function Login() {
 
 function SignedIn({
   userInfo,
-  refetchUserInfo,
 }: {
   userInfo: components['schemas']['UserInfo'] | undefined;
-  refetchUserInfo: () => void;
 }) {
   const { mutate: logoutMutate, isPending } = useLogout();
 
@@ -65,10 +60,7 @@ function SignedIn({
           className="w-full"
           disabled={isPending}
           onClick={() => {
-            logoutMutate(
-              { credentials: 'include' },
-              { onSuccess: refetchUserInfo },
-            );
+            logoutMutate({ credentials: 'include' });
           }}
         >
           Log out
