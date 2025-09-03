@@ -4,7 +4,8 @@ import { AuthStatus, useUserInfo } from '@/context/userInfoContext';
 export function useLogin() {
   const client = useLoginQueryClient();
 
-  const { setCachedUserInfo, setAuthStatus } = useUserInfo();
+  const { setCachedUserInfo, deleteCachedUserInfo, setAuthStatus } =
+    useUserInfo();
 
   return client.useMutation('post', '/login/google', {
     onSuccess: (data) => {
@@ -13,7 +14,7 @@ export function useLogin() {
     },
     onError: () => {
       setAuthStatus(AuthStatus.UNAUTHENTICATED);
-      setCachedUserInfo(undefined);
+      deleteCachedUserInfo();
     },
   });
 }
@@ -42,11 +43,11 @@ export function useLoginUserInfo(options?: { enabled?: boolean }) {
 export function useLogout() {
   const client = useLoginQueryClient();
 
-  const { setCachedUserInfo, setAuthStatus } = useUserInfo();
+  const { deleteCachedUserInfo, setAuthStatus } = useUserInfo();
 
   return client.useMutation('delete', '/login/google', {
     onSuccess: () => {
-      setCachedUserInfo(undefined);
+      deleteCachedUserInfo();
       setAuthStatus(AuthStatus.UNAUTHENTICATED);
     },
   });
