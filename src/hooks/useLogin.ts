@@ -4,30 +4,18 @@ import { AuthStatus, useUserInfo } from '@/context/userInfoContext';
 export function useLogin() {
   const client = useLoginQueryClient();
 
-  const mutation = client.useMutation('post', '/login/google');
-
   const { setCachedUserInfo, setAuthStatus } = useUserInfo();
 
-  return {
-    ...mutation,
-    mutate: (
-      variables: Parameters<typeof mutation.mutate>[0],
-      options?: Parameters<typeof mutation.mutate>[1],
-    ) => {
-      mutation.mutate(variables, {
-        ...options,
-        onSuccess: (data, variables, context) => {
-          setCachedUserInfo(data);
-          setAuthStatus(AuthStatus.AUTHENTICATED);
-          options?.onSuccess?.(data, variables, context);
-        },
-        onError: (error, variables, context) => {
-          setAuthStatus(AuthStatus.UNAUTHENTICATED);
-          options?.onError?.(error, variables, context);
-        },
-      });
+  return client.useMutation('post', '/login/google', {
+    onSuccess: (data) => {
+      setCachedUserInfo(data);
+      setAuthStatus(AuthStatus.AUTHENTICATED);
     },
-  };
+    onError: () => {
+      setAuthStatus(AuthStatus.UNAUTHENTICATED);
+      setCachedUserInfo(undefined);
+    },
+  });
 }
 
 export function useLoginUserInfo(options?: { enabled?: boolean }) {
@@ -56,22 +44,10 @@ export function useLogout() {
 
   const { setCachedUserInfo, setAuthStatus } = useUserInfo();
 
-  const mutation = client.useMutation('delete', '/login/google');
-
-  return {
-    ...mutation,
-    mutate: (
-      variables: Parameters<typeof mutation.mutate>[0],
-      options?: Parameters<typeof mutation.mutate>[1],
-    ) => {
-      mutation.mutate(variables, {
-        ...options,
-        onSuccess: (data, variables, context) => {
-          setCachedUserInfo(null);
-          setAuthStatus(AuthStatus.UNAUTHENTICATED);
-          options?.onSuccess?.(data, variables, context);
-        },
-      });
+  return client.useMutation('delete', '/login/google', {
+    onSuccess: () => {
+      setCachedUserInfo(undefined);
+      setAuthStatus(AuthStatus.UNAUTHENTICATED);
     },
-  };
+  });
 }
