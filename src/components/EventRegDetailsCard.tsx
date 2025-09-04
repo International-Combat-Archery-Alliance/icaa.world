@@ -8,8 +8,8 @@ interface EventDetailsCardProps {
 }
 
 export function EventDetailsCard({ event }: EventDetailsCardProps) {
-  const startTime = DateTime.fromISO(event.startTime);
-  const endTime = DateTime.fromISO(event.endTime);
+  const startTime = DateTime.fromISO(event.startTime, { zone: event.timeZone });
+  const endTime = DateTime.fromISO(event.endTime, { zone: event.timeZone });
   const dateString = `${startTime.toLocaleString(DateTime.DATE_HUGE)} at ${startTime.toLocaleString(DateTime.TIME_SIMPLE)} to ${endTime.toLocaleString({ ...DateTime.TIME_WITH_SHORT_OFFSET, second: undefined })}`;
 
   const byIndividualOpt = event.registrationOptions.find(

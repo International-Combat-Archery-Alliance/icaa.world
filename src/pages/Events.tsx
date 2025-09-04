@@ -86,8 +86,10 @@ function EventContent({
 }
 
 function EventCard({ event, className }: { event: Event; className?: string }) {
-  const date = DateTime.fromISO(event.startTime);
-  const closeRegDate = DateTime.fromISO(event.registrationCloseTime);
+  const date = DateTime.fromISO(event.startTime, { zone: event.timeZone });
+  const closeRegDate = DateTime.fromISO(event.registrationCloseTime, {
+    zone: event.timeZone,
+  });
 
   const byIndividualOpt = event.registrationOptions.find(
     (e) => e.registrationType === 'ByIndividual',

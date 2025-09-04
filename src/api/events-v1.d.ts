@@ -164,6 +164,11 @@ export interface components {
              * @example 2025-08-19T18:46:53.185Z
              */
             startTime: string;
+            /**
+             * @description Time zone of the event. Defaults to UTC if not set.
+             * @example America/New_York
+             */
+            timeZone?: string;
             /** @example 1 */
             readonly version: number;
         };

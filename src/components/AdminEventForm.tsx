@@ -114,15 +114,22 @@ export function AdminEventForm({
     resolver: zodResolver(formSchema),
     values: editData && {
       id: editData?.id,
-      eventDate: DateTime.fromISO(editData.startTime).toISODate()!,
-      eventStartTime: DateTime.fromISO(editData.startTime).toFormat('HH:mm')!,
-      eventEndTime: DateTime.fromISO(editData.endTime).toFormat('HH:mm')!,
-      eventTimeZone: DateTime.fromISO(editData.startTime).zoneName!,
-      regCloseDate: DateTime.fromISO(
-        editData.registrationCloseTime,
-      ).toISODate()!,
+      eventDate: DateTime.fromISO(editData.startTime, {
+        zone: editData.timeZone,
+      }).toISODate()!,
+      eventStartTime: DateTime.fromISO(editData.startTime, {
+        zone: editData.timeZone,
+      }).toFormat('HH:mm')!,
+      eventEndTime: DateTime.fromISO(editData.endTime, {
+        zone: editData.timeZone,
+      }).toFormat('HH:mm')!,
+      eventTimeZone: editData.timeZone,
+      regCloseDate: DateTime.fromISO(editData.registrationCloseTime, {
+        zone: editData.timeZone,
+      }).toISODate()!,
       regCloseTime: DateTime.fromISO(editData.registrationCloseTime).toFormat(
         'HH:mm',
+        { zone: editData.timeZone },
       )!,
       eventName: editData.name,
       locationInfo: editData.location,
@@ -205,6 +212,7 @@ export function AdminEventForm({
       registrationOptions: registrationOptions,
       rulesDocLink: values.eventRules,
       startTime: startTime,
+      timeZone: eventTimeZone,
     } as components['schemas']['Event'];
 
     const mutateOptions: MutateOptions<z.infer<typeof formSchema>> = {

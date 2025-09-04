@@ -50,9 +50,9 @@ const UpcomingEventsContainer = ({ className }: { className?: string }) => {
           upcomingEvents.map((event) => (
             <div key={event.id} className="grid gap-1 rounded-lg p-3">
               <p className="text-sm text-muted-foreground">
-                {DateTime.fromISO(event.startTime).toLocaleString(
-                  DateTime.DATE_FULL,
-                )}
+                {DateTime.fromISO(event.startTime, {
+                  zone: event.timeZone,
+                }).toLocaleString(DateTime.DATE_FULL)}
               </p>
               <h4 className="font-semibold group-hover:text-primary">
                 {event.name}
