@@ -6,12 +6,12 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Link } from 'react-router-dom';
 import { CalendarDays } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { DateTime } from 'luxon';
 
 const UpcomingEventsContainer = ({ className }: { className?: string }) => {
   const { data, isPending, error } = useGetEvents();
@@ -50,7 +50,9 @@ const UpcomingEventsContainer = ({ className }: { className?: string }) => {
           upcomingEvents.map((event) => (
             <div key={event.id} className="grid gap-1 rounded-lg p-3">
               <p className="text-sm text-muted-foreground">
-                {format(new Date(event.startTime), 'MMMM d, yyyy')}
+                {DateTime.fromISO(event.startTime, {
+                  zone: event.timeZone,
+                }).toLocaleString(DateTime.DATE_FULL)}
               </p>
               <h4 className="font-semibold group-hover:text-primary">
                 {event.name}

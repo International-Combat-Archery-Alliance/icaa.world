@@ -96,7 +96,7 @@ function CreateEventForm() {
 
   return (
     <>
-      <Card className="w-full max-w-screen-lg mx-auto p-15">
+      <Card className="w-full max-w-screen-lg mx-auto">
         <CardHeader>
           <CardTitle className="text-center font-bold text-2xl">
             Create Event
