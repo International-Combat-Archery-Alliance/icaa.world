@@ -118,10 +118,11 @@ function EventCard({ event, className }: { event: Event; className?: string }) {
       </CardHeader>
       <CardContent>
         <div className="flex flex-col">
+          <div>{date.toLocaleString(DateTime.DATE_HUGE)}</div>
           <div>
             {date.toLocaleString({
-              ...DateTime.DATETIME_FULL,
-              weekday: 'long',
+              ...DateTime.TIME_WITH_SHORT_OFFSET,
+              second: undefined,
             })}
           </div>
           {event.rulesDocLink && (
