@@ -40,7 +40,8 @@ export function EventDetailsCard({ event }: EventDetailsCardProps) {
             <strong>Venue:</strong> {event.location.name}
           </p>
           <p>
-            <strong>Address:</strong> {event.location.address.city},{' '}
+            <strong>Address:</strong> {event.location.address.street},{' '}
+            {event.location.address.city},{' '}
             {event.location.address.state}, {event.location.address.postalCode}
           </p>
           {byIndividualOpt && (
