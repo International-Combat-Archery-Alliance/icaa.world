@@ -221,7 +221,7 @@ function EventDetailsTemplate({ event }: { event: Event }) {
               <TableBody>
                 <TableRow>
                   <TableCell className="text-center">1</TableCell>
-                  <TableCell className="text-center">Renegades</TableCell>
+                  <TableCell className="text-center">Team V</TableCell>
                   <TableCell className="text-center">-</TableCell>
                   <TableCell className="text-center">-</TableCell>
                   <TableCell className="text-center">Tag Alongs</TableCell>
@@ -231,14 +231,14 @@ function EventDetailsTemplate({ event }: { event: Event }) {
                   <TableCell className="text-center">Draw Blood</TableCell>
                   <TableCell className="text-center">-</TableCell>
                   <TableCell className="text-center">-</TableCell>
-                  <TableCell className="text-center">Team V</TableCell>
+                  <TableCell className="text-center">Renegades</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell className="text-center">3</TableCell>
-                  <TableCell className="text-center">Team V</TableCell>
-                  <TableCell className="text-center">-</TableCell>
-                  <TableCell className="text-center">-</TableCell>
                   <TableCell className="text-center">Renegades</TableCell>
+                  <TableCell className="text-center">-</TableCell>
+                  <TableCell className="text-center">-</TableCell>
+                  <TableCell className="text-center">Team V</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell className="text-center">4</TableCell>
@@ -249,31 +249,31 @@ function EventDetailsTemplate({ event }: { event: Event }) {
                 </TableRow>
                 <TableRow>
                   <TableCell className="text-center">5</TableCell>
-                  <TableCell className="text-center">Renegades</TableCell>
+                  <TableCell className="text-center">Team V</TableCell>
                   <TableCell className="text-center">-</TableCell>
                   <TableCell className="text-center">-</TableCell>
                   <TableCell className="text-center">Draw Blood</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell className="text-center">6</TableCell>
-                  <TableCell className="text-center">Team V</TableCell>
-                  <TableCell className="text-center">-</TableCell>
-                  <TableCell className="text-center">-</TableCell>
-                  <TableCell className="text-center">Tag Alongs</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell className="text-center">7</TableCell>
                   <TableCell className="text-center">Renegades</TableCell>
                   <TableCell className="text-center">-</TableCell>
                   <TableCell className="text-center">-</TableCell>
                   <TableCell className="text-center">Tag Alongs</TableCell>
                 </TableRow>
                 <TableRow>
-                  <TableCell className="text-center">8</TableCell>
-                  <TableCell className="text-center">Draw Blood</TableCell>
+                  <TableCell className="text-center">7</TableCell>
+                  <TableCell className="text-center">Tag Alongs</TableCell>
                   <TableCell className="text-center">-</TableCell>
                   <TableCell className="text-center">-</TableCell>
                   <TableCell className="text-center">Team V</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell className="text-center">8</TableCell>
+                  <TableCell className="text-center">Renegades</TableCell>
+                  <TableCell className="text-center">-</TableCell>
+                  <TableCell className="text-center">-</TableCell>
+                  <TableCell className="text-center">Draw Blood</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell className="text-center">9</TableCell>
@@ -284,24 +284,24 @@ function EventDetailsTemplate({ event }: { event: Event }) {
                 </TableRow>
                 <TableRow>
                   <TableCell className="text-center">10</TableCell>
-                  <TableCell className="text-center">Tag Alongs</TableCell>
-                  <TableCell className="text-center">-</TableCell>
-                  <TableCell className="text-center">-</TableCell>
                   <TableCell className="text-center">Draw Blood</TableCell>
+                  <TableCell className="text-center">-</TableCell>
+                  <TableCell className="text-center">-</TableCell>
+                  <TableCell className="text-center">Tag Alongs</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell className="text-center">11</TableCell>
-                  <TableCell className="text-center">Renegades</TableCell>
-                  <TableCell className="text-center">-</TableCell>
-                  <TableCell className="text-center">-</TableCell>
                   <TableCell className="text-center">Draw Blood</TableCell>
+                  <TableCell className="text-center">-</TableCell>
+                  <TableCell className="text-center">-</TableCell>
+                  <TableCell className="text-center">Team V</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell className="text-center">12</TableCell>
-                  <TableCell className="text-center">Team V</TableCell>
-                  <TableCell className="text-center">-</TableCell>
-                  <TableCell className="text-center">-</TableCell>
                   <TableCell className="text-center">Tag Alongs</TableCell>
+                  <TableCell className="text-center">-</TableCell>
+                  <TableCell className="text-center">-</TableCell>
+                  <TableCell className="text-center">Renegades</TableCell>
                 </TableRow>
               </TableBody>
             </Table>
