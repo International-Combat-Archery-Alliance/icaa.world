@@ -90,6 +90,7 @@ function EventCard({ event, className }: { event: Event; className?: string }) {
   const closeRegDate = DateTime.fromISO(event.registrationCloseTime, {
     zone: event.timeZone,
   });
+  const isRegistrationClosed = DateTime.now() > closeRegDate;
 
   const byIndividualOpt = event.registrationOptions.find(
     (e) => e.registrationType === 'ByIndividual',
@@ -124,38 +125,43 @@ function EventCard({ event, className }: { event: Event; className?: string }) {
               ...DateTime.TIME_WITH_SHORT_OFFSET,
               second: undefined,
             })}
+            
+
           </div>
-          {event.rulesDocLink && (
-            <Button variant="secondary" asChild className="mt-2">
-              <a
-                href={`/docs/${event.rulesDocLink}`}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Rules
-              </a>
+            <Button variant="secondary" asChild>
+              <Link to={`/events/${event.id}/event-details`}>
+                Event Details
+              </Link>
             </Button>
-          )}
         </div>
       </CardContent>
       <CardFooter className="flex flex-col items-stretch gap-2">
-        {byIndividualOpt !== undefined ? (
-          <Button asChild>
-            <Link to={`/events/${event.id}/register-free-agent`}>
-              Free Agent Sign Up ({formatMoney(byIndividualOpt.price)})
-            </Link>
-          </Button>
-        ) : null}
-        {byTeamOpt !== undefined ? (
-          <Button asChild>
-            <Link to={`/events/${event.id}/register-team`}>
-              Team Sign Up ({formatMoney(byTeamOpt.price)})
-            </Link>
-          </Button>
-        ) : null}
-        <p className="text-center text-sm text-muted-foreground pt-2">
-          Registration Closes: {closeRegDate.toLocaleString(DateTime.DATE_HUGE)}
-        </p>
+        {isRegistrationClosed ? (
+          <p className="text-center font-semibold text-destructive pt-2">
+            Registration has closed
+          </p>
+        ) : (
+          <>
+            {byIndividualOpt !== undefined ? (
+              <Button asChild>
+                <Link to={`/events/${event.id}/register-free-agent`}>
+                  Free Agent Sign Up ({formatMoney(byIndividualOpt.price)})
+                </Link>
+              </Button>
+            ) : null}
+            {byTeamOpt !== undefined ? (
+              <Button asChild>
+                <Link to={`/events/${event.id}/register-team`}>
+                  Team Sign Up ({formatMoney(byTeamOpt.price)})
+                </Link>
+              </Button>
+            ) : null}
+            <p className="text-center text-sm text-muted-foreground pt-2">
+              Registration Closes:{' '}
+              {closeRegDate.toLocaleString(DateTime.DATE_HUGE)}
+            </p>
+          </>
+        )}
       </CardFooter>
     </Card>
   );

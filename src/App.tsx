@@ -23,6 +23,7 @@ import AdminOnlyRoute from './components/auth/AdminOnlyRoute';
 import Sidebar from './components/Sidebar';
 import { UserInfoContextProvider } from './context/userInfoContext';
 import OurCommunities from './pages/OurCommunities';
+import EventDetailsPage from './components/EventPageTemplate';
 
 const App = () => {
   const queryClient = new QueryClient();
@@ -56,6 +57,10 @@ const App = () => {
                         }
                       />
                       <Route path="/events" element={<Events />} />
+                      <Route
+                        path="/events/:eventId/event-details"
+                        element={<EventDetailsPage />}
+                      />
                       <Route
                         path="/events/:eventId/register-free-agent"
                         element={<EventRegistrationFreeAgent />}
