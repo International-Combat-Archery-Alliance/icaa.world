@@ -41,8 +41,8 @@ export function EventDetailsCard({ event }: EventDetailsCardProps) {
           </p>
           <p>
             <strong>Address:</strong> {event.location.address.street},{' '}
-            {event.location.address.city},{' '}
-            {event.location.address.state}, {event.location.address.postalCode}
+            {event.location.address.city}, {event.location.address.state},{' '}
+            {event.location.address.postalCode}
           </p>
           {byIndividualOpt && (
             <p>
