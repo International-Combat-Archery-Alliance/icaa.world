@@ -48,13 +48,17 @@ const UpcomingEventsContainer = ({ className }: { className?: string }) => {
           <p className="text-center text-red-600 p-4">Error loading events.</p>
         ) : upcomingEvents && upcomingEvents.length > 0 ? (
           upcomingEvents.map((event) => (
-            <div key={event.id} className="grid gap-1 rounded-lg p-3">
+            <Link
+              key={event.id}
+              to={`/events/${event.id}/event-details`}
+              className="group grid gap-1 rounded-lg p-3 transition-colors hover:bg-muted/50"
+            >
               <p className="text-sm text-muted-foreground">
                 {DateTime.fromISO(event.startTime, {
                   zone: event.timeZone,
                 }).toLocaleString(DateTime.DATE_FULL)}
               </p>
-              <h4 className="font-semibold group-hover:text-primary">
+              <h4 className="font-semibold group-hover:text-primary transition-colors">
                 {event.name}
               </h4>
               {event.location && (
@@ -62,7 +66,7 @@ const UpcomingEventsContainer = ({ className }: { className?: string }) => {
                   {`${event.location.name} - ${event.location.address.city}, ${event.location.address.state}`}
                 </p>
               )}
-            </div>
+            </Link>
           ))
         ) : (
           <p className="text-center text-muted-foreground p-4">
