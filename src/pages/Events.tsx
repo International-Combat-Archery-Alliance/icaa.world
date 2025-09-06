@@ -125,14 +125,10 @@ function EventCard({ event, className }: { event: Event; className?: string }) {
               ...DateTime.TIME_WITH_SHORT_OFFSET,
               second: undefined,
             })}
-            
-
           </div>
-            <Button variant="secondary" asChild>
-              <Link to={`/events/${event.id}/event-details`}>
-                Event Details
-              </Link>
-            </Button>
+          <Button variant="secondary" asChild>
+            <Link to={`/events/${event.id}/event-details`}>Event Details</Link>
+          </Button>
         </div>
       </CardContent>
       <CardFooter className="flex flex-col items-stretch gap-2">
