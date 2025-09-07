@@ -1,5 +1,10 @@
 import { useTitle } from 'react-use';
-import { useGetEvent, useRegisterForEvent, type Event } from '@/hooks/useEvent';
+import {
+  useGetEvent,
+  useRegisterForEvent,
+  useRegisterForEventWithPayment,
+  type Event,
+} from '@/hooks/useEvent';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -25,6 +30,8 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { EventDetailsCard } from '@/components/EventRegDetailsCard';
 import { TurnstileFormField } from '@/components/TurnstileFormField';
+import StripeEmbeddedCheckout from '@/components/StripeEmbeddedCheckout';
+import { useState } from 'react';
 
 export default function EventRegistrationFreeAgent() {
   useTitle('Free Agent Registration - ICAA');
@@ -40,7 +47,9 @@ export default function EventRegistrationFreeAgent() {
 }
 
 function FreeAgentForm({ event }: { event: Event }) {
-  const { mutate, isPending } = useRegisterForEvent();
+  const { mutate, isPending } = useRegisterForEventWithPayment();
+
+  const [clientSecret, setClientSecret] = useState<string | undefined>();
 
   const experienceOptions = ['Novice', 'Intermediate', 'Advanced'] as const;
 
@@ -99,11 +108,12 @@ function FreeAgentForm({ event }: { event: Event }) {
         } as components['schemas']['IndividualRegistration'],
       },
       {
-        onSuccess: () => {
-          window.open(
-            'https://buy.stripe.com/dRm8wOgPA0CXgNB4Kbco003',
-            '_blank',
-          );
+        onSuccess: (resp) => {
+          setClientSecret(resp.info.clientSecret);
+          // window.open(
+          //   'https://buy.stripe.com/dRm8wOgPA0CXgNB4Kbco003',
+          //   '_blank',
+          // );
           form.reset();
         },
         onError: (error) => {
@@ -219,6 +229,7 @@ function FreeAgentForm({ event }: { event: Event }) {
           </Form>
         </CardContent>
       </Card>
+      <StripeEmbeddedCheckout clientSecret={clientSecret} />
     </>
   );
 }
