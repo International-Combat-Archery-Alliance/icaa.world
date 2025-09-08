@@ -3,7 +3,7 @@ import { useTitle } from 'react-use';
 //import { Link } from 'react-router-dom';
 import NewsContainer from '@/components/NewsContainer';
 //import { Button } from '@/components/ui/button';
-import UpcomingEventsContainer from '@/components/UpcomingEventsContainer';
+import EventsContainer from '@/components/EventsContainer';
 
 const Home = () => {
   useTitle('ICAA - International Combat Archery Alliance');
@@ -64,7 +64,7 @@ const Home = () => {
 
         <NewsContainer className="lg:justify-self-end lg:max-w-[500px]" />
 
-        <UpcomingEventsContainer className="lg:max-w-[500px]" />
+        <EventsContainer className="lg:max-w-[500px]" />
       </div>
     </>
   );

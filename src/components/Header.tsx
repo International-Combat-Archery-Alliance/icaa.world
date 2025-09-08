@@ -6,11 +6,8 @@ const routeToHeaderMap: Record<string, string> = {
   '/official-rules': 'Official Rules',
   '/our-communities': 'The Alliance',
   '/events': 'Events',
-  '/event-registration': 'Event Registration',
   '/news/icaa-launch': 'The Launch of the ICAA',
   '/news/rules': 'New Official Tournament Rules',
-  '/registration': 'Registration',
-  '/registrations-table': 'Registrations',
   '/contact': 'Contact Us',
   '/admin': 'Admin',
 };

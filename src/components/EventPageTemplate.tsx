@@ -166,34 +166,34 @@ function EventDetailsTemplate({ event }: { event: Event }) {
                 <TableRow>
                   <TableCell>1</TableCell>
                   <TableCell>Boston Renegades</TableCell>
-                  <TableCell>0-0</TableCell>
-                  <TableCell>0</TableCell>
-                  <TableCell>0</TableCell>
+                  <TableCell>6-0</TableCell>
+                  <TableCell>30</TableCell>
+                  <TableCell>30</TableCell>
                   <TableCell>0</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell>2</TableCell>
                   <TableCell>Draw Blood</TableCell>
-                  <TableCell>0-0</TableCell>
+                  <TableCell>4-2</TableCell>
                   <TableCell>0</TableCell>
-                  <TableCell>0</TableCell>
-                  <TableCell>0</TableCell>
+                  <TableCell>15</TableCell>
+                  <TableCell>15</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell>3</TableCell>
                   <TableCell>Tag Alongs</TableCell>
-                  <TableCell>0-0</TableCell>
-                  <TableCell>0</TableCell>
-                  <TableCell>0</TableCell>
-                  <TableCell>0</TableCell>
+                  <TableCell>2-4</TableCell>
+                  <TableCell>-2</TableCell>
+                  <TableCell>14</TableCell>
+                  <TableCell>16</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell>4</TableCell>
-                  <TableCell>Team V</TableCell>
-                  <TableCell>0-0</TableCell>
-                  <TableCell>0</TableCell>
-                  <TableCell>0</TableCell>
-                  <TableCell>0</TableCell>
+                  <TableCell>V</TableCell>
+                  <TableCell>0-6</TableCell>
+                  <TableCell>-28</TableCell>
+                  <TableCell>1</TableCell>
+                  <TableCell>29</TableCell>
                 </TableRow>
               </TableBody>
             </Table>
@@ -221,86 +221,86 @@ function EventDetailsTemplate({ event }: { event: Event }) {
               <TableBody>
                 <TableRow>
                   <TableCell className="text-center">1</TableCell>
-                  <TableCell className="text-center">Team V</TableCell>
-                  <TableCell className="text-center">-</TableCell>
-                  <TableCell className="text-center">-</TableCell>
+                  <TableCell className="text-center">V</TableCell>
+                  <TableCell className="text-center">0</TableCell>
+                  <TableCell className="text-center">5</TableCell>
                   <TableCell className="text-center">Tag Alongs</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell className="text-center">2</TableCell>
                   <TableCell className="text-center">Draw Blood</TableCell>
-                  <TableCell className="text-center">-</TableCell>
-                  <TableCell className="text-center">-</TableCell>
+                  <TableCell className="text-center">0</TableCell>
+                  <TableCell className="text-center">5</TableCell>
                   <TableCell className="text-center">Renegades</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell className="text-center">3</TableCell>
                   <TableCell className="text-center">Renegades</TableCell>
-                  <TableCell className="text-center">-</TableCell>
-                  <TableCell className="text-center">-</TableCell>
-                  <TableCell className="text-center">Team V</TableCell>
+                  <TableCell className="text-center">5</TableCell>
+                  <TableCell className="text-center">0</TableCell>
+                  <TableCell className="text-center">V</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell className="text-center">4</TableCell>
                   <TableCell className="text-center">Tag Alongs</TableCell>
-                  <TableCell className="text-center">-</TableCell>
-                  <TableCell className="text-center">-</TableCell>
+                  <TableCell className="text-center">2</TableCell>
+                  <TableCell className="text-center">3</TableCell>
                   <TableCell className="text-center">Draw Blood</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell className="text-center">5</TableCell>
-                  <TableCell className="text-center">Team V</TableCell>
-                  <TableCell className="text-center">-</TableCell>
-                  <TableCell className="text-center">-</TableCell>
+                  <TableCell className="text-center">V</TableCell>
+                  <TableCell className="text-center">0</TableCell>
+                  <TableCell className="text-center">5</TableCell>
                   <TableCell className="text-center">Draw Blood</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell className="text-center">6</TableCell>
                   <TableCell className="text-center">Renegades</TableCell>
-                  <TableCell className="text-center">-</TableCell>
-                  <TableCell className="text-center">-</TableCell>
+                  <TableCell className="text-center">5</TableCell>
+                  <TableCell className="text-center">0</TableCell>
                   <TableCell className="text-center">Tag Alongs</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell className="text-center">7</TableCell>
                   <TableCell className="text-center">Tag Alongs</TableCell>
-                  <TableCell className="text-center">-</TableCell>
-                  <TableCell className="text-center">-</TableCell>
-                  <TableCell className="text-center">Team V</TableCell>
+                  <TableCell className="text-center">5</TableCell>
+                  <TableCell className="text-center">0</TableCell>
+                  <TableCell className="text-center">V</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell className="text-center">8</TableCell>
                   <TableCell className="text-center">Renegades</TableCell>
-                  <TableCell className="text-center">-</TableCell>
-                  <TableCell className="text-center">-</TableCell>
+                  <TableCell className="text-center">5</TableCell>
+                  <TableCell className="text-center">0</TableCell>
                   <TableCell className="text-center">Draw Blood</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell className="text-center">9</TableCell>
-                  <TableCell className="text-center">Team V</TableCell>
-                  <TableCell className="text-center">-</TableCell>
-                  <TableCell className="text-center">-</TableCell>
+                  <TableCell className="text-center">V</TableCell>
+                  <TableCell className="text-center">0</TableCell>
+                  <TableCell className="text-center">5</TableCell>
                   <TableCell className="text-center">Renegades</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell className="text-center">10</TableCell>
                   <TableCell className="text-center">Draw Blood</TableCell>
-                  <TableCell className="text-center">-</TableCell>
-                  <TableCell className="text-center">-</TableCell>
+                  <TableCell className="text-center">3</TableCell>
+                  <TableCell className="text-center">2</TableCell>
                   <TableCell className="text-center">Tag Alongs</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell className="text-center">11</TableCell>
                   <TableCell className="text-center">Draw Blood</TableCell>
-                  <TableCell className="text-center">-</TableCell>
-                  <TableCell className="text-center">-</TableCell>
-                  <TableCell className="text-center">Team V</TableCell>
+                  <TableCell className="text-center">4</TableCell>
+                  <TableCell className="text-center">1</TableCell>
+                  <TableCell className="text-center">V</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell className="text-center">12</TableCell>
                   <TableCell className="text-center">Tag Alongs</TableCell>
-                  <TableCell className="text-center">-</TableCell>
-                  <TableCell className="text-center">-</TableCell>
+                  <TableCell className="text-center">0</TableCell>
+                  <TableCell className="text-center">5</TableCell>
                   <TableCell className="text-center">Renegades</TableCell>
                 </TableRow>
               </TableBody>

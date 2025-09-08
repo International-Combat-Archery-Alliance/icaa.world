@@ -8,6 +8,7 @@ import OfficialRules from './pages/OfficialRules';
 import Events from './pages/Events';
 import NewsItem1 from './pages/news/NewsItem1';
 import NewsItem2 from './pages/news/NewsItem2';
+import NewsItem3 from './pages/news/NewsItem3';
 import Registration from './pages/Registration';
 import RegistrationsTablePage from './pages/RegistrationsTablePage';
 import Contact from './pages/Contact';
@@ -85,6 +86,10 @@ const App = () => {
                       />
                       <Route path="/news/icaa-launch" element={<NewsItem1 />} />
                       <Route path="/news/rules" element={<NewsItem2 />} />
+                      <Route
+                        path="/news/play-ins-results"
+                        element={<NewsItem3 />}
+                      />
                     </Routes>
                   </main>
                   <footer>

@@ -1,6 +1,5 @@
 import { useTitle } from 'react-use';
 import { Link } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const NewsItem2 = () => {
@@ -52,12 +51,6 @@ const NewsItem2 = () => {
             </a>
             .
           </p>
-        </div>
-
-        <div className="mt-10 text-center">
-          <Button asChild size="lg" className="text-lg">
-            <Link to="/events">View All Events</Link>
-          </Button>
         </div>
       </div>
     </section>
