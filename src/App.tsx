@@ -86,7 +86,10 @@ const App = () => {
                       />
                       <Route path="/news/icaa-launch" element={<NewsItem1 />} />
                       <Route path="/news/rules" element={<NewsItem2 />} />
-                      <Route path="/news/play-ins-results" element={<NewsItem3 />} />
+                      <Route
+                        path="/news/play-ins-results"
+                        element={<NewsItem3 />}
+                      />
                     </Routes>
                   </main>
                   <footer>
