@@ -24,7 +24,6 @@ import { EventDetailsCard } from '@/components/EventRegDetailsCard';
 import { Trash2 } from 'lucide-react';
 import { TurnstileFormField } from '@/components/TurnstileFormField';
 import { useEventPaymentInfo } from '@/hooks/useEventPaymentInfo';
-import { DateTime } from 'luxon';
 import InProgressPayment from '@/components/InProgressPayment';
 
 export default function EventRegistrationTeam() {

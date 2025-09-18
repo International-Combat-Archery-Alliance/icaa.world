@@ -30,7 +30,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { EventDetailsCard } from '@/components/EventRegDetailsCard';
 import { TurnstileFormField } from '@/components/TurnstileFormField';
 import { useEventPaymentInfo } from '@/hooks/useEventPaymentInfo';
-import { DateTime } from 'luxon';
 import InProgressPayment from '@/components/InProgressPayment';
 
 export default function EventRegistrationFreeAgent() {
