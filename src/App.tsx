@@ -8,8 +8,7 @@ import OfficialRules from './pages/OfficialRules';
 import Events from './pages/Events';
 import NewsItem1 from './pages/news/NewsItem1';
 import NewsItem2 from './pages/news/NewsItem2';
-import Registration from './pages/Registration';
-import RegistrationsTablePage from './pages/RegistrationsTablePage';
+import NewsItem3 from './pages/news/NewsItem3';
 import Contact from './pages/Contact';
 import AdminPage from './pages/Admin';
 import { EventQueryClientProvider } from './context/eventQueryClientContext';
@@ -79,11 +78,6 @@ const App = () => {
                         path="/events/:eventId/success"
                         element={<EventPaymentSuccess />}
                       />
-                      <Route path="/registration" element={<Registration />} />
-                      <Route
-                        path="/registrations-table"
-                        element={<RegistrationsTablePage />}
-                      />
                       <Route path="/contact" element={<Contact />} />
                       <Route
                         path="/admin"
@@ -95,6 +89,10 @@ const App = () => {
                       />
                       <Route path="/news/icaa-launch" element={<NewsItem1 />} />
                       <Route path="/news/rules" element={<NewsItem2 />} />
+                      <Route
+                        path="/news/play-ins-results"
+                        element={<NewsItem3 />}
+                      />
                     </Routes>
                   </main>
                   <footer>

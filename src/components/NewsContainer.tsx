@@ -9,7 +9,7 @@ const newsItems = [
     id: 'icaa-launch',
     to: '/news/icaa-launch',
     title: 'ICAA to Launch with Inaugural Boston Play Ins',
-    date: 'August 30, 2025',
+    date: 'August 29, 2025',
     excerpt:
       'The ICAA is proud to announce its official launch with the first-ever Boston Play Ins Tournament this fall.',
   },
@@ -21,9 +21,21 @@ const newsItems = [
     excerpt:
       'The official rulebook for competitive tournament play has been released, outlining standardized regulations for all ICAA-sanctioned events.',
   },
+  {
+    id: 'play-ins-results',
+    to: '/news/play-ins-results',
+    title: 'Boston Play-In Results Are In!',
+    date: 'September 7, 2025',
+    excerpt:
+      "The inaugural Boston Play-Ins have concluded! Three teams have punched their ticket to the international tournament. Find out who came out on top and see the full breakdown of the day's action.",
+  },
 ];
 
 const NewsContainer = ({ className }: { className?: string }) => {
+  const sortedNews = [...newsItems].sort(
+    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+  );
+
   return (
     <Card className={cn('flex h-full flex-col', className)}>
       <CardHeader>
@@ -33,7 +45,7 @@ const NewsContainer = ({ className }: { className?: string }) => {
         </CardTitle>
       </CardHeader>
       <CardContent className="grid flex-grow gap-4">
-        {newsItems.map((item) => (
+        {sortedNews.map((item) => (
           <div key={item.id}>
             <Link
               to={item.to}
