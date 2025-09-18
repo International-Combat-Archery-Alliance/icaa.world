@@ -77,12 +77,6 @@ export function useUpdateEventDataAfterMutate() {
   };
 }
 
-export function useRegisterForEvent() {
-  const client = useEventQueryClient();
-
-  return client.useMutation('post', '/events/v1/{eventId}/register');
-}
-
 export function useRegisterForEventWithPayment() {
   const client = useEventQueryClient();
 

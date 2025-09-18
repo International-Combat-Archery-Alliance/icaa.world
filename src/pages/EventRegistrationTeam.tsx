@@ -1,7 +1,6 @@
 import { useTitle } from 'react-use';
 import {
   useGetEvent,
-  useRegisterForEvent,
   useRegisterForEventWithPayment,
   type Event,
 } from '@/hooks/useEvent';
