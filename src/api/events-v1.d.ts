@@ -15,238 +15,17 @@ export interface paths {
          * Get all events
          * @description Retrieves a list of all events
          */
-        get: {
-            parameters: {
-                query?: {
-                    /** @description Cursor of where to start from */
-                    cursor?: string;
-                    /** @description Max amount of events to fetch */
-                    limit?: number;
-                };
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description A list of events. */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            data: components["schemas"]["Event"][];
-                            /** @example Y29uZ3JhdHMsIHlvdSBmb3VuZCB0aGUgZWFzdGVyIGVnZw== */
-                            cursor?: string;
-                            /** @example true */
-                            hasNextPage: boolean;
-                        };
-                    };
-                };
-                /** @description Bad request. */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                /** @description Unknown server error. */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-            };
-        };
+        get: operations["GetEventsV1"];
         put?: never;
         /**
          * Create a new event
          * @description Admin endpoint to create a new event
          */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            /** @description Event to be created */
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["Event"];
-                };
-            };
-            responses: {
-                /** @description The created event. */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Event"];
-                    };
-                };
-                /** @description Bad request. */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                /** @description Unknown server error. */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-            };
-        };
+        post: operations["PostEventsV1"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
-        trace?: never;
-    };
-    "/events/v1/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get an event
-         * @description Get one event by id
-         */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    /** @description ID of the event */
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description The event */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            event: components["schemas"]["Event"];
-                        };
-                    };
-                };
-                /** @description Bad request. */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                /** @description Event not found. */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                /** @description Unknown server error. */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        /**
-         * Update an event
-         * @description Update an event by id
-         */
-        patch: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    /** @description ID of the event */
-                    id: string;
-                };
-                cookie?: never;
-            };
-            /** @description Event to be updated */
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["Event"];
-                };
-            };
-            responses: {
-                /** @description The updated event */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            event: components["schemas"]["Event"];
-                        };
-                    };
-                };
-                /** @description Bad request. */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                /** @description Event not found. */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                /** @description Unknown server error. */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-            };
-        };
         trace?: never;
     };
     "/events/v1/{eventId}/register": {
@@ -263,84 +42,7 @@ export interface paths {
          * @deprecated
          * @description Deprecated in favor of the payment sign up flow, will be removed in the future.
          */
-        post: {
-            parameters: {
-                query?: never;
-                header: {
-                    /** @description Cloudflare turnstile CAPTCHA */
-                    "cf-turnstile-response": string;
-                };
-                path: {
-                    /** @description ID of the event */
-                    eventId: string;
-                };
-                cookie?: never;
-            };
-            /** @description Registration to be created */
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["Registration"];
-                };
-            };
-            responses: {
-                /** @description The created registration. */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            registration: components["schemas"]["Registration"];
-                        };
-                    };
-                };
-                /** @description Bad request */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                /** @description Not allowed to register. */
-                403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                /** @description Event is not found to register with */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                /** @description Someone is already signed up under this email */
-                409: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                /** @description Unknown server error. */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-            };
-        };
+        post: operations["PostEventsV1EventIdRegister"];
         delete?: never;
         options?: never;
         head?: never;
@@ -358,272 +60,183 @@ export interface paths {
          * Get all registrations for an event
          * @description Get all registrations for an event
          */
-        get: {
-            parameters: {
-                query?: {
-                    /** @description Cursor of where to start from */
-                    cursor?: string;
-                    /** @description Max amount of registrations to fetch */
-                    limit?: number;
-                };
-                header?: never;
-                path: {
-                    /** @description ID of the event */
-                    eventId: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description A list of registrations. */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            data: components["schemas"]["Registration"][];
-                            /** @example 54321 */
-                            cursor?: string;
-                            /** @example true */
-                            hasNextPage: boolean;
-                        };
-                    };
-                };
-                /** @description Bad request. */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                /** @description Unknown server error. */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-            };
-        };
+        get: operations["GetEventsV1EventIdRegistrations"];
         put?: never;
         /**
          * Sign up for an event
          * @description Starts an event sign up flow
          */
-        post: {
-            parameters: {
-                query?: never;
-                header: {
-                    /** @description Cloudflare turnstile CAPTCHA */
-                    "cf-turnstile-response": string;
-                };
-                path: {
-                    /** @description ID of the event */
-                    eventId: string;
-                };
-                cookie?: never;
-            };
-            /** @description Registration to be created */
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["Registration"];
-                };
-            };
-            responses: {
-                /** @description The created registration with payment info. */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            info: components["schemas"]["RegistrationPaymentInfo"];
-                        };
-                    };
-                };
-                /** @description Bad request */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                /** @description Not allowed to register. */
-                403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                /** @description Event is not found to register with */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                /** @description Someone is already signed up under this email */
-                409: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                /** @description Unknown server error. */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-            };
-        };
+        post: operations["PostEventsV1EventIdRegistrations"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
+    "/events/v1/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get an event
+         * @description Get one event by id
+         */
+        get: operations["GetEventsV1Id"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Update an event
+         * @description Update an event by id
+         */
+        patch: operations["PatchEventsV1Id"];
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        Address: {
+            /**
+             * @description City or town
+             * @example Anytown
+             */
+            city: string;
+            /**
+             * @description Country
+             * @example USA
+             */
+            country: string;
+            /**
+             * @description Postal code
+             * @example 90210
+             */
+            postalCode: string;
+            /**
+             * @description State or province
+             * @example CA
+             */
+            state: string;
+            /**
+             * @description Street address
+             * @example 123 Main St
+             */
+            street: string;
+        };
+        Error: {
+            code: components["schemas"]["ErrorCode"];
+            /** @example An unexpected error occurred. */
+            message: string;
+        };
+        /** @enum {string} */
+        ErrorCode: "InternalError" | "LimitOutOfBounds" | "InvalidCursor" | "NotFound" | "EmptyBody" | "InvalidBody" | "AlreadyExists" | "RegistrationClosed" | "InputValidationError" | "AuthError" | "CaptchaInvalid";
         Event: {
-            /**
-             * Format: uuid
-             * @example 00000000-0000-0000-0000-000000000000
-             */
-            readonly id: string;
-            /** @example 1 */
-            readonly version: number;
-            /** @example ICAA Cup 2025 */
-            name: string;
-            location: components["schemas"]["Location"];
-            /**
-             * @description Time zone of the event. Defaults to UTC if not set.
-             * @example America/New_York
-             */
-            timeZone?: string;
-            /**
-             * Format: date-time
-             * @example 2025-08-19T18:46:53.185Z
-             */
-            startTime: string;
+            allowedTeamSizeRange: components["schemas"]["Range"];
             /**
              * Format: date-time
              * @example 2025-08-19T22:00:00.000Z
              */
             endTime: string;
             /**
-             * Format: date-time
-             * @example 2025-08-17T23:59:59.000Z
+             * Format: uuid
+             * @example 00000000-0000-0000-0000-000000000000
              */
-            registrationCloseTime: string;
-            registrationOptions: components["schemas"]["EventRegistrationOption"][];
-            allowedTeamSizeRange: components["schemas"]["Range"];
-            signUpStats: components["schemas"]["SignUpStats"];
-            /** @example https://docs.google.com/document/d/adsffafsafsadfd/view */
-            rulesDocLink?: string;
+            readonly id: string;
             /**
              * @description A file name that exists in the UI assets to use as the logo.
              * @example boston-tournament.jpg
              */
             imageName?: string;
-        };
-        SignUpStats: {
-            /** @example 10 */
-            numTeams: number;
-            /** @example 50 */
-            numRosteredPlayers: number;
-            /** @example 55 */
-            numTotalPlayers: number;
-        };
-        Registration: components["schemas"]["IndividualRegistration"] | components["schemas"]["TeamRegistration"];
-        IndividualRegistration: {
+            location: components["schemas"]["Location"];
+            /** @example ICAA Cup 2025 */
+            name: string;
             /**
-             * @description discriminator enum property added by openapi-typescript
-             * @enum {string}
+             * Format: date-time
+             * @example 2025-08-17T23:59:59.000Z
              */
-            registrationType: "ByIndividual";
-            /**
-             * Format: uuid
-             * @example 00000000-0000-0000-0000-000000000000
-             */
-            readonly id: string;
-            /** @example 1 */
-            readonly version: number;
-            /**
-             * Format: uuid
-             * @example 00000000-0000-0000-0000-000000000000
-             */
-            readonly eventId: string;
+            registrationCloseTime: string;
+            registrationOptions: components["schemas"]["EventRegistrationOption"][];
+            /** @example https://docs.google.com/document/d/adsffafsafsadfd/view */
+            rulesDocLink?: string;
+            signUpStats: components["schemas"]["SignUpStats"];
             /**
              * Format: date-time
              * @example 2025-08-19T18:46:53.185Z
              */
-            readonly registeredAt: string;
+            startTime: string;
+            /**
+             * @description Time zone of the event. Defaults to UTC if not set.
+             * @example America/New_York
+             */
+            timeZone?: string;
+            /** @example 1 */
+            readonly version: number;
+        };
+        EventRegistrationOption: {
+            price: components["schemas"]["Money"];
+            registrationType: components["schemas"]["RegistrationType"];
+        };
+        /**
+         * @example Intermediate
+         * @enum {string}
+         */
+        ExperienceLevel: "Novice" | "Intermediate" | "Advanced";
+        IndividualRegistration: {
             /**
              * Format: email
              * @example jane.doe@example.com
              */
             email: string;
-            /** @example Anytown, USA */
-            homeCity: string;
-            playerInfo: components["schemas"]["PlayerInfo"];
-            experience: components["schemas"]["ExperienceLevel"];
-            /** @example true */
-            readonly paid: boolean;
-        };
-        TeamRegistration: {
-            /**
-             * @description discriminator enum property added by openapi-typescript
-             * @enum {string}
-             */
-            registrationType: "ByTeam";
-            /**
-             * Format: uuid
-             * @example 00000000-0000-0000-0000-000000000000
-             */
-            readonly id: string;
-            /** @example 1 */
-            readonly version: number;
             /**
              * Format: uuid
              * @example 00000000-0000-0000-0000-000000000000
              */
             readonly eventId: string;
+            experience: components["schemas"]["ExperienceLevel"];
+            /** @example Anytown, USA */
+            homeCity: string;
+            /**
+             * Format: uuid
+             * @example 00000000-0000-0000-0000-000000000000
+             */
+            readonly id: string;
+            /** @example true */
+            readonly paid: boolean;
+            playerInfo: components["schemas"]["PlayerInfo"];
             /**
              * Format: date-time
              * @example 2025-08-19T18:46:53.185Z
              */
             readonly registeredAt: string;
-            /** @example The Fighting Mongooses */
-            teamName: string;
-            /** @example Anytown, USA */
-            homeCity: string;
             /**
-             * Format: email
-             * @example captain@example.com
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
              */
-            captainEmail: string;
-            players: components["schemas"]["PlayerInfo"][];
-            /** @example true */
-            readonly paid: boolean;
+            registrationType: "ByIndividual";
+            /** @example 1 */
+            readonly version: number;
+        };
+        Location: {
+            address: components["schemas"]["Address"];
+            /** @example Anytown Community Center */
+            name: string;
+        };
+        Money: {
+            /**
+             * @description Minor units of money (i.e. 100 == $1 in USD)
+             * @example 100
+             */
+            amount: number;
+            /**
+             * Format: iso-4217
+             * @example USD
+             */
+            currency: string;
         };
         PlayerInfo: {
             /** @example Jane */
@@ -631,60 +244,13 @@ export interface components {
             /** @example Doe */
             lastName: string;
         };
-        Location: {
-            /** @example Anytown Community Center */
-            name: string;
-            address: components["schemas"]["Address"];
-        };
-        Address: {
-            /**
-             * @description Street address
-             * @example 123 Main St
-             */
-            street: string;
-            /**
-             * @description City or town
-             * @example Anytown
-             */
-            city: string;
-            /**
-             * @description State or province
-             * @example CA
-             */
-            state: string;
-            /**
-             * @description Postal code
-             * @example 90210
-             */
-            postalCode: string;
-            /**
-             * @description Country
-             * @example USA
-             */
-            country: string;
-        };
         Range: {
-            /** @example 1 */
-            min: number;
             /** @example 5 */
             max: number;
+            /** @example 1 */
+            min: number;
         };
-        Money: {
-            /**
-             * Format: iso-4217
-             * @example USD
-             */
-            currency: string;
-            /**
-             * @description Minor units of money (i.e. 100 == $1 in USD)
-             * @example 100
-             */
-            amount: number;
-        };
-        EventRegistrationOption: {
-            registrationType: components["schemas"]["RegistrationType"];
-            price: components["schemas"]["Money"];
-        };
+        Registration: components["schemas"]["IndividualRegistration"] | components["schemas"]["TeamRegistration"];
         RegistrationPaymentInfo: {
             clientSecret: string;
             /** Format: date-time */
@@ -696,18 +262,49 @@ export interface components {
          * @enum {string}
          */
         RegistrationType: "ByIndividual" | "ByTeam";
-        /**
-         * @example Intermediate
-         * @enum {string}
-         */
-        ExperienceLevel: "Novice" | "Intermediate" | "Advanced";
-        /** @enum {string} */
-        ErrorCode: "InternalError" | "LimitOutOfBounds" | "InvalidCursor" | "NotFound" | "EmptyBody" | "InvalidBody" | "AlreadyExists" | "RegistrationClosed" | "InputValidationError" | "AuthError" | "CaptchaInvalid";
-        Error: {
-            /** @example InternalError */
-            code: components["schemas"]["ErrorCode"];
-            /** @example An unexpected error occurred. */
-            message: string;
+        SignUpStats: {
+            /** @example 50 */
+            numRosteredPlayers: number;
+            /** @example 10 */
+            numTeams: number;
+            /** @example 55 */
+            numTotalPlayers: number;
+        };
+        TeamRegistration: {
+            /**
+             * Format: email
+             * @example captain@example.com
+             */
+            captainEmail: string;
+            /**
+             * Format: uuid
+             * @example 00000000-0000-0000-0000-000000000000
+             */
+            readonly eventId: string;
+            /** @example Anytown, USA */
+            homeCity: string;
+            /**
+             * Format: uuid
+             * @example 00000000-0000-0000-0000-000000000000
+             */
+            readonly id: string;
+            /** @example true */
+            readonly paid: boolean;
+            players: components["schemas"]["PlayerInfo"][];
+            /**
+             * Format: date-time
+             * @example 2025-08-19T18:46:53.185Z
+             */
+            readonly registeredAt: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            registrationType: "ByTeam";
+            /** @example The Fighting Mongooses */
+            teamName: string;
+            /** @example 1 */
+            readonly version: number;
         };
     };
     responses: never;
@@ -717,4 +314,414 @@ export interface components {
     pathItems: never;
 }
 export type $defs = Record<string, never>;
-export type operations = Record<string, never>;
+export interface operations {
+    GetEventsV1: {
+        parameters: {
+            query?: {
+                /** @description Cursor of where to start from */
+                cursor?: string;
+                /** @description Max amount of events to fetch */
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description A list of events. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example Y29uZ3JhdHMsIHlvdSBmb3VuZCB0aGUgZWFzdGVyIGVnZw== */
+                        cursor?: string;
+                        data: components["schemas"]["Event"][];
+                        /** @example true */
+                        hasNextPage: boolean;
+                    };
+                };
+            };
+            /** @description Bad request. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Unknown server error. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    PostEventsV1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Event to be created */
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Event"];
+            };
+        };
+        responses: {
+            /** @description The created event. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Event"];
+                };
+            };
+            /** @description Bad request. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Unknown server error. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    PostEventsV1EventIdRegister: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Cloudflare turnstile CAPTCHA */
+                "cf-turnstile-response": string;
+            };
+            path: {
+                /** @description ID of the event */
+                eventId: string;
+            };
+            cookie?: never;
+        };
+        /** @description Registration to be created */
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Registration"];
+            };
+        };
+        responses: {
+            /** @description The created registration. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        registration: components["schemas"]["Registration"];
+                    };
+                };
+            };
+            /** @description Bad request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Not allowed to register. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Event is not found to register with */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Someone is already signed up under this email */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Unknown server error. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    GetEventsV1EventIdRegistrations: {
+        parameters: {
+            query?: {
+                /** @description Cursor of where to start from */
+                cursor?: string;
+                /** @description Max amount of registrations to fetch */
+                limit?: number;
+            };
+            header?: never;
+            path: {
+                /** @description ID of the event */
+                eventId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description A list of registrations. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example 54321 */
+                        cursor?: string;
+                        data: components["schemas"]["Registration"][];
+                        /** @example true */
+                        hasNextPage: boolean;
+                    };
+                };
+            };
+            /** @description Bad request. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Unknown server error. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    PostEventsV1EventIdRegistrations: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Cloudflare turnstile CAPTCHA */
+                "cf-turnstile-response": string;
+            };
+            path: {
+                /** @description ID of the event */
+                eventId: string;
+            };
+            cookie?: never;
+        };
+        /** @description Registration to be created */
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Registration"];
+            };
+        };
+        responses: {
+            /** @description The created registration with payment info. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        info: components["schemas"]["RegistrationPaymentInfo"];
+                    };
+                };
+            };
+            /** @description Bad request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Not allowed to register. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Event is not found to register with */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Someone is already signed up under this email */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Unknown server error. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    GetEventsV1Id: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description ID of the event */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The event */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        event: components["schemas"]["Event"];
+                    };
+                };
+            };
+            /** @description Bad request. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Event not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Unknown server error. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    PatchEventsV1Id: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description ID of the event */
+                id: string;
+            };
+            cookie?: never;
+        };
+        /** @description Event to be updated */
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Event"];
+            };
+        };
+        responses: {
+            /** @description The updated event */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        event: components["schemas"]["Event"];
+                    };
+                };
+            };
+            /** @description Bad request. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Event not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Unknown server error. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+}
