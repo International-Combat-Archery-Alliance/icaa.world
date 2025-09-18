@@ -77,10 +77,10 @@ export function useUpdateEventDataAfterMutate() {
   };
 }
 
-export function useRegisterForEvent() {
+export function useRegisterForEventWithPayment() {
   const client = useEventQueryClient();
 
-  return client.useMutation('post', '/events/v1/{eventId}/register');
+  return client.useMutation('post', '/events/v1/{eventId}/registrations');
 }
 
 export function useCreateEvent() {

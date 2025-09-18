@@ -22,6 +22,14 @@ function getHeaderTextForParameterizedRoute(pathname: string): string | null {
     return 'Team Registration';
   }
 
+  if (pathname.match(/^\/events\/[^\/]+\/payment$/)) {
+    return 'Event Payment';
+  }
+
+  if (pathname.match(/^\/events\/[^\/]+\/success$/)) {
+    return 'Thank you for signing up!';
+  }
+
   return null;
 }
 

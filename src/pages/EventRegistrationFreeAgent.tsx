@@ -1,9 +1,13 @@
 import { useTitle } from 'react-use';
-import { useGetEvent, useRegisterForEvent, type Event } from '@/hooks/useEvent';
+import {
+  useGetEvent,
+  useRegisterForEventWithPayment,
+  type Event,
+} from '@/hooks/useEvent';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import type { components } from '@/api/events-v1';
 import {
   Form,
@@ -25,6 +29,8 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { EventDetailsCard } from '@/components/EventRegDetailsCard';
 import { TurnstileFormField } from '@/components/TurnstileFormField';
+import { useEventPaymentInfo } from '@/hooks/useEventPaymentInfo';
+import InProgressPayment from '@/components/InProgressPayment';
 
 export default function EventRegistrationFreeAgent() {
   useTitle('Free Agent Registration - ICAA');
@@ -40,7 +46,11 @@ export default function EventRegistrationFreeAgent() {
 }
 
 function FreeAgentForm({ event }: { event: Event }) {
-  const { mutate, isPending } = useRegisterForEvent();
+  const { mutate, isPending } = useRegisterForEventWithPayment();
+
+  const [paymentInfo, setPaymentInfo] = useEventPaymentInfo(event.id);
+
+  const navigate = useNavigate();
 
   const experienceOptions = ['Novice', 'Intermediate', 'Advanced'] as const;
 
@@ -99,11 +109,12 @@ function FreeAgentForm({ event }: { event: Event }) {
         } as components['schemas']['IndividualRegistration'],
       },
       {
-        onSuccess: () => {
-          window.open(
-            'https://buy.stripe.com/dRm8wOgPA0CXgNB4Kbco003',
-            '_blank',
-          );
+        onSuccess: (resp) => {
+          setPaymentInfo({
+            clientSecret: resp.info.clientSecret,
+            expiresAt: resp.info.expiresAt,
+          });
+          navigate(`/events/${event.id}/payment`);
           form.reset();
         },
         onError: (error) => {
@@ -123,31 +134,20 @@ function FreeAgentForm({ event }: { event: Event }) {
           </CardTitle>
         </CardHeader>
         <CardContent className="grid gap-6">
-          <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(onSubmit)}
-              className="flex flex-col gap-8 w-full"
-            >
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <Input {...field} className="bg-white" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <div className="flex flex-col gap-4 lg:flex-row">
+          {paymentInfo !== undefined ? (
+            <InProgressPayment eventId={event.id} />
+          ) : (
+            <Form {...form}>
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="flex flex-col gap-8 w-full"
+              >
                 <FormField
                   control={form.control}
-                  name="playerInfo.firstName"
+                  name="email"
                   render={({ field }) => (
-                    <FormItem className="flex-grow">
-                      <FormLabel>First name</FormLabel>
+                    <FormItem>
+                      <FormLabel>Email</FormLabel>
                       <FormControl>
                         <Input {...field} className="bg-white" />
                       </FormControl>
@@ -155,68 +155,83 @@ function FreeAgentForm({ event }: { event: Event }) {
                     </FormItem>
                   )}
                 />
-                <FormField
-                  control={form.control}
-                  name="playerInfo.lastName"
-                  render={({ field }) => (
-                    <FormItem className="flex-grow">
-                      <FormLabel>Last name</FormLabel>
-                      <FormControl>
-                        <Input {...field} className="bg-white" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-              <div className="flex flex-col gap-4 lg:flex-row">
-                <FormField
-                  control={form.control}
-                  name="homeCity"
-                  render={({ field }) => (
-                    <FormItem className="flex-grow">
-                      <FormLabel>Home city</FormLabel>
-                      <FormControl>
-                        <Input {...field} className="bg-white" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="experience"
-                  render={({ field }) => (
-                    <FormItem className="flex-grow">
-                      <FormLabel>Experience level</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
+                <div className="flex flex-col gap-4 lg:flex-row">
+                  <FormField
+                    control={form.control}
+                    name="playerInfo.firstName"
+                    render={({ field }) => (
+                      <FormItem className="flex-grow">
+                        <FormLabel>First name</FormLabel>
                         <FormControl>
-                          <SelectTrigger className="w-full bg-white">
-                            <SelectValue />
-                          </SelectTrigger>
+                          <Input {...field} className="bg-white" />
                         </FormControl>
-                        <SelectContent>
-                          {experienceOptions.map((v) => (
-                            <SelectItem key={v} value={v}>
-                              {v}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-              <TurnstileFormField form={form} fieldName="turnstileToken" />
-              <Button type="submit" disabled={isPending}>
-                {isPending ? 'Submitting...' : 'Submit'}
-              </Button>
-            </form>
-          </Form>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="playerInfo.lastName"
+                    render={({ field }) => (
+                      <FormItem className="flex-grow">
+                        <FormLabel>Last name</FormLabel>
+                        <FormControl>
+                          <Input {...field} className="bg-white" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                <div className="flex flex-col gap-4 lg:flex-row">
+                  <FormField
+                    control={form.control}
+                    name="homeCity"
+                    render={({ field }) => (
+                      <FormItem className="flex-grow">
+                        <FormLabel>Home city</FormLabel>
+                        <FormControl>
+                          <Input {...field} className="bg-white" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="experience"
+                    render={({ field }) => (
+                      <FormItem className="flex-grow">
+                        <FormLabel>Experience level</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger className="w-full bg-white">
+                              <SelectValue />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {experienceOptions.map((v) => (
+                              <SelectItem key={v} value={v}>
+                                {v}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                <TurnstileFormField form={form} fieldName="turnstileToken" />
+                <Button type="submit" disabled={isPending}>
+                  {isPending ? 'Submitting...' : 'Continue to payment'}
+                </Button>
+              </form>
+            </Form>
+          )}
         </CardContent>
       </Card>
     </>

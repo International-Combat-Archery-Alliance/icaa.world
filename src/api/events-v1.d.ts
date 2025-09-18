@@ -39,7 +39,8 @@ export interface paths {
         put?: never;
         /**
          * Sign up for an event
-         * @description Sign up for an event
+         * @deprecated
+         * @description Deprecated in favor of the payment sign up flow, will be removed in the future.
          */
         post: operations["PostEventsV1EventIdRegister"];
         delete?: never;
@@ -61,7 +62,11 @@ export interface paths {
          */
         get: operations["GetEventsV1EventIdRegistrations"];
         put?: never;
-        post?: never;
+        /**
+         * Sign up for an event
+         * @description Starts an event sign up flow
+         */
+        post: operations["PostEventsV1EventIdRegistrations"];
         delete?: never;
         options?: never;
         head?: never;
@@ -246,6 +251,12 @@ export interface components {
             min: number;
         };
         Registration: components["schemas"]["IndividualRegistration"] | components["schemas"]["TeamRegistration"];
+        RegistrationPaymentInfo: {
+            clientSecret: string;
+            /** Format: date-time */
+            expiresAt: string;
+            registration: components["schemas"]["Registration"];
+        };
         /**
          * @example ByIndividual
          * @enum {string}
@@ -508,6 +519,84 @@ export interface operations {
             };
             /** @description Bad request. */
             400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Unknown server error. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    PostEventsV1EventIdRegistrations: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Cloudflare turnstile CAPTCHA */
+                "cf-turnstile-response": string;
+            };
+            path: {
+                /** @description ID of the event */
+                eventId: string;
+            };
+            cookie?: never;
+        };
+        /** @description Registration to be created */
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Registration"];
+            };
+        };
+        responses: {
+            /** @description The created registration with payment info. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        info: components["schemas"]["RegistrationPaymentInfo"];
+                    };
+                };
+            };
+            /** @description Bad request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Not allowed to register. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Event is not found to register with */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Someone is already signed up under this email */
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };
