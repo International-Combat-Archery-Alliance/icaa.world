@@ -1,5 +1,7 @@
 import { EventDetailsCard } from '@/components/EventRegDetailsCard';
 import { useGetEvent } from '@/hooks/useEvent';
+import { useEventPaymentInfo } from '@/hooks/useEventPaymentInfo';
+import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useTitle } from 'react-use';
 
@@ -8,6 +10,11 @@ export default function EventPaymentSuccess() {
 
   const { eventId } = useParams();
   const { data } = useGetEvent(eventId!);
+  const [, , deletePaymentInfo] = useEventPaymentInfo(eventId!);
+
+  useEffect(() => {
+    deletePaymentInfo();
+  }, [deletePaymentInfo]);
 
   if (data === undefined) {
     return <></>;

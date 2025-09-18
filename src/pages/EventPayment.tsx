@@ -34,22 +34,20 @@ export default function EventPayment() {
   }
 
   return (
-    <div className="p-4">
+    <div className="p-4 flex flex-col items-center">
       <EventDetailsCard event={data.event} />
       <div className="pb-4">
         Note that if you do not pay within 30 minutes, your registration will be
         cancelled and you will need to re-register.
       </div>
-      <div className="flex flex-col items-center">
-        <Card className="w-full md:w-1/2">
-          <StripeEmbeddedCheckout
-            clientSecret={paymentInfo.clientSecret}
-            onComplete={() => {
-              deletePaymentInfo();
-            }}
-          />
-        </Card>
-      </div>
+      <Card className="w-full max-w-screen-lg">
+        <StripeEmbeddedCheckout
+          clientSecret={paymentInfo.clientSecret}
+          onComplete={() => {
+            deletePaymentInfo();
+          }}
+        />
+      </Card>
     </div>
   );
 }
