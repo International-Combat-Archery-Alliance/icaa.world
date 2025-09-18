@@ -7,13 +7,15 @@ import {
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 
 export interface StripeEmbeddedCheckoutProps {
-  clientSecret: string;
+  clientSecret: string | undefined;
+  onComplete?: () => void;
 }
 
 export default function StripeEmbeddedCheckout({
   clientSecret,
+  onComplete,
 }: StripeEmbeddedCheckoutProps) {
-  const options = { clientSecret };
+  const options = { clientSecret, onComplete };
 
   return (
     <div className="w-full max-w-2xl mx-auto">

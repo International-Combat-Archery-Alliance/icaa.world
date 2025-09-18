@@ -687,6 +687,8 @@ export interface components {
         };
         RegistrationPaymentInfo: {
             clientSecret: string;
+            /** Format: date-time */
+            expiresAt: string;
             registration: components["schemas"]["Registration"];
         };
         /**

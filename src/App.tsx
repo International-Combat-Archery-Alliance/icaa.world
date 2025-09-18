@@ -24,6 +24,8 @@ import Sidebar from './components/Sidebar';
 import { UserInfoContextProvider } from './context/userInfoContext';
 import OurCommunities from './pages/OurCommunities';
 import EventDetailsPage from './components/EventPageTemplate';
+import EventPayment from './pages/EventPayment';
+import EventPaymentSuccess from './pages/EventPaymentSuccess';
 
 const App = () => {
   const queryClient = new QueryClient();
@@ -68,6 +70,14 @@ const App = () => {
                       <Route
                         path="/events/:eventId/register-team"
                         element={<EventRegistrationTeam />}
+                      />
+                      <Route
+                        path="/events/:eventId/payment"
+                        element={<EventPayment />}
+                      />
+                      <Route
+                        path="/events/:eventId/success"
+                        element={<EventPaymentSuccess />}
                       />
                       <Route path="/registration" element={<Registration />} />
                       <Route
