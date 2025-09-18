@@ -113,7 +113,7 @@ function FreeAgentForm({ event }: { event: Event }) {
         onSuccess: (resp) => {
           setPaymentInfo({
             clientSecret: resp.info.clientSecret,
-            expiresAt: DateTime.fromISO(resp.info.expiresAt),
+            expiresAt: resp.info.expiresAt,
           });
           navigate(`/events/${event.id}/payment`);
           form.reset();

@@ -4,7 +4,7 @@ import { useLocalStorage } from 'react-use';
 
 export interface EventPaymentInfo {
   clientSecret: string;
-  expiresAt: DateTime;
+  expiresAt: string;
 }
 
 export function useEventPaymentInfo(
@@ -20,7 +20,10 @@ export function useEventPaymentInfo(
 
   // expire payment info if it's past expire at time
   useEffect(() => {
-    if (paymentInfo !== undefined && paymentInfo.expiresAt <= DateTime.now()) {
+    if (
+      paymentInfo !== undefined &&
+      DateTime.fromISO(paymentInfo.expiresAt) <= DateTime.now()
+    ) {
       deletePaymentInfo();
     }
   }, [paymentInfo, deletePaymentInfo]);

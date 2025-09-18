@@ -109,7 +109,7 @@ function TeamForm({ event }: { event: Event }) {
         onSuccess: (resp) => {
           setPaymentInfo({
             clientSecret: resp.info.clientSecret,
-            expiresAt: DateTime.fromISO(resp.info.expiresAt),
+            expiresAt: resp.info.expiresAt,
           });
           navigate(`/events/${event.id}/payment`);
           // Reset the form on the original page after opening the payment link
