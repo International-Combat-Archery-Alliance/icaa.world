@@ -5,8 +5,11 @@ import { Card } from '@/components/ui/card';
 import { useGetEvent } from '@/hooks/useEvent';
 import { useEventPaymentInfo } from '@/hooks/useEventPaymentInfo';
 import { Link, useParams } from 'react-router-dom';
+import { useTitle } from 'react-use';
 
 export default function EventPayment() {
+  useTitle('Event payment');
+
   const { eventId } = useParams();
   const { data } = useGetEvent(eventId!);
 

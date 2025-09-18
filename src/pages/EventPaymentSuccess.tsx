@@ -1,8 +1,11 @@
 import { EventDetailsCard } from '@/components/EventRegDetailsCard';
 import { useGetEvent } from '@/hooks/useEvent';
 import { useParams } from 'react-router-dom';
+import { useTitle } from 'react-use';
 
 export default function EventPaymentSuccess() {
+  useTitle('Successful sign up');
+
   const { eventId } = useParams();
   const { data } = useGetEvent(eventId!);
 
