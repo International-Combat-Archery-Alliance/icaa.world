@@ -29,6 +29,14 @@ const newsItems = [
     excerpt:
       "The inaugural Boston Play-Ins have concluded! Three teams have punched their ticket to the international tournament. Find out who came out on top and see the full breakdown of the day's action.",
   },
+  {
+    id: 'boston-championship-registration',
+    to: '/news/boston-championship-registration',
+    title: 'Registration is Now Open for the Boston Championships 2025!',
+    date: 'September 20, 2025',
+    excerpt:
+      'The stage is set! Registration for the premier Boston Championships 2025 is now open to teams and free agents. Secure your spot to compete against the best in North America.',
+  },
 ];
 
 const NewsContainer = ({ className }: { className?: string }) => {
