@@ -140,19 +140,6 @@ function TeamForm({ event }: { event: Event }) {
                 onSubmit={form.handleSubmit(onSubmit)}
                 className="flex flex-col gap-8 w-full"
               >
-                <FormField
-                  control={form.control}
-                  name="captainEmail"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Captain Email</FormLabel>
-                      <FormControl>
-                        <Input {...field} className="bg-white" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
                 <div className="flex flex-col gap-4 lg:flex-row">
                   <FormField
                     control={form.control}
@@ -197,7 +184,7 @@ function TeamForm({ event }: { event: Event }) {
                         key={field.id}
                         className="flex items-start gap-4 p-4 border rounded-lg"
                       >
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 flex-grow">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 flex-grow">
                           <FormField
                             control={form.control}
                             name={`players.${index}.firstName`}
@@ -232,6 +219,43 @@ function TeamForm({ event }: { event: Event }) {
                               </FormItem>
                             )}
                           />
+                          {index === 0 ? (
+                            <FormField
+                              control={form.control}
+                              name="captainEmail"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Captain Email</FormLabel>
+                                  <FormControl>
+                                    <Input
+                                      {...field}
+                                      className="bg-white"
+                                      placeholder="captain@example.com"
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          ) : (
+                            <FormField
+                              control={form.control}
+                              name={`players.${index}.email`}
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Email</FormLabel>
+                                  <FormControl>
+                                    <Input
+                                      {...field}
+                                      className="bg-white"
+                                      placeholder="player@example.com"
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          )}
                         </div>
                         <Button
                           type="button"
