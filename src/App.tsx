@@ -9,6 +9,7 @@ import Events from './pages/Events';
 import NewsItem1 from './pages/news/NewsItem1';
 import NewsItem2 from './pages/news/NewsItem2';
 import NewsItem3 from './pages/news/NewsItem3';
+import NewsItem4 from './pages/news/NewsItem4';
 import Contact from './pages/Contact';
 import AdminPage from './pages/Admin';
 import { EventQueryClientProvider } from './context/eventQueryClientContext';
@@ -92,6 +93,10 @@ const App = () => {
                       <Route
                         path="/news/play-ins-results"
                         element={<NewsItem3 />}
+                      />
+                      <Route
+                        path="/news/boston-championship-registration"
+                        element={<NewsItem4 />}
                       />
                     </Routes>
                   </main>

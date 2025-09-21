@@ -239,6 +239,8 @@ export interface components {
             currency: string;
         };
         PlayerInfo: {
+            /** @example JaneDoe@gmail.com */
+            email: string;
             /** @example Jane */
             firstName: string;
             /** @example Doe */

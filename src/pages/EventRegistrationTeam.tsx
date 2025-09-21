@@ -47,6 +47,7 @@ function TeamForm({ event }: { event: Event }) {
   const navigate = useNavigate();
 
   const playerSchema = z.object({
+    email: z.string().email({ message: 'A valid email is required.' }),
     firstName: z.string().min(1, 'First name is required.'),
     lastName: z.string().min(1, 'Last name is required.'),
   });
@@ -251,7 +252,9 @@ function TeamForm({ event }: { event: Event }) {
                     type="button"
                     variant="outline"
                     className="mt-4"
-                    onClick={() => append({ firstName: '', lastName: '' })}
+                    onClick={() =>
+                      append({ firstName: '', lastName: '', email: '' })
+                    }
                     disabled={fields.length >= event.allowedTeamSizeRange.max}
                   >
                     Add Player
