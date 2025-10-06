@@ -47,13 +47,12 @@ function TeamForm({ event }: { event: Event }) {
   const navigate = useNavigate();
 
   const playerSchema = z.object({
-    email: z.string().email({ message: 'A valid email is required.' }),
+    email: z.email({ message: 'A valid email is required.' }),
     firstName: z.string().min(1, 'First name is required.'),
     lastName: z.string().min(1, 'Last name is required.'),
   });
 
   const formSchema = z.object({
-    captainEmail: z.email({ message: 'A valid captain email is required.' }),
     homeCity: z.string().min(3, {
       message: 'Home city must be at least 3 characters.',
     }),
@@ -99,7 +98,7 @@ function TeamForm({ event }: { event: Event }) {
         },
         body: {
           registrationType: 'ByTeam',
-          captainEmail: values.captainEmail,
+          captainEmail: values.players[0].email,
           teamName: values.teamName,
           homeCity: values.homeCity,
           players: values.players,
@@ -222,7 +221,7 @@ function TeamForm({ event }: { event: Event }) {
                           {index === 0 ? (
                             <FormField
                               control={form.control}
-                              name="captainEmail"
+                              name={`players.${index}.email`}
                               render={({ field }) => (
                                 <FormItem>
                                   <FormLabel>Captain Email</FormLabel>
