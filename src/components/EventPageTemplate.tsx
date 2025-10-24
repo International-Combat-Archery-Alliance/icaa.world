@@ -103,6 +103,8 @@ function EventDetailsTemplate({ event }: { event: Event }) {
   const isRegistrationClosed = DateTime.now() > closeRegDate;
   const isBostonPlayInEvent =
     event.id === '0219a408-e86a-4404-bc0d-473e68b310dc';
+  const isBostonChampionships =
+    event.id === '78af69ec-e323-436b-96b6-1b5dc9acf46b';
   return (
     <div className="mx-auto max-w-screen-xl grid grid-cols-1 lg:grid-cols-3 gap-4">
       {/* Details */}
@@ -200,6 +202,15 @@ function EventDetailsTemplate({ event }: { event: Event }) {
                   </TableRow>
                 </TableBody>
               </Table>
+            ) : isBostonChampionships ? (
+              <Button asChild>
+                <a
+                  target="_blank"
+                  href="https://docs.google.com/spreadsheets/d/1P8nXzgfSKyduU1yUjB0C_cU1Ucdr_kkVLsikF5SAAkY/edit?gid=673306283#gid=673306283"
+                >
+                  Standings sheet
+                </a>
+              </Button>
             ) : (
               <p>Standings coming soon</p>
             )}
@@ -312,6 +323,15 @@ function EventDetailsTemplate({ event }: { event: Event }) {
                   </TableRow>
                 </TableBody>
               </Table>
+            ) : isBostonChampionships ? (
+              <Button asChild>
+                <a
+                  target="_blank"
+                  href="https://docs.google.com/spreadsheets/d/1P8nXzgfSKyduU1yUjB0C_cU1Ucdr_kkVLsikF5SAAkY/edit?gid=0#gid=0"
+                >
+                  Schedule sheet
+                </a>
+              </Button>
             ) : (
               <p>Schedule coming soon</p>
             )}
