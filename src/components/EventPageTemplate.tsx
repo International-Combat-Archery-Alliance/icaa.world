@@ -101,6 +101,199 @@ function EventDetailsTemplate({ event }: { event: Event }) {
     zone: event.timeZone,
   });
   const isRegistrationClosed = DateTime.now() > closeRegDate;
+  const bostonChampionshipsGameResults = [
+    {
+      game: 1,
+      greenTeam: 'Boston Renegades',
+      greenScore: 6,
+      yellowTeam: 'Draw Blood',
+      yellowScore: 1,
+    },
+    {
+      game: 2,
+      greenTeam: 'Lolipops',
+      greenScore: 1,
+      yellowTeam: 'Casual Tease',
+      yellowScore: 6,
+    },
+    {
+      game: 3,
+      greenTeam: 'Tag Alongs',
+      greenScore: 1,
+      yellowTeam: 'MTL Originals',
+      yellowScore: 6,
+    },
+    {
+      game: 4,
+      greenTeam: 'Boston Renegades',
+      greenScore: 7,
+      yellowTeam: 'Lolipops',
+      yellowScore: 0,
+    },
+    {
+      game: 5,
+      greenTeam: 'MTL Originals',
+      greenScore: 6,
+      yellowTeam: 'Draw Blood',
+      yellowScore: 1,
+    },
+    {
+      game: 6,
+      greenTeam: 'Tag Alongs',
+      greenScore: 3,
+      yellowTeam: 'Casual Tease',
+      yellowScore: 4,
+    },
+    {
+      game: 7,
+      greenTeam: 'MTL Originals',
+      greenScore: 3,
+      yellowTeam: 'Boston Renegades',
+      yellowScore: 4,
+    },
+    {
+      game: 8,
+      greenTeam: 'Draw Blood',
+      greenScore: 0,
+      yellowTeam: 'Casual Tease',
+      yellowScore: 7,
+    },
+    {
+      game: 9,
+      greenTeam: 'Lolipops',
+      greenScore: 2,
+      yellowTeam: 'Tag Alongs',
+      yellowScore: 4,
+    },
+    {
+      game: 10,
+      greenTeam: 'Casual Tease',
+      greenScore: 1,
+      yellowTeam: 'Boston Renegades',
+      yellowScore: 6,
+    },
+    {
+      game: 11,
+      greenTeam: 'MTL Originals',
+      greenScore: 7,
+      yellowTeam: 'Lolipops',
+      yellowScore: 0,
+    },
+    {
+      game: 12,
+      greenTeam: 'Draw Blood',
+      greenScore: 4,
+      yellowTeam: 'Tag Alongs',
+      yellowScore: 1,
+    },
+    {
+      game: 13,
+      greenTeam: 'Casual Tease',
+      greenScore: 4,
+      yellowTeam: 'MTL Originals',
+      yellowScore: 3,
+    },
+    {
+      game: 14,
+      greenTeam: 'Lolipops',
+      greenScore: 4,
+      yellowTeam: 'Draw Blood',
+      yellowScore: 3,
+    },
+    {
+      game: 15,
+      greenTeam: 'Boston Renegades',
+      greenScore: 6,
+      yellowTeam: 'Tag Alongs',
+      yellowScore: 1,
+    },
+  ];
+  const bostonPlayInGameResults = [
+    {
+      game: 1,
+      homeTeam: 'V',
+      homeScore: 0,
+      awayTeam: 'Tag Alongs',
+      awayScore: 5,
+    },
+    {
+      game: 2,
+      homeTeam: 'Draw Blood',
+      homeScore: 0,
+      awayTeam: 'Renegades',
+      awayScore: 5,
+    },
+    {
+      game: 3,
+      homeTeam: 'Renegades',
+      homeScore: 5,
+      awayTeam: 'V',
+      awayScore: 0,
+    },
+    {
+      game: 4,
+      homeTeam: 'Tag Alongs',
+      homeScore: 2,
+      awayTeam: 'Draw Blood',
+      awayScore: 3,
+    },
+    {
+      game: 5,
+      homeTeam: 'V',
+      homeScore: 0,
+      awayTeam: 'Draw Blood',
+      awayScore: 5,
+    },
+    {
+      game: 6,
+      homeTeam: 'Renegades',
+      homeScore: 5,
+      awayTeam: 'Tag Alongs',
+      awayScore: 0,
+    },
+    {
+      game: 7,
+      homeTeam: 'Tag Alongs',
+      homeScore: 5,
+      awayTeam: 'V',
+      awayScore: 0,
+    },
+    {
+      game: 8,
+      homeTeam: 'Renegades',
+      homeScore: 5,
+      awayTeam: 'Draw Blood',
+      awayScore: 0,
+    },
+    {
+      game: 9,
+      homeTeam: 'V',
+      homeScore: 0,
+      awayTeam: 'Renegades',
+      awayScore: 5,
+    },
+    {
+      game: 10,
+      homeTeam: 'Draw Blood',
+      homeScore: 3,
+      awayTeam: 'Tag Alongs',
+      awayScore: 2,
+    },
+    {
+      game: 11,
+      homeTeam: 'Draw Blood',
+      homeScore: 4,
+      awayTeam: 'V',
+      awayScore: 1,
+    },
+    {
+      game: 12,
+      homeTeam: 'Tag Alongs',
+      homeScore: 0,
+      awayTeam: 'Renegades',
+      awayScore: 5,
+    },
+  ];
   const isBostonPlayInEvent =
     event.id === '0219a408-e86a-4404-bc0d-473e68b310dc';
   const isBostonChampionships =
@@ -203,14 +396,11 @@ function EventDetailsTemplate({ event }: { event: Event }) {
                 </TableBody>
               </Table>
             ) : isBostonChampionships ? (
-              <Button asChild>
-                <a
-                  target="_blank"
-                  href="https://docs.google.com/spreadsheets/d/1P8nXzgfSKyduU1yUjB0C_cU1Ucdr_kkVLsikF5SAAkY/edit?gid=673306283#gid=673306283"
-                >
-                  Standings sheet
-                </a>
-              </Button>
+              <img
+                src="/images/other/2025_BC_Results.PNG"
+                alt="2025 Boston Championship Final Standings"
+                className="w-full rounded-lg"
+              />
             ) : (
               <p>Standings coming soon</p>
             )}
@@ -223,7 +413,7 @@ function EventDetailsTemplate({ event }: { event: Event }) {
           <CardHeader>
             <CardTitle className="text-primary">Schedule</CardTitle>
           </CardHeader>
-          <CardContent className="max-h-96 overflow-y-auto lg:max-h-none lg:overflow-y-visible">
+          <CardContent className="max-h-[50vh] overflow-y-auto lg:max-h-none lg:overflow-y-visible">
             {isBostonPlayInEvent ? (
               <Table>
                 <TableHeader>
@@ -237,101 +427,61 @@ function EventDetailsTemplate({ event }: { event: Event }) {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  <TableRow>
-                    <TableCell className="text-center">1</TableCell>
-                    <TableCell className="text-center">V</TableCell>
-                    <TableCell className="text-center">0</TableCell>
-                    <TableCell className="text-center">5</TableCell>
-                    <TableCell className="text-center">Tag Alongs</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="text-center">2</TableCell>
-                    <TableCell className="text-center">Draw Blood</TableCell>
-                    <TableCell className="text-center">0</TableCell>
-                    <TableCell className="text-center">5</TableCell>
-                    <TableCell className="text-center">Renegades</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="text-center">3</TableCell>
-                    <TableCell className="text-center">Renegades</TableCell>
-                    <TableCell className="text-center">5</TableCell>
-                    <TableCell className="text-center">0</TableCell>
-                    <TableCell className="text-center">V</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="text-center">4</TableCell>
-                    <TableCell className="text-center">Tag Alongs</TableCell>
-                    <TableCell className="text-center">2</TableCell>
-                    <TableCell className="text-center">3</TableCell>
-                    <TableCell className="text-center">Draw Blood</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="text-center">5</TableCell>
-                    <TableCell className="text-center">V</TableCell>
-                    <TableCell className="text-center">0</TableCell>
-                    <TableCell className="text-center">5</TableCell>
-                    <TableCell className="text-center">Draw Blood</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="text-center">6</TableCell>
-                    <TableCell className="text-center">Renegades</TableCell>
-                    <TableCell className="text-center">5</TableCell>
-                    <TableCell className="text-center">0</TableCell>
-                    <TableCell className="text-center">Tag Alongs</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="text-center">7</TableCell>
-                    <TableCell className="text-center">Tag Alongs</TableCell>
-                    <TableCell className="text-center">5</TableCell>
-                    <TableCell className="text-center">0</TableCell>
-                    <TableCell className="text-center">V</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="text-center">8</TableCell>
-                    <TableCell className="text-center">Renegades</TableCell>
-                    <TableCell className="text-center">5</TableCell>
-                    <TableCell className="text-center">0</TableCell>
-                    <TableCell className="text-center">Draw Blood</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="text-center">9</TableCell>
-                    <TableCell className="text-center">V</TableCell>
-                    <TableCell className="text-center">0</TableCell>
-                    <TableCell className="text-center">5</TableCell>
-                    <TableCell className="text-center">Renegades</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="text-center">10</TableCell>
-                    <TableCell className="text-center">Draw Blood</TableCell>
-                    <TableCell className="text-center">3</TableCell>
-                    <TableCell className="text-center">2</TableCell>
-                    <TableCell className="text-center">Tag Alongs</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="text-center">11</TableCell>
-                    <TableCell className="text-center">Draw Blood</TableCell>
-                    <TableCell className="text-center">4</TableCell>
-                    <TableCell className="text-center">1</TableCell>
-                    <TableCell className="text-center">V</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="text-center">12</TableCell>
-                    <TableCell className="text-center">Tag Alongs</TableCell>
-                    <TableCell className="text-center">0</TableCell>
-                    <TableCell className="text-center">5</TableCell>
-                    <TableCell className="text-center">Renegades</TableCell>
-                  </TableRow>
+                  {bostonPlayInGameResults.map((result) => (
+                    <TableRow key={result.game}>
+                      <TableCell className="text-center">
+                        {result.game}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        {result.homeTeam}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        {result.homeScore}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        {result.awayScore}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        {result.awayTeam}
+                      </TableCell>
+                    </TableRow>
+                  ))}
                 </TableBody>
               </Table>
             ) : isBostonChampionships ? (
-              <Button asChild>
-                <a
-                  target="_blank"
-                  href="https://docs.google.com/spreadsheets/d/1P8nXzgfSKyduU1yUjB0C_cU1Ucdr_kkVLsikF5SAAkY/edit?gid=0#gid=0"
-                >
-                  Schedule sheet
-                </a>
-              </Button>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="text-center">Game</TableHead>
+                    <TableHead className="text-center">Home</TableHead>
+                    <TableHead colSpan={2} className="text-center">
+                      Score
+                    </TableHead>
+                    <TableHead className="text-center">Away</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {bostonChampionshipsGameResults.map((result) => (
+                    <TableRow key={result.game}>
+                      <TableCell className="text-center">
+                        {result.game}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        {result.greenTeam}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        {result.greenScore}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        {result.yellowScore}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        {result.yellowTeam}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
             ) : (
               <p>Schedule coming soon</p>
             )}
