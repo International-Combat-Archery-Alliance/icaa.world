@@ -9,7 +9,7 @@ const Home = () => {
   useTitle('ICAA - International Combat Archery Alliance');
 
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const totalImages = 65;
+  const totalImages = 67;
   const images = [];
   for (let i = 1; i <= totalImages; i++) {
     images.push(`images/Rotating Archery Photos/${i}.jpg`);
