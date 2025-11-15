@@ -37,6 +37,14 @@ const newsItems = [
     excerpt:
       'The stage is set! Registration for the premier Boston Championships 2025 is now open to teams and free agents. Secure your spot to compete against the best in North America.',
   },
+  {
+    id: 'boston-championship-results',
+    to: '/news/boston-championship-results',
+    title: 'Boston Renegades Win the 2025 Boston Championships!',
+    date: 'October 26, 2025',
+    excerpt:
+      'The inaugural ICAA Boston Championships have concluded! The Boston Renegades have been crowned champions after a thrilling day of competition. See the final standings and read the full recap.',
+  },
 ];
 
 const NewsContainer = ({ className }: { className?: string }) => {
@@ -52,12 +60,12 @@ const NewsContainer = ({ className }: { className?: string }) => {
           <span>Latest News</span>
         </CardTitle>
       </CardHeader>
-      <CardContent className="grid flex-grow gap-4">
+      <CardContent className="grid flex-grow gap-4 overflow-y-auto max-h-[450px]">
         {sortedNews.map((item) => (
           <div key={item.id}>
             <Link
               to={item.to}
-              className="group grid gap-1 rounded-lg transition-colors hover:bg-muted/50"
+              className="group grid gap-1 rounded-lg p-2 transition-colors hover:bg-muted/50"
             >
               <p className="text-sm text-muted-foreground">{item.date}</p>
               <h4 className="font-semibold group-hover:text-primary">
