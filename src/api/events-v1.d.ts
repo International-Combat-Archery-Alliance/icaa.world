@@ -239,8 +239,12 @@ export interface components {
             currency: string;
         };
         PlayerInfo: {
-            /** @example JaneDoe@gmail.com */
-            email: string;
+            /**
+             * Format: email
+             * @description Optional email for each player
+             * @example player@example.com
+             */
+            email?: string;
             /** @example Jane */
             firstName: string;
             /** @example Doe */

@@ -20,6 +20,7 @@ import EventRegistrationTeam from './pages/EventRegistrationTeam';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import Header from './components/Header';
 import { LoginQueryClientProvider } from './context/loginQueryClientContext';
+import { AssetsQueryClientProvider } from './context/assetsQueryClientContext';
 import AdminOnlyRoute from './components/auth/AdminOnlyRoute';
 import Sidebar from './components/Sidebar';
 import { UserInfoContextProvider } from './context/userInfoContext';
@@ -35,10 +36,11 @@ const App = () => {
     <QueryClientProvider client={queryClient}>
       <LoginQueryClientProvider>
         <EventQueryClientProvider>
-          <GoogleOAuthProvider clientId="1008624351875-q36btbijttq83bogn9f8a4srgji0g3qg.apps.googleusercontent.com">
-            <UserInfoContextProvider>
-              <Router>
-                <div className="app-container">
+          <AssetsQueryClientProvider>
+            <GoogleOAuthProvider clientId="1008624351875-q36btbijttq83bogn9f8a4srgji0g3qg.apps.googleusercontent.com">
+              <UserInfoContextProvider>
+                <Router>
+                  <div className="app-container">
                   <Sidebar />
 
                   <Header />
@@ -149,9 +151,10 @@ const App = () => {
                     </p>
                   </footer>
                 </div>
-              </Router>
-            </UserInfoContextProvider>
-          </GoogleOAuthProvider>
+                </Router>
+              </UserInfoContextProvider>
+            </GoogleOAuthProvider>
+          </AssetsQueryClientProvider>
         </EventQueryClientProvider>
       </LoginQueryClientProvider>
     </QueryClientProvider>
