@@ -13,6 +13,8 @@ import {
   Trash2,
   Copy,
   ExternalLink,
+  LayoutGrid,
+  List,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -75,6 +77,7 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
   const [newFolderDescription, setNewFolderDescription] = useState('');
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
   const {
     data,
@@ -319,8 +322,28 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
         </div>
       </div>
 
-      <div className="text-sm text-gray-600">
-        Total items: {allAssets.length}
+      <div className="flex items-center justify-between">
+        <div className="text-sm text-gray-600">
+          Total items: {allAssets.length}
+        </div>
+        <div className="flex gap-1">
+          <Button
+            variant={viewMode === 'grid' ? 'default' : 'outline'}
+            size="icon"
+            onClick={() => setViewMode('grid')}
+            title="Grid view"
+          >
+            <LayoutGrid className="w-4 h-4" />
+          </Button>
+          <Button
+            variant={viewMode === 'list' ? 'default' : 'outline'}
+            size="icon"
+            onClick={() => setViewMode('list')}
+            title="List view"
+          >
+            <List className="w-4 h-4" />
+          </Button>
+        </div>
       </div>
 
       {allAssets.length === 0 ? (
@@ -328,7 +351,7 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
           <Folder className="w-16 h-16 mx-auto mb-4 text-gray-300" />
           <p>This folder is empty</p>
         </div>
-      ) : (
+      ) : viewMode === 'grid' ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {allAssets.map((asset) => (
             <div
@@ -406,6 +429,78 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
                 <p className="text-xs text-gray-500 mt-2">
                   {new Date(asset.createdAt).toLocaleString()}
                 </p>
+              )}
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="border rounded-lg divide-y">
+          {allAssets.map((asset) => (
+            <div
+              key={isAssetAdmin(asset) ? asset.id : asset.name}
+              className={`flex items-center gap-4 p-3 cursor-pointer transition-all hover:bg-gray-50 ${
+                selectedAsset &&
+                isAssetAdmin(selectedAsset) &&
+                isAssetAdmin(asset)
+                  ? selectedAsset.id === asset.id
+                    ? 'bg-primary/10'
+                    : ''
+                  : ''
+              }`}
+              onClick={() => {
+                if (isAssetAdmin(asset)) {
+                  setSelectedAsset(asset);
+                }
+              }}
+              onDoubleClick={() => {
+                if (asset.type === 'folder') {
+                  navigateToFolder(joinPath(currentPath, asset.name));
+                } else if (asset.type === 'file' && 'url' in asset) {
+                  window.open(asset.url, '_blank');
+                }
+              }}
+            >
+              <div className="flex-shrink-0">
+                {isImageAsset(asset) && 'url' in asset ? (
+                  <img
+                    src={asset.url}
+                    alt={asset.name}
+                    className="w-10 h-10 object-cover rounded"
+                  />
+                ) : (
+                  getAssetIcon(asset)
+                )}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="font-medium truncate">{asset.name}</p>
+                {asset.description && (
+                  <p className="text-xs text-gray-500 truncate">
+                    {asset.description}
+                  </p>
+                )}
+              </div>
+              <div className="flex-shrink-0 text-sm text-gray-500">
+                {asset.type === 'file' && asset.size
+                  ? `${(asset.size / 1024).toFixed(1)} KB`
+                  : asset.type === 'folder'
+                    ? `${asset.contentCount} items`
+                    : ''}
+              </div>
+              {'status' in asset && (
+                <span
+                  className={`flex-shrink-0 text-xs px-2 py-1 rounded-full ${
+                    asset.status === 'confirmed'
+                      ? 'bg-green-100 text-green-800'
+                      : 'bg-yellow-100 text-yellow-800'
+                  }`}
+                >
+                  {asset.status}
+                </span>
+              )}
+              {'createdAt' in asset && (
+                <div className="flex-shrink-0 text-xs text-gray-500 hidden md:block">
+                  {new Date(asset.createdAt).toLocaleDateString()}
+                </div>
               )}
             </div>
           ))}
