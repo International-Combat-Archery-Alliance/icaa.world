@@ -50,7 +50,15 @@ const joinPath = (basePath: string, name: string): string => {
 
 const isImageAsset = (asset: Asset): boolean => {
   return (
-    asset.type === 'file' && asset.contentType.toLowerCase().startsWith('image/')
+    asset.type === 'file' &&
+    asset.contentType.toLowerCase().startsWith('image/')
+  );
+};
+
+const isPdfAsset = (asset: Asset): boolean => {
+  return (
+    asset.type === 'file' &&
+    asset.contentType.toLowerCase() === 'application/pdf'
   );
 };
 
@@ -66,6 +74,7 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
   const [newFolderName, setNewFolderName] = useState('');
   const [newFolderDescription, setNewFolderDescription] = useState('');
   const [uploadError, setUploadError] = useState<string | null>(null);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   const {
     data,
@@ -85,6 +94,7 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
 
   const navigateToFolder = (path: string) => {
     setCurrentPath(path);
+    setSelectedAsset(null);
   };
 
   const navigateUp = () => {
@@ -92,6 +102,7 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
     if (pathParts.length > 0) {
       const parentPath = '/' + pathParts.slice(0, -1).join('/');
       setCurrentPath(parentPath);
+      setSelectedAsset(null);
     }
   };
 
@@ -129,6 +140,17 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
       setShowDeleteDialog(false);
     } catch (error) {
       console.error('Failed to delete asset:', error);
+      setShowDeleteDialog(false);
+
+      // Check for FolderNotEmpty error
+      const err = error as { code?: string };
+      if (err.code === 'FolderNotEmpty') {
+        setDeleteError(
+          'Cannot delete folder because it is not empty. Please delete all files and subfolders first.',
+        );
+      } else {
+        setDeleteError('Failed to delete. Please try again.');
+      }
     }
   };
 
@@ -328,6 +350,8 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
               onDoubleClick={() => {
                 if (asset.type === 'folder') {
                   navigateToFolder(joinPath(currentPath, asset.name));
+                } else if (asset.type === 'file' && 'url' in asset) {
+                  window.open(asset.url, '_blank');
                 }
               }}
             >
@@ -417,6 +441,15 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
                   src={selectedAsset.url}
                   alt={selectedAsset.name}
                   className="w-48 h-48 object-contain rounded border bg-white"
+                />
+              </div>
+            )}
+            {isPdfAsset(selectedAsset) && 'url' in selectedAsset && (
+              <div className="flex-shrink-0">
+                <iframe
+                  src={selectedAsset.url}
+                  title={selectedAsset.name}
+                  className="w-64 h-80 rounded border bg-white"
                 />
               </div>
             )}
@@ -580,6 +613,23 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogAction onClick={() => setUploadError(null)}>
+              OK
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog
+        open={deleteError !== null}
+        onOpenChange={(open) => !open && setDeleteError(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Error</AlertDialogTitle>
+            <AlertDialogDescription>{deleteError}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction onClick={() => setDeleteError(null)}>
               OK
             </AlertDialogAction>
           </AlertDialogFooter>
