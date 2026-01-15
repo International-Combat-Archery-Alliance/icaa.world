@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
 import {
   Folder,
   FileText,
@@ -13,6 +12,7 @@ import {
   FolderPlus,
   Trash2,
   Copy,
+  ExternalLink,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -48,6 +48,12 @@ const joinPath = (basePath: string, name: string): string => {
   return `${basePath}/${name}`;
 };
 
+const isImageAsset = (asset: Asset): boolean => {
+  return (
+    asset.type === 'file' && asset.contentType.toLowerCase().startsWith('image/')
+  );
+};
+
 interface AssetBrowserProps {
   initialPath?: string;
 }
@@ -59,10 +65,16 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [newFolderName, setNewFolderName] = useState('');
   const [newFolderDescription, setNewFolderDescription] = useState('');
+  const [uploadError, setUploadError] = useState<string | null>(null);
 
-  const queryClient = useQueryClient();
-  const { data, isLoading, hasNextPage, fetchNextPage, isFetchingNextPage } =
-    useGetAssets(currentPath, 50);
+  const {
+    data,
+    isLoading,
+    hasNextPage,
+    fetchNextPage,
+    isFetchingNextPage,
+    refetch,
+  } = useGetAssets(currentPath, 50);
 
   const createFolderMutation = useCreateFolder();
   const deleteAssetMutation = useDeleteAsset();
@@ -94,9 +106,7 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
           description: newFolderDescription.trim() || undefined,
         },
       });
-      await queryClient.invalidateQueries({
-        queryKey: ['get', '/assets/v1'],
-      });
+      await refetch();
       setNewFolderName('');
       setNewFolderDescription('');
       setShowCreateFolderDialog(false);
@@ -114,9 +124,7 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
           query: { path: joinPath(currentPath, selectedAsset.name) },
         },
       });
-      await queryClient.invalidateQueries({
-        queryKey: ['get', '/assets/v1'],
-      });
+      await refetch();
       setSelectedAsset(null);
       setShowDeleteDialog(false);
     } catch (error) {
@@ -145,10 +153,45 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
       });
       formData.append('file', file);
 
-      await fetch(uploadResponse.uploadUrl, {
+      const s3Response = await fetch(uploadResponse.uploadUrl, {
         method: 'POST',
         body: formData,
       });
+
+      if (!s3Response.ok) {
+        // Clean up the file metadata since the upload failed
+        try {
+          await deleteAssetMutation.mutateAsync({
+            params: {
+              query: { path: joinPath(currentPath, file.name) },
+            },
+          });
+        } catch {
+          // Ignore cleanup errors
+        }
+
+        const responseText = await s3Response.text();
+        // S3 returns XML errors, try to parse the message
+        const codeMatch = responseText.match(/<Code>([^<]+)<\/Code>/);
+        const messageMatch = responseText.match(/<Message>([^<]+)<\/Message>/);
+
+        if (codeMatch?.[1] === 'EntityTooLarge') {
+          const maxSize = responseText.match(
+            /<MaxSizeAllowed>(\d+)<\/MaxSizeAllowed>/,
+          );
+          const maxSizeMB = maxSize
+            ? (parseInt(maxSize[1]) / 1024 / 1024).toFixed(0)
+            : 'unknown';
+          setUploadError(
+            `File is too large. Maximum allowed size is ${maxSizeMB} MB.`,
+          );
+        } else if (messageMatch?.[1]) {
+          setUploadError(`Upload failed: ${messageMatch[1]}`);
+        } else {
+          setUploadError('Upload failed. Please try again.');
+        }
+        return;
+      }
 
       await confirmUploadMutation.mutateAsync({
         params: {
@@ -156,11 +199,10 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
         },
       });
 
-      await queryClient.invalidateQueries({
-        queryKey: ['get', '/assets/v1'],
-      });
+      await refetch();
     } catch (error) {
       console.error('Failed to upload file:', error);
+      setUploadError('Upload failed. Please try again.');
     }
 
     event.target.value = '';
@@ -289,14 +331,24 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
                 }
               }}
             >
-              <div className="flex items-start justify-between">
-                <div className="flex items-center gap-3">
-                  {getAssetIcon(asset)}
-                  <div className="flex-1 min-w-0">
-                    <p className="font-medium truncate">{asset.name}</p>
-                    <p className="text-xs text-gray-500">{asset.type}</p>
+              {isImageAsset(asset) && 'url' in asset ? (
+                <div className="mb-2">
+                  <img
+                    src={asset.url}
+                    alt={asset.name}
+                    className="w-full h-32 object-cover rounded"
+                  />
+                </div>
+              ) : (
+                <div className="flex items-start justify-between">
+                  <div className="flex items-center gap-3">
+                    {getAssetIcon(asset)}
                   </div>
                 </div>
+              )}
+              <div className="flex-1 min-w-0">
+                <p className="font-medium truncate">{asset.name}</p>
+                <p className="text-xs text-gray-500">{asset.type}</p>
               </div>
               {asset.type === 'file' && asset.description && (
                 <p className="text-sm text-gray-600 mt-2 line-clamp-2">
@@ -358,70 +410,100 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
       {selectedAsset && (
         <div className="border rounded-lg p-4 bg-gray-50">
           <h3 className="font-semibold mb-2">Selected Asset</h3>
-          <div className="grid grid-cols-2 gap-2 text-sm">
-            <div>
-              <span className="text-gray-600">Name:</span> {selectedAsset.name}
-            </div>
-            <div>
-              <span className="text-gray-600">Type:</span> {selectedAsset.type}
-            </div>
-            {selectedAsset.type === 'file' && (
-              <>
-                <div>
-                  <span className="text-gray-600">Size:</span>{' '}
-                  {selectedAsset.size && (selectedAsset.size / 1024).toFixed(2)}{' '}
-                  KB
-                </div>
-                <div>
-                  <span className="text-gray-600">Content Type:</span>{' '}
-                  {selectedAsset.contentType}
-                </div>
-                {isAssetAdmin(selectedAsset) && (
-                  <div>
-                    <span className="text-gray-600">Status:</span>{' '}
-                    {selectedAsset.status}
-                  </div>
-                )}
-              </>
-            )}
-            {selectedAsset.description && (
-              <div className="col-span-2">
-                <span className="text-gray-600">Description:</span>{' '}
-                {selectedAsset.description}
+          <div className="flex gap-4">
+            {isImageAsset(selectedAsset) && 'url' in selectedAsset && (
+              <div className="flex-shrink-0">
+                <img
+                  src={selectedAsset.url}
+                  alt={selectedAsset.name}
+                  className="w-48 h-48 object-contain rounded border bg-white"
+                />
               </div>
             )}
-            {isAssetAdmin(selectedAsset) && (
-              <>
-                <div className="col-span-2">
-                  <span className="text-gray-600">Created:</span>{' '}
-                  {new Date(selectedAsset.createdAt).toLocaleString()}
+            <div className="flex-1">
+              <div className="grid grid-cols-2 gap-2 text-sm">
+                <div>
+                  <span className="text-gray-600">Name:</span>{' '}
+                  {selectedAsset.name}
                 </div>
-                <div className="col-span-2">
-                  <span className="text-gray-600">Created By:</span>{' '}
-                  {selectedAsset.createdBy}
+                <div>
+                  <span className="text-gray-600">Type:</span>{' '}
+                  {selectedAsset.type}
                 </div>
-              </>
-            )}
-          </div>
-          <div className="mt-4 flex gap-2">
-            {selectedAsset.type === 'file' && 'url' in selectedAsset && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => copyToClipboard(selectedAsset.url as string)}
-              >
-                <Copy className="w-4 h-4 mr-2" />
-                Copy URL
-              </Button>
-            )}
-            <Button
-              variant="destructive"
-              size="sm"
-              onClick={() => setShowDeleteDialog(true)}
-            >
-              <Trash2 className="w-4 h-4 mr-2" />
-              Delete
-            </Button>
+                {selectedAsset.type === 'file' && (
+                  <>
+                    <div>
+                      <span className="text-gray-600">Size:</span>{' '}
+                      {selectedAsset.size &&
+                        (selectedAsset.size / 1024).toFixed(2)}{' '}
+                      KB
+                    </div>
+                    <div>
+                      <span className="text-gray-600">Content Type:</span>{' '}
+                      {selectedAsset.contentType}
+                    </div>
+                    {isAssetAdmin(selectedAsset) && (
+                      <div>
+                        <span className="text-gray-600">Status:</span>{' '}
+                        {selectedAsset.status}
+                      </div>
+                    )}
+                  </>
+                )}
+                {selectedAsset.description && (
+                  <div className="col-span-2">
+                    <span className="text-gray-600">Description:</span>{' '}
+                    {selectedAsset.description}
+                  </div>
+                )}
+                {isAssetAdmin(selectedAsset) && (
+                  <>
+                    <div className="col-span-2">
+                      <span className="text-gray-600">Created:</span>{' '}
+                      {new Date(selectedAsset.createdAt).toLocaleString()}
+                    </div>
+                    <div className="col-span-2">
+                      <span className="text-gray-600">Created By:</span>{' '}
+                      {selectedAsset.createdBy}
+                    </div>
+                  </>
+                )}
+              </div>
+              <div className="mt-4 flex gap-2">
+                {selectedAsset.type === 'file' && 'url' in selectedAsset && (
+                  <>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() =>
+                        window.open(selectedAsset.url as string, '_blank')
+                      }
+                    >
+                      <ExternalLink className="w-4 h-4 mr-2" />
+                      Open
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() =>
+                        copyToClipboard(selectedAsset.url as string)
+                      }
+                    >
+                      <Copy className="w-4 h-4 mr-2" />
+                      Copy URL
+                    </Button>
+                  </>
+                )}
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={() => setShowDeleteDialog(true)}
+                >
+                  <Trash2 className="w-4 h-4 mr-2" />
+                  Delete
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
       )}
@@ -482,6 +564,23 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
               className="bg-destructive"
             >
               Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog
+        open={uploadError !== null}
+        onOpenChange={(open) => !open && setUploadError(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Upload Error</AlertDialogTitle>
+            <AlertDialogDescription>{uploadError}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction onClick={() => setUploadError(null)}>
+              OK
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

@@ -41,86 +41,89 @@ const App = () => {
               <UserInfoContextProvider>
                 <Router>
                   <div className="app-container">
-                  <Sidebar />
+                    <Sidebar />
 
-                  <Header />
-                  <main className="main-content">
-                    <Routes>
-                      <Route path="/" element={<Home />} />
-                      <Route path="/about-icaa" element={<AboutICAA />} />
-                      <Route path="/about-sport" element={<AboutSport />} />
-                      <Route
-                        path="/official-rules"
-                        element={<OfficialRules />}
-                      />
-                      <Route
-                        path="/our-communities"
-                        element={
-                          <AdminOnlyRoute>
-                            <OurCommunities />
-                          </AdminOnlyRoute>
-                        }
-                      />
-                      <Route path="/events" element={<Events />} />
-                      <Route
-                        path="/events/:eventId/event-details"
-                        element={<EventDetailsPage />}
-                      />
-                      <Route
-                        path="/events/:eventId/register-free-agent"
-                        element={<EventRegistrationFreeAgent />}
-                      />
-                      <Route
-                        path="/events/:eventId/register-team"
-                        element={<EventRegistrationTeam />}
-                      />
-                      <Route
-                        path="/events/:eventId/payment"
-                        element={<EventPayment />}
-                      />
-                      <Route
-                        path="/events/:eventId/success"
-                        element={<EventPaymentSuccess />}
-                      />
-                      <Route path="/contact" element={<Contact />} />
-                      <Route
-                        path="/admin"
-                        element={
-                          <AdminOnlyRoute>
-                            <AdminPage />
-                          </AdminOnlyRoute>
-                        }
-                      />
-                      <Route path="/news/icaa-launch" element={<NewsItem1 />} />
-                      <Route path="/news/rules" element={<NewsItem2 />} />
-                      <Route
-                        path="/news/play-ins-results"
-                        element={<NewsItem3 />}
-                      />
-                      <Route
-                        path="/news/boston-championship-registration"
-                        element={<NewsItem4 />}
-                      />
-                      <Route
-                        path="/news/boston-championship-results"
-                        element={<NewsItem5 />}
-                      />
-                    </Routes>
-                  </main>
-                  <footer>
-                    <div className="social-links">
-                      <a
-                        href="https://www.youtube.com/@combatarcheryboston9136"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        <img
-                          src="/images/logos/youtube.png"
-                          alt="YouTube"
-                          className="social-icon"
+                    <Header />
+                    <main className="main-content">
+                      <Routes>
+                        <Route path="/" element={<Home />} />
+                        <Route path="/about-icaa" element={<AboutICAA />} />
+                        <Route path="/about-sport" element={<AboutSport />} />
+                        <Route
+                          path="/official-rules"
+                          element={<OfficialRules />}
                         />
-                      </a>
-                      {/*
+                        <Route
+                          path="/our-communities"
+                          element={
+                            <AdminOnlyRoute>
+                              <OurCommunities />
+                            </AdminOnlyRoute>
+                          }
+                        />
+                        <Route path="/events" element={<Events />} />
+                        <Route
+                          path="/events/:eventId/event-details"
+                          element={<EventDetailsPage />}
+                        />
+                        <Route
+                          path="/events/:eventId/register-free-agent"
+                          element={<EventRegistrationFreeAgent />}
+                        />
+                        <Route
+                          path="/events/:eventId/register-team"
+                          element={<EventRegistrationTeam />}
+                        />
+                        <Route
+                          path="/events/:eventId/payment"
+                          element={<EventPayment />}
+                        />
+                        <Route
+                          path="/events/:eventId/success"
+                          element={<EventPaymentSuccess />}
+                        />
+                        <Route path="/contact" element={<Contact />} />
+                        <Route
+                          path="/admin"
+                          element={
+                            <AdminOnlyRoute>
+                              <AdminPage />
+                            </AdminOnlyRoute>
+                          }
+                        />
+                        <Route
+                          path="/news/icaa-launch"
+                          element={<NewsItem1 />}
+                        />
+                        <Route path="/news/rules" element={<NewsItem2 />} />
+                        <Route
+                          path="/news/play-ins-results"
+                          element={<NewsItem3 />}
+                        />
+                        <Route
+                          path="/news/boston-championship-registration"
+                          element={<NewsItem4 />}
+                        />
+                        <Route
+                          path="/news/boston-championship-results"
+                          element={<NewsItem5 />}
+                        />
+                      </Routes>
+                    </main>
+                    <footer>
+                      <div className="social-links">
+                        <a
+                          href="https://www.youtube.com/@combatarcheryboston9136"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <img
+                            src="/images/logos/youtube.png"
+                            alt="YouTube"
+                            className="social-icon"
+                          />
+                        </a>
+                        {/*
                       <a
                         href="https://x.com/yourhandle"
                         target="_blank"
@@ -144,13 +147,13 @@ const App = () => {
                         />
                       </a>
                       */}
-                    </div>
-                    <p>
-                      &copy; 2025 International Combat Archery Alliance, Inc.
-                      All Rights Reserved.
-                    </p>
-                  </footer>
-                </div>
+                      </div>
+                      <p>
+                        &copy; 2025 International Combat Archery Alliance, Inc.
+                        All Rights Reserved.
+                      </p>
+                    </footer>
+                  </div>
                 </Router>
               </UserInfoContextProvider>
             </GoogleOAuthProvider>
