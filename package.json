@@ -6,14 +6,15 @@
     "build": "vite build",
     "preview": "vite preview",
     "test:ts": "tsc --noEmit",
-    "codegen": "openapi-typescript https://api.icaa.world/events/openapi.json -o ./src/api/events-v1.d.ts; openapi-typescript https://api.icaa.world/login/openapi.json -o ./src/api/login.d.ts",
+    "codegen": "openapi-typescript https://api.icaa.world/events/openapi.json -o ./src/api/events-v1.d.ts; openapi-typescript https://api.icaa.world/login/openapi.json -o ./src/api/login.d.ts; openapi-typescript https://api.icaa.world/assets/openapi.json -o ./src/api/assets-api-v1.d.ts",
     "lint": "eslint . --report-unused-disable-directives --max-warnings 0",
     "lint:fix": "bun lint --fix",
     "format": "prettier --write .",
     "prepare": "husky",
     "run-login-service": "cd ../login && make local",
     "run-event-service": "cd ../event-registration && make local",
-    "run-all-backend": "concurrently \"bun run-login-service\" \"bun run-event-service\""
+    "run-assets-service": "cd ../assets-api && make local",
+    "run-all-backend": "concurrently \"bun run-login-service\" \"bun run-event-service\" \"bun run-assets-service\""
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",

@@ -85,8 +85,7 @@ export interface operations {
             };
         };
         responses: {
-            /** @description Auth successful. The JWT is returned in a cookie named `GOOGLE_AUTH_JWT`. You need to include this cookie subsequent requests if using cookie based auth.
-             *      */
+            /** @description Auth successful. The JWT is returned in a cookie named `GOOGLE_AUTH_JWT`. You need to include this cookie subsequent requests if using cookie based auth. */
             200: {
                 headers: {
                     /** @description The google auth token cookie. */
