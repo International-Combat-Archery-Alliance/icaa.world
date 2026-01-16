@@ -15,6 +15,7 @@ import {
   ExternalLink,
   LayoutGrid,
   List,
+  RefreshCw,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -35,6 +36,7 @@ import {
   useDeleteAsset,
   useGetUploadUrl,
   useConfirmUpload,
+  useGetReplaceUrl,
   type Asset,
   type AdminAsset,
 } from '@/hooks/useAssets';
@@ -92,6 +94,7 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
   const deleteAssetMutation = useDeleteAsset();
   const getUploadUrlMutation = useGetUploadUrl();
   const confirmUploadMutation = useConfirmUpload();
+  const getReplaceUrlMutation = useGetReplaceUrl();
 
   const allAssets = data?.pages.flatMap((page) => page.data) || [];
 
@@ -228,6 +231,71 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
     } catch (error) {
       console.error('Failed to upload file:', error);
       setUploadError('Upload failed. Please try again.');
+    }
+
+    event.target.value = '';
+  };
+
+  const handleFileReplace = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const file = event.target.files?.[0];
+    if (!file || !selectedAsset || selectedAsset.type !== 'file') return;
+
+    const assetPath = joinPath(currentPath, selectedAsset.name);
+
+    try {
+      const replaceResponse = await getReplaceUrlMutation.mutateAsync({
+        params: {
+          query: { path: assetPath },
+        },
+      });
+
+      const formData = new FormData();
+      Object.entries(replaceResponse.formFields).forEach(([key, value]) => {
+        formData.append(key, value);
+      });
+      formData.append('file', file);
+
+      const s3Response = await fetch(replaceResponse.uploadUrl, {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!s3Response.ok) {
+        const responseText = await s3Response.text();
+        const codeMatch = responseText.match(/<Code>([^<]+)<\/Code>/);
+        const messageMatch = responseText.match(/<Message>([^<]+)<\/Message>/);
+
+        if (codeMatch?.[1] === 'EntityTooLarge') {
+          const maxSize = responseText.match(
+            /<MaxSizeAllowed>(\d+)<\/MaxSizeAllowed>/,
+          );
+          const maxSizeMB = maxSize
+            ? (parseInt(maxSize[1]) / 1024 / 1024).toFixed(0)
+            : 'unknown';
+          setUploadError(
+            `File is too large. Maximum allowed size is ${maxSizeMB} MB.`,
+          );
+        } else if (messageMatch?.[1]) {
+          setUploadError(`Replace failed: ${messageMatch[1]}`);
+        } else {
+          setUploadError('Replace failed. Please try again.');
+        }
+        return;
+      }
+
+      await confirmUploadMutation.mutateAsync({
+        params: {
+          query: { path: assetPath },
+        },
+      });
+
+      await refetch();
+      setSelectedAsset(null);
+    } catch (error) {
+      console.error('Failed to replace file:', error);
+      setUploadError('Replace failed. Please try again.');
     }
 
     event.target.value = '';
@@ -620,6 +688,32 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
                       <Copy className="w-4 h-4 mr-2" />
                       Copy URL
                     </Button>
+                    <label htmlFor="file-replace">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        asChild
+                        disabled={
+                          getReplaceUrlMutation.isPending ||
+                          confirmUploadMutation.isPending
+                        }
+                      >
+                        <span>
+                          <RefreshCw className="w-4 h-4 mr-2" />
+                          Replace
+                        </span>
+                      </Button>
+                    </label>
+                    <input
+                      id="file-replace"
+                      type="file"
+                      className="hidden"
+                      onChange={handleFileReplace}
+                      disabled={
+                        getReplaceUrlMutation.isPending ||
+                        confirmUploadMutation.isPending
+                      }
+                    />
                   </>
                 )}
                 <Button

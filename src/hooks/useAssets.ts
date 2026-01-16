@@ -62,3 +62,8 @@ export function useConfirmUpload() {
   const client = useAssetsQueryClient();
   return client.useMutation('post', '/assets/v1/by-path/confirm');
 }
+
+export function useGetReplaceUrl() {
+  const client = useAssetsQueryClient();
+  return client.useMutation('post', '/assets/v1/by-path/replace-url');
+}
