@@ -80,6 +80,7 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [cacheBuster, setCacheBuster] = useState<Record<string, number>>({});
 
   const {
     data,
@@ -97,6 +98,18 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
   const getReplaceUrlMutation = useGetReplaceUrl();
 
   const allAssets = data?.pages.flatMap((page) => page.data) || [];
+
+  const getAssetUrl = (asset: Asset): string | undefined => {
+    if (!('url' in asset)) return undefined;
+    const url = asset.url as string;
+    const assetPath = joinPath(currentPath, asset.name);
+    const buster = cacheBuster[assetPath];
+    if (buster) {
+      const separator = url.includes('?') ? '&' : '?';
+      return `${url}${separator}v=${buster}`;
+    }
+    return url;
+  };
 
   const navigateToFolder = (path: string) => {
     setCurrentPath(path);
@@ -291,11 +304,14 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
         },
       });
 
+      // Set cache buster to force browser to reload the image
+      setCacheBuster((prev) => ({ ...prev, [assetPath]: Date.now() }));
+
       await refetch();
       setSelectedAsset(null);
     } catch (error) {
-      console.error('Failed to replace file:', error);
-      setUploadError('Replace failed. Please try again.');
+      console.error('Failed to update file:', error);
+      setUploadError('Update failed. Please try again.');
     }
 
     event.target.value = '';
@@ -390,6 +406,11 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
         </div>
       </div>
 
+      <div className="text-sm text-muted-foreground bg-muted/50 rounded-md px-3 py-2">
+        <span className="font-medium">Note:</span> Maximum file size is 25 MB.
+        All uploaded files are publicly accessible to everyone.
+      </div>
+
       <div className="flex items-center justify-between">
         <div className="text-sm text-gray-600">
           Total items: {allAssets.length}
@@ -449,7 +470,7 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
               {isImageAsset(asset) && 'url' in asset ? (
                 <div className="mb-2">
                   <img
-                    src={asset.url}
+                    src={getAssetUrl(asset)}
                     alt={asset.name}
                     className="w-full h-32 object-cover rounded"
                   />
@@ -531,7 +552,7 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
               <div className="flex-shrink-0">
                 {isImageAsset(asset) && 'url' in asset ? (
                   <img
-                    src={asset.url}
+                    src={getAssetUrl(asset)}
                     alt={asset.name}
                     className="w-10 h-10 object-cover rounded"
                   />
@@ -601,7 +622,7 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
             {isImageAsset(selectedAsset) && 'url' in selectedAsset && (
               <div className="flex-shrink-0">
                 <img
-                  src={selectedAsset.url}
+                  src={getAssetUrl(selectedAsset)}
                   alt={selectedAsset.name}
                   className="w-48 h-48 object-contain rounded border bg-white"
                 />
@@ -610,7 +631,7 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
             {isPdfAsset(selectedAsset) && 'url' in selectedAsset && (
               <div className="flex-shrink-0">
                 <iframe
-                  src={selectedAsset.url}
+                  src={getAssetUrl(selectedAsset)}
                   title={selectedAsset.name}
                   className="w-64 h-80 rounded border bg-white"
                 />
@@ -700,7 +721,7 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
                       >
                         <span>
                           <RefreshCw className="w-4 h-4 mr-2" />
-                          Replace
+                          Update
                         </span>
                       </Button>
                     </label>
