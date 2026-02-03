@@ -179,6 +179,28 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
     }
   };
 
+  // Retry utility with exponential backoff
+  const retryWithBackoff = async <T,>(
+    operation: () => Promise<T>,
+    maxRetries: number = 3,
+    baseDelay: number = 1000,
+  ): Promise<T> => {
+    let lastError: Error | undefined;
+
+    for (let attempt = 0; attempt < maxRetries; attempt++) {
+      try {
+        return await operation();
+      } catch (error) {
+        lastError = error as Error;
+        // Exponential backoff: 1s, 2s, 4s
+        const delay = baseDelay * Math.pow(2, attempt);
+        await new Promise((resolve) => setTimeout(resolve, delay));
+      }
+    }
+
+    throw lastError;
+  };
+
   const handleFileUpload = async (
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
@@ -232,13 +254,15 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
       );
 
       try {
-        const uploadResponse = await getUploadUrlMutation.mutateAsync({
-          body: {
-            path: currentPath,
-            fileName: file.name,
-            contentType: file.type,
-          },
-        });
+        const uploadResponse = await retryWithBackoff(() =>
+          getUploadUrlMutation.mutateAsync({
+            body: {
+              path: currentPath,
+              fileName: file.name,
+              contentType: file.type,
+            },
+          }),
+        );
 
         const formData = new FormData();
         Object.entries(uploadResponse.formFields).forEach(([key, value]) => {
@@ -297,11 +321,13 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
           }
         }
 
-        await confirmUploadMutation.mutateAsync({
-          params: {
-            query: { path: joinPath(currentPath, file.name) },
-          },
-        });
+        await retryWithBackoff(() =>
+          confirmUploadMutation.mutateAsync({
+            params: {
+              query: { path: joinPath(currentPath, file.name) },
+            },
+          }),
+        );
 
         setUploadProgress((prev) =>
           prev ? { ...prev, completed: prev.completed + 1 } : null,
@@ -322,13 +348,15 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
 
     setUploadProgress(null);
 
-    const failedUploads = results.filter((r) => !r.success);
+    const failedUploads = results.filter((r) => !r.success && r.error);
     if (failedUploads.length > 0) {
       if (failedUploads.length === 1) {
-        setUploadError(failedUploads[0].error);
+        setUploadError(
+          failedUploads[0].error || 'Upload failed. Please try again.',
+        );
       } else {
         const errorList = failedUploads
-          .map((r) => `${r.fileName}: ${r.error}`)
+          .map((r) => `${r.fileName}: ${r.error || 'Unknown error'}`)
           .join('\n');
         setUploadError(`Some uploads failed:\n${errorList}`);
       }
