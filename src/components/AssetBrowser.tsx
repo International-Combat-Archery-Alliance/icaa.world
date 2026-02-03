@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
   AlertDialog,
@@ -81,6 +82,11 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [cacheBuster, setCacheBuster] = useState<Record<string, number>>({});
+  const [uploadProgress, setUploadProgress] = useState<{
+    total: number;
+    completed: number;
+    currentFile: string | null;
+  } | null>(null);
 
   const {
     data,
@@ -176,74 +182,162 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
   const handleFileUpload = async (
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
+    const files = event.target.files;
+    if (!files || files.length === 0) return;
 
-    try {
-      const uploadResponse = await getUploadUrlMutation.mutateAsync({
-        body: {
-          path: currentPath,
+    const MAX_FILES = 50;
+    const MAX_SIZE_MB = 25;
+    const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
+
+    // Check file count limit
+    if (files.length > MAX_FILES) {
+      setUploadError(
+        `Too many files selected. Maximum ${MAX_FILES} files allowed at once.`,
+      );
+      event.target.value = '';
+      return;
+    }
+
+    // Check for duplicate filenames
+    const fileNames = Array.from(files).map((f) => f.name);
+    const duplicates = fileNames.filter(
+      (name, index) => fileNames.indexOf(name) !== index,
+    );
+    if (duplicates.length > 0) {
+      setUploadError(
+        `Duplicate filenames detected: ${[...new Set(duplicates)].join(', ')}. Please select unique files.`,
+      );
+      event.target.value = '';
+      return;
+    }
+
+    // Check file sizes before upload
+    const oversizedFiles = Array.from(files).filter(
+      (file) => file.size > MAX_SIZE_BYTES,
+    );
+    if (oversizedFiles.length > 0) {
+      const fileList = oversizedFiles
+        .map((f) => `${f.name} (${(f.size / 1024 / 1024).toFixed(1)} MB)`)
+        .join(', ');
+      setUploadError(`Files exceed ${MAX_SIZE_MB}MB limit: ${fileList}`);
+      event.target.value = '';
+      return;
+    }
+
+    setUploadProgress({ total: files.length, completed: 0, currentFile: null });
+
+    const uploadPromises = Array.from(files).map(async (file) => {
+      setUploadProgress((prev) =>
+        prev ? { ...prev, currentFile: file.name } : null,
+      );
+
+      try {
+        const uploadResponse = await getUploadUrlMutation.mutateAsync({
+          body: {
+            path: currentPath,
+            fileName: file.name,
+            contentType: file.type,
+          },
+        });
+
+        const formData = new FormData();
+        Object.entries(uploadResponse.formFields).forEach(([key, value]) => {
+          formData.append(key, value);
+        });
+        formData.append('file', file);
+
+        const s3Response = await fetch(uploadResponse.uploadUrl, {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (!s3Response.ok) {
+          // Clean up the file metadata since the upload failed
+          try {
+            await deleteAssetMutation.mutateAsync({
+              params: {
+                query: { path: joinPath(currentPath, file.name) },
+              },
+            });
+          } catch {
+            // Ignore cleanup errors
+          }
+
+          const responseText = await s3Response.text();
+          // S3 returns XML errors, try to parse the message
+          const codeMatch = responseText.match(/<Code>([^<]+)<\/Code>/);
+          const messageMatch = responseText.match(
+            /<Message>([^<]+)<\/Message>/,
+          );
+
+          if (codeMatch?.[1] === 'EntityTooLarge') {
+            const maxSize = responseText.match(
+              /<MaxSizeAllowed>(\d+)<\/MaxSizeAllowed>/,
+            );
+            const maxSizeMB = maxSize
+              ? (parseInt(maxSize[1]) / 1024 / 1024).toFixed(0)
+              : 'unknown';
+            return {
+              fileName: file.name,
+              success: false,
+              error: `File is too large. Maximum allowed size is ${maxSizeMB} MB.`,
+            };
+          } else if (messageMatch?.[1]) {
+            return {
+              fileName: file.name,
+              success: false,
+              error: `Upload failed: ${messageMatch[1]}`,
+            };
+          } else {
+            return {
+              fileName: file.name,
+              success: false,
+              error: 'Upload failed. Please try again.',
+            };
+          }
+        }
+
+        await confirmUploadMutation.mutateAsync({
+          params: {
+            query: { path: joinPath(currentPath, file.name) },
+          },
+        });
+
+        setUploadProgress((prev) =>
+          prev ? { ...prev, completed: prev.completed + 1 } : null,
+        );
+
+        return { fileName: file.name, success: true };
+      } catch (error) {
+        console.error(`Failed to upload file ${file.name}:`, error);
+        return {
           fileName: file.name,
-          contentType: file.type,
-        },
-      });
-
-      const formData = new FormData();
-      Object.entries(uploadResponse.formFields).forEach(([key, value]) => {
-        formData.append(key, value);
-      });
-      formData.append('file', file);
-
-      const s3Response = await fetch(uploadResponse.uploadUrl, {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (!s3Response.ok) {
-        // Clean up the file metadata since the upload failed
-        try {
-          await deleteAssetMutation.mutateAsync({
-            params: {
-              query: { path: joinPath(currentPath, file.name) },
-            },
-          });
-        } catch {
-          // Ignore cleanup errors
-        }
-
-        const responseText = await s3Response.text();
-        // S3 returns XML errors, try to parse the message
-        const codeMatch = responseText.match(/<Code>([^<]+)<\/Code>/);
-        const messageMatch = responseText.match(/<Message>([^<]+)<\/Message>/);
-
-        if (codeMatch?.[1] === 'EntityTooLarge') {
-          const maxSize = responseText.match(
-            /<MaxSizeAllowed>(\d+)<\/MaxSizeAllowed>/,
-          );
-          const maxSizeMB = maxSize
-            ? (parseInt(maxSize[1]) / 1024 / 1024).toFixed(0)
-            : 'unknown';
-          setUploadError(
-            `File is too large. Maximum allowed size is ${maxSizeMB} MB.`,
-          );
-        } else if (messageMatch?.[1]) {
-          setUploadError(`Upload failed: ${messageMatch[1]}`);
-        } else {
-          setUploadError('Upload failed. Please try again.');
-        }
-        return;
+          success: false,
+          error: 'Upload failed. Please try again.',
+        };
       }
+    });
 
-      await confirmUploadMutation.mutateAsync({
-        params: {
-          query: { path: joinPath(currentPath, file.name) },
-        },
-      });
+    const results = await Promise.all(uploadPromises);
 
+    setUploadProgress(null);
+
+    const failedUploads = results.filter((r) => !r.success);
+    if (failedUploads.length > 0) {
+      if (failedUploads.length === 1) {
+        setUploadError(failedUploads[0].error);
+      } else {
+        const errorList = failedUploads
+          .map((r) => `${r.fileName}: ${r.error}`)
+          .join('\n');
+        setUploadError(`Some uploads failed:\n${errorList}`);
+      }
+    }
+
+    // Only refetch once after all uploads are complete
+    const hasAnySuccess = results.some((r) => r.success);
+    if (hasAnySuccess) {
       await refetch();
-    } catch (error) {
-      console.error('Failed to upload file:', error);
-      setUploadError('Upload failed. Please try again.');
     }
 
     event.target.value = '';
@@ -390,13 +484,14 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
             <Button variant="outline" asChild>
               <span>
                 <Upload className="w-4 h-4 mr-2" />
-                Upload File
+                Upload Files
               </span>
             </Button>
           </label>
           <input
             id="file-upload"
             type="file"
+            multiple
             className="hidden"
             onChange={handleFileUpload}
             disabled={
@@ -410,6 +505,22 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
         <span className="font-medium">Note:</span> Maximum file size is 25 MB.
         All uploaded files are publicly accessible to everyone.
       </div>
+
+      {uploadProgress && (
+        <div className="bg-primary/10 border border-primary/20 rounded-md px-3 py-2 space-y-2">
+          <div className="flex items-center justify-between text-sm">
+            <span className="text-primary font-medium">
+              Uploading {uploadProgress.currentFile}...
+            </span>
+            <span className="text-muted-foreground">
+              {uploadProgress.completed} of {uploadProgress.total}
+            </span>
+          </div>
+          <Progress
+            value={(uploadProgress.completed / uploadProgress.total) * 100}
+          />
+        </div>
+      )}
 
       <div className="flex items-center justify-between">
         <div className="text-sm text-gray-600">
