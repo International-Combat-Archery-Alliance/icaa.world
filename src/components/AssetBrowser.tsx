@@ -16,6 +16,7 @@ import {
   LayoutGrid,
   List,
   RefreshCw,
+  ArrowUpDown,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -87,6 +88,10 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
     completed: number;
     currentFile: string | null;
   } | null>(null);
+  const [sortField, setSortField] = useState<'name' | 'type' | 'size' | 'date'>(
+    'name',
+  );
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
 
   const {
     data,
@@ -104,6 +109,42 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
   const getReplaceUrlMutation = useGetReplaceUrl();
 
   const allAssets = data?.pages.flatMap((page) => page.data) || [];
+
+  const sortedAssets = allAssets.sort((a, b) => {
+    const multiplier = sortDirection === 'asc' ? 1 : -1;
+
+    if (sortField === 'name') {
+      if (a.type === 'folder' && b.type !== 'folder') return -1;
+      if (a.type !== 'folder' && b.type === 'folder') return 1;
+      return multiplier * a.name.localeCompare(b.name);
+    }
+
+    if (sortField === 'type') {
+      if (a.type === 'folder' && b.type !== 'folder') return -1;
+      if (a.type !== 'folder' && b.type === 'folder') return 1;
+      const aType = a.type === 'folder' ? 'folder' : a.contentType;
+      const bType = b.type === 'folder' ? 'folder' : b.contentType;
+      return multiplier * aType.localeCompare(bType);
+    }
+
+    if (sortField === 'size') {
+      if (a.type === 'folder' && b.type !== 'folder') return -1;
+      if (a.type !== 'folder' && b.type === 'folder') return 1;
+      const aSize = 'size' in a ? a.size : 0;
+      const bSize = 'size' in b ? b.size : 0;
+      return multiplier * (aSize - bSize);
+    }
+
+    if (sortField === 'date') {
+      if (a.type === 'folder' && b.type !== 'folder') return -1;
+      if (a.type !== 'folder' && b.type === 'folder') return 1;
+      const aDate = 'createdAt' in a ? new Date(a.createdAt).getTime() : 0;
+      const bDate = 'createdAt' in b ? new Date(b.createdAt).getTime() : 0;
+      return multiplier * (aDate - bDate);
+    }
+
+    return 0;
+  });
 
   const getAssetUrl = (asset: Asset): string | undefined => {
     if (!('url' in asset)) return undefined;
@@ -554,34 +595,64 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
         <div className="text-sm text-gray-600">
           Total items: {allAssets.length}
         </div>
-        <div className="flex gap-1">
-          <Button
-            variant={viewMode === 'grid' ? 'default' : 'outline'}
-            size="icon"
-            onClick={() => setViewMode('grid')}
-            title="Grid view"
-          >
-            <LayoutGrid className="w-4 h-4" />
-          </Button>
-          <Button
-            variant={viewMode === 'list' ? 'default' : 'outline'}
-            size="icon"
-            onClick={() => setViewMode('list')}
-            title="List view"
-          >
-            <List className="w-4 h-4" />
-          </Button>
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
+            <select
+              value={sortField}
+              onChange={(e) =>
+                setSortField(
+                  e.target.value as 'name' | 'type' | 'size' | 'date',
+                )
+              }
+              className="h-9 px-3 text-sm border rounded-md bg-background hover:bg-accent hover:text-accent-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-ring"
+            >
+              <option value="name">Name</option>
+              <option value="type">Type</option>
+              <option value="size">Size</option>
+              <option value="date">Date Created</option>
+            </select>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() =>
+                setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc')
+              }
+              title={sortDirection === 'asc' ? 'Ascending' : 'Descending'}
+            >
+              <ArrowUpDown
+                className={`w-4 h-4 ${sortDirection === 'desc' ? 'rotate-180' : ''} transition-transform`}
+              />
+            </Button>
+          </div>
+          <div className="flex gap-1">
+            <Button
+              variant={viewMode === 'grid' ? 'default' : 'outline'}
+              size="icon"
+              onClick={() => setViewMode('grid')}
+              title="Grid view"
+            >
+              <LayoutGrid className="w-4 h-4" />
+            </Button>
+            <Button
+              variant={viewMode === 'list' ? 'default' : 'outline'}
+              size="icon"
+              onClick={() => setViewMode('list')}
+              title="List view"
+            >
+              <List className="w-4 h-4" />
+            </Button>
+          </div>
         </div>
       </div>
 
-      {allAssets.length === 0 ? (
+      {sortedAssets.length === 0 ? (
         <div className="text-center py-12 text-gray-500">
           <Folder className="w-16 h-16 mx-auto mb-4 text-gray-300" />
           <p>This folder is empty</p>
         </div>
       ) : viewMode === 'grid' ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {allAssets.map((asset) => (
+          {sortedAssets.map((asset) => (
             <div
               key={isAssetAdmin(asset) ? asset.id : asset.name}
               className={`border rounded-lg p-4 cursor-pointer transition-all hover:shadow-md ${
@@ -663,7 +734,7 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
         </div>
       ) : (
         <div className="border rounded-lg divide-y">
-          {allAssets.map((asset) => (
+          {sortedAssets.map((asset) => (
             <div
               key={isAssetAdmin(asset) ? asset.id : asset.name}
               className={`flex items-center gap-4 p-3 cursor-pointer transition-all hover:bg-gray-50 ${
