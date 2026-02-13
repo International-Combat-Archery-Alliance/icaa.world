@@ -1,31 +1,40 @@
-import { useState, useEffect } from 'react';
+import { useMemo } from 'react';
 import { useTitle } from 'react-use';
 //import { Link } from 'react-router-dom';
 import NewsContainer from '@/components/NewsContainer';
 //import { Button } from '@/components/ui/button';
 import EventsContainer from '@/components/EventsContainer';
+import { useGetAssets } from '@/hooks/useAssets';
+import type { Asset } from '@/hooks/useAssets';
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from '@/components/ui/carousel';
+import { Skeleton } from '@/components/ui/skeleton';
+import Autoplay from 'embla-carousel-autoplay';
+
+const isImageAsset = (asset: Asset): boolean => {
+  return (
+    asset.type === 'file' &&
+    asset.contentType.toLowerCase().startsWith('image/')
+  );
+};
 
 const Home = () => {
   useTitle('ICAA - International Combat Archery Alliance');
 
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const totalImages = 67;
-  const images = [];
-  for (let i = 1; i <= totalImages; i++) {
-    images.push(`images/Rotating Archery Photos/${i}.jpg`);
-  }
+  const { data, isLoading } = useGetAssets('/Carousel-Images', 100);
 
-  const changeImage = () => {
-    const newIndex = Math.floor(Math.random() * images.length);
-    setCurrentImageIndex(newIndex);
-  };
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      changeImage();
-    }, 10000);
-    return () => clearInterval(interval);
-  }, []);
+  const images = useMemo(() => {
+    const allAssets = data?.pages.flatMap((page) => page.data) || [];
+    return allAssets
+      .filter(isImageAsset)
+      .map((asset) => ('url' in asset ? asset.url : ''))
+      .filter((url): url is string => url !== '');
+  }, [data]);
 
   return (
     <>
@@ -47,19 +56,42 @@ const Home = () => {
       */}
 
       <div className="mt-8 grid grid-cols-1 pb-6 px-4 gap-4 lg:px-12 lg:grid-cols-2">
-        <div className="image-rotator-container lg:col-span-2">
-          <button id="prev-btn" className="rotator-btn" onClick={changeImage}>
-            ❮
-          </button>
-          <img
-            id="rotator-img"
-            src={images[currentImageIndex]}
-            alt="Rotating image of combat archery"
-            className="rotator-img"
-          />
-          <button id="next-btn" className="rotator-btn" onClick={changeImage}>
-            ❯
-          </button>
+        <div className="lg:col-span-2">
+          {isLoading ? (
+            <Skeleton className="w-full h-[400px] rounded-lg" />
+          ) : images.length > 0 ? (
+            <Carousel
+              plugins={[
+                Autoplay({
+                  delay: 10000,
+                  stopOnInteraction: false,
+                }),
+              ]}
+              opts={{
+                align: 'start',
+                loop: true,
+              }}
+              className="w-full"
+            >
+              <CarouselContent>
+                {images.map((url, index) => (
+                  <CarouselItem key={index}>
+                    <img
+                      src={url}
+                      alt={`Combat archery photo ${index + 1}`}
+                      className="w-full h-[400px] object-cover rounded-lg"
+                    />
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <CarouselPrevious className="left-4" />
+              <CarouselNext className="right-4" />
+            </Carousel>
+          ) : (
+            <div className="w-full h-[400px] flex items-center justify-center bg-gray-100 rounded-lg">
+              <span className="text-gray-400">No images found</span>
+            </div>
+          )}
         </div>
 
         <NewsContainer className="lg:justify-self-end lg:max-w-[500px]" />
