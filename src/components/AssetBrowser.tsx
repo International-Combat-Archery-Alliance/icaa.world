@@ -274,6 +274,33 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
       return;
     }
 
+    // Check for files that already exist in the current folder
+    const existingFileNames = allAssets
+      .filter((asset) => asset.type === 'file')
+      .map((asset) => asset.name);
+    const alreadyExisting = fileNames.filter((name) =>
+      existingFileNames.includes(name),
+    );
+
+    // Filter out files that already exist - they will be skipped
+    const filesToUpload = Array.from(files).filter(
+      (file) => !existingFileNames.includes(file.name),
+    );
+
+    if (filesToUpload.length === 0) {
+      if (alreadyExisting.length === 1) {
+        setUploadError(
+          `File "${alreadyExisting[0]}" already exists in this folder.`,
+        );
+      } else {
+        setUploadError(
+          `Files already exist in this folder: ${alreadyExisting.join(', ')}.`,
+        );
+      }
+      event.target.value = '';
+      return;
+    }
+
     // Check file sizes before upload
     const oversizedFiles = Array.from(files).filter(
       (file) => file.size > MAX_SIZE_BYTES,
@@ -287,9 +314,13 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
       return;
     }
 
-    setUploadProgress({ total: files.length, completed: 0, currentFile: null });
+    setUploadProgress({
+      total: filesToUpload.length,
+      completed: 0,
+      currentFile: null,
+    });
 
-    const uploadPromises = Array.from(files).map(async (file) => {
+    const uploadPromises = filesToUpload.map(async (file) => {
       setUploadProgress((prev) =>
         prev ? { ...prev, currentFile: file.name } : null,
       );
@@ -390,17 +421,33 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
     setUploadProgress(null);
 
     const failedUploads = results.filter((r) => !r.success && r.error);
-    if (failedUploads.length > 0) {
-      if (failedUploads.length === 1) {
-        setUploadError(
-          failedUploads[0].error || 'Upload failed. Please try again.',
-        );
-      } else {
-        const errorList = failedUploads
-          .map((r) => `${r.fileName}: ${r.error || 'Unknown error'}`)
-          .join('\n');
-        setUploadError(`Some uploads failed:\n${errorList}`);
+    const hasSkippedFiles = alreadyExisting.length > 0;
+
+    if (failedUploads.length > 0 || hasSkippedFiles) {
+      let message = '';
+
+      if (hasSkippedFiles) {
+        if (alreadyExisting.length === 1) {
+          message += `Skipped: "${alreadyExisting[0]}" already exists.`;
+        } else {
+          message += `Skipped ${alreadyExisting.length} files that already exist: ${alreadyExisting.join(', ')}.`;
+        }
       }
+
+      if (failedUploads.length > 0) {
+        if (message) message += '\n\n';
+        if (failedUploads.length === 1) {
+          message +=
+            failedUploads[0].error || 'Upload failed. Please try again.';
+        } else {
+          const errorList = failedUploads
+            .map((r) => `${r.fileName}: ${r.error || 'Unknown error'}`)
+            .join('\n');
+          message += `Some uploads failed:\n${errorList}`;
+        }
+      }
+
+      setUploadError(message);
     }
 
     // Only refetch once after all uploads are complete
