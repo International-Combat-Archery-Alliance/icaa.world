@@ -44,7 +44,9 @@ const MailingListForm = () => {
         alert('There was an error sending your message. Please try again.');
       }
     } catch {
-      alert('A network error occurred. Please check your connection and try again.');
+      alert(
+        'A network error occurred. Please check your connection and try again.',
+      );
     }
   };
 
@@ -60,7 +62,10 @@ const MailingListForm = () => {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 p-6 border rounded-lg shadow-sm bg-card text-card-foreground">
+    <form
+      onSubmit={handleSubmit}
+      className="space-y-6 p-6 border rounded-lg shadow-sm bg-card text-card-foreground"
+    >
       <div className="space-y-2">
         <Label htmlFor="email">Email address:</Label>
         <Input

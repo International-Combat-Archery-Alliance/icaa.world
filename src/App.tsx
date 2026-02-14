@@ -109,7 +109,10 @@ const App = () => {
                           path="/news/boston-championship-results"
                           element={<NewsItem5 />}
                         />
-                        <Route path="/mailing-list" element={<MailingListPage />} />
+                        <Route
+                          path="/mailing-list"
+                          element={<MailingListPage />}
+                        />
                       </Routes>
                     </main>
                     <footer>
@@ -151,7 +154,11 @@ const App = () => {
                       <div style={{ marginBottom: '1rem' }}>
                         <Link
                           to="/mailing-list"
-                          style={{ color: 'orange', textDecoration: 'underline', fontSize: '1rem' }}
+                          style={{
+                            color: 'orange',
+                            textDecoration: 'underline',
+                            fontSize: '1rem',
+                          }}
                         >
                           Join Our Mailing List!
                         </Link>
