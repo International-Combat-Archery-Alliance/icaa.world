@@ -97,38 +97,52 @@ export default function Sidebar() {
         </div>
       </aside>
 
-      {/* Mobile Sheet Sidebar */}
-      <Sheet open={isOpen} onOpenChange={setIsOpen}>
-        <SheetTrigger asChild className="md:hidden">
-          <Button
-            variant="outline"
-            size="icon"
-            className="fixed left-4 top-4 z-50 h-10 w-10 border-2 border-white bg-[#0a1c4a] text-white hover:bg-[#0a1c4a]/90 hover:text-white"
+      {/* Mobile Header Bar with Menu */}
+      <header className="sticky top-0 z-50 flex h-14 items-center justify-between bg-[#0a1c4a] px-4 md:hidden">
+        <Sheet open={isOpen} onOpenChange={setIsOpen}>
+          <SheetTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-9 w-9 text-white hover:bg-white/10"
+            >
+              <Menu className="h-6 w-6" />
+              <span className="sr-only">Open menu</span>
+            </Button>
+          </SheetTrigger>
+          <SheetContent
+            side="left"
+            className="w-72 border-r-0 bg-[#0a1c4a] p-0 text-white"
           >
-            <Menu className="h-5 w-5" />
-            <span className="sr-only">Open menu</span>
-          </Button>
-        </SheetTrigger>
-        <SheetContent
-          side="left"
-          className="w-72 border-r-0 bg-[#0a1c4a] p-0 text-white"
-        >
-          <div className="flex h-full flex-col p-6">
-            <SheetHeader className="mb-6 border-b border-white/10 pb-4">
-              <SheetTitle asChild>
-                <Link to="/" onClick={closeSidebar}>
-                  <img
-                    src="/images/logos/ICAA Logo transparent.png"
-                    alt="ICAA Logo"
-                    className="h-16 w-auto"
-                  />
-                </Link>
-              </SheetTitle>
-            </SheetHeader>
-            <SidebarContent onNavigate={closeSidebar} />
-          </div>
-        </SheetContent>
-      </Sheet>
+            <div className="flex h-full flex-col p-6">
+              <SheetHeader className="mb-6 border-b border-white/10 pb-4">
+                <SheetTitle asChild>
+                  <Link to="/" onClick={closeSidebar}>
+                    <img
+                      src="/images/logos/ICAA Logo transparent.png"
+                      alt="ICAA Logo"
+                      className="h-16 w-auto"
+                    />
+                  </Link>
+                </SheetTitle>
+              </SheetHeader>
+              <SidebarContent onNavigate={closeSidebar} />
+            </div>
+          </SheetContent>
+        </Sheet>
+
+        {/* Mobile Logo */}
+        <Link to="/" className="flex items-center">
+          <img
+            src="/images/logos/ICAA Logo transparent.png"
+            alt="ICAA"
+            className="h-10 w-auto"
+          />
+        </Link>
+
+        {/* Spacer to center the logo */}
+        <div className="w-9" />
+      </header>
     </>
   );
 }
