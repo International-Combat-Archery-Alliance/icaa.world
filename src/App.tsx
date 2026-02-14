@@ -92,9 +92,7 @@ const App = () => {
                       />
                       <Route
                         path="/player-profile"
-                        element={
-                            <PlayerProfile />
-                        }
+                        element={<PlayerProfile />}
                       />
                       <Route path="/news/icaa-launch" element={<NewsItem1 />} />
                       <Route path="/news/rules" element={<NewsItem2 />} />
