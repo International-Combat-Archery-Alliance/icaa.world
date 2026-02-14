@@ -29,7 +29,10 @@ const Home = () => {
 
   return (
     <>
-      <header id="hero-section" className="content-section active">
+      <header
+        id="hero-section"
+        className="content-section active pt-12 md:pt-0"
+      >
         <h1 className="text-balance text-center text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl">
           International <span className="text-primary">Combat Archery</span>{' '}
           Alliance
