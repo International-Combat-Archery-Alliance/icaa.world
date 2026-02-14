@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 
 // Import page components
 import Home from './pages/Home';
@@ -28,6 +28,7 @@ import OurCommunities from './pages/OurCommunities';
 import EventDetailsPage from './components/EventPageTemplate';
 import EventPayment from './pages/EventPayment';
 import EventPaymentSuccess from './pages/EventPaymentSuccess';
+import MailingListPage from './pages/MailingListPage';
 
 const App = () => {
   const queryClient = new QueryClient();
@@ -108,12 +109,16 @@ const App = () => {
                           path="/news/boston-championship-results"
                           element={<NewsItem5 />}
                         />
+                        <Route
+                          path="/mailing-list"
+                          element={<MailingListPage />}
+                        />
                       </Routes>
                     </main>
                     <footer>
                       <div className="social-links">
                         <a
-                          href="https://www.youtube.com/@combatarcheryboston9136"
+                          href="https://www.youtube.com/@Icaa-world"
                           target="_blank"
                           rel="noopener noreferrer"
                         >
@@ -123,30 +128,40 @@ const App = () => {
                             className="social-icon"
                           />
                         </a>
-                        {/*
-                      <a
-                        href="https://x.com/yourhandle"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        <img
-                          src="/images/logos/X.jfif"
-                          alt="X (formerly Twitter)"
-                          className="social-icon"
-                        />
-                      </a>
-                      <a
-                        href="https://www.instagram.com/yourprofile/"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        <img
-                          src="/images/logos/instagram.jfif"
-                          alt="Instagram"
-                          className="social-icon"
-                        />
-                      </a>
-                      */}
+                        <a
+                          href="https://www.instagram.com/icaa.world/?hl=en"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <img
+                            src="/images/logos/instagram.jfif"
+                            alt="Instagram"
+                            className="social-icon"
+                          />
+                        </a>
+                        <a
+                          href="https://www.linkedin.com/company/icaa-world/"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <img
+                            src="/images/logos/linkedin.png"
+                            alt="LinkedIn"
+                            className="social-icon"
+                          />
+                        </a>
+                      </div>
+                      <div style={{ marginBottom: '1rem' }}>
+                        <Link
+                          to="/mailing-list"
+                          style={{
+                            color: 'orange',
+                            textDecoration: 'underline',
+                            fontSize: '1rem',
+                          }}
+                        >
+                          Join Our Mailing List!
+                        </Link>
                       </div>
                       <p>
                         &copy; 2025 International Combat Archery Alliance, Inc.
