@@ -27,6 +27,7 @@ import OurCommunities from './pages/OurCommunities';
 import EventDetailsPage from './components/EventPageTemplate';
 import EventPayment from './pages/EventPayment';
 import EventPaymentSuccess from './pages/EventPaymentSuccess';
+import PlayerProfile from './pages/PlayerProfile';
 
 const App = () => {
   const queryClient = new QueryClient();
@@ -87,6 +88,12 @@ const App = () => {
                           <AdminOnlyRoute>
                             <AdminPage />
                           </AdminOnlyRoute>
+                        }
+                      />
+                      <Route
+                        path="/player-profile"
+                        element={
+                            <PlayerProfile />
                         }
                       />
                       <Route path="/news/icaa-launch" element={<NewsItem1 />} />

@@ -1,0 +1,21 @@
+{
+  "firstName": "Rachel",
+  "lastName": "Loreus",
+  "position": "Rear Guard",
+  "homeCity": "Unknown",
+  "number": "00",
+  "experience": "0 Years",
+  "profilePicture": "https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png",
+  "tournamentResults": [{
+      "year": "2025",
+      "tournament": "Boston Play Ins",
+      "city": "Boston, MA",
+      "date": "2025-09-9",
+      "team": "V",
+      "wins": 0,
+      "losses": 6,
+      "pf": 1,
+      "pa": 29,
+      "placement": "4th"
+    }]
+}

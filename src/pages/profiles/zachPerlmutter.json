@@ -1,0 +1,21 @@
+{
+  "firstName": "Zach",
+  "lastName": "Perlmutter",
+  "position": "Rear Guard",
+  "homeCity": "Unknown",
+  "number": "00",
+  "experience": "0 Years",
+  "profilePicture": "https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png",
+  "tournamentResults": [{
+      "year": "2025",
+      "tournament": "Boston Play Ins",
+      "city": "Boston, MA",
+      "date": "2025-09-9",
+      "team": "Draw Blood",
+      "wins": 4,
+      "losses": 2,
+      "pf": 15,
+      "pa": 15,
+      "placement": "2nd"
+    }]
+}

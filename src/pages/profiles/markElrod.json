@@ -1,0 +1,33 @@
+{
+  "firstName": "Mark",
+  "lastName": "Elrod",
+  "position": "Rear Guard",
+  "homeCity": "Unknown",
+  "number": "00",
+  "experience": "0 Years",
+  "profilePicture": "https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png",
+  "tournamentResults": [{
+      "year": "2025",
+      "tournament": "Boston Play Ins",
+      "city": "Boston, MA",
+      "date": "2025-09-9",
+      "team": "Tag Alongs",
+      "wins": 2,
+      "losses": 4,
+      "pf": 14,
+      "pa": 16,
+      "placement": "3rd"
+    },
+  {
+      "year": "2025",
+      "tournament": "Boston Championships",
+      "city": "Boston, MA",
+      "date": "2025-10-25",
+      "team": "Tag Alongs",
+      "wins": 1,
+      "losses": 5,
+      "pf": 13,
+      "pa": 26,
+      "placement": "3rd"
+    }]
+}
