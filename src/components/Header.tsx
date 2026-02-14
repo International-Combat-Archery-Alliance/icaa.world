@@ -10,7 +10,7 @@ const routeToHeaderMap: Record<string, string> = {
   '/news/rules': 'New Official Tournament Rules',
   '/contact': 'Contact Us',
   '/admin': 'Admin',
-  '/newsletter': 'Newsletter Signup',
+  '/mailing-list': 'Mailing List Sign Up',
 };
 
 function getHeaderTextForParameterizedRoute(pathname: string): string | null {
