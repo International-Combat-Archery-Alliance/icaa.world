@@ -52,16 +52,11 @@ export default function Header() {
 
   return (
     <header className="bg-[#0a1c4a]">
-      <div className="py-4 px-4 md:px-8 flex items-center justify-center">
-        {/* Spacer for mobile to balance the hamburger button area */}
-        <div className="w-10 md:hidden" />
-
-        <h1 className="flex-1 text-center font-['Montserrat',sans-serif] text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-[#ff5722]">
+      {/* Mobile: Add top padding to avoid overlapping with fixed menu button */}
+      <div className="pt-16 pb-4 px-4 md:px-8 md:pt-4 flex items-center justify-center">
+        <h1 className="text-center font-['Montserrat',sans-serif] text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl text-[#ff5722]">
           {headerText}
         </h1>
-
-        {/* Spacer to match left side */}
-        <div className="w-10 md:hidden" />
       </div>
     </header>
   );

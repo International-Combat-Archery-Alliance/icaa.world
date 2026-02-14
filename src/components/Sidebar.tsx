@@ -1,10 +1,17 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Menu, X } from 'lucide-react';
+import { Menu } from 'lucide-react';
 import Login from '@/components/Login';
 import { useUserInfo } from '@/context/userInfoContext';
 import { useSwipeGesture } from '@/hooks/useSwipeGesture';
 import { Button } from '@/components/ui/button';
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '@/components/ui/sheet';
 
 interface NavItem {
   to: string;
@@ -46,6 +53,19 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
   );
 }
 
+function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
+  return (
+    <div className="flex h-full flex-col">
+      <nav className="flex-1 overflow-auto py-4">
+        <NavLinks onNavigate={onNavigate} />
+      </nav>
+      <div className="border-t border-white/10 pt-4">
+        <Login />
+      </div>
+    </div>
+  );
+}
+
 export default function Sidebar() {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -73,36 +93,29 @@ export default function Sidebar() {
               />
             </Link>
           </div>
-          <nav className="flex-1 overflow-auto py-4">
-            <NavLinks />
-          </nav>
-          <div className="border-t border-white/10 pt-4">
-            <Login />
-          </div>
+          <SidebarContent />
         </div>
       </aside>
 
-      {/* Mobile Menu Button */}
-      <Button
-        variant="outline"
-        size="icon"
-        onClick={openSidebar}
-        className="fixed left-4 top-4 z-50 h-10 w-10 border-2 border-white bg-[#0a1c4a] text-white hover:bg-[#0a1c4a]/90 hover:text-white md:hidden"
-      >
-        <Menu className="h-5 w-5" />
-        <span className="sr-only">Open menu</span>
-      </Button>
-
-      {/* Mobile Sidebar Overlay */}
-      {isOpen && (
-        <>
-          <div
-            className="fixed inset-0 z-40 bg-black/50 md:hidden"
-            onClick={closeSidebar}
-          />
-          <div className="fixed left-0 top-0 z-50 h-screen w-72 bg-[#0a1c4a] p-6 md:hidden">
-            <div className="flex h-full flex-col">
-              <div className="mb-6 flex items-center justify-between border-b border-white/10 pb-4">
+      {/* Mobile Sheet Sidebar */}
+      <Sheet open={isOpen} onOpenChange={setIsOpen}>
+        <SheetTrigger asChild className="md:hidden">
+          <Button
+            variant="outline"
+            size="icon"
+            className="fixed left-4 top-4 z-50 h-10 w-10 border-2 border-white bg-[#0a1c4a] text-white hover:bg-[#0a1c4a]/90 hover:text-white"
+          >
+            <Menu className="h-5 w-5" />
+            <span className="sr-only">Open menu</span>
+          </Button>
+        </SheetTrigger>
+        <SheetContent
+          side="left"
+          className="w-72 border-r-0 bg-[#0a1c4a] p-0 text-white"
+        >
+          <div className="flex h-full flex-col p-6">
+            <SheetHeader className="mb-6 border-b border-white/10 pb-4">
+              <SheetTitle asChild>
                 <Link to="/" onClick={closeSidebar}>
                   <img
                     src="/images/logos/ICAA Logo transparent.png"
@@ -110,26 +123,12 @@ export default function Sidebar() {
                     className="h-16 w-auto"
                   />
                 </Link>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={closeSidebar}
-                  className="text-white hover:bg-white/10"
-                >
-                  <X className="h-5 w-5" />
-                  <span className="sr-only">Close menu</span>
-                </Button>
-              </div>
-              <nav className="flex-1 overflow-auto py-4">
-                <NavLinks onNavigate={closeSidebar} />
-              </nav>
-              <div className="border-t border-white/10 pt-4">
-                <Login />
-              </div>
-            </div>
+              </SheetTitle>
+            </SheetHeader>
+            <SidebarContent onNavigate={closeSidebar} />
           </div>
-        </>
-      )}
+        </SheetContent>
+      </Sheet>
     </>
   );
 }
