@@ -1,17 +1,10 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Menu } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import Login from '@/components/Login';
 import { useUserInfo } from '@/context/userInfoContext';
 import { useSwipeGesture } from '@/hooks/useSwipeGesture';
 import { Button } from '@/components/ui/button';
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from '@/components/ui/sheet';
 
 interface NavItem {
   to: string;
@@ -29,7 +22,7 @@ const navItems: NavItem[] = [
   { to: '/admin', label: 'Admin', adminOnly: true },
 ];
 
-function SidebarContent({ onNavigate }: { onNavigate: () => void }) {
+function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
   const { userInfo, isSuccess } = useUserInfo();
 
   const visibleNavItems = navItems.filter(
@@ -37,39 +30,19 @@ function SidebarContent({ onNavigate }: { onNavigate: () => void }) {
   );
 
   return (
-    <div className="flex h-full flex-col">
-      <SheetHeader className="border-b border-border/10 pb-4">
-        <SheetTitle asChild>
-          <Link to="/" onClick={onNavigate} className="flex items-center gap-2">
-            <img
-              src="/images/logos/ICAA Logo transparent.png"
-              alt="ICAA Logo"
-              className="h-16 w-auto"
-            />
+    <ul className="space-y-1">
+      {visibleNavItems.map((item) => (
+        <li key={item.to}>
+          <Link
+            to={item.to}
+            onClick={onNavigate}
+            className="block rounded-md px-4 py-3 text-base font-medium text-white transition-colors hover:bg-white/10 hover:translate-x-1"
+          >
+            {item.label}
           </Link>
-        </SheetTitle>
-      </SheetHeader>
-
-      <nav className="flex-1 overflow-auto py-4">
-        <ul className="space-y-1">
-          {visibleNavItems.map((item) => (
-            <li key={item.to}>
-              <Link
-                to={item.to}
-                onClick={onNavigate}
-                className="block rounded-md px-4 py-3 text-base font-medium text-white transition-colors hover:bg-white/10 hover:translate-x-1"
-              >
-                {item.label}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </nav>
-
-      <div className="border-t border-border/10 pt-4">
-        <Login />
-      </div>
-    </div>
+        </li>
+      ))}
+    </ul>
   );
 }
 
@@ -79,7 +52,6 @@ export default function Sidebar() {
   const openSidebar = () => setIsOpen(true);
   const closeSidebar = () => setIsOpen(false);
 
-  // Add swipe gesture support
   useSwipeGesture({
     onSwipeRight: openSidebar,
     onSwipeLeft: isOpen ? closeSidebar : undefined,
@@ -89,7 +61,7 @@ export default function Sidebar() {
 
   return (
     <>
-      {/* Desktop Sidebar - Always visible on md and up */}
+      {/* Desktop Sidebar */}
       <aside className="fixed left-0 top-0 z-40 hidden h-screen w-64 flex-col bg-[#0a1c4a] md:flex">
         <div className="flex h-full flex-col p-6">
           <div className="mb-6 border-b border-white/10 pb-4">
@@ -101,31 +73,63 @@ export default function Sidebar() {
               />
             </Link>
           </div>
-          <SidebarContent onNavigate={() => {}} />
+          <nav className="flex-1 overflow-auto py-4">
+            <NavLinks />
+          </nav>
+          <div className="border-t border-white/10 pt-4">
+            <Login />
+          </div>
         </div>
       </aside>
 
-      {/* Mobile Sheet Sidebar */}
-      <Sheet open={isOpen} onOpenChange={setIsOpen}>
-        <SheetTrigger asChild className="md:hidden">
-          <Button
-            variant="outline"
-            size="icon"
-            className="fixed left-4 top-4 z-50 h-10 w-10 border-2 border-white bg-[#0a1c4a] text-white hover:bg-[#0a1c4a]/90 hover:text-white"
-          >
-            <Menu className="h-5 w-5" />
-            <span className="sr-only">Open menu</span>
-          </Button>
-        </SheetTrigger>
-        <SheetContent
-          side="left"
-          className="w-72 border-r-0 bg-[#0a1c4a] p-0 text-white"
-        >
-          <div className="flex h-full flex-col p-6">
-            <SidebarContent onNavigate={closeSidebar} />
+      {/* Mobile Menu Button */}
+      <Button
+        variant="outline"
+        size="icon"
+        onClick={openSidebar}
+        className="fixed left-4 top-4 z-50 h-10 w-10 border-2 border-white bg-[#0a1c4a] text-white hover:bg-[#0a1c4a]/90 hover:text-white md:hidden"
+      >
+        <Menu className="h-5 w-5" />
+        <span className="sr-only">Open menu</span>
+      </Button>
+
+      {/* Mobile Sidebar Overlay */}
+      {isOpen && (
+        <>
+          <div
+            className="fixed inset-0 z-40 bg-black/50 md:hidden"
+            onClick={closeSidebar}
+          />
+          <div className="fixed left-0 top-0 z-50 h-screen w-72 bg-[#0a1c4a] p-6 md:hidden">
+            <div className="flex h-full flex-col">
+              <div className="mb-6 flex items-center justify-between border-b border-white/10 pb-4">
+                <Link to="/" onClick={closeSidebar}>
+                  <img
+                    src="/images/logos/ICAA Logo transparent.png"
+                    alt="ICAA Logo"
+                    className="h-16 w-auto"
+                  />
+                </Link>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={closeSidebar}
+                  className="text-white hover:bg-white/10"
+                >
+                  <X className="h-5 w-5" />
+                  <span className="sr-only">Close menu</span>
+                </Button>
+              </div>
+              <nav className="flex-1 overflow-auto py-4">
+                <NavLinks onNavigate={closeSidebar} />
+              </nav>
+              <div className="border-t border-white/10 pt-4">
+                <Login />
+              </div>
+            </div>
           </div>
-        </SheetContent>
-      </Sheet>
+        </>
+      )}
     </>
   );
 }
