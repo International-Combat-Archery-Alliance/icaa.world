@@ -1,0 +1,33 @@
+{
+  "firstName": "Bob",
+  "lastName": "Beng",
+  "position": "Rear Guard",
+  "homeCity": "Unknown",
+  "number": "00",
+  "experience": "0 Years",
+  "profilePicture": "https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png",
+  "tournamentResults": [{
+      "year": "2025",
+      "tournament": "Boston Play Ins",
+      "city": "Boston, MA",
+      "date": "2025-09-9",
+      "team": "Boston Renegades",
+      "wins": 6,
+      "losses": 0,
+      "pf": 30,
+      "pa": 0,
+      "placement": "1st"
+    },
+    {
+      "year": "2025",
+      "tournament": "Boston Championships",
+      "city": "Boston, MA",
+      "date": "2025-10-25",
+      "team": "Boston Renegades",
+      "wins": 7,
+      "losses": 0,
+      "pf": 38,
+      "pa": 8,
+      "placement": "1st"
+    }]
+}

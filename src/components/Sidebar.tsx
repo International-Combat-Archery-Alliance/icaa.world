@@ -87,6 +87,13 @@ export default function Sidebar() {
               </Link>
             </li>
           ) : null}
+
+            <li>
+              <Link to="/player-profile" onClick={() => setSidebarOpen(false)}>
+                Player Profile
+              </Link>
+            </li>
+
         </ul>
         <div className="mt-auto p-4">
           <Login />
