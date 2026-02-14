@@ -1,107 +1,131 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { Menu } from 'lucide-react';
 import Login from '@/components/Login';
 import { useUserInfo } from '@/context/userInfoContext';
 import { useSwipeGesture } from '@/hooks/useSwipeGesture';
+import { Button } from '@/components/ui/button';
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '@/components/ui/sheet';
 
-export default function Sidebar() {
+interface NavItem {
+  to: string;
+  label: string;
+  adminOnly?: boolean;
+}
+
+const navItems: NavItem[] = [
+  { to: '/', label: 'Home' },
+  { to: '/about-icaa', label: 'About The ICAA' },
+  { to: '/about-sport', label: 'About The Sport' },
+  { to: '/our-communities', label: 'The Alliance', adminOnly: true },
+  { to: '/events', label: 'Events' },
+  { to: '/contact', label: 'Contact Us' },
+  { to: '/admin', label: 'Admin', adminOnly: true },
+];
+
+function SidebarContent({ onNavigate }: { onNavigate: () => void }) {
   const { userInfo, isSuccess } = useUserInfo();
 
-  const [isSidebarOpen, setSidebarOpen] = useState(false);
+  const visibleNavItems = navItems.filter(
+    (item) => !item.adminOnly || (isSuccess && userInfo?.isAdmin),
+  );
 
-  const toggleSidebar = () => {
-    setSidebarOpen(!isSidebarOpen);
-  };
+  return (
+    <div className="flex h-full flex-col">
+      <SheetHeader className="border-b border-border/10 pb-4">
+        <SheetTitle asChild>
+          <Link to="/" onClick={onNavigate} className="flex items-center gap-2">
+            <img
+              src="/images/logos/ICAA Logo transparent.png"
+              alt="ICAA Logo"
+              className="h-16 w-auto"
+            />
+          </Link>
+        </SheetTitle>
+      </SheetHeader>
 
-  const openSidebar = () => {
-    setSidebarOpen(true);
-  };
+      <nav className="flex-1 overflow-auto py-4">
+        <ul className="space-y-1">
+          {visibleNavItems.map((item) => (
+            <li key={item.to}>
+              <Link
+                to={item.to}
+                onClick={onNavigate}
+                className="block rounded-md px-4 py-3 text-base font-medium text-white transition-colors hover:bg-white/10 hover:translate-x-1"
+              >
+                {item.label}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </nav>
 
-  const closeSidebar = () => {
-    setSidebarOpen(false);
-  };
+      <div className="border-t border-border/10 pt-4">
+        <Login />
+      </div>
+    </div>
+  );
+}
+
+export default function Sidebar() {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const openSidebar = () => setIsOpen(true);
+  const closeSidebar = () => setIsOpen(false);
 
   // Add swipe gesture support
   useSwipeGesture({
     onSwipeRight: openSidebar,
-    onSwipeLeft: isSidebarOpen ? closeSidebar : undefined,
+    onSwipeLeft: isOpen ? closeSidebar : undefined,
     minSwipeDistance: 100,
     maxStartDistance: 50,
   });
 
-  useEffect(() => {
-    if (isSidebarOpen) {
-      document.body.classList.add('sidebar-open');
-    } else {
-      document.body.classList.remove('sidebar-open');
-    }
-  }, [isSidebarOpen]);
-
   return (
     <>
-      <nav id="sidebar" className="sidebar flex flex-col">
-        <ul className="sidebar-nav">
-          <div className="logo-container">
-            <img
-              src="/images/logos/ICAA Logo transparent.png"
-              alt="ICAA Logo"
-              className="logo"
-            />
+      {/* Desktop Sidebar - Always visible on md and up */}
+      <aside className="fixed left-0 top-0 z-40 hidden h-screen w-64 flex-col bg-[#0a1c4a] md:flex">
+        <div className="flex h-full flex-col p-6">
+          <div className="mb-6 border-b border-white/10 pb-4">
+            <Link to="/" className="flex items-center gap-2">
+              <img
+                src="/images/logos/ICAA Logo transparent.png"
+                alt="ICAA Logo"
+                className="h-20 w-auto"
+              />
+            </Link>
           </div>
-          <li>
-            <Link to="/" onClick={() => setSidebarOpen(false)}>
-              Home
-            </Link>
-          </li>
-          <li>
-            <Link to="/about-icaa" onClick={() => setSidebarOpen(false)}>
-              About The ICAA
-            </Link>
-          </li>
-          <li>
-            <Link to="/about-sport" onClick={() => setSidebarOpen(false)}>
-              About The Sport
-            </Link>
-          </li>
-          {isSuccess && userInfo?.isAdmin ? (
-            <li>
-              <Link to="/our-communities" onClick={() => setSidebarOpen(false)}>
-                The Alliance
-              </Link>
-            </li>
-          ) : null}
-          <li>
-            <Link to="/events" onClick={() => setSidebarOpen(false)}>
-              Events
-            </Link>
-          </li>
-          <li>
-            <Link to="/contact" onClick={() => setSidebarOpen(false)}>
-              Contact Us
-            </Link>
-          </li>
-          {isSuccess && userInfo?.isAdmin ? (
-            <li>
-              <Link to="/admin" onClick={() => setSidebarOpen(false)}>
-                Admin
-              </Link>
-            </li>
-          ) : null}
-        </ul>
-        <div className="mt-auto p-4">
-          <Login />
+          <SidebarContent onNavigate={() => {}} />
         </div>
-      </nav>
+      </aside>
 
-      {/* Add click handler to overlay to close sidebar */}
-      <div className="content-overlay" onClick={closeSidebar}></div>
-      <button
-        className="menu-toggle"
-        id="menu-toggle-btn"
-        onClick={toggleSidebar}
-      >
-        ☰
-      </button>
+      {/* Mobile Sheet Sidebar */}
+      <Sheet open={isOpen} onOpenChange={setIsOpen}>
+        <SheetTrigger asChild className="md:hidden">
+          <Button
+            variant="outline"
+            size="icon"
+            className="fixed left-4 top-4 z-50 h-10 w-10 border-2 border-white bg-[#0a1c4a] text-white hover:bg-[#0a1c4a]/90 hover:text-white"
+          >
+            <Menu className="h-5 w-5" />
+            <span className="sr-only">Open menu</span>
+          </Button>
+        </SheetTrigger>
+        <SheetContent
+          side="left"
+          className="w-72 border-r-0 bg-[#0a1c4a] p-0 text-white"
+        >
+          <div className="flex h-full flex-col p-6">
+            <SidebarContent onNavigate={closeSidebar} />
+          </div>
+        </SheetContent>
+      </Sheet>
     </>
   );
 }

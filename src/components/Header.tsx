@@ -51,13 +51,17 @@ export default function Header() {
   }
 
   return (
-    <header>
-      {/* ml is for the sidebar, can be removed if the sidebar is refactored */}
-      <div className="md:ml-[250px] py-4 px-2 flex justify-center items-center bg-[#0a1c4a]">
-        <div></div>
-        <h2 className="font-['Montserrat', sans-serif] text-6xl text-center text-(--electric-orange)">
+    <header className="bg-[#0a1c4a]">
+      <div className="py-4 px-4 md:px-8 flex items-center justify-center">
+        {/* Spacer for mobile to balance the hamburger button area */}
+        <div className="w-10 md:hidden" />
+
+        <h1 className="flex-1 text-center font-['Montserrat',sans-serif] text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-[#ff5722]">
           {headerText}
-        </h2>
+        </h1>
+
+        {/* Spacer to match left side */}
+        <div className="w-10 md:hidden" />
       </div>
     </header>
   );
