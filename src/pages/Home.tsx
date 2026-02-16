@@ -1,31 +1,10 @@
-import { useState, useEffect } from 'react';
 import { useTitle } from 'react-use';
-//import { Link } from 'react-router-dom';
 import NewsContainer from '@/components/NewsContainer';
-//import { Button } from '@/components/ui/button';
 import EventsContainer from '@/components/EventsContainer';
+import { CarouselImages } from '@/components/CarouselImages';
 
 const Home = () => {
   useTitle('ICAA - International Combat Archery Alliance');
-
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const totalImages = 67;
-  const images = [];
-  for (let i = 1; i <= totalImages; i++) {
-    images.push(`images/Rotating Archery Photos/${i}.jpg`);
-  }
-
-  const changeImage = () => {
-    const newIndex = Math.floor(Math.random() * images.length);
-    setCurrentImageIndex(newIndex);
-  };
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      changeImage();
-    }, 10000);
-    return () => clearInterval(interval);
-  }, []);
 
   return (
     <>
@@ -38,28 +17,12 @@ const Home = () => {
           Building a global alliance for the sport of Combat Archery.
         </p>
       </header>
-      {/*
-      <div className="mt-6 flex justify-center">
-        <Button asChild size="lg" className="px-8 text-lg">
-          <Link to="/registration">Join the Alliance</Link>
-        </Button>
-      </div>
-      */}
 
       <div className="mt-8 grid grid-cols-1 pb-6 px-4 gap-4 lg:px-12 lg:grid-cols-2">
-        <div className="image-rotator-container lg:col-span-2">
-          <button id="prev-btn" className="rotator-btn" onClick={changeImage}>
-            ❮
-          </button>
-          <img
-            id="rotator-img"
-            src={images[currentImageIndex]}
-            alt="Rotating image of combat archery"
-            className="rotator-img"
-          />
-          <button id="next-btn" className="rotator-btn" onClick={changeImage}>
-            ❯
-          </button>
+        <div className="lg:col-span-2 flex justify-center">
+          <div className="w-full max-w-[1016px]">
+            <CarouselImages assetPath="/Carousel-Images" />
+          </div>
         </div>
 
         <NewsContainer className="lg:justify-self-end lg:max-w-[500px]" />
