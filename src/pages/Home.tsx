@@ -141,43 +141,45 @@ const Home = () => {
       */}
 
       <div className="mt-8 grid grid-cols-1 pb-6 px-4 gap-4 lg:px-12 lg:grid-cols-2">
-        <div className="lg:col-span-2">
-          {isLoading ? (
-            <Skeleton className="w-full h-[400px] rounded-lg" />
-          ) : images.length > 0 ? (
-            <Carousel
-              setApi={setApi}
-              plugins={[
-                Autoplay({
-                  delay: 10000,
-                  stopOnInteraction: false,
-                }),
-              ]}
-              opts={{
-                align: 'start',
-                loop: true,
-              }}
-              className="w-full"
-            >
-              <CarouselContent>
-                {images.map((url, index) => (
-                  <CarouselItem key={index}>
-                    <CarouselImage
-                      src={url}
-                      alt={`Combat archery photo ${index + 1}`}
-                      isVisible={index === currentIndex}
-                    />
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-              <CarouselPrevious className="left-4" />
-              <CarouselNext className="right-4" />
-            </Carousel>
-          ) : (
-            <div className="w-full h-[400px] flex items-center justify-center bg-gray-100 rounded-lg">
-              <span className="text-gray-400">No images found</span>
-            </div>
-          )}
+        <div className="lg:col-span-2 flex justify-center">
+          <div className="w-full max-w-[1016px]">
+            {isLoading ? (
+              <Skeleton className="w-full h-[400px] rounded-lg" />
+            ) : images.length > 0 ? (
+              <Carousel
+                setApi={setApi}
+                plugins={[
+                  Autoplay({
+                    delay: 10000,
+                    stopOnInteraction: false,
+                  }),
+                ]}
+                opts={{
+                  align: 'start',
+                  loop: true,
+                }}
+                className="w-full"
+              >
+                <CarouselContent>
+                  {images.map((url, index) => (
+                    <CarouselItem key={index}>
+                      <CarouselImage
+                        src={url}
+                        alt={`Combat archery photo ${index + 1}`}
+                        isVisible={index === currentIndex}
+                      />
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                <CarouselPrevious className="left-4" />
+                <CarouselNext className="right-4" />
+              </Carousel>
+            ) : (
+              <div className="w-full h-[400px] flex items-center justify-center bg-gray-100 rounded-lg">
+                <span className="text-gray-400">No images found</span>
+              </div>
+            )}
+          </div>
         </div>
 
         <NewsContainer className="lg:justify-self-end lg:max-w-[500px]" />
