@@ -189,21 +189,6 @@ body {
   box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
 }
 
-.event-logo,
-.community-logo {
-  max-width: 100px;
-  height: auto;
-  margin-bottom: 1rem;
-  display: inline-block;
-}
-.community-logo-alt {
-  max-width: 100px;
-  height: auto;
-  margin-bottom: 1rem;
-  background-color: #0a1c4a;
-  display: inline-block;
-}
-
 .community-card h3 {
   color: var(--navy-blue);
   margin-bottom: 0.25rem;
