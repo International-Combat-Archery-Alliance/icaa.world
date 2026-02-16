@@ -24,18 +24,20 @@ const isImageAsset = (asset: Asset): boolean => {
 function CarouselImage({
   src,
   alt,
-  height,
+  aspectRatio,
 }: {
   src: string;
   alt: string;
-  height: string;
+  aspectRatio: string;
 }) {
   const [isLoaded, setIsLoaded] = useState(false);
 
   return (
     <div
-      className="relative w-full overflow-hidden rounded-lg bg-gray-100"
-      style={{ height }}
+      className={cn(
+        'relative w-full overflow-hidden rounded-lg bg-gray-100',
+        aspectRatio,
+      )}
     >
       {!isLoaded && <Skeleton className="absolute inset-0 rounded-lg" />}
       <img
@@ -64,7 +66,7 @@ function useImagePreloader() {
 
 interface CarouselImagesProps {
   assetPath: string;
-  height?: string;
+  aspectRatio?: string;
   autoplayDelay?: number;
   maxAssets?: number;
   className?: string;
@@ -72,7 +74,7 @@ interface CarouselImagesProps {
 
 export function CarouselImages({
   assetPath,
-  height = '400px',
+  aspectRatio = 'aspect-video',
   autoplayDelay = 10000,
   maxAssets = 100,
   className,
@@ -115,10 +117,7 @@ export function CarouselImages({
 
   if (isLoading) {
     return (
-      <Skeleton
-        className={cn('w-full rounded-lg', className)}
-        style={{ height }}
-      />
+      <Skeleton className={cn('w-full rounded-lg', aspectRatio, className)} />
     );
   }
 
@@ -127,9 +126,9 @@ export function CarouselImages({
       <div
         className={cn(
           'w-full flex items-center justify-center bg-gray-100 rounded-lg',
+          aspectRatio,
           className,
         )}
-        style={{ height }}
       >
         <span className="text-gray-400">No images found</span>
       </div>
@@ -157,7 +156,7 @@ export function CarouselImages({
             <CarouselImage
               src={url}
               alt={`Combat archery photo ${index + 1}`}
-              height={height}
+              aspectRatio={aspectRatio}
             />
           </CarouselItem>
         ))}
