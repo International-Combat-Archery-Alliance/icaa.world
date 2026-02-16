@@ -1,8 +1,6 @@
 import { useMemo, useState, useEffect, useCallback } from 'react';
 import { useTitle } from 'react-use';
-//import { Link } from 'react-router-dom';
 import NewsContainer from '@/components/NewsContainer';
-//import { Button } from '@/components/ui/button';
 import EventsContainer from '@/components/EventsContainer';
 import { useGetAssets } from '@/hooks/useAssets';
 import type { Asset } from '@/hooks/useAssets';
@@ -25,36 +23,19 @@ const isImageAsset = (asset: Asset): boolean => {
 };
 
 // Component to handle image loading with fade-in
-function CarouselImage({
-  src,
-  alt,
-  isVisible,
-}: {
-  src: string;
-  alt: string;
-  isVisible: boolean;
-}) {
+function CarouselImage({ src, alt }: { src: string; alt: string }) {
   const [isLoaded, setIsLoaded] = useState(false);
-
-  useEffect(() => {
-    if (isVisible) {
-      setIsLoaded(false);
-    }
-  }, [isVisible]);
 
   return (
     <div className="relative w-full h-[400px] overflow-hidden rounded-lg bg-gray-100">
-      {!isLoaded && isVisible && (
-        <Skeleton className="absolute inset-0 rounded-lg" />
-      )}
+      {!isLoaded && <Skeleton className="absolute inset-0 rounded-lg" />}
       <img
         src={src}
         alt={alt}
         className={`w-full h-full object-cover transition-opacity duration-500 ${
-          isLoaded && isVisible ? 'opacity-100' : 'opacity-0'
+          isLoaded ? 'opacity-100' : 'opacity-0'
         }`}
         onLoad={() => setIsLoaded(true)}
-        loading="eager"
       />
     </div>
   );
@@ -62,22 +43,12 @@ function CarouselImage({
 
 // Hook to preload images
 function useImagePreloader() {
-  const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set());
-
-  const preloadImages = useCallback(
-    (urls: string[]) => {
-      urls.forEach((url) => {
-        if (!loadedImages.has(url)) {
-          const img = new Image();
-          img.src = url;
-          img.onload = () => {
-            setLoadedImages((prev) => new Set(prev).add(url));
-          };
-        }
-      });
-    },
-    [loadedImages],
-  );
+  const preloadImages = useCallback((urls: string[]) => {
+    urls.forEach((url) => {
+      const img = new Image();
+      img.src = url;
+    });
+  }, []);
 
   return { preloadImages };
 }
@@ -132,13 +103,6 @@ const Home = () => {
           Building a global alliance for the sport of Combat Archery.
         </p>
       </header>
-      {/*
-      <div className="mt-6 flex justify-center">
-        <Button asChild size="lg" className="px-8 text-lg">
-          <Link to="/registration">Join the Alliance</Link>
-        </Button>
-      </div>
-      */}
 
       <div className="mt-8 grid grid-cols-1 pb-6 px-4 gap-4 lg:px-12 lg:grid-cols-2">
         <div className="lg:col-span-2 flex justify-center">
@@ -166,7 +130,6 @@ const Home = () => {
                       <CarouselImage
                         src={url}
                         alt={`Combat archery photo ${index + 1}`}
-                        isVisible={index === currentIndex}
                       />
                     </CarouselItem>
                   ))}
