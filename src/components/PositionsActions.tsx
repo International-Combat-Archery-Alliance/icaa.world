@@ -20,11 +20,7 @@ const Positions: React.FC<PositionProps> = ({
     <Card className="w-full flex flex-col md:flex-row items-center p-4 gap-6">
       <img
         width="150"
-        src={
-          isHovered
-            ? 'images/action shots/' + actionshot + '.png'
-            : 'images/logos/' + icon + '.png'
-        }
+        src={isHovered ? actionshot : icon}
         alt={`${position}'s Icon`}
         className="position-icon flex-shrink-0 rounded-lg"
         onMouseEnter={() => setIsHovered(true)}
