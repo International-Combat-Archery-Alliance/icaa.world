@@ -38,8 +38,8 @@
   --sidebar-foreground: oklch(0.145 0 0);
   --sidebar-primary: oklch(0.205 0 0);
   --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-accent: var(--electric-orange);
+  --sidebar-accent-foreground: var(--white);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
 }
@@ -80,23 +80,6 @@ body {
   margin-bottom: 1rem;
   margin-left: 1.75em;
   display: inline-block;
-}
-
-/* Main Content */
-.main-content {
-  flex-grow: 1;
-  max-width: 100%;
-}
-
-/* Desktop: Add margin for fixed sidebar */
-@media (min-width: 768px) {
-  .main-content {
-    margin-left: 256px; /* w-64 = 16rem = 256px */
-  }
-
-  footer {
-    margin-left: 256px;
-  }
 }
 
 .content-section {

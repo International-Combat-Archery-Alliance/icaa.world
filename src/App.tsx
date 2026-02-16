@@ -45,7 +45,7 @@ const App = () => {
                     <Sidebar />
 
                     <Header />
-                    <main className="main-content">
+                    <main className="flex-1 max-w-full md:ml-64">
                       <Routes>
                         <Route path="/" element={<Home />} />
                         <Route path="/about-icaa" element={<AboutICAA />} />
@@ -115,7 +115,7 @@ const App = () => {
                         />
                       </Routes>
                     </main>
-                    <footer>
+                    <footer className="md:ml-64">
                       <div className="social-links">
                         <a
                           href="https://www.youtube.com/@Icaa-world"

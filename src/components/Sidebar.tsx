@@ -43,7 +43,7 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
           <Link
             to={item.to}
             onClick={onNavigate}
-            className="block rounded-md px-4 py-3 text-base font-medium text-white transition-colors hover:bg-white/10 hover:translate-x-1"
+            className="block px-6 py-4 text-lg font-medium text-white transition-colors hover:bg-[var(--sidebar-accent)]"
           >
             {item.label}
           </Link>
@@ -59,7 +59,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
       <nav className="flex-1 overflow-auto py-4">
         <NavLinks onNavigate={onNavigate} />
       </nav>
-      <div className="border-t border-white/10 pt-4">
+      <div className="px-6 pt-4">
         <Login />
       </div>
     </div>
@@ -83,13 +83,13 @@ export default function Sidebar() {
     <>
       {/* Desktop Sidebar */}
       <aside className="fixed left-0 top-0 z-40 hidden h-screen w-64 flex-col bg-[#0a1c4a] md:flex">
-        <div className="flex h-full flex-col p-6">
-          <div className="mb-6 border-b border-white/10 pb-4">
+        <div className="flex h-full flex-col py-6">
+          <div className="mb-6 px-6">
             <Link to="/" className="flex items-center gap-2">
               <img
                 src="/images/logos/ICAA Logo transparent.png"
                 alt="ICAA Logo"
-                className="h-20 w-auto"
+                className="h-36 w-auto"
               />
             </Link>
           </div>
@@ -114,14 +114,14 @@ export default function Sidebar() {
             side="left"
             className="w-72 border-r-0 bg-[#0a1c4a] p-0 text-white"
           >
-            <div className="flex h-full flex-col p-6">
-              <SheetHeader className="mb-6 border-b border-white/10 pb-4">
+            <div className="flex h-full flex-col py-6">
+              <SheetHeader className="mb-6 px-6">
                 <SheetTitle asChild>
                   <Link to="/" onClick={closeSidebar}>
                     <img
                       src="/images/logos/ICAA Logo transparent.png"
                       alt="ICAA Logo"
-                      className="h-16 w-auto"
+                      className="h-20 w-auto"
                     />
                   </Link>
                 </SheetTitle>

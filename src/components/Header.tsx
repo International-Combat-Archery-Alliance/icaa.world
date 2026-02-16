@@ -51,7 +51,7 @@ export default function Header() {
   }
 
   return (
-    <header className="bg-[#0a1c4a]">
+    <header className="bg-[#0a1c4a] md:ml-64">
       <div className="py-4 px-4 md:px-8 flex items-center justify-center">
         <h1 className="text-center font-['Montserrat',sans-serif] text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl text-[#ff5722]">
           {headerText}
