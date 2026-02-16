@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect, useCallback } from 'react';
 import { useTitle } from 'react-use';
 //import { Link } from 'react-router-dom';
 import NewsContainer from '@/components/NewsContainer';
@@ -12,6 +12,7 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
+  type CarouselApi,
 } from '@/components/ui/carousel';
 import { Skeleton } from '@/components/ui/skeleton';
 import Autoplay from 'embla-carousel-autoplay';
@@ -23,8 +24,69 @@ const isImageAsset = (asset: Asset): boolean => {
   );
 };
 
+// Component to handle image loading with fade-in
+function CarouselImage({
+  src,
+  alt,
+  isVisible,
+}: {
+  src: string;
+  alt: string;
+  isVisible: boolean;
+}) {
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  useEffect(() => {
+    if (isVisible) {
+      setIsLoaded(false);
+    }
+  }, [isVisible]);
+
+  return (
+    <div className="relative w-full h-[400px] overflow-hidden rounded-lg bg-gray-100">
+      {!isLoaded && isVisible && (
+        <Skeleton className="absolute inset-0 rounded-lg" />
+      )}
+      <img
+        src={src}
+        alt={alt}
+        className={`w-full h-full object-cover transition-opacity duration-500 ${
+          isLoaded && isVisible ? 'opacity-100' : 'opacity-0'
+        }`}
+        onLoad={() => setIsLoaded(true)}
+        loading="eager"
+      />
+    </div>
+  );
+}
+
+// Hook to preload images
+function useImagePreloader() {
+  const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set());
+
+  const preloadImages = useCallback(
+    (urls: string[]) => {
+      urls.forEach((url) => {
+        if (!loadedImages.has(url)) {
+          const img = new Image();
+          img.src = url;
+          img.onload = () => {
+            setLoadedImages((prev) => new Set(prev).add(url));
+          };
+        }
+      });
+    },
+    [loadedImages],
+  );
+
+  return { preloadImages };
+}
+
 const Home = () => {
   useTitle('ICAA - International Combat Archery Alliance');
+
+  const [api, setApi] = useState<CarouselApi>();
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   const { data, isLoading } = useGetAssets('/Carousel-Images', 100);
 
@@ -35,6 +97,29 @@ const Home = () => {
       .map((asset) => ('url' in asset ? asset.url : ''))
       .filter((url): url is string => url !== '');
   }, [data]);
+
+  const { preloadImages } = useImagePreloader();
+
+  // Preload next 2 images when current changes
+  useEffect(() => {
+    if (images.length === 0) return;
+
+    const nextIndex1 = (currentIndex + 1) % images.length;
+    const nextIndex2 = (currentIndex + 2) % images.length;
+
+    preloadImages([images[nextIndex1], images[nextIndex2]]);
+  }, [currentIndex, images, preloadImages]);
+
+  // Track carousel index changes
+  useEffect(() => {
+    if (!api) return;
+
+    setCurrentIndex(api.selectedScrollSnap());
+
+    api.on('select', () => {
+      setCurrentIndex(api.selectedScrollSnap());
+    });
+  }, [api]);
 
   return (
     <>
@@ -61,6 +146,7 @@ const Home = () => {
             <Skeleton className="w-full h-[400px] rounded-lg" />
           ) : images.length > 0 ? (
             <Carousel
+              setApi={setApi}
               plugins={[
                 Autoplay({
                   delay: 10000,
@@ -76,10 +162,10 @@ const Home = () => {
               <CarouselContent>
                 {images.map((url, index) => (
                   <CarouselItem key={index}>
-                    <img
+                    <CarouselImage
                       src={url}
                       alt={`Combat archery photo ${index + 1}`}
-                      className="w-full h-[400px] object-cover rounded-lg"
+                      isVisible={index === currentIndex}
                     />
                   </CarouselItem>
                 ))}
