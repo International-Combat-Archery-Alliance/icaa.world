@@ -152,19 +152,19 @@ export default function Sidebar() {
             </li>
           ) : null}
           {isSuccess && userInfo?.isAdmin ? (
-          <li>
-            <Link
-              to="/player-profile"
-              onClick={() => setSidebarOpen(false)}
-              className={
-                isActive('/player-profile')
-                  ? 'font-bold text-primary bg-primary/10 border-l-4 border-primary'
-                  : 'border-l-4 border-transparent'
-              }
-            >
-              Player Profile
-            </Link>
-          </li>
+            <li>
+              <Link
+                to="/player-profile"
+                onClick={() => setSidebarOpen(false)}
+                className={
+                  isActive('/player-profile')
+                    ? 'font-bold text-primary bg-primary/10 border-l-4 border-primary'
+                    : 'border-l-4 border-transparent'
+                }
+              >
+                Player Profile
+              </Link>
+            </li>
           ) : null}
         </ul>
         <div className="mt-auto p-4">

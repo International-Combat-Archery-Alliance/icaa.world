@@ -98,10 +98,7 @@ const NewsContainer = ({ className }: { className?: string }) => {
             key={item.id}
             className="group relative rounded-lg p-2 transition-colors hover:bg-muted/50"
           >
-            <Link
-              to={item.to}
-              className="grid gap-1"
-            >
+            <Link to={item.to} className="grid gap-1">
               <div className="pr-8">
                 <p className="text-sm text-muted-foreground">{item.date}</p>
               </div>

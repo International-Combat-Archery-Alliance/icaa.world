@@ -46,7 +46,11 @@ const BoardMember: React.FC<BoardMemberProps> = ({
           title="Copy email"
           type="button"
         >
-          {copied ? <Check className="w-3 h-3 text-green-600" /> : <Copy className="w-3 h-3 text-gray-500" />}
+          {copied ? (
+            <Check className="w-3 h-3 text-green-600" />
+          ) : (
+            <Copy className="w-3 h-3 text-gray-500" />
+          )}
         </button>
       </div>
     </div>
