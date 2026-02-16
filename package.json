@@ -70,7 +70,7 @@
     "luxon": "^3.7.2",
     "mailersend": "^2.6.0",
     "openai-fetch": "^3.4.2",
-    "openapi-fetch": "^0.15.0",
+    "openapi-fetch": "^0.17.0",
     "openapi-react-query": "^0.5.1",
     "radix-ui": "^1.4.3",
     "react": "^19.2.3",
