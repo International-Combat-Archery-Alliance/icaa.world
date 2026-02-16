@@ -93,7 +93,7 @@ export function EventDetailsCard({ event }: EventDetailsCardProps) {
       <CardContent className="flex flex-col md:flex-row items-center gap-6 p-6">
         {event.imageName && (
           <img
-            src={`/images/logos/${event.imageName}`}
+            src={event.imageName}
             alt={`${event.name} logo`}
             className="w-32 h-32 rounded-md object-contain flex-shrink-0"
           />
