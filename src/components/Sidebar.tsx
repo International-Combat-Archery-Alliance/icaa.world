@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { Menu } from 'lucide-react';
 import Login from '@/components/Login';
 import { useUserInfo } from '@/context/userInfoContext';
@@ -31,6 +31,14 @@ const navItems: NavItem[] = [
 
 function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
   const { userInfo, isSuccess } = useUserInfo();
+  const location = useLocation();
+
+  const isActive = (path: string) => {
+    if (path === '/') {
+      return location.pathname === '/';
+    }
+    return location.pathname.startsWith(path);
+  };
 
   const visibleNavItems = navItems.filter(
     (item) => !item.adminOnly || (isSuccess && userInfo?.isAdmin),
@@ -43,7 +51,11 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
           <Link
             to={item.to}
             onClick={onNavigate}
-            className="block px-6 py-4 text-lg font-medium text-white transition-colors hover:bg-[var(--sidebar-accent)]"
+            className={
+              isActive(item.to)
+                ? 'block px-6 py-4 text-lg font-bold text-white bg-white/10 border-l-4 border-white transition-colors hover:bg-[var(--sidebar-accent)]'
+                : 'block px-6 py-4 text-lg font-medium text-white border-l-4 border-transparent transition-colors hover:bg-[var(--sidebar-accent)]'
+            }
           >
             {item.label}
           </Link>

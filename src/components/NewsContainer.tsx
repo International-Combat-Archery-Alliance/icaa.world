@@ -1,7 +1,8 @@
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 
-import { Newspaper } from 'lucide-react';
+import { Newspaper, Share2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const newsItems = [
@@ -52,6 +53,37 @@ const NewsContainer = ({ className }: { className?: string }) => {
     (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
   );
 
+  const isRecent = (dateString: string) => {
+    const date = new Date(dateString);
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    return date >= thirtyDaysAgo;
+  };
+
+  const handleShare = async (
+    e: React.MouseEvent,
+    item: (typeof newsItems)[0],
+  ) => {
+    e.preventDefault();
+    const url = `${window.location.origin}${item.to}`;
+    const shareData = {
+      title: item.title,
+      text: item.excerpt,
+      url,
+    };
+
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+      } catch (err) {
+        console.error('Error sharing:', err);
+      }
+    } else {
+      navigator.clipboard.writeText(url);
+      alert('Link copied to clipboard!');
+    }
+  };
+
   return (
     <Card className={cn('flex h-full flex-col', className)}>
       <CardHeader>
@@ -62,14 +94,21 @@ const NewsContainer = ({ className }: { className?: string }) => {
       </CardHeader>
       <CardContent className="grid flex-grow gap-4 overflow-y-auto max-h-[450px]">
         {sortedNews.map((item) => (
-          <div key={item.id}>
-            <Link
-              to={item.to}
-              className="group grid gap-1 rounded-lg p-2 transition-colors hover:bg-muted/50"
-            >
-              <p className="text-sm text-muted-foreground">{item.date}</p>
+          <div
+            key={item.id}
+            className="group relative rounded-lg p-2 transition-colors hover:bg-muted/50"
+          >
+            <Link to={item.to} className="grid gap-1">
+              <div className="pr-8">
+                <p className="text-sm text-muted-foreground">{item.date}</p>
+              </div>
               <h4 className="font-semibold group-hover:text-primary">
                 {item.title}
+                {isRecent(item.date) && (
+                  <span className="ml-2 inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors border-transparent bg-primary text-primary-foreground shadow">
+                    New
+                  </span>
+                )}
               </h4>
               {/* Need the wrapper dive for the line clamp to work correctly for some reason */}
               <div>
@@ -78,6 +117,15 @@ const NewsContainer = ({ className }: { className?: string }) => {
                 </p>
               </div>
             </Link>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute top-2 right-2 h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
+              onClick={(e) => handleShare(e, item)}
+            >
+              <Share2 className="h-4 w-4" />
+              <span className="sr-only">Share</span>
+            </Button>
           </div>
         ))}
       </CardContent>
