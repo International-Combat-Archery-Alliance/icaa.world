@@ -53,7 +53,7 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
             onClick={onNavigate}
             className={
               isActive(item.to)
-                ? 'block px-6 py-4 text-lg font-bold text-white bg-white/10 border-l-4 border-white transition-colors hover:bg-[var(--sidebar-accent)]'
+                ? 'block px-6 py-4 text-lg font-bold text-white bg-[var(--primary)]/20 border-l-4 border-[var(--primary)] transition-colors hover:bg-[var(--primary)]/30'
                 : 'block px-6 py-4 text-lg font-medium text-white border-l-4 border-transparent transition-colors hover:bg-[var(--sidebar-accent)]'
             }
           >
