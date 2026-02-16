@@ -38,8 +38,8 @@
   --sidebar-foreground: oklch(0.145 0 0);
   --sidebar-primary: oklch(0.205 0 0);
   --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-accent: var(--electric-orange);
+  --sidebar-accent-foreground: var(--white);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
 }
@@ -74,87 +74,12 @@ body {
   align-items: center;
 }
 
-/* Sidebar Navigation */
-.sidebar {
-  height: 100%;
-  width: 250px;
-  position: fixed;
-  top: 0;
-  left: 0;
-  background-color: var(--navy-blue);
-  padding-top: 60px;
-  transition: transform 0.3s ease-in-out;
-  transform: translateX(-250px);
-  z-index: 50;
-  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
-}
-
-.sidebar-nav {
-  list-style-type: none;
-  padding: 0;
-}
-
-.sidebar-nav li a {
-  padding: 15px 25px;
-  text-decoration: none;
-  font-size: 1.2rem;
-  color: var(--white);
-  display: block;
-}
-
-.sidebar-nav li a:hover {
-  background-color: var(--electric-orange);
-  transform: translateX(5px);
-}
-
-/* Overlay for when sidebar is open */
-.content-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  z-index: 49;
-  visibility: hidden;
-  opacity: 0;
-  transition:
-    visibility 0s,
-    opacity 0.3s ease-in-out;
-}
-
-/* Menu Toggle Button (Hamburger Icon) */
-.menu-toggle {
-  display: block; /* Visible on mobile by default */
-  position: fixed;
-  z-index: 51; /* Ensure it's above other content */
-  top: 5%;
-  right: 90%;
-  transform: translateY(-50%);
-  background: var(--navy-blue);
-  color: var(--white);
-  border: 2px solid var(--white);
-  border-radius: 8px;
-  padding: 0.5rem 0.75rem;
-  font-size: 1.5rem;
-  cursor: pointer;
-}
-
-/* Class to show sidebar and overlay */
-body.sidebar-open .sidebar {
-  transform: translateX(0);
-}
-
-body.sidebar-open .content-overlay {
-  visibility: visible;
-  opacity: 1;
-}
-
-/* Main Content */
-.main-content {
-  transition: margin-left 0.3s ease-in-out;
-  max-width: 100%;
-  flex-grow: 1;
+/* Logo */
+.logo {
+  max-width: 100px;
+  margin-bottom: 1rem;
+  margin-left: 1.75em;
+  display: inline-block;
 }
 
 .content-section {
@@ -474,20 +399,6 @@ footer {
 
 /* Responsive Design */
 @media (min-width: 768px) {
-  .menu-toggle {
-    display: none;
-  }
-  .sidebar {
-    transform: translateX(0);
-  }
-  .main-content {
-    margin-left: 250px;
-  }
-  .main-content,
-  footer {
-    margin-left: 250px; /* Aligns with the sidebar */
-  }
-
   .logo {
     max-width: 150px;
     display: inline-block;
