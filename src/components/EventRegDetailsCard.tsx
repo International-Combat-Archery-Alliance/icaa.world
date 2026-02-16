@@ -57,7 +57,9 @@ export function EventDetailsCard({ event }: EventDetailsCardProps) {
       'END:VCALENDAR',
     ].join('\n');
 
-    const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+    const blob = new Blob([icsContent], {
+      type: 'text/calendar;charset=utf-8',
+    });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
@@ -123,17 +125,29 @@ export function EventDetailsCard({ event }: EventDetailsCardProps) {
             </p>
           )}
           <div className="flex flex-col sm:flex-row gap-2 mt-4">
-            <Button variant="outline" className="w-full md:w-auto" onClick={handleShare}>
+            <Button
+              variant="outline"
+              className="w-full md:w-auto"
+              onClick={handleShare}
+            >
               <Share2 className="mr-2 h-4 w-4" />
               Share
             </Button>
             <Button variant="outline" className="w-full md:w-auto" asChild>
-              <a href={googleCalendarUrl} target="_blank" rel="noopener noreferrer">
+              <a
+                href={googleCalendarUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <CalendarPlus className="mr-2 h-4 w-4" />
                 Google Calendar
               </a>
             </Button>
-            <Button variant="outline" className="w-full md:w-auto" onClick={handleDownloadIcs}>
+            <Button
+              variant="outline"
+              className="w-full md:w-auto"
+              onClick={handleDownloadIcs}
+            >
               <Download className="mr-2 h-4 w-4" />
               iCal / Outlook
             </Button>

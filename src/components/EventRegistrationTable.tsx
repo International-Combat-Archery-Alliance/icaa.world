@@ -131,7 +131,14 @@ const EventRegistrationTable = ({
             .join('; ');
         }
 
-        return [escape(type), escape(name), escape(reg.homeCity), escape(email), escape(paid), escape(extra)].join(',');
+        return [
+          escape(type),
+          escape(name),
+          escape(reg.homeCity),
+          escape(email),
+          escape(paid),
+          escape(extra),
+        ].join(',');
       }),
     ].join('\n');
 
