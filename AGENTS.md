@@ -2,70 +2,69 @@
 
 ## Project Overview
 
-The official website for the International Combat Archery Alliance (ICAA), promoting and organizing combat archery events worldwide. Built with React 19, TypeScript, and TailwindCSS.
+Official website for the International Combat Archery Alliance (ICAA). React 19 + TypeScript + TailwindCSS.
 
 ## Tech Stack
 
-- **Framework**: React 19 with TypeScript
-- **Build Tool**: Vite 7.x
-- **Styling**: TailwindCSS 4.x
+- **Framework**: React 19, TypeScript, Vite 7.x
+- **Styling**: TailwindCSS 4.x, shadcn/ui components
 - **Routing**: React Router DOM 7.x
-- **State Management**: TanStack Query (React Query)
-- **UI Components**: Radix UI primitives with custom styling
-- **Forms**: React Hook Form with Zod validation
-- **Authentication**: Google OAuth
+- **State**: TanStack Query (React Query)
+- **Forms**: React Hook Form + Zod
+- **Auth**: Google OAuth
 - **Payment**: Stripe
-- **Deployment**: Cloudflare Pages (via Wrangler)
+- **Deploy**: Cloudflare Pages (Wrangler)
 
-## Available Commands
+## Commands
 
-Always run these commands after making changes:
-
-```bash
-# Lint check (MUST pass before committing)
-bun run lint
-
-# TypeScript type checking
-bun run test:ts
-
-# Format code with Prettier
-bun run format
-
-# Build for production
-bun run build
-```
-
-### Development Commands
+**Required before committing:**
 
 ```bash
-# Start development server
-bun run dev
-
-# Start frontend + all backend services (requires other repos)
-bun run full-dev
-
-# Preview production build
-bun run preview
-
-# Generate TypeScript types from OpenAPI specs
-bun run codegen
+bun run lint        # ESLint check (MUST pass)
+bun run test:ts     # TypeScript type check
+bun run format      # Prettier formatting
+bun run build       # Production build
 ```
 
-## Code Style Guidelines
+**Development:**
 
-### General Rules
+```bash
+bun run dev         # Start dev server
+bun run preview     # Preview production build
+bun run codegen     # Generate API types from OpenAPI
+bun run full-dev    # Frontend + all backend services
+```
 
-- **TypeScript**: Use strict typing, avoid `any`
-- **Components**: Use functional components with hooks
-- **Imports**: Use `@/` alias for src imports (e.g., `import { cn } from '@/lib/utils'`)
-- **Styling**: Use TailwindCSS classes, use `cn()` utility for conditional classes
-- **No semicolons**: Project uses no-semicolon style
-- **Single quotes**: Use single quotes for strings
+**Linting:**
 
-### Component Structure
+```bash
+bun run lint        # Check lint
+bun run lint:fix    # Fix lint issues
+```
+
+**Note:** No unit tests currently configured. Husky runs `bun run lint:fix` pre-commit.
+
+## Code Style
+
+### General
+
+- **TypeScript**: Strict mode, avoid `any`, explicit return types on exports
+- **No semicolons**: Omit semicolons at end of statements
+- **Quotes**: Single quotes for strings
+- **Imports**: Use `@/` alias for src (e.g., `import { cn } from '@/lib/utils'`)
+- **Styling**: Tailwind classes with `cn()` utility for conditionals
+
+### Naming Conventions
+
+- **Components**: PascalCase files and exports (e.g., `Button.tsx`, `EventCard`)
+- **Hooks**: camelCase with `use` prefix (e.g., `useEvent.ts`)
+- **Utils**: camelCase (e.g., `cn()`, `formatDate()`)
+- **Types/Interfaces**: PascalCase with descriptive names
+- **Constants**: UPPER_SNAKE_CASE for true constants
+
+### Component Pattern
 
 ```tsx
-// Example component pattern
 import * as React from 'react';
 import { cn } from '@/lib/utils';
 
@@ -83,115 +82,81 @@ export { MyComponent };
 
 ### UI Components
 
-UI components are in `src/components/ui/` and follow the shadcn/ui pattern.
-**Always use the shadcn CLI to add new UI components:**
+**Always use shadcn CLI to add new UI components:**
 
 ```bash
-bunx shadcn add <component-name>
+bunx shadcn add button dialog select
 ```
 
-For example:
+UI conventions:
 
-```bash
-bunx shadcn add button
-bunx shadcn add dialog
-```
-
-UI components follow these conventions:
-
-- **Always prefer shadcn/ui components** over writing UI components manually
-- Use `class-variance-authority` (cva) for variant management
-- Use Radix UI primitives as base
+- Prefer shadcn/ui over custom components
+- Use `class-variance-authority` (cva) for variants
+- Radix UI primitives as base
+- Support `className` prop with `cn()` utility
 - Export component and variants separately
 
 ## File Structure
 
 ```
 src/
-├── components/           # Reusable React components
-│   ├── ui/              # shadcn/ui style components
-│   ├── auth/            # Authentication components
+├── components/
+│   ├── ui/              # shadcn/ui components (auto-generated)
+│   ├── auth/            # Auth components (ProtectedRoute, AdminOnlyRoute)
 │   └── ...
-├── pages/               # Page components
-│   ├── news/            # News article pages
-│   └── ...
+├── pages/               # Route pages
 ├── hooks/               # Custom React hooks
-├── context/             # React context providers
-├── api/                 # API type definitions (auto-generated)
-├── lib/                 # Utility functions
-└── main.tsx            # Application entry point
+├── context/             # QueryClient providers
+├── api/                 # Auto-generated types from OpenAPI
+├── lib/                 # Utilities (cn, formatters)
+└── main.tsx
 ```
 
 ## API Integration
 
-The app connects to multiple backend services:
-
-- **Events API**: `https://api.icaa.world/events`
-- **Login API**: `https://api.icaa.world/login`
-- **Assets API**: `https://api.icaa.world/assets`
-
-Types are auto-generated from OpenAPI specs:
+Auto-generated types from OpenAPI specs:
 
 ```bash
 bun run codegen
 ```
 
-### Query Client Pattern
+**APIs:**
 
-Each API has its own QueryClient provider in `src/context/`:
+- Events: `https://api.icaa.world/events`
+- Login: `https://api.icaa.world/login`
+- Assets: `https://api.icaa.world/assets`
 
-- `eventQueryClientContext.tsx`
-- `loginQueryClientContext.tsx`
-- `assetsQueryClientContext.tsx`
+**Query Clients:** Each API has its own provider in `src/context/`
 
-## Pre-commit Hooks
+## Key Guidelines
 
-Husky runs `bun run lint:fix` before each commit. Ensure lint passes:
+1. **Always run lint before committing** - CI fails if lint errors
+2. **Never edit `src/api/` or `src/components/ui/` manually** - use `codegen` or `shadcn`
+3. **Use `cn()` utility** for Tailwind class merging
+4. **Route protection**: Use `ProtectedRoute` and `AdminOnlyRoute` components
+5. **Forms**: Use `react-hook-form` + Zod + components from `src/components/ui/form.tsx`
+6. **Bot protection**: Use `TurnstileFormField` on public forms
 
-```bash
-bun run lint
-```
+## Environment
 
-## Environment Variables
-
-Development and production configs:
-
-- `.env.development`
-- `.env.production`
-
-## Deployment
-
-Deployed to Cloudflare Pages via Wrangler:
-
-- Config: `wrangler.jsonc`
-- CI/CD: GitHub Actions (`.github/workflows/ci.yml`)
-
-## Important Notes
-
-1. **Always run lint before committing** - CI will fail if lint doesn't pass
-2. **Use the `cn()` utility** from `@/lib/utils` for Tailwind class merging
-3. **UI components** in `src/components/ui/` are auto-generated - modify with caution
-4. **API types** in `src/api/` are auto-generated - don't edit manually, run `bun run codegen`
-5. **Route protection**: Use `ProtectedRoute` and `AdminOnlyRoute` components for auth
-6. **Bundle size**: Be mindful of imported libraries
+- `.env.development` - Dev config
+- `.env.production` - Production config
 
 ## Common Tasks
 
-### Adding a New Page
+**Add a page:**
 
-1. Create page component in `src/pages/`
+1. Create in `src/pages/`
 2. Add route in `src/App.tsx`
-3. Add navigation link in `src/components/Header.tsx` or `src/components/Sidebar.tsx`
+3. Add nav link in `Header.tsx` or `Sidebar.tsx`
 
-### Adding a New UI Component
+**Add a UI component:**
 
-1. Use existing shadcn/ui patterns from `src/components/ui/`
-2. Use Radix UI primitives as base
-3. Support `className` prop with `cn()` utility
-4. Export variants if applicable
+1. `bunx shadcn add <component>`
+2. Follow existing patterns
 
-### Working with Forms
+**Add a hook:**
 
-- Use `react-hook-form` with `@hookform/resolvers` and `zod`
-- Use components from `src/components/ui/form.tsx`
-- Use `TurnstileFormField` for bot protection on public forms
+1. Create in `src/hooks/`
+2. Use `use` prefix
+3. Export from file
