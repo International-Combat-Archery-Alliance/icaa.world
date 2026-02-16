@@ -34,6 +34,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { useGetRegistrations } from '@/hooks/useEvent';
+import { Download } from 'lucide-react';
 
 export interface Registration {
   id: string;
@@ -91,6 +92,59 @@ const EventRegistrationTable = ({
     setEditedRegistration(null);
   };
 
+  const handleExportCSV = () => {
+    if (!registrations || registrations.length === 0) return;
+
+    const headers = [
+      'Registration Type',
+      'Name/Team Name',
+      'Home City',
+      'Email',
+      'Paid',
+      'Experience/Roster',
+    ];
+
+    const escape = (str: string | undefined | null) =>
+      `"${(str || '').replace(/"/g, '""')}"`;
+
+    const csvContent = [
+      headers.join(','),
+      ...registrations.map((reg) => {
+        const type =
+          reg.registrationType === 'ByIndividual' ? 'Free Agent' : 'Team';
+        const name =
+          reg.registrationType === 'ByIndividual'
+            ? `${reg.playerInfo.firstName} ${reg.playerInfo.lastName}`
+            : reg.teamName;
+        const email =
+          reg.registrationType === 'ByIndividual'
+            ? reg.email
+            : reg.captainEmail;
+        const paid = reg.paid ? 'Yes' : 'No';
+
+        let extra = '';
+        if (reg.registrationType === 'ByIndividual') {
+          extra = reg.experience || '';
+        } else if (reg.registrationType === 'ByTeam' && reg.players) {
+          extra = reg.players
+            .map((p) => `${p.firstName} ${p.lastName}`)
+            .join('; ');
+        }
+
+        return [escape(type), escape(name), escape(reg.homeCity), escape(email), escape(paid), escape(extra)].join(',');
+      }),
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', `registrations-${eventId}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useGetRegistrations(eventId);
   const registrations = data?.pages.flatMap((page) => page.data) ?? [];
@@ -124,6 +178,12 @@ const EventRegistrationTable = ({
 
   return (
     <>
+      <div className="flex justify-end mb-4">
+        <Button variant="outline" onClick={handleExportCSV}>
+          <Download className="mr-2 h-4 w-4" />
+          Export CSV
+        </Button>
+      </div>
       <Table>
         <TableHeader>
           <TableRow>
