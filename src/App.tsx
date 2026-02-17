@@ -92,7 +92,11 @@ const App = () => {
                       />
                       <Route
                         path="/player-profile"
-                        element={<PlayerProfile />}
+                        element={
+                        <AdminOnlyRoute>
+                          <PlayerProfile />
+                          </AdminOnlyRoute>
+                        }
                       />
                       <Route path="/news/icaa-launch" element={<NewsItem1 />} />
                       <Route path="/news/rules" element={<NewsItem2 />} />
