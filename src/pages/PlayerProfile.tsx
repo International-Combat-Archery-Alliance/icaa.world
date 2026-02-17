@@ -23,7 +23,9 @@ const PlayerProfile = () => {
   useEffect(() => {
     const loadPlayerData = async () => {
       try {
-        const data = await import(`../components/profiles/${selectedPlayerId}.json`);
+        const data = await import(
+          `../components/profiles/${selectedPlayerId}.json`
+        );
         setPlayerData(data.default);
       } catch (error) {
         console.error('Failed to load player data', error);
