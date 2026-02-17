@@ -28,6 +28,7 @@ import OurCommunities from './pages/OurCommunities';
 import EventDetailsPage from './components/EventPageTemplate';
 import EventPayment from './pages/EventPayment';
 import EventPaymentSuccess from './pages/EventPaymentSuccess';
+import PlayerProfile from './pages/PlayerProfile';
 import MailingListPage from './pages/MailingListPage';
 
 const App = () => {
@@ -89,6 +90,14 @@ const App = () => {
                           element={
                             <AdminOnlyRoute>
                               <AdminPage />
+                            </AdminOnlyRoute>
+                          }
+                        />
+                        <Route
+                          path="/player-profile"
+                          element={
+                            <AdminOnlyRoute>
+                              <PlayerProfile />
                             </AdminOnlyRoute>
                           }
                         />

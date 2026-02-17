@@ -27,6 +27,7 @@ const navItems: NavItem[] = [
   { to: '/events', label: 'Events' },
   { to: '/contact', label: 'Contact Us' },
   { to: '/admin', label: 'Admin', adminOnly: true },
+  { to: '/player-profile', label: 'Player Profiles', adminOnly: true },
 ];
 
 function NavLinks({ onNavigate }: { onNavigate?: () => void }) {

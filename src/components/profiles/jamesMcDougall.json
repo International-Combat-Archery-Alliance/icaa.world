@@ -1,0 +1,23 @@
+{
+  "firstName": "James",
+  "lastName": "McDougall",
+  "position": "Rear Guard",
+  "homeCity": "Unknown",
+  "number": "00",
+  "experience": "0 Years",
+  "profilePicture": "https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png",
+  "tournamentResults": [
+    {
+      "year": "2025",
+      "tournament": "Boston Championships",
+      "city": "Boston, MA",
+      "date": "2025-10-25",
+      "team": "Lolipops",
+      "wins": 1,
+      "losses": 5,
+      "pf": 7,
+      "pa": 31,
+      "placement": "6th"
+    }
+  ]
+}

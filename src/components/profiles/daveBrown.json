@@ -1,0 +1,35 @@
+{
+  "firstName": "Dave",
+  "lastName": "Brown",
+  "position": "Rear Guard",
+  "homeCity": "Unknown",
+  "number": "00",
+  "experience": "0 Years",
+  "profilePicture": "https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png",
+  "tournamentResults": [
+    {
+      "year": "2025",
+      "tournament": "Boston Play Ins",
+      "city": "Boston, MA",
+      "date": "2025-09-9",
+      "team": "Draw Blood",
+      "wins": 4,
+      "losses": 2,
+      "pf": 15,
+      "pa": 15,
+      "placement": "2nd"
+    },
+    {
+      "year": "2025",
+      "tournament": "Boston Championships",
+      "city": "Boston, MA",
+      "date": "2025-10-25",
+      "team": "Draw Blood",
+      "wins": 2,
+      "losses": 5,
+      "pf": 14,
+      "pa": 31,
+      "placement": "4th"
+    }
+  ]
+}
