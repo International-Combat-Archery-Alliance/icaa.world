@@ -3,13 +3,37 @@ import { useTitle } from 'react-use';
 import { useUserInfo } from '../context/userInfoContext';
 import playerList from '../components/profiles/playerList.json';
 
+interface TournamentResult {
+  year: string;
+  tournament: string;
+  city: string;
+  date: string;
+  team: string;
+  wins: number;
+  losses: number;
+  pf: number;
+  pa: number;
+  placement: string;
+}
+
+interface PlayerData {
+  firstName: string;
+  lastName: string;
+  position: string;
+  homeCity: string;
+  number: string;
+  experience: string;
+  profilePicture: string;
+  tournamentResults: TournamentResult[];
+}
+
 const PlayerProfile = () => {
   useTitle('Player Profile');
   const { userInfo } = useUserInfo();
   const [activeTab, setActiveTab] = useState('Overview');
   const [selectedYear, setSelectedYear] = useState('All');
   const [selectedPlayerId, setSelectedPlayerId] = useState('cameronCardwell');
-  const [playerData, setPlayerData] = useState<any>(null);
+  const [playerData, setPlayerData] = useState<PlayerData | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState({
     firstName: '',
@@ -49,28 +73,32 @@ const PlayerProfile = () => {
   }, [playerData]);
 
   const handleSave = () => {
-    setPlayerData({ ...playerData, ...editForm });
+    if (playerData) {
+      setPlayerData({ ...playerData, ...editForm });
+    }
     setIsEditing(false);
   };
 
   const handleCancel = () => {
     setIsEditing(false);
     // Revert form to current data
-    setEditForm({
-      firstName: playerData.firstName,
-      lastName: playerData.lastName,
-      position: playerData.position,
-      homeCity: playerData.homeCity,
-      number: playerData.number,
-      experience: playerData.experience,
-    });
+    if (playerData) {
+      setEditForm({
+        firstName: playerData.firstName,
+        lastName: playerData.lastName,
+        position: playerData.position,
+        homeCity: playerData.homeCity,
+        number: playerData.number,
+        experience: playerData.experience,
+      });
+    }
   };
 
   const derivedStats = useMemo(() => {
     if (!playerData) return null;
     const results = playerData.tournamentResults || [];
 
-    const getBestPlacement = (res: any[]) => {
+    const getBestPlacement = (res: TournamentResult[]) => {
       if (!res.length) return '-';
       // Sort by placement (assuming "1st", "2nd" format, parsing integer works)
       const sorted = [...res].sort(
@@ -81,15 +109,12 @@ const PlayerProfile = () => {
     };
 
     // Season Stats (2025)
-    const seasonResults = results.filter((r: any) => r.year === '2025');
+    const seasonResults = results.filter((r) => r.year === '2025');
     const seasonStats = {
       tournaments: seasonResults.length,
-      wins: seasonResults.reduce(
-        (acc: number, r: any) => acc + (r.wins || 0),
-        0,
-      ),
+      wins: seasonResults.reduce((acc: number, r) => acc + (r.wins || 0), 0),
       losses: seasonResults.reduce(
-        (acc: number, r: any) => acc + (r.losses || 0),
+        (acc: number, r) => acc + (r.losses || 0),
         0,
       ),
       bestPlacement: getBestPlacement(seasonResults),
@@ -97,22 +122,19 @@ const PlayerProfile = () => {
 
     // Lifetime Stats
     const lifetimeStats = {
-      wins: results.reduce((acc: number, r: any) => acc + (r.wins || 0), 0),
-      losses: results.reduce((acc: number, r: any) => acc + (r.losses || 0), 0),
+      wins: results.reduce((acc: number, r) => acc + (r.wins || 0), 0),
+      losses: results.reduce((acc: number, r) => acc + (r.losses || 0), 0),
       bestPlacement: getBestPlacement(results),
       netPoints: results.reduce(
-        (acc: number, r: any) => acc + ((r.pf || 0) - (r.pa || 0)),
+        (acc: number, r) => acc + ((r.pf || 0) - (r.pa || 0)),
         0,
       ),
     };
 
     // Recent Tournaments (Sort by date desc)
     const recentTournaments = [...results]
-      .sort(
-        (a: any, b: any) =>
-          new Date(b.date).getTime() - new Date(a.date).getTime(),
-      )
-      .map((r: any) => ({
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+      .map((r) => ({
         name: r.tournament,
         city: r.city,
         date: r.date,
@@ -134,7 +156,7 @@ const PlayerProfile = () => {
             onChange={(e) => setSelectedPlayerId(e.target.value)}
             className="p-2 border border-gray-300 rounded-md shadow-sm text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 bg-white text-gray-900"
           >
-            {playerList.map((player: any) => (
+            {playerList.map((player: { id: string; name: string }) => (
               <option key={player.id} value={player.id}>
                 {player.name}
               </option>
@@ -407,7 +429,7 @@ const PlayerProfile = () => {
                       </thead>
                       <tbody className="divide-y divide-gray-100">
                         {derivedStats?.recentTournaments.map(
-                          (tournament: any, index: number) => (
+                          (tournament, index: number) => (
                             <tr key={index}>
                               <td className="px-6 py-4 font-medium text-gray-900">
                                 {tournament.name}
@@ -526,15 +548,15 @@ const PlayerProfile = () => {
                   <tbody className="divide-y divide-gray-100">
                     {playerData.tournamentResults
                       .filter(
-                        (t: any) =>
+                        (t) =>
                           selectedYear === 'All' || t.year === selectedYear,
                       )
                       .sort(
-                        (a: any, b: any) =>
+                        (a, b) =>
                           new Date(b.date).getTime() -
                           new Date(a.date).getTime(),
                       )
-                      .map((result: any, index: number) => (
+                      .map((result, index: number) => (
                         <tr key={index} className="hover:bg-gray-50">
                           <td className="px-6 py-4 font-medium text-gray-900">
                             {result.tournament}
