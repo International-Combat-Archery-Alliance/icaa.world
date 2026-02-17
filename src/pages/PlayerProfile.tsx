@@ -370,7 +370,7 @@ const PlayerProfile = () => {
                 <div className="bg-white rounded-lg shadow overflow-hidden">
                   <div className="px-6 py-4 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
                     <h3 className="text-lg font-bold text-gray-900">
-                      2025 - '26 Season Results
+                      2025 - 2026 Season Results
                     </h3>
                   </div>
                   <div className="p-6 grid grid-cols-2 sm:grid-cols-4 gap-6 text-center">
