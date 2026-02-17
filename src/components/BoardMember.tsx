@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Copy, Check } from 'lucide-react';
 
 interface BoardMemberProps {
   name: string;
@@ -16,6 +17,13 @@ const BoardMember: React.FC<BoardMemberProps> = ({
   actionshot,
 }) => {
   const [isHovered, setIsHovered] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(email);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   return (
     <div
@@ -30,7 +38,21 @@ const BoardMember: React.FC<BoardMemberProps> = ({
       />
       <h3>{name}</h3>
       <p>{title}</p>
-      <a href={`mailto:${email}`}>{email}</a>
+      <div className="flex items-center justify-center gap-2">
+        <a href={`mailto:${email}`}>{email}</a>
+        <button
+          onClick={handleCopy}
+          className="p-1 hover:bg-gray-200 rounded-full transition-colors"
+          title="Copy email"
+          type="button"
+        >
+          {copied ? (
+            <Check className="w-3 h-3 text-green-600" />
+          ) : (
+            <Copy className="w-3 h-3 text-gray-500" />
+          )}
+        </button>
+      </div>
     </div>
   );
 };

@@ -1,1 +1,3 @@
 bun run lint:fix || true
+bun run format || true
+git add -A

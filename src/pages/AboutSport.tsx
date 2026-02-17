@@ -100,30 +100,30 @@ export function AboutSport() {
               position="Forward"
               description="The Forward is the player who makes the space using their position and aggression. They are the the main aggressors, 
                         or sometimes the best bait..."
-              icon="Forward"
-              actionshot="Forward"
+              icon="https://assets.icaa.world/492fba5b-aed6-430b-9c97-2d6d56885eff.webp"
+              actionshot="https://assets.icaa.world/51c24020-6283-4e7e-9149-69435e0cd7c0.webp"
             />
             <Positions
               position="Rear Guard"
               description="The Rear Guard are the sharpshooters of the team. They typically play a bit safer in their position, but can be just as much, or more, of
                         an offensive weapon than the Forwards"
-              icon="Rear Guard"
-              actionshot="Rear Guard"
+              icon="https://assets.icaa.world/912721cf-cbaf-4a83-b004-ab9ac6cec9c9.webp"
+              actionshot="https://assets.icaa.world/557b6d25-881a-4147-ad30-0604fcd6a932.webp"
             />
             <Positions
               position="Centerback"
               description="The Centerback is the backbone of a team. They are responsible for making sure their team survives. Hanging back and making
                         catches, knocking out the Revive Targets, or even providing covering fire for their Forwards. Often times the Centerback is the Field General of the team,
                         being able to command the team from an advantageous point of view"
-              icon="Centerback"
-              actionshot="Centerback"
+              icon="https://assets.icaa.world/e58af81b-af45-4e23-b82f-3c54839d0eff.webp"
+              actionshot="https://assets.icaa.world/b2676936-9d8e-4591-a497-386e72e1915c.webp"
             />
             <Positions
               position="Flex"
               description="The Flex can do it all. They can interchange between providing pressure on the front lines, to picking off their opponents from
                         the safety of cover, or to be the one to revive their entire team. Just remember the saying 'jack of all trades...master of none' "
-              icon="Flex"
-              actionshot="Flex"
+              icon="https://assets.icaa.world/714c4f1a-11f4-45d4-bdc8-2c1b9a10f65c.webp"
+              actionshot="https://assets.icaa.world/1f174c49-7c3c-4c0d-961e-eaf58d120f68.webp"
             />
           </AccordionContent>
         </AccordionItem>

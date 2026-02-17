@@ -20,7 +20,7 @@ const OurCommunities = () => {
             <img
               src="images/logos/AG-Boston.avif"
               alt="Archery Games Boston Logo"
-              className="community-logo"
+              className="max-w-[100px] h-auto mb-4 inline-block"
             />
             <h3>Archery Games Boston</h3>
             <p>Chelsea, MA, United States</p>
@@ -53,7 +53,7 @@ const OurCommunities = () => {
           <img
             src="images/logos/AG-Ottawa.avif"
             alt="Archery Games Ottawa Logo"
-            className="community-logo"
+            className="max-w-[100px] h-auto mb-4 inline-block"
           />
           <h3>Archery Games Ottawa</h3>
           <p>Ottawa, ON, Canada</p>
@@ -69,7 +69,7 @@ const OurCommunities = () => {
           <img
             src="images/logos/AG-Ottawa.avif"
             alt="Archery Games Denver Logo"
-            className="community-logo"
+            className="max-w-[100px] h-auto mb-4 inline-block"
           />
           <h3>Archery Games Denver</h3>
           <p>Arvada, CO, United States</p>
@@ -85,7 +85,7 @@ const OurCommunities = () => {
           <img
             src="images/logos/Combat d' Archers.png"
             alt="Combat d'Archers Logo"
-            className="community-logo-alt"
+            className="max-w-[100px] h-auto mb-4 inline-block bg-[#0a1c4a]"
           />
           <h3>Combat d&apos;Archers</h3>
           <p>Montréal, QC, Canada</p>
@@ -101,7 +101,7 @@ const OurCommunities = () => {
           <img
             src="images/logos/Combat d' Archers.png"
             alt="Combat d'Archers Sherbrooke Logo"
-            className="community-logo-alt"
+            className="max-w-[100px] h-auto mb-4 inline-block bg-[#0a1c4a]"
           />
           <h3>Combat d&apos;Archers Sherbrooke</h3>
           <p>Sherbrooke, QC, Canada</p>
@@ -117,7 +117,7 @@ const OurCommunities = () => {
           <img
             src="images/logos/Archers Arena.PNG"
             alt="Archers Arena Logo"
-            className="community-logo"
+            className="max-w-[100px] h-auto mb-4 inline-block"
           />
           <h3>Archers Arena</h3>
           <p>Toronto, ON, Canada</p>

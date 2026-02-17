@@ -35,6 +35,7 @@ import {
 import EventRegistrationTable from '@/components/EventRegistrationTable';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AdminEventForm, AdminEventMode } from '@/components/AdminEventForm';
+import { AssetBrowser } from '@/components/AssetBrowser';
 
 export function AdminPage() {
   useTitle('Admin Panel - ICAA');
@@ -60,6 +61,9 @@ export function AdminPage() {
           >
             View Registration
           </TabsTrigger>
+          <TabsTrigger value="assets" className="text-xl text-primary">
+            Assets
+          </TabsTrigger>
         </TabsList>
         <TabsContent value="create-event">
           <CreateEventForm />
@@ -83,6 +87,19 @@ export function AdminPage() {
                 <SignUpInfoCards eventId={eventId} />
                 <EventRegistrationTable eventId={eventId} />
               </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+        <TabsContent value="assets">
+          <Card>
+            <CardHeader>
+              <CardTitle>Asset Management</CardTitle>
+              <CardDescription>
+                Upload and manage files and folders
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <AssetBrowser />
             </CardContent>
           </Card>
         </TabsContent>

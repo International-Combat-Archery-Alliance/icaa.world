@@ -497,7 +497,7 @@ function EventDetailsTemplate({ event }: { event: Event }) {
           <CardContent>
             {event.rulesDocLink ? (
               <iframe
-                src={`https://drive.google.com/viewerng/viewer?embedded=true&url=https://icaa.world/docs/${event.rulesDocLink}`}
+                src={`https://drive.google.com/viewerng/viewer?embedded=true&url=${event.rulesDocLink}`}
                 className="w-full h-[50vh] bg-white border-0 rounded-xl"
               />
             ) : (
