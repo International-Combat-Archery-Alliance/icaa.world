@@ -35,36 +35,36 @@ const Leadership = () => {
             name="Cameron Cardwell"
             title="President/Chair"
             email="cameron.cardwell@icaa.world"
-            headshot="images/headshots/Cameron.jpg"
-            actionshot="images/action shots/Cameron.jpg"
+            headshot="https://assets.icaa.world/a7744c62-8529-4f16-9e11-96a6779f9152.webp"
+            actionshot="https://assets.icaa.world/349f2f02-23cb-44b4-a27e-e65e101b7e86.webp"
           />
           <BoardMember
             name="Andrew Mellen"
             title="Clerk"
             email="andrew.mellen@icaa.world"
-            headshot="images/headshots/Andrew.jpeg"
-            actionshot="images/action shots/Andrew.jpg"
+            headshot="https://assets.icaa.world/79e5e03f-fb9f-47a7-a253-841073332dc1.webp"
+            actionshot="https://assets.icaa.world/a8f9754e-546e-439a-90ec-d9d423cf5046.webp"
           />
           <BoardMember
             name="Kyle Best"
             title="Treasurer"
             email="kyle.best@icaa.world"
-            headshot="images/headshots/Kyle.jpg"
-            actionshot="images/action shots/Kyle.jpg"
+            headshot="https://assets.icaa.world/2ad11ea2-674b-49a9-a38e-c78566fdd88c.webp"
+            actionshot="https://assets.icaa.world/5bd32348-7f85-4e30-9a53-7b7232c8172d.webp"
           />
           <BoardMember
             name="Timothy Ahong"
             title="Director"
             email="timothy.ahong@icaa.world"
-            headshot="images/headshots/Tim.png"
-            actionshot="images/action shots/Tim_2.jpg"
+            headshot="https://assets.icaa.world/feb7506d-331a-401a-a37d-a51d02934a33.webp"
+            actionshot="https://assets.icaa.world/dd7d12b1-5735-4014-8ea9-e0207ba41036.webp"
           />
           <BoardMember
             name="Yousef Hariri"
             title="Director"
             email="yousef.hariri@icaa.world"
-            headshot="images/headshots/Yousef.jpg"
-            actionshot="images/action shots/Yousef.jpg"
+            headshot="https://assets.icaa.world/7e5d1bcc-298a-49bc-8743-135ed0dbb44e.webp"
+            actionshot="https://assets.icaa.world/3194fcad-ff13-44ad-b510-2e62aa1f867f.webp"
           />
         </div>
       </div>

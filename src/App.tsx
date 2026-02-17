@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 
 // Import page components
 import Home from './pages/Home';
@@ -20,6 +20,7 @@ import EventRegistrationTeam from './pages/EventRegistrationTeam';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import Header from './components/Header';
 import { LoginQueryClientProvider } from './context/loginQueryClientContext';
+import { AssetsQueryClientProvider } from './context/assetsQueryClientContext';
 import AdminOnlyRoute from './components/auth/AdminOnlyRoute';
 import Sidebar from './components/Sidebar';
 import { UserInfoContextProvider } from './context/userInfoContext';
@@ -28,6 +29,7 @@ import EventDetailsPage from './components/EventPageTemplate';
 import EventPayment from './pages/EventPayment';
 import EventPaymentSuccess from './pages/EventPaymentSuccess';
 import PlayerProfile from './pages/PlayerProfile';
+import MailingListPage from './pages/MailingListPage';
 
 const App = () => {
   const queryClient = new QueryClient();
@@ -36,131 +38,150 @@ const App = () => {
     <QueryClientProvider client={queryClient}>
       <LoginQueryClientProvider>
         <EventQueryClientProvider>
-          <GoogleOAuthProvider clientId="1008624351875-q36btbijttq83bogn9f8a4srgji0g3qg.apps.googleusercontent.com">
-            <UserInfoContextProvider>
-              <Router>
-                <div className="app-container">
-                  <Sidebar />
+          <AssetsQueryClientProvider>
+            <GoogleOAuthProvider clientId="1008624351875-q36btbijttq83bogn9f8a4srgji0g3qg.apps.googleusercontent.com">
+              <UserInfoContextProvider>
+                <Router>
+                  <div className="app-container">
+                    <Sidebar />
 
-                  <Header />
-                  <main className="main-content">
-                    <Routes>
-                      <Route path="/" element={<Home />} />
-                      <Route path="/about-icaa" element={<AboutICAA />} />
-                      <Route path="/about-sport" element={<AboutSport />} />
-                      <Route
-                        path="/official-rules"
-                        element={<OfficialRules />}
-                      />
-                      <Route
-                        path="/our-communities"
-                        element={
-                          <AdminOnlyRoute>
-                            <OurCommunities />
-                          </AdminOnlyRoute>
-                        }
-                      />
-                      <Route path="/events" element={<Events />} />
-                      <Route
-                        path="/events/:eventId/event-details"
-                        element={<EventDetailsPage />}
-                      />
-                      <Route
-                        path="/events/:eventId/register-free-agent"
-                        element={<EventRegistrationFreeAgent />}
-                      />
-                      <Route
-                        path="/events/:eventId/register-team"
-                        element={<EventRegistrationTeam />}
-                      />
-                      <Route
-                        path="/events/:eventId/payment"
-                        element={<EventPayment />}
-                      />
-                      <Route
-                        path="/events/:eventId/success"
-                        element={<EventPaymentSuccess />}
-                      />
-                      <Route path="/contact" element={<Contact />} />
-                      <Route
-                        path="/admin"
-                        element={
-                          <AdminOnlyRoute>
-                            <AdminPage />
-                          </AdminOnlyRoute>
-                        }
-                      />
-                      <Route
-                        path="/player-profile"
-                        element={
-                          <AdminOnlyRoute>
-                            <PlayerProfile />
-                          </AdminOnlyRoute>
-                        }
-                      />
-                      <Route path="/news/icaa-launch" element={<NewsItem1 />} />
-                      <Route path="/news/rules" element={<NewsItem2 />} />
-                      <Route
-                        path="/news/play-ins-results"
-                        element={<NewsItem3 />}
-                      />
-                      <Route
-                        path="/news/boston-championship-registration"
-                        element={<NewsItem4 />}
-                      />
-                      <Route
-                        path="/news/boston-championship-results"
-                        element={<NewsItem5 />}
-                      />
-                    </Routes>
-                  </main>
-                  <footer>
-                    <div className="social-links">
-                      <a
-                        href="https://www.youtube.com/@combatarcheryboston9136"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        <img
-                          src="/images/logos/youtube.png"
-                          alt="YouTube"
-                          className="social-icon"
+                    <Header />
+                    <main className="flex-1 max-w-full md:ml-64">
+                      <Routes>
+                        <Route path="/" element={<Home />} />
+                        <Route path="/about-icaa" element={<AboutICAA />} />
+                        <Route path="/about-sport" element={<AboutSport />} />
+                        <Route
+                          path="/official-rules"
+                          element={<OfficialRules />}
                         />
-                      </a>
-                      {/*
-                      <a
-                        href="https://x.com/yourhandle"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        <img
-                          src="/images/logos/X.jfif"
-                          alt="X (formerly Twitter)"
-                          className="social-icon"
+                        <Route
+                          path="/our-communities"
+                          element={
+                            <AdminOnlyRoute>
+                              <OurCommunities />
+                            </AdminOnlyRoute>
+                          }
                         />
-                      </a>
-                      <a
-                        href="https://www.instagram.com/yourprofile/"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        <img
-                          src="/images/logos/instagram.jfif"
-                          alt="Instagram"
-                          className="social-icon"
+                        <Route path="/events" element={<Events />} />
+                        <Route
+                          path="/events/:eventId/event-details"
+                          element={<EventDetailsPage />}
                         />
-                      </a>
-                      */}
-                    </div>
-                    <p>
-                      &copy; 2025 International Combat Archery Alliance, Inc.
-                      All Rights Reserved.
-                    </p>
-                  </footer>
-                </div>
-              </Router>
-            </UserInfoContextProvider>
-          </GoogleOAuthProvider>
+                        <Route
+                          path="/events/:eventId/register-free-agent"
+                          element={<EventRegistrationFreeAgent />}
+                        />
+                        <Route
+                          path="/events/:eventId/register-team"
+                          element={<EventRegistrationTeam />}
+                        />
+                        <Route
+                          path="/events/:eventId/payment"
+                          element={<EventPayment />}
+                        />
+                        <Route
+                          path="/events/:eventId/success"
+                          element={<EventPaymentSuccess />}
+                        />
+                        <Route path="/contact" element={<Contact />} />
+                        <Route
+                          path="/admin"
+                          element={
+                            <AdminOnlyRoute>
+                              <AdminPage />
+                            </AdminOnlyRoute>
+                          }
+                        />
+                        <Route
+                          path="/player-profile"
+                          element={
+                            <AdminOnlyRoute>
+                              <PlayerProfile />
+                            </AdminOnlyRoute>
+                          }
+                        />
+                        <Route
+                          path="/news/icaa-launch"
+                          element={<NewsItem1 />}
+                        />
+                        <Route path="/news/rules" element={<NewsItem2 />} />
+                        <Route
+                          path="/news/play-ins-results"
+                          element={<NewsItem3 />}
+                        />
+                        <Route
+                          path="/news/boston-championship-registration"
+                          element={<NewsItem4 />}
+                        />
+                        <Route
+                          path="/news/boston-championship-results"
+                          element={<NewsItem5 />}
+                        />
+                        <Route
+                          path="/mailing-list"
+                          element={<MailingListPage />}
+                        />
+                      </Routes>
+                    </main>
+                    <footer className="md:ml-64">
+                      <div className="social-links">
+                        <a
+                          href="https://www.youtube.com/@Icaa-world"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <img
+                            src="/images/logos/youtube.png"
+                            alt="YouTube"
+                            className="social-icon"
+                          />
+                        </a>
+                        <a
+                          href="https://www.instagram.com/icaa.world/?hl=en"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <img
+                            src="/images/logos/instagram.jfif"
+                            alt="Instagram"
+                            className="social-icon"
+                          />
+                        </a>
+                        <a
+                          href="https://www.linkedin.com/company/icaa-world/"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <img
+                            src="/images/logos/linkedin.png"
+                            alt="LinkedIn"
+                            className="social-icon"
+                          />
+                        </a>
+                      </div>
+                      <div style={{ marginBottom: '1rem' }}>
+                        <Link
+                          to="/mailing-list"
+                          style={{
+                            color: 'orange',
+                            textDecoration: 'underline',
+                            fontSize: '1rem',
+                          }}
+                        >
+                          Join Our Mailing List!
+                        </Link>
+                      </div>
+                      <p>
+                        &copy; 2025 International Combat Archery Alliance, Inc.
+                        All Rights Reserved.
+                      </p>
+                    </footer>
+                  </div>
+                </Router>
+              </UserInfoContextProvider>
+            </GoogleOAuthProvider>
+          </AssetsQueryClientProvider>
         </EventQueryClientProvider>
       </LoginQueryClientProvider>
     </QueryClientProvider>
