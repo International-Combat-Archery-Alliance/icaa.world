@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useTitle } from 'react-use';
 import { useUserInfo } from '../context/userInfoContext';
-import playerList from './profiles/playerList.json';
+import playerList from '../components/profiles/playerList.json';
 
 const PlayerProfile = () => {
   useTitle('Player Profile');
@@ -23,7 +23,7 @@ const PlayerProfile = () => {
   useEffect(() => {
     const loadPlayerData = async () => {
       try {
-        const data = await import(`./profiles/${selectedPlayerId}.json`);
+        const data = await import(`../components/profiles/${selectedPlayerId}.json`);
         setPlayerData(data.default);
       } catch (error) {
         console.error('Failed to load player data', error);
