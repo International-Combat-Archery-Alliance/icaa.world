@@ -88,11 +88,11 @@ export default function Sidebar() {
             </li>
           ) : null}
           {isSuccess && userInfo?.isAdmin ? (
-          <li>
-            <Link to="/player-profile" onClick={() => setSidebarOpen(false)}>
-              Player Profile
-            </Link>
-          </li>
+            <li>
+              <Link to="/player-profile" onClick={() => setSidebarOpen(false)}>
+                Player Profile
+              </Link>
+            </li>
           ) : null}
         </ul>
         <div className="mt-auto p-4">

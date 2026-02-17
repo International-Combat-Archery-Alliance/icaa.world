@@ -93,8 +93,8 @@ const App = () => {
                       <Route
                         path="/player-profile"
                         element={
-                        <AdminOnlyRoute>
-                          <PlayerProfile />
+                          <AdminOnlyRoute>
+                            <PlayerProfile />
                           </AdminOnlyRoute>
                         }
                       />
