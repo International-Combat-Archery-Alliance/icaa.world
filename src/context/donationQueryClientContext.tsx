@@ -15,6 +15,7 @@ export const DonationQueryClientProvider = ({
   const { donationQueryClient } = useMemo(() => {
     const donationAPIFetchClient = createFetchClient<paths>({
       baseUrl: import.meta.env.VITE_DONATION_API_URL,
+      credentials: 'include',
     });
     const donationQueryClient = createClient(donationAPIFetchClient);
     return { donationQueryClient };
