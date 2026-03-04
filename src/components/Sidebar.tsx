@@ -25,6 +25,7 @@ const navItems: NavItem[] = [
   { to: '/about-sport', label: 'About The Sport' },
   { to: '/our-communities', label: 'The Alliance', adminOnly: true },
   { to: '/events', label: 'Events' },
+  { to: '/donate', label: 'Donate', adminOnly: true },
   { to: '/contact', label: 'Contact Us' },
   { to: '/admin', label: 'Admin', adminOnly: true },
 ];
