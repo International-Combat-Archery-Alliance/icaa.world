@@ -36,6 +36,8 @@ import EventRegistrationTable from '@/components/EventRegistrationTable';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AdminEventForm, AdminEventMode } from '@/components/AdminEventForm';
 import { AssetBrowser } from '@/components/AssetBrowser';
+import { DonationList } from '@/components/DonationList';
+import { DonationByState } from '@/components/DonationByState';
 
 export function AdminPage() {
   useTitle('Admin Panel - ICAA');
@@ -63,6 +65,9 @@ export function AdminPage() {
           </TabsTrigger>
           <TabsTrigger value="assets" className="text-xl text-primary">
             Assets
+          </TabsTrigger>
+          <TabsTrigger value="donations" className="text-xl text-primary">
+            Donations
           </TabsTrigger>
         </TabsList>
         <TabsContent value="create-event">
@@ -102,6 +107,12 @@ export function AdminPage() {
               <AssetBrowser />
             </CardContent>
           </Card>
+        </TabsContent>
+        <TabsContent value="donations">
+          <div className="space-y-6">
+            <DonationList />
+            <DonationByState />
+          </div>
         </TabsContent>
       </Tabs>
     </section>
