@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useTitle } from 'react-use';
+import { useLocation, useNavigate } from 'react-router-dom';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -22,7 +23,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-
 import {
   Select,
   SelectContent,
@@ -31,71 +31,97 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-
 import EventRegistrationTable from '@/components/EventRegistrationTable';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AdminEventForm, AdminEventMode } from '@/components/AdminEventForm';
 import { AssetBrowser } from '@/components/AssetBrowser';
 import { DonationList } from '@/components/DonationList';
 import { DonationByState } from '@/components/DonationByState';
+import { cn } from '@/lib/utils';
+import {
+  CalendarPlus,
+  CalendarCog,
+  Users,
+  FolderOpen,
+  Heart,
+} from 'lucide-react';
+
+const adminTabs = [
+  { id: 'create-event', label: 'Create Event', icon: CalendarPlus },
+  { id: 'edit-event', label: 'Edit Event', icon: CalendarCog },
+  { id: 'view-registration', label: 'View Registration', icon: Users },
+  { id: 'assets', label: 'Assets', icon: FolderOpen },
+  { id: 'donations', label: 'Donations', icon: Heart },
+] as const;
+
+type AdminTabId = (typeof adminTabs)[number]['id'];
 
 export function AdminPage() {
   useTitle('Admin Panel - ICAA');
-
+  const location = useLocation();
+  const navigate = useNavigate();
   const [eventId, setEventId] = useState<string | undefined>(undefined);
+
+  const hash = location.hash.replace('#', '') as AdminTabId;
+  const activeTab = adminTabs.find((tab) => tab.id === hash)
+    ? hash
+    : 'create-event';
+
+  const handleTabChange = (value: string) => {
+    navigate(`/admin#${value}`, { replace: true });
+  };
 
   return (
     <section id="admin" className="admin-section">
       <Tabs
-        defaultValue="create-event"
-        className="w-full max-w-screen-lg mx-auto p-6 lg:p-15"
+        value={activeTab}
+        onValueChange={handleTabChange}
+        className="w-full max-w-screen-lg mx-auto p-4 md:p-6 lg:p-15"
       >
-        <TabsList>
-          <TabsTrigger value="create-event" className="text-xl text-primary">
-            Create Event
-          </TabsTrigger>
-          <TabsTrigger value="edit-event" className="text-xl text-primary">
-            Edit Event
-          </TabsTrigger>
-          <TabsTrigger
-            value="view-registration"
-            className="text-xl text-primary"
-          >
-            View Registration
-          </TabsTrigger>
-          <TabsTrigger value="assets" className="text-xl text-primary">
-            Assets
-          </TabsTrigger>
-          <TabsTrigger value="donations" className="text-xl text-primary">
-            Donations
-          </TabsTrigger>
+        <TabsList className="w-full h-auto flex flex-wrap justify-start gap-1 p-1 bg-muted/50 rounded-lg mb-6">
+          {adminTabs.map((tab) => (
+            <TabsTrigger
+              key={tab.id}
+              value={tab.id}
+              className={cn(
+                'flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md transition-all',
+                'data-[state=active]:bg-background data-[state=active]:text-primary data-[state=active]:shadow-sm',
+                'data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:text-foreground data-[state=inactive]:hover:bg-muted',
+                'md:px-4 md:py-2.5 md:text-base',
+              )}
+            >
+              <tab.icon className="h-4 w-4 md:h-5 md:w-5" />
+              <span className="hidden sm:inline">{tab.label}</span>
+              <span className="sm:hidden text-xs">
+                {tab.label.split(' ')[0]}
+              </span>
+            </TabsTrigger>
+          ))}
         </TabsList>
-        <TabsContent value="create-event">
+        <TabsContent value="create-event" className="mt-0">
           <CreateEventForm />
         </TabsContent>
-        <TabsContent value="edit-event">
+        <TabsContent value="edit-event" className="mt-0">
           <UpdateEventForm />
         </TabsContent>
-        <TabsContent value="view-registration">
+        <TabsContent value="view-registration" className="mt-0">
           <Card>
             <CardHeader>
               <CardTitle>View Registration Info</CardTitle>
               <CardDescription>
-                {' '}
                 Select an event to view the registration
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid gap-6">
                 <SelectEvent setEventId={setEventId} />
-
                 <SignUpInfoCards eventId={eventId} />
                 <EventRegistrationTable eventId={eventId} />
               </div>
             </CardContent>
           </Card>
         </TabsContent>
-        <TabsContent value="assets">
+        <TabsContent value="assets" className="mt-0">
           <Card>
             <CardHeader>
               <CardTitle>Asset Management</CardTitle>
@@ -108,7 +134,7 @@ export function AdminPage() {
             </CardContent>
           </Card>
         </TabsContent>
-        <TabsContent value="donations">
+        <TabsContent value="donations" className="mt-0">
           <div className="space-y-6">
             <DonationList />
             <DonationByState />
