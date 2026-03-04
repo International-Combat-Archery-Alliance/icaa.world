@@ -1,12 +1,12 @@
 {
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "bunx --bun vite",
     "full-dev": "concurrently \"bun dev\" \"bun run-all-backend\"",
-    "build": "vite build",
-    "preview": "vite preview",
+    "build": "bunx --bun vite build",
+    "preview": "bunx --bun vite preview",
     "test:ts": "tsc --noEmit",
-    "codegen": "openapi-typescript https://api.icaa.world/events/openapi.json -o ./src/api/events-v1.d.ts; openapi-typescript https://api.icaa.world/login/openapi.json -o ./src/api/login.d.ts; openapi-typescript https://api.icaa.world/assets/openapi.json -o ./src/api/assets-api-v1.d.ts",
+    "codegen": "openapi-typescript https://api.icaa.world/events/openapi.json -o ./src/api/events-v1.d.ts; openapi-typescript https://api.icaa.world/login/openapi.json -o ./src/api/login.d.ts; openapi-typescript https://api.icaa.world/assets/openapi.json -o ./src/api/assets-api-v1.d.ts; openapi-typescript https://api.icaa.world/donations/openapi.json -o ./src/api/donations-v1.d.ts",
     "lint": "eslint . --report-unused-disable-directives --max-warnings 0",
     "lint:fix": "bun lint --fix",
     "format": "prettier --write .",
@@ -14,7 +14,8 @@
     "run-login-service": "cd ../login && make local",
     "run-event-service": "cd ../event-registration && make local",
     "run-assets-service": "cd ../assets-api && make local",
-    "run-all-backend": "concurrently \"bun run-login-service\" \"bun run-event-service\" \"bun run-assets-service\""
+    "run-donation-service": "cd ../donation-api && make local",
+    "run-all-backend": "concurrently \"bun run-login-service\" \"bun run-event-service\" \"bun run-assets-service\" \"bun run-donation-service\""
   },
   "devDependencies": {
     "@eslint/js": "9",
