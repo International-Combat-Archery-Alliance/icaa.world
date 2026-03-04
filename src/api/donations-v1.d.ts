@@ -11,7 +11,11 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /**
+         * List donations
+         * @description Admin-only endpoint to list all donations with pagination.
+         */
+        get: operations["GetDonationsV1"];
         put?: never;
         /**
          * Create a donation
@@ -24,10 +28,62 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/donations/v1/per-state": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get donation aggregations by state
+         * @description Admin-only endpoint to aggregate donations by country and state/province.
+         */
+        get: operations["GetDonationsV1PerState"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        Address: {
+            city?: string | null;
+            country?: string | null;
+            line1?: string | null;
+            line2?: string | null;
+            postalCode?: string | null;
+            state?: string | null;
+        };
+        AggregationItem: {
+            /**
+             * @description Number of donations in this aggregation
+             * @example 3
+             */
+            count: number;
+            /**
+             * @description ISO 3166-1 alpha-2 country code
+             * @example US
+             */
+            country: string;
+            money: components["schemas"]["Money"];
+            /**
+             * @description State or province code
+             * @example MA
+             */
+            state: string;
+        };
+        BillingDetails: {
+            address?: components["schemas"]["Address"];
+            /** Format: email */
+            email?: string | null;
+            name?: string | null;
+        };
         CreateDonationRequest: {
             /**
              * @description Amount in smallest currency unit (e.g., cents for USD)
@@ -52,11 +108,115 @@ export interface components {
              */
             clientSecret: string;
         };
+        DonationAggregationResponse: {
+            /**
+             * @description List of donation aggregations by location and currency
+             * @example [
+             *       {
+             *         "count": 3,
+             *         "country": "US",
+             *         "money": {
+             *           "amount": 15000,
+             *           "currency": "USD"
+             *         },
+             *         "state": "MA"
+             *       },
+             *       {
+             *         "count": 5,
+             *         "country": "US",
+             *         "money": {
+             *           "amount": 25000,
+             *           "currency": "USD"
+             *         },
+             *         "state": "CA"
+             *       },
+             *       {
+             *         "count": 2,
+             *         "country": "CA",
+             *         "money": {
+             *           "amount": 5000,
+             *           "currency": "CAD"
+             *         },
+             *         "state": "ON"
+             *       }
+             *     ]
+             */
+            aggregations: components["schemas"]["AggregationItem"][];
+        };
+        DonationItem: {
+            /**
+             * @description Amount in minor currency units
+             * @example 15000
+             */
+            amount: number;
+            billingDetails?: components["schemas"]["BillingDetails"];
+            /**
+             * Format: date-time
+             * @description When the donation was created
+             * @example 2024-01-15T10:30:00Z
+             */
+            createdAt: string;
+            /**
+             * @description ISO 4217 currency code
+             * @example USD
+             */
+            currency: string;
+            /**
+             * Format: email
+             * @description Email of the donor (if available)
+             * @example donor@example.com
+             */
+            donorEmail?: string | null;
+            /**
+             * @description Payment ID
+             * @example pay_1234567890
+             */
+            id: string;
+            /** @description Payment metadata */
+            metadata?: {
+                [key: string]: string;
+            };
+            /**
+             * @description Payment status
+             * @example succeeded
+             */
+            status: string;
+        };
+        DonationListResponse: {
+            /** @description List of donations */
+            items: components["schemas"]["DonationItem"][];
+            /**
+             * @description Cursor for the next page (null if no more results)
+             * @example eyJpZCI6InBheV8xMjMifQ==
+             */
+            nextCursor: string | null;
+            /**
+             * @description Total number of donations matching the filter (if available)
+             * @example 150
+             */
+            totalCount?: number | null;
+        };
         Error: {
-            /** @example BAD_REQUEST */
-            error: string;
+            code: components["schemas"]["ErrorCode"];
             /** @example Invalid donation amount */
             message: string;
+        };
+        /**
+         * @example InternalError
+         * @enum {string}
+         */
+        ErrorCode: "InternalError" | "BadRequest" | "NotFound" | "InputValidationError" | "AuthError" | "InvalidDateRange" | "InvalidCursor";
+        Money: {
+            /**
+             * @description Amount in minor currency units (e.g., cents)
+             * @example 15000
+             */
+            amount: number;
+            /**
+             * @description ISO 4217 currency code
+             * @example USD
+             */
+            currency: string;
         };
     };
     responses: never;
@@ -67,6 +227,71 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    GetDonationsV1: {
+        parameters: {
+            query?: {
+                /** @description Maximum number of donations to return (default 20, max 100) */
+                limit?: number;
+                /** @description Pagination cursor for fetching the next page */
+                cursor?: string;
+                /** @description Filter donations created after this date (ISO 8601 format) */
+                created_after?: string;
+                /** @description Filter donations created before this date (ISO 8601 format) */
+                created_before?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description List of donations returned successfully. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DonationListResponse"];
+                };
+            };
+            /** @description Invalid parameters (e.g., invalid cursor). */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Unauthorized - missing or invalid authentication. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Forbidden - user is not an admin. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Unknown server error. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
     PostDonationsV1: {
         parameters: {
             query?: never;
@@ -92,6 +317,67 @@ export interface operations {
             };
             /** @description Bad request. */
             400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Unknown server error. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    GetDonationsV1PerState: {
+        parameters: {
+            query?: {
+                /** @description Filter donations created after this date (ISO 8601 format) */
+                created_after?: string;
+                /** @description Filter donations created before this date (ISO 8601 format) */
+                created_before?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Aggregation results returned successfully. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DonationAggregationResponse"];
+                };
+            };
+            /** @description Invalid date range (created_before is before created_after). */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Unauthorized - missing or invalid authentication. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Forbidden - user is not an admin. */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
