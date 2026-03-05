@@ -6,30 +6,41 @@ export function useCreateDonation() {
   return client.useMutation('post', '/donations/v1');
 }
 
-export function useGetDonations(params?: {
-  limit?: number;
-  cursor?: string;
-  created_after?: string;
-  created_before?: string;
-}) {
+export function useGetDonations(
+  limit: number = 20,
+  dateRange?: { from?: Date; to?: Date },
+) {
   const client = useDonationQueryClient();
 
-  return client.useQuery('get', '/donations/v1', {
-    params: {
-      query: params,
+  return client.useInfiniteQuery(
+    'get',
+    '/donations/v1',
+    {
+      params: {
+        query: {
+          limit,
+          cursor: undefined,
+          created_after: dateRange?.from?.toISOString(),
+          created_before: dateRange?.to?.toISOString(),
+        },
+      },
     },
-  });
+    {
+      getNextPageParam: (lastPage) => lastPage.nextCursor,
+      initialPageParam: null as string | null,
+    },
+  );
 }
 
-export function useGetDonationsByState(params?: {
-  created_after?: string;
-  created_before?: string;
-}) {
+export function useGetDonationsByState(dateRange?: { from?: Date; to?: Date }) {
   const client = useDonationQueryClient();
 
   return client.useQuery('get', '/donations/v1/per-state', {
     params: {
-      query: params,
+      query: {
+        created_after: dateRange?.from?.toISOString(),
+        created_before: dateRange?.to?.toISOString(),
+      },
     },
   });
 }
