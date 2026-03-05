@@ -11,6 +11,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useGetDonationsByState } from '@/hooks/useDonation';
 import { formatMoney } from '@/api/money';
+import type { DateRange } from 'react-day-picker';
+
+interface DonationByStateProps {
+  dateRange?: DateRange;
+}
 
 type AggregationItem = {
   count: number;
@@ -22,8 +27,11 @@ type AggregationItem = {
   };
 };
 
-export function DonationByState() {
-  const { data, isLoading } = useGetDonationsByState();
+export function DonationByState({ dateRange }: DonationByStateProps) {
+  const { data, isLoading } = useGetDonationsByState({
+    from: dateRange?.from,
+    to: dateRange?.to,
+  });
 
   const aggregations: AggregationItem[] = data?.aggregations || [];
 

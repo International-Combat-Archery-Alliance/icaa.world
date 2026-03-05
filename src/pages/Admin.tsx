@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTitle } from 'react-use';
 import { useLocation, useNavigate } from 'react-router-dom';
+import type { DateRange } from 'react-day-picker';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -37,6 +38,7 @@ import { AdminEventForm, AdminEventMode } from '@/components/AdminEventForm';
 import { AssetBrowser } from '@/components/AssetBrowser';
 import { DonationList } from '@/components/DonationList';
 import { DonationByState } from '@/components/DonationByState';
+import { DateRangePicker } from '@/components/DateRangePicker';
 import { cn } from '@/lib/utils';
 import {
   CalendarPlus,
@@ -61,6 +63,9 @@ export function AdminPage() {
   const location = useLocation();
   const navigate = useNavigate();
   const [eventId, setEventId] = useState<string | undefined>(undefined);
+  const [donationDateRange, setDonationDateRange] = useState<
+    DateRange | undefined
+  >(undefined);
 
   const hash = location.hash.replace('#', '') as AdminTabId;
   const activeTab = adminTabs.find((tab) => tab.id === hash)
@@ -136,8 +141,23 @@ export function AdminPage() {
         </TabsContent>
         <TabsContent value="donations" className="mt-0">
           <div className="space-y-6">
-            <DonationList />
-            <DonationByState />
+            <Card>
+              <CardHeader>
+                <CardTitle>Filter Donations</CardTitle>
+                <CardDescription>
+                  Select a date range to filter donations
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <DateRangePicker
+                  dateRange={donationDateRange}
+                  onDateRangeChange={setDonationDateRange}
+                  placeholder="Filter by date range"
+                />
+              </CardContent>
+            </Card>
+            <DonationList dateRange={donationDateRange} />
+            <DonationByState dateRange={donationDateRange} />
           </div>
         </TabsContent>
       </Tabs>

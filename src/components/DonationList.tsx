@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { useState } from 'react';
 import {
   Table,
   TableBody,
@@ -13,9 +12,11 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useGetDonations } from '@/hooks/useDonation';
 import { formatMoney } from '@/api/money';
-import type { components } from '@/api/donations-v1';
+import type { DateRange } from 'react-day-picker';
 
-type DonationItem = components['schemas']['DonationItem'];
+interface DonationListProps {
+  dateRange?: DateRange;
+}
 
 function formatDate(dateString: string): string {
   return new Date(dateString).toLocaleDateString('en-US', {
@@ -29,36 +30,25 @@ function formatAmount(amount: number, currency: string): string {
   return formatMoney({ amount, currency });
 }
 
-export function DonationList() {
-  const [cursor, setCursor] = useState<string | undefined>(undefined);
-  const [allDonations, setAllDonations] = useState<DonationItem[]>([]);
+export function DonationList({ dateRange }: DonationListProps) {
+  const { data, isLoading, isFetchingNextPage, fetchNextPage, hasNextPage } =
+    useGetDonations(20, { from: dateRange?.from, to: dateRange?.to });
 
-  const { data, isLoading, isFetching } = useGetDonations({
-    limit: 20,
-    cursor,
-  });
-
-  // Append new donations to the list when data changes
-  React.useEffect(() => {
-    if (data?.items) {
-      setAllDonations((prev) => {
-        const newItems = data.items.filter(
-          (item) => !prev.some((p) => p.id === item.id),
-        );
-        return [...prev, ...newItems];
-      });
-    }
+  // Flatten all pages into a single array of donations
+  const allDonations = React.useMemo(() => {
+    return data?.pages.flatMap((page) => page.items) ?? [];
   }, [data]);
 
+  // Get total count from the first page (if available)
+  const totalCount = data?.pages[0]?.totalCount;
+
   const handleLoadMore = () => {
-    if (data?.nextCursor) {
-      setCursor(data.nextCursor);
+    if (hasNextPage) {
+      fetchNextPage();
     }
   };
 
-  const hasMore = data?.nextCursor !== null && data?.nextCursor !== undefined;
-
-  if (isLoading && allDonations.length === 0) {
+  if (isLoading) {
     return (
       <Card>
         <CardHeader>
@@ -80,9 +70,9 @@ export function DonationList() {
       <CardHeader>
         <CardTitle>
           Donations
-          {data?.totalCount !== undefined && data?.totalCount !== null && (
+          {totalCount !== undefined && totalCount !== null && (
             <span className="ml-2 text-sm font-normal text-muted-foreground">
-              ({data.totalCount} total)
+              ({totalCount} total)
             </span>
           )}
         </CardTitle>
@@ -142,14 +132,14 @@ export function DonationList() {
           </Table>
         </div>
 
-        {hasMore && (
+        {hasNextPage && (
           <div className="mt-4 flex justify-center">
             <Button
               onClick={handleLoadMore}
-              disabled={isFetching}
+              disabled={isFetchingNextPage}
               variant="outline"
             >
-              {isFetching ? 'Loading...' : 'Load More'}
+              {isFetchingNextPage ? 'Loading...' : 'Load More'}
             </Button>
           </div>
         )}
