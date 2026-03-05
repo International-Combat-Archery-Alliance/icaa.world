@@ -12,6 +12,31 @@ export function useGetDonations(
 ) {
   const client = useDonationQueryClient();
 
+  // Adjust dates to be inclusive of entire days
+  const createdAfter = dateRange?.from
+    ? new Date(
+        dateRange.from.getFullYear(),
+        dateRange.from.getMonth(),
+        dateRange.from.getDate(),
+        0,
+        0,
+        0,
+        0,
+      ).toISOString()
+    : undefined;
+
+  const createdBefore = dateRange?.to
+    ? new Date(
+        dateRange.to.getFullYear(),
+        dateRange.to.getMonth(),
+        dateRange.to.getDate(),
+        23,
+        59,
+        59,
+        999,
+      ).toISOString()
+    : undefined;
+
   return client.useInfiniteQuery(
     'get',
     '/donations/v1',
@@ -20,8 +45,8 @@ export function useGetDonations(
         query: {
           limit,
           cursor: undefined,
-          created_after: dateRange?.from?.toISOString(),
-          created_before: dateRange?.to?.toISOString(),
+          created_after: createdAfter,
+          created_before: createdBefore,
         },
       },
     },
@@ -35,11 +60,36 @@ export function useGetDonations(
 export function useGetDonationsByState(dateRange?: { from?: Date; to?: Date }) {
   const client = useDonationQueryClient();
 
+  // Adjust dates to be inclusive of entire days
+  const createdAfter = dateRange?.from
+    ? new Date(
+        dateRange.from.getFullYear(),
+        dateRange.from.getMonth(),
+        dateRange.from.getDate(),
+        0,
+        0,
+        0,
+        0,
+      ).toISOString()
+    : undefined;
+
+  const createdBefore = dateRange?.to
+    ? new Date(
+        dateRange.to.getFullYear(),
+        dateRange.to.getMonth(),
+        dateRange.to.getDate(),
+        23,
+        59,
+        59,
+        999,
+      ).toISOString()
+    : undefined;
+
   return client.useQuery('get', '/donations/v1/per-state', {
     params: {
       query: {
-        created_after: dateRange?.from?.toISOString(),
-        created_before: dateRange?.to?.toISOString(),
+        created_after: createdAfter,
+        created_before: createdBefore,
       },
     },
   });
