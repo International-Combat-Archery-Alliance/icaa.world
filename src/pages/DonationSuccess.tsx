@@ -27,6 +27,16 @@ export default function DonationSuccess() {
           <p className="text-gray-600">
             A receipt has been sent to your email address.
           </p>
+          <div className="bg-blue-50 p-4 rounded-lg border border-blue-100">
+            <p className="text-blue-800 font-medium mb-2">Stay Connected!</p>
+            <p className="text-blue-700 text-sm mb-3">
+              Want to receive updates about events, tournaments, and ICAA news?
+              Join our mailing list to stay in the loop!
+            </p>
+            <Button variant="outline" size="sm" asChild>
+              <Link to="/mailing-list">Join Our Mailing List</Link>
+            </Button>
+          </div>
           <div className="flex justify-center gap-4 pt-4">
             <Button asChild>
               <Link to="/">Return to Home</Link>
