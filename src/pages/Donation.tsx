@@ -130,7 +130,7 @@ export default function Donation() {
                 className="w-full h-48 md:h-80 rounded-lg object-cover"
               />
               <p className="text-center text-gray-600">
-                Your donation helps us grow combat archery worldwide and support
+                Your donation helps us grow Combat Archery worldwide and support
                 our community programs.
               </p>
               <Form {...form}>
