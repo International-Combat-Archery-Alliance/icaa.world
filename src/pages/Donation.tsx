@@ -70,9 +70,10 @@ export default function Donation() {
     return fees[currency] || fees.USD;
   };
 
-  const calculateTotalWithFees = (amount: number, currency: string) => {
+  const calculateTotalWithFees = (amount: number, currency: string): number => {
     const fee = getStripeFee(currency);
-    return Math.round(((amount + fee.fixed) / (1 - fee.percent)) * 100) / 100;
+    const total = (amount + fee.fixed) / (1 - fee.percent);
+    return Money.fromDecimal(total, currency, Math.round).toDecimal();
   };
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
