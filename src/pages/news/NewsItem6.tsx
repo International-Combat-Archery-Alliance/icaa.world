@@ -72,7 +72,7 @@ const NewsItem6 = () => {
             </li>
             <li>
               <b>Other:</b> If you have other skills or expertise and feel you
-              can be an asset to our organization and community, please don't
+              can be an asset to our organization and community, please do not
               hesitate to still reach out. We can find the best way to utilize
               your skills!
             </li>
@@ -116,8 +116,8 @@ const NewsItem6 = () => {
             and far future.
           </p>
           <p>
-            Let's work together to turn this silly little game we all love into
-            a recognized sport that everyone can love!
+            Lets work together to turn this silly little game we all love into a
+            recognized sport that everyone can love!
           </p>
           <p>
             Sincerely,
