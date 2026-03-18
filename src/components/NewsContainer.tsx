@@ -46,6 +46,14 @@ const newsItems = [
     excerpt:
       'The inaugural ICAA Boston Championships have concluded! The Boston Renegades have been crowned champions after a thrilling day of competition. See the final standings and read the full recap.',
   },
+  {
+    id: 'ICAA-volunteer-updates',
+    to: '/news/ICAA-volunteer-updates',
+    title: 'The ICAA needs help! Come Join Us!',
+    date: 'March 14, 2026',
+    excerpt:
+      'The ICAA is officially opening volunteer roles and announcing a major milestone. Learn how you can get involved and help us grow the sport of Combat Archery.',
+  },
 ];
 
 const NewsContainer = ({ className }: { className?: string }) => {

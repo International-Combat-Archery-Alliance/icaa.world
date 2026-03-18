@@ -11,6 +11,7 @@ import NewsItem2 from './pages/news/NewsItem2';
 import NewsItem3 from './pages/news/NewsItem3';
 import NewsItem4 from './pages/news/NewsItem4';
 import NewsItem5 from './pages/news/NewsItem5';
+import NewsItem6 from './pages/news/NewsItem6';
 import Contact from './pages/Contact';
 import AdminPage from './pages/Admin';
 import { EventQueryClientProvider } from './context/eventQueryClientContext';
@@ -112,6 +113,10 @@ const App = () => {
                           <Route
                             path="/news/boston-championship-results"
                             element={<NewsItem5 />}
+                          />
+                          <Route
+                            path="/news/ICAA-volunteer-updates"
+                            element={<NewsItem6 />}
                           />
                           <Route
                             path="/mailing-list"
