@@ -1,5 +1,5 @@
 import type { components } from '@/api/login';
-import { useLoginUserInfo } from '@/hooks/useLogin';
+import { useLoginSession } from '@/hooks/useLogin';
 import { createContext, useContext, type ReactNode, useEffect } from 'react';
 import { useLocalStorage } from 'react-use';
 
@@ -53,6 +53,7 @@ export const UserInfoContextProvider = ({
     authStatus === null ||
     (authStatus === AuthStatus.AUTHENTICATED && !cachedUserInfo) ||
     (authStatus === AuthStatus.AUTHENTICATED &&
+      cachedUserInfo &&
       isUserInfoExpired(cachedUserInfo));
 
   const {
@@ -60,7 +61,7 @@ export const UserInfoContextProvider = ({
     isSuccess: apiIsSuccess,
     isError: apiIsError,
     isLoading: apiIsLoading,
-  } = useLoginUserInfo({
+  } = useLoginSession({
     enabled: shouldFetchFromAPI,
   });
 
@@ -79,6 +80,7 @@ export const UserInfoContextProvider = ({
     apiUserInfo,
     setCachedUserInfo,
     deleteCachedUserInfo,
+    setAuthStatus,
   ]);
 
   const userInfo = cachedUserInfo || apiUserInfo;
