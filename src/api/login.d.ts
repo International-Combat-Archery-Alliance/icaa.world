@@ -15,34 +15,6 @@ export interface paths {
         put?: never;
         /** Logs in and returns the auth cookie */
         post: operations["PostLoginGoogle"];
-        /**
-         * Logs the user out (deprecated, use DELETE /login/session)
-         * @deprecated
-         * @description **Deprecated:** Use DELETE /login/session instead.
-         *     For cookie based auth, deletes the cookies, effectively logging the user out.
-         */
-        delete: operations["DeleteLoginGoogle"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/login/google/userInfo": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Returns info about the logged in user (deprecated, use GET /login/session)
-         * @deprecated
-         * @description **Deprecated:** Use GET /login/session instead.
-         *     Returns info about the logged in user.
-         */
-        get: operations["GetLoginGoogleUserInfo"];
-        put?: never;
-        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -107,8 +79,6 @@ export interface components {
         UserInfo: {
             /** Format: date-time */
             expiresAt: string;
-            /** @description Deprecated - use roles array instead. True if user has ADMIN role. */
-            isAdmin: boolean;
             profilePicURL: string;
             /** @description User's assigned roles */
             roles: "ADMIN"[];
@@ -144,55 +114,6 @@ export interface operations {
                 headers: {
                     /** @description The ICAA auth token cookies. */
                     "Set-Cookie"?: string;
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["UserInfo"];
-                };
-            };
-            /** @description Unauthorized. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-        };
-    };
-    DeleteLoginGoogle: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description User logged out */
-            200: {
-                headers: {
-                    /** @description Tells the browser to delete the cookies. */
-                    "Set-Cookie"?: string;
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    GetLoginGoogleUserInfo: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description User info */
-            200: {
-                headers: {
                     [name: string]: unknown;
                 };
                 content: {
