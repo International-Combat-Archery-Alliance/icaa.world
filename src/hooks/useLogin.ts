@@ -40,28 +40,6 @@ export function useLoginSession(options?: { enabled?: boolean }) {
   );
 }
 
-// Deprecated: Use useLoginSession instead
-export function useLoginUserInfo(options?: { enabled?: boolean }) {
-  const client = useLoginQueryClient();
-
-  return client.useQuery(
-    'get',
-    '/login/google/userInfo',
-    {
-      credentials: 'include',
-    },
-    {
-      retry(_, error) {
-        if (error.code === 'AuthError') {
-          return false;
-        }
-        return true;
-      },
-      enabled: options?.enabled,
-    },
-  );
-}
-
 export function useRefreshToken() {
   const client = useLoginQueryClient();
   const { setCachedUserInfo, deleteCachedUserInfo, setAuthStatus } =
