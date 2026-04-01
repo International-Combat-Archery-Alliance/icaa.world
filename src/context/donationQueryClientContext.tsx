@@ -2,6 +2,7 @@ import { createContext, useContext, useMemo, type ReactNode } from 'react';
 import createFetchClient from 'openapi-fetch';
 import createClient, { type OpenapiQueryClient } from 'openapi-react-query';
 import type { paths } from '@/api/donations-v1';
+import { createAuthMiddleware } from '@/lib/authMiddleware';
 
 // Create the context with a null default value
 const DonationQueryClientContext =
@@ -17,6 +18,7 @@ export const DonationQueryClientProvider = ({
       baseUrl: import.meta.env.VITE_DONATION_API_URL,
       credentials: 'include',
     });
+    donationAPIFetchClient.use(createAuthMiddleware());
     const donationQueryClient = createClient(donationAPIFetchClient);
     return { donationQueryClient };
   }, []);

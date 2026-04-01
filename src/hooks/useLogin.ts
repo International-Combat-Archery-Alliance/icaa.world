@@ -19,6 +19,28 @@ export function useLogin() {
   });
 }
 
+export function useLoginSession(options?: { enabled?: boolean }) {
+  const client = useLoginQueryClient();
+
+  return client.useQuery(
+    'get',
+    '/login/session',
+    {
+      credentials: 'include',
+    },
+    {
+      retry(_, error) {
+        if (error.code === 'AuthError') {
+          return false;
+        }
+        return true;
+      },
+      enabled: options?.enabled,
+    },
+  );
+}
+
+// Deprecated: Use useLoginSession instead
 export function useLoginUserInfo(options?: { enabled?: boolean }) {
   const client = useLoginQueryClient();
 
@@ -40,12 +62,30 @@ export function useLoginUserInfo(options?: { enabled?: boolean }) {
   );
 }
 
+export function useRefreshToken() {
+  const client = useLoginQueryClient();
+  const { setCachedUserInfo, deleteCachedUserInfo, setAuthStatus } =
+    useUserInfo();
+
+  return client.useMutation('post', '/login/refresh', {
+    onSuccess: (data) => {
+      setCachedUserInfo(data);
+      setAuthStatus(AuthStatus.AUTHENTICATED);
+    },
+    onError: () => {
+      // Refresh failed - clear auth state
+      deleteCachedUserInfo();
+      setAuthStatus(AuthStatus.UNAUTHENTICATED);
+    },
+  });
+}
+
 export function useLogout() {
   const client = useLoginQueryClient();
 
   const { deleteCachedUserInfo, setAuthStatus } = useUserInfo();
 
-  return client.useMutation('delete', '/login/google', {
+  return client.useMutation('delete', '/login/session', {
     onSuccess: () => {
       deleteCachedUserInfo();
       setAuthStatus(AuthStatus.UNAUTHENTICATED);

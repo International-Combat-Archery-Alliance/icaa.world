@@ -2,6 +2,7 @@ import { createContext, useContext, useMemo, type ReactNode } from 'react';
 import createFetchClient from 'openapi-fetch';
 import createClient, { type OpenapiQueryClient } from 'openapi-react-query';
 import type { paths } from '@/api/assets-api-v1';
+import { createAuthMiddleware } from '@/lib/authMiddleware';
 
 const AssetsQueryClientContext =
   createContext<OpenapiQueryClient<paths> | null>(null);
@@ -16,6 +17,7 @@ export const AssetsQueryClientProvider = ({
       baseUrl: import.meta.env.VITE_ASSETS_API_URL,
       credentials: 'include',
     });
+    assetsAPIFetchClient.use(createAuthMiddleware());
     const assetsQueryClient = createClient(assetsAPIFetchClient);
     return { assetsQueryClient };
   }, []);
