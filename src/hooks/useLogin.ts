@@ -19,7 +19,6 @@ export function useLogin() {
   });
 }
 
-// New hook using the non-deprecated /login/session endpoint
 export function useLoginSession(options?: { enabled?: boolean }) {
   const client = useLoginQueryClient();
 
@@ -63,7 +62,6 @@ export function useLoginUserInfo(options?: { enabled?: boolean }) {
   );
 }
 
-// New hook to refresh the access token using the refresh token
 export function useRefreshToken() {
   const client = useLoginQueryClient();
   const { setCachedUserInfo, deleteCachedUserInfo, setAuthStatus } =
@@ -82,7 +80,6 @@ export function useRefreshToken() {
   });
 }
 
-// New hook using the non-deprecated /login/session DELETE endpoint
 export function useLogout() {
   const client = useLoginQueryClient();
 
