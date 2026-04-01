@@ -2,6 +2,7 @@ import { createContext, useContext, useMemo, type ReactNode } from 'react';
 import createFetchClient from 'openapi-fetch';
 import createClient, { type OpenapiQueryClient } from 'openapi-react-query';
 import type { paths } from '@/api/events-v1';
+import { createAuthMiddleware } from '@/lib/authMiddleware';
 
 // Create the context with a null default value
 const EventQueryClientContext = createContext<OpenapiQueryClient<paths> | null>(
@@ -16,7 +17,9 @@ export const EventQueryClientProvider = ({
   const { eventQueryClient } = useMemo(() => {
     const eventAPIFetchClient = createFetchClient<paths>({
       baseUrl: import.meta.env.VITE_EVENT_API_URL,
+      credentials: 'include',
     });
+    eventAPIFetchClient.use(createAuthMiddleware());
     const eventQueryClient = createClient(eventAPIFetchClient);
     return { eventQueryClient };
   }, []);

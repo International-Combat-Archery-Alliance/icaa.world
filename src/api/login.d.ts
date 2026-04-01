@@ -14,12 +14,70 @@ export interface paths {
         get?: never;
         put?: never;
         /** Logs in and returns the auth cookie */
-        post: operations["PostLoginGoogle"];
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            /** @description The Google JWT to log in with */
+            requestBody: {
+                content: {
+                    "application/json": {
+                        googleJWT: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Auth successful. The access and refresh tokens are returned in cookies named `ICAA_ACCESS_TOKEN` and `ICAA_REFRESH_TOKEN`. */
+                200: {
+                    headers: {
+                        /** @description The ICAA auth token cookies. */
+                        "Set-Cookie"?: string;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["UserInfo"];
+                    };
+                };
+                /** @description Unauthorized. */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
         /**
-         * Logs the user out
-         * @description For cookie based auth, deletes the cookie, effectively logging the user out.
+         * Logs the user out (deprecated, use DELETE /login/session)
+         * @deprecated
+         * @description **Deprecated:** Use DELETE /login/session instead.
+         *     For cookie based auth, deletes the cookies, effectively logging the user out.
          */
-        delete: operations["DeleteLoginGoogle"];
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description User logged out */
+                200: {
+                    headers: {
+                        /** @description Tells the browser to delete the cookies. */
+                        "Set-Cookie"?: string;
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
         options?: never;
         head?: never;
         patch?: never;
@@ -32,10 +90,164 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Returns info about the logged in user */
-        get: operations["GetLoginGoogleUserInfo"];
+        /**
+         * Returns info about the logged in user (deprecated, use GET /login/session)
+         * @deprecated
+         * @description **Deprecated:** Use GET /login/session instead.
+         *     Returns info about the logged in user.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description User info */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["UserInfo"];
+                    };
+                };
+                /** @description Unauthorized. */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/login/session": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Returns info about the current session/user
+         * @description Returns information about the currently logged in user.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description User info */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["UserInfo"];
+                    };
+                };
+                /** @description Unauthorized. */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        /**
+         * Logs the user out
+         * @description For cookie based auth, deletes the cookies and revokes the refresh token, effectively logging the user out.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description User logged out */
+                200: {
+                    headers: {
+                        /** @description Tells the browser to delete the cookies. */
+                        "Set-Cookie"?: string;
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/login/refresh": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Refreshes the access token using a refresh token
+         * @description Uses the refresh token cookie to generate a new access token. The old refresh token is invalidated and a new one is issued (token rotation).
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Token refresh successful */
+                200: {
+                    headers: {
+                        /** @description New access and refresh token cookies. */
+                        "Set-Cookie"?: string;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["UserInfo"];
+                    };
+                };
+                /** @description Unauthorized - invalid or expired refresh token */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
         delete?: never;
         options?: never;
         head?: never;
@@ -46,19 +258,23 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
-        Error: {
-            code: components["schemas"]["ErrorCode"];
-            /** @example An unexpected error occurred. */
-            message: string;
+        UserInfo: {
+            /** @description Deprecated - use roles array instead. True if user has ADMIN role. */
+            isAdmin: boolean;
+            profilePicURL: string;
+            /** Format: date-time */
+            expiresAt: string;
+            userEmail: string;
+            /** @description User's assigned roles */
+            roles: "ADMIN"[];
         };
         /** @enum {string} */
         ErrorCode: "InternalError" | "AuthError" | "InputValidationError";
-        UserInfo: {
-            /** Format: date-time */
-            expiresAt: string;
-            isAdmin: boolean;
-            profilePicURL: string;
-            userEmail: string;
+        Error: {
+            /** @example InternalError */
+            code: components["schemas"]["ErrorCode"];
+            /** @example An unexpected error occurred. */
+            message: string;
         };
     };
     responses: never;
@@ -68,92 +284,4 @@ export interface components {
     pathItems: never;
 }
 export type $defs = Record<string, never>;
-export interface operations {
-    PostLoginGoogle: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** @description The Google JWT to log in with */
-        requestBody: {
-            content: {
-                "application/json": {
-                    googleJWT: string;
-                };
-            };
-        };
-        responses: {
-            /** @description Auth successful. The JWT is returned in a cookie named `GOOGLE_AUTH_JWT`. You need to include this cookie subsequent requests if using cookie based auth. */
-            200: {
-                headers: {
-                    /** @description The google auth token cookie. */
-                    "Set-Cookie"?: string;
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["UserInfo"];
-                };
-            };
-            /** @description Unauthorized. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-        };
-    };
-    DeleteLoginGoogle: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description User logged out */
-            200: {
-                headers: {
-                    /** @description Tells the browser to delete the cookie. */
-                    "Set-Cookie"?: string;
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    GetLoginGoogleUserInfo: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description User info */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["UserInfo"];
-                };
-            };
-            /** @description Unauthorized. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-        };
-    };
-}
+export type operations = Record<string, never>;

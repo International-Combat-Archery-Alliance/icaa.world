@@ -2,6 +2,7 @@ import { createContext, useContext, useMemo, type ReactNode } from 'react';
 import createFetchClient from 'openapi-fetch';
 import createClient, { type OpenapiQueryClient } from 'openapi-react-query';
 import type { paths } from '@/api/login';
+import { createAuthMiddleware } from '@/lib/authMiddleware';
 
 // Create the context with a null default value
 const LoginQueryClientContext = createContext<OpenapiQueryClient<paths> | null>(
@@ -16,7 +17,9 @@ export const LoginQueryClientProvider = ({
   const { loginQueryClient } = useMemo(() => {
     const loginAPIFetchClient = createFetchClient<paths>({
       baseUrl: import.meta.env.VITE_LOGIN_API_URL,
+      credentials: 'include',
     });
+    loginAPIFetchClient.use(createAuthMiddleware());
     const loginQueryClient = createClient(loginAPIFetchClient);
     return { loginQueryClient };
   }, []);
