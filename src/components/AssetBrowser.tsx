@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
@@ -92,6 +93,8 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
     'name',
   );
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+  const [selectedAssets, setSelectedAssets] = useState<Set<string>>(new Set());
+  const [showMultiDeleteDialog, setShowMultiDeleteDialog] = useState(false);
 
   const {
     data,
@@ -161,6 +164,7 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
   const navigateToFolder = (path: string) => {
     setCurrentPath(path);
     setSelectedAsset(null);
+    setSelectedAssets(new Set());
   };
 
   const navigateUp = () => {
@@ -169,7 +173,42 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
       const parentPath = '/' + pathParts.slice(0, -1).join('/');
       setCurrentPath(parentPath);
       setSelectedAsset(null);
+      setSelectedAssets(new Set());
     }
+  };
+
+  const getAssetId = (asset: Asset): string => {
+    return isAssetAdmin(asset) ? asset.id : asset.name;
+  };
+
+  const toggleAssetSelection = (asset: Asset) => {
+    const assetId = getAssetId(asset);
+    setSelectedAssets((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(assetId)) {
+        newSet.delete(assetId);
+      } else {
+        newSet.add(assetId);
+      }
+      return newSet;
+    });
+  };
+
+  const isAssetSelected = (asset: Asset): boolean => {
+    return selectedAssets.has(getAssetId(asset));
+  };
+
+  const selectAllAssets = () => {
+    const allIds = sortedAssets.map(getAssetId);
+    setSelectedAssets(new Set(allIds));
+  };
+
+  const deselectAllAssets = () => {
+    setSelectedAssets(new Set());
+  };
+
+  const getSelectedAssetsList = (): Asset[] => {
+    return sortedAssets.filter((asset) => isAssetSelected(asset));
   };
 
   const handleCreateFolder = async () => {
@@ -217,6 +256,36 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
       } else {
         setDeleteError('Failed to delete. Please try again.');
       }
+    }
+  };
+
+  const handleMultiDelete = async () => {
+    const assetsToDelete = getSelectedAssetsList();
+    if (assetsToDelete.length === 0) return;
+
+    const errors: string[] = [];
+
+    for (const asset of assetsToDelete) {
+      try {
+        await deleteAssetMutation.mutateAsync({
+          params: {
+            query: { path: joinPath(currentPath, asset.name) },
+          },
+        });
+      } catch (error) {
+        console.error(`Failed to delete asset ${asset.name}:`, error);
+        errors.push(asset.name);
+      }
+    }
+
+    await refetch();
+    setSelectedAssets(new Set());
+    setShowMultiDeleteDialog(false);
+
+    if (errors.length > 0) {
+      setDeleteError(
+        `Failed to delete ${errors.length} item(s): ${errors.join(', ')}`,
+      );
     }
   };
 
@@ -639,8 +708,53 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
       )}
 
       <div className="flex items-center justify-between">
-        <div className="text-sm text-gray-600">
-          Total items: {allAssets.length}
+        <div className="flex items-center gap-4">
+          <div className="text-sm text-gray-600">
+            Total items: {allAssets.length}
+          </div>
+          {sortedAssets.length > 0 && (
+            <div className="flex items-center gap-2">
+              <Checkbox
+                checked={
+                  selectedAssets.size > 0 &&
+                  selectedAssets.size === sortedAssets.length
+                }
+                onCheckedChange={(checked) => {
+                  if (checked) {
+                    selectAllAssets();
+                  } else {
+                    deselectAllAssets();
+                  }
+                }}
+              />
+              <span className="text-sm text-gray-600">
+                {selectedAssets.size > 0
+                  ? `${selectedAssets.size} selected`
+                  : 'Select all'}
+              </span>
+              {selectedAssets.size > 0 && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={deselectAllAssets}
+                  className="h-7 px-2"
+                >
+                  Clear
+                </Button>
+              )}
+            </div>
+          )}
+          {selectedAssets.size > 0 && (
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={() => setShowMultiDeleteDialog(true)}
+              className="h-7"
+            >
+              <Trash2 className="w-4 h-4 mr-1" />
+              Delete Selected
+            </Button>
+          )}
         </div>
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1">
@@ -711,7 +825,10 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
                     : ''
                   : ''
               }`}
-              onClick={() => {
+              onClick={(e) => {
+                if ((e.target as HTMLElement).closest('.checkbox-wrapper')) {
+                  return;
+                }
                 if (isAssetAdmin(asset)) {
                   setSelectedAsset(asset);
                 }
@@ -724,6 +841,12 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
                 }
               }}
             >
+              <div className="checkbox-wrapper flex items-center gap-2 mb-2">
+                <Checkbox
+                  checked={isAssetSelected(asset)}
+                  onCheckedChange={() => toggleAssetSelection(asset)}
+                />
+              </div>
               {isImageAsset(asset) && 'url' in asset ? (
                 <div className="mb-2">
                   <img
@@ -793,7 +916,10 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
                     : ''
                   : ''
               }`}
-              onClick={() => {
+              onClick={(e) => {
+                if ((e.target as HTMLElement).closest('.checkbox-wrapper')) {
+                  return;
+                }
                 if (isAssetAdmin(asset)) {
                   setSelectedAsset(asset);
                 }
@@ -806,6 +932,12 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
                 }
               }}
             >
+              <div className="checkbox-wrapper flex-shrink-0">
+                <Checkbox
+                  checked={isAssetSelected(asset)}
+                  onCheckedChange={() => toggleAssetSelection(asset)}
+                />
+              </div>
               <div className="flex-shrink-0">
                 {isImageAsset(asset) && 'url' in asset ? (
                   <img
@@ -1064,6 +1196,32 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
               className="bg-destructive"
             >
               Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog
+        open={showMultiDeleteDialog}
+        onOpenChange={setShowMultiDeleteDialog}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Multiple Items</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete {selectedAssets.size} selected
+              item{selectedAssets.size !== 1 ? 's' : ''}? This action cannot be
+              undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleMultiDelete}
+              className="bg-destructive"
+            >
+              Delete {selectedAssets.size} Item
+              {selectedAssets.size !== 1 ? 's' : ''}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
