@@ -148,7 +148,7 @@ const App = () => {
                               target="_blank"
                               rel="noopener noreferrer"
                               aria-label="YouTube"
-                              className="text-white transition-all duration-300 flex items-center hover:scale-110 hover:opacity-80"
+                              className="text-primary transition-all duration-300 flex items-center hover:scale-110 hover:opacity-80"
                             >
                               <FaYoutube size={30} />
                             </a>
@@ -157,7 +157,7 @@ const App = () => {
                               target="_blank"
                               rel="noopener noreferrer"
                               aria-label="Instagram"
-                              className="text-white transition-all duration-300 flex items-center hover:scale-110 hover:opacity-80"
+                              className="text-primary transition-all duration-300 flex items-center hover:scale-110 hover:opacity-80"
                             >
                               <FaInstagram size={30} />
                             </a>
@@ -166,7 +166,7 @@ const App = () => {
                               target="_blank"
                               rel="noopener noreferrer"
                               aria-label="Facebook"
-                              className="text-white transition-all duration-300 flex items-center hover:scale-110 hover:opacity-80"
+                              className="text-primary transition-all duration-300 flex items-center hover:scale-110 hover:opacity-80"
                             >
                               <FaFacebook size={30} />
                             </a>
@@ -175,7 +175,7 @@ const App = () => {
                               target="_blank"
                               rel="noopener noreferrer"
                               aria-label="LinkedIn"
-                              className="text-white transition-all duration-300 flex items-center hover:scale-110 hover:opacity-80"
+                              className="text-primary transition-all duration-300 flex items-center hover:scale-110 hover:opacity-80"
                             >
                               <FaLinkedin size={30} />
                             </a>
@@ -184,19 +184,15 @@ const App = () => {
                               target="_blank"
                               rel="noopener noreferrer"
                               aria-label="TikTok"
-                              className="text-white transition-all duration-300 flex items-center hover:scale-110 hover:opacity-80"
+                              className="text-primary transition-all duration-300 flex items-center hover:scale-110 hover:opacity-80"
                             >
                               <FaTiktok size={30} />
                             </a>
                           </div>
-                          <div style={{ marginBottom: '1rem' }}>
+                          <div className="mb-4">
                             <Link
                               to="/mailing-list"
-                              style={{
-                                color: 'orange',
-                                textDecoration: 'underline',
-                                fontSize: '1rem',
-                              }}
+                              className="text-primary underline text-base"
                             >
                               Join Our Mailing List!
                             </Link>
