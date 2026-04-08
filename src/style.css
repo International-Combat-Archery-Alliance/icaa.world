@@ -367,22 +367,6 @@ footer {
   font-size: 0.8rem;
 }
 
-.social-links {
-  display: flex;
-  gap: 3.5rem;
-}
-
-.social-icon {
-  width: 30px;
-  height: 30px;
-  transition: transform 0.3s ease-in-out;
-  border-radius: 30%;
-}
-
-.social-icon:hover {
-  transform: scale(1.1);
-}
-
 /* Responsive Design */
 @media (min-width: 768px) {
   .logo {

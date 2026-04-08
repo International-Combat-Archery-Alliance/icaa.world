@@ -1,4 +1,11 @@
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import {
+  FaYoutube,
+  FaInstagram,
+  FaLinkedin,
+  FaFacebook,
+  FaTiktok,
+} from 'react-icons/fa';
 
 // Import page components
 import Home from './pages/Home';
@@ -135,52 +142,79 @@ const App = () => {
                           </Routes>
                         </main>
                         <footer className="md:ml-64">
-                          <div className="social-links">
+                          <div className="flex gap-6 items-center">
                             <a
                               href="https://www.youtube.com/@Icaa-world"
                               target="_blank"
                               rel="noopener noreferrer"
+                              aria-label="YouTube"
+                              className="text-white transition-all duration-300 flex items-center hover:scale-110 hover:opacity-80"
                             >
-                              <img
-                                src="/images/logos/youtube.png"
-                                alt="YouTube"
-                                className="social-icon"
-                              />
+                              <FaYoutube size={30} />
                             </a>
                             <a
                               href="https://www.instagram.com/icaa.world/?hl=en"
                               target="_blank"
                               rel="noopener noreferrer"
+                              aria-label="Instagram"
+                              className="text-white transition-all duration-300 flex items-center hover:scale-110 hover:opacity-80"
                             >
-                              <img
-                                src="/images/logos/instagram.jfif"
-                                alt="Instagram"
-                                className="social-icon"
-                              />
+                              <FaInstagram size={30} />
+                            </a>
+                            <a
+                              href="https://www.facebook.com/people/ICAA/61584158166079/"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              aria-label="Facebook"
+                              className="text-white transition-all duration-300 flex items-center hover:scale-110 hover:opacity-80"
+                            >
+                              <FaFacebook size={30} />
                             </a>
                             <a
                               href="https://www.linkedin.com/company/icaa-world/"
                               target="_blank"
                               rel="noopener noreferrer"
+                              aria-label="LinkedIn"
+                              className="text-white transition-all duration-300 flex items-center hover:scale-110 hover:opacity-80"
                             >
-                              <img
-                                src="/images/logos/linkedin.png"
-                                alt="LinkedIn"
-                                className="social-icon"
-                              />
+                              <FaLinkedin size={30} />
+                            </a>
+                            <a
+                              href="https://www.tiktok.com/@icaalliance?_r=1&_t=ZT-95M0u21eJwb"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              aria-label="TikTok"
+                              className="text-white transition-all duration-300 flex items-center hover:scale-110 hover:opacity-80"
+                            >
+                              <FaTiktok size={30} />
                             </a>
                           </div>
-                          <div style={{ marginBottom: '1rem' }}>
+                          <div className="mb-4">
                             <Link
                               to="/mailing-list"
-                              style={{
-                                color: 'orange',
-                                textDecoration: 'underline',
-                                fontSize: '1rem',
-                              }}
+                              className="text-primary underline text-base"
                             >
                               Join Our Mailing List!
                             </Link>
+                          </div>
+                          <div className="flex gap-4 text-sm">
+                            <a
+                              href="https://assets.icaa.world/63275a84-7c75-4ea9-8849-4f3499f88335.pdf"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-white hover:text-gray-300 underline"
+                            >
+                              Privacy Policy
+                            </a>
+                            <span className="text-gray-400">|</span>
+                            <a
+                              href="https://assets.icaa.world/ef2127a5-2b86-4790-8790-f3e2444d2ab4.pdf"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-white hover:text-gray-300 underline"
+                            >
+                              Terms of Service
+                            </a>
                           </div>
                           <p>
                             &copy; 2026 International Combat Archery Alliance,
