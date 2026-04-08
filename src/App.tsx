@@ -1,4 +1,11 @@
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import {
+  FaYoutube,
+  FaInstagram,
+  FaLinkedin,
+  FaFacebook,
+  FaTiktok,
+} from 'react-icons/fa';
 
 // Import page components
 import Home from './pages/Home';
@@ -135,39 +142,51 @@ const App = () => {
                           </Routes>
                         </main>
                         <footer className="md:ml-64">
-                          <div className="social-links">
+                          <div className="flex gap-6 items-center">
                             <a
                               href="https://www.youtube.com/@Icaa-world"
                               target="_blank"
                               rel="noopener noreferrer"
+                              aria-label="YouTube"
+                              className="text-white transition-all duration-300 flex items-center hover:scale-110 hover:opacity-80"
                             >
-                              <img
-                                src="/images/logos/youtube.png"
-                                alt="YouTube"
-                                className="social-icon"
-                              />
+                              <FaYoutube size={30} />
                             </a>
                             <a
                               href="https://www.instagram.com/icaa.world/?hl=en"
                               target="_blank"
                               rel="noopener noreferrer"
+                              aria-label="Instagram"
+                              className="text-white transition-all duration-300 flex items-center hover:scale-110 hover:opacity-80"
                             >
-                              <img
-                                src="/images/logos/instagram.jfif"
-                                alt="Instagram"
-                                className="social-icon"
-                              />
+                              <FaInstagram size={30} />
+                            </a>
+                            <a
+                              href="https://www.facebook.com/people/ICAA/61584158166079/"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              aria-label="Facebook"
+                              className="text-white transition-all duration-300 flex items-center hover:scale-110 hover:opacity-80"
+                            >
+                              <FaFacebook size={30} />
                             </a>
                             <a
                               href="https://www.linkedin.com/company/icaa-world/"
                               target="_blank"
                               rel="noopener noreferrer"
+                              aria-label="LinkedIn"
+                              className="text-white transition-all duration-300 flex items-center hover:scale-110 hover:opacity-80"
                             >
-                              <img
-                                src="/images/logos/linkedin.png"
-                                alt="LinkedIn"
-                                className="social-icon"
-                              />
+                              <FaLinkedin size={30} />
+                            </a>
+                            <a
+                              href="https://www.tiktok.com/@icaalliance?_r=1&_t=ZT-95M0u21eJwb"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              aria-label="TikTok"
+                              className="text-white transition-all duration-300 flex items-center hover:scale-110 hover:opacity-80"
+                            >
+                              <FaTiktok size={30} />
                             </a>
                           </div>
                           <div style={{ marginBottom: '1rem' }}>
