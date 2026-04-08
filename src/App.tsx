@@ -148,7 +148,7 @@ const App = () => {
                               target="_blank"
                               rel="noopener noreferrer"
                               aria-label="YouTube"
-                              className="text-primary transition-all duration-300 flex items-center hover:scale-110 hover:opacity-80"
+                              className="text-white transition-all duration-300 flex items-center hover:scale-110 hover:opacity-80"
                             >
                               <FaYoutube size={30} />
                             </a>
@@ -157,7 +157,7 @@ const App = () => {
                               target="_blank"
                               rel="noopener noreferrer"
                               aria-label="Instagram"
-                              className="text-primary transition-all duration-300 flex items-center hover:scale-110 hover:opacity-80"
+                              className="text-white transition-all duration-300 flex items-center hover:scale-110 hover:opacity-80"
                             >
                               <FaInstagram size={30} />
                             </a>
@@ -166,7 +166,7 @@ const App = () => {
                               target="_blank"
                               rel="noopener noreferrer"
                               aria-label="Facebook"
-                              className="text-primary transition-all duration-300 flex items-center hover:scale-110 hover:opacity-80"
+                              className="text-white transition-all duration-300 flex items-center hover:scale-110 hover:opacity-80"
                             >
                               <FaFacebook size={30} />
                             </a>
@@ -175,7 +175,7 @@ const App = () => {
                               target="_blank"
                               rel="noopener noreferrer"
                               aria-label="LinkedIn"
-                              className="text-primary transition-all duration-300 flex items-center hover:scale-110 hover:opacity-80"
+                              className="text-white transition-all duration-300 flex items-center hover:scale-110 hover:opacity-80"
                             >
                               <FaLinkedin size={30} />
                             </a>
@@ -184,7 +184,7 @@ const App = () => {
                               target="_blank"
                               rel="noopener noreferrer"
                               aria-label="TikTok"
-                              className="text-primary transition-all duration-300 flex items-center hover:scale-110 hover:opacity-80"
+                              className="text-white transition-all duration-300 flex items-center hover:scale-110 hover:opacity-80"
                             >
                               <FaTiktok size={30} />
                             </a>
