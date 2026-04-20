@@ -1,5 +1,6 @@
 import { useLoginQueryClient } from '@/context/loginQueryClientContext';
 import { AuthStatus, useUserInfo } from '@/context/userInfoContext';
+import { trackEvent } from '@/lib/newrelic';
 
 export function useLogin() {
   const client = useLoginQueryClient();
@@ -11,6 +12,7 @@ export function useLogin() {
     onSuccess: (data) => {
       setCachedUserInfo(data);
       setAuthStatus(AuthStatus.AUTHENTICATED);
+      trackEvent('user_login', { method: 'google' });
     },
     onError: () => {
       setAuthStatus(AuthStatus.UNAUTHENTICATED);

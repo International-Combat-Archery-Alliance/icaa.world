@@ -3,6 +3,7 @@ import { useTitle } from 'react-use';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { trackEvent } from '@/lib/newrelic';
 import {
   Form,
   FormControl,
@@ -109,6 +110,8 @@ export default function Donation() {
   };
 
   const handleCheckoutComplete = () => {
+    // Track donation completion
+    trackEvent('donation_completed');
     // Navigate to success page on completion
     window.location.href = '/donation/success';
   };
