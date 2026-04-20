@@ -39,6 +39,9 @@ declare global {
         setAttribute(name: string, value: string | number | boolean): void;
       };
 
+      // Consent mode API
+      consent(accept?: boolean): void;
+
       // Generic method call for other features
       callMethod?(method: string, ...args: unknown[]): void;
     };
