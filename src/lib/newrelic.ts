@@ -16,12 +16,10 @@ function hasRequiredConfig(): boolean {
 }
 
 function getNewRelic(): Window['newrelic'] | undefined {
-  if (typeof window === 'undefined') return undefined;
   return window.newrelic;
 }
 
 function checkStoredConsent(): boolean | null {
-  if (typeof window === 'undefined') return null;
   try {
     const stored = localStorage.getItem('icaa_analytics_consent');
     if (stored === 'granted') return true;
@@ -34,7 +32,6 @@ function checkStoredConsent(): boolean | null {
 }
 
 function saveConsentPreference(granted: boolean): void {
-  if (typeof window === 'undefined') return;
   try {
     localStorage.setItem(
       'icaa_analytics_consent',
@@ -130,7 +127,7 @@ export function hasUserConsent(): boolean {
  * Check if New Relic is available and initialized
  */
 export function isNewRelicAvailable(): boolean {
-  return isInitialized && typeof window !== 'undefined' && !!window.newrelic;
+  return isInitialized && !!window.newrelic;
 }
 
 /**
