@@ -22,18 +22,27 @@ function getNewRelic(): Window['newrelic'] | undefined {
 
 function checkStoredConsent(): boolean | null {
   if (typeof window === 'undefined') return null;
-  const stored = localStorage.getItem('icaa_analytics_consent');
-  if (stored === 'granted') return true;
-  if (stored === 'denied') return false;
-  return null;
+  try {
+    const stored = localStorage.getItem('icaa_analytics_consent');
+    if (stored === 'granted') return true;
+    if (stored === 'denied') return false;
+    return null;
+  } catch {
+    // localStorage not available (e.g., iOS Safari private browsing)
+    return null;
+  }
 }
 
 function saveConsentPreference(granted: boolean): void {
   if (typeof window === 'undefined') return;
-  localStorage.setItem(
-    'icaa_analytics_consent',
-    granted ? 'granted' : 'denied',
-  );
+  try {
+    localStorage.setItem(
+      'icaa_analytics_consent',
+      granted ? 'granted' : 'denied',
+    );
+  } catch {
+    // localStorage not available (e.g., iOS Safari private browsing)
+  }
 }
 
 /**
@@ -84,15 +93,15 @@ export async function initNewRelic(): Promise<void> {
     setCustomAttribute('environment', 'production');
 
     const storedConsent = checkStoredConsent();
-    applyConsent(storedConsent || false);
+    applyConsent(storedConsent);
   } catch (error) {
     console.error('[New Relic] Failed to initialize:', error);
   }
 }
 
-function applyConsent(granted: boolean): void {
+function applyConsent(granted: boolean | null): void {
   const nr = getNewRelic();
-  if (!nr) return;
+  if (!nr || granted === null) return;
 
   if (granted) {
     nr.consent();
