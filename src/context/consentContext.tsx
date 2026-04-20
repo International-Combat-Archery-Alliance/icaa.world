@@ -5,6 +5,8 @@ import {
   useEffect,
   type ReactNode,
 } from 'react';
+import { useLocalStorage } from 'react-use';
+import { setConsent as setNewRelicConsent } from '@/lib/newrelic';
 
 export enum ConsentStatus {
   GRANTED = 'granted',
@@ -26,37 +28,42 @@ const CONSENT_STORAGE_KEY = 'icaa_analytics_consent';
 const ConsentContext = createContext<ConsentContextValue | null>(null);
 
 export function ConsentProvider({ children }: { children: ReactNode }) {
+  const [storedConsent, setStoredConsent, removeStoredConsent] =
+    useLocalStorage<ConsentStatus>(CONSENT_STORAGE_KEY);
   const [consentStatus, setConsentStatus] = useState<ConsentStatus>(
     ConsentStatus.PENDING,
   );
   const [showBanner, setShowBanner] = useState(false);
 
-  // Load consent preference from localStorage on mount
+  // Load consent preference from localStorage on mount and sync with New Relic
   useEffect(() => {
-    const stored = localStorage.getItem(CONSENT_STORAGE_KEY);
-    if (stored) {
-      setConsentStatus(stored as ConsentStatus);
+    if (storedConsent) {
+      setConsentStatus(storedConsent);
+      setNewRelicConsent(storedConsent === ConsentStatus.GRANTED);
     } else {
       // Show banner if no preference stored
       setShowBanner(true);
     }
-  }, []);
+  }, [storedConsent]);
 
   const grantConsent = () => {
     setConsentStatus(ConsentStatus.GRANTED);
-    localStorage.setItem(CONSENT_STORAGE_KEY, ConsentStatus.GRANTED);
+    setStoredConsent(ConsentStatus.GRANTED);
+    setNewRelicConsent(true);
     setShowBanner(false);
   };
 
   const denyConsent = () => {
     setConsentStatus(ConsentStatus.DENIED);
-    localStorage.setItem(CONSENT_STORAGE_KEY, ConsentStatus.DENIED);
+    setStoredConsent(ConsentStatus.DENIED);
+    setNewRelicConsent(false);
     setShowBanner(false);
   };
 
   const resetConsent = () => {
-    localStorage.removeItem(CONSENT_STORAGE_KEY);
+    removeStoredConsent();
     setConsentStatus(ConsentStatus.PENDING);
+    setNewRelicConsent(false);
     setShowBanner(true);
   };
 
