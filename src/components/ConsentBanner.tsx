@@ -15,7 +15,7 @@ export default function ConsentBanner() {
             We use cookies to monitor site performance and fix errors.
           </span>
         </div>
-        <div className="flex gap-2 shrink-0">
+        <div className="flex gap-2 shrink-0 self-center sm:self-auto">
           <Button variant="ghost" size="sm" onClick={denyConsent}>
             Decline
           </Button>
