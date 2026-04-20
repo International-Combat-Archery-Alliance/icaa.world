@@ -1,5 +1,6 @@
 import type { components } from '@/api/login';
 import { useLoginSession } from '@/hooks/useLogin';
+import { setUser, clearUser } from '@/lib/newrelic';
 import { createContext, useContext, type ReactNode, useEffect } from 'react';
 import { useLocalStorage } from 'react-use';
 
@@ -69,10 +70,14 @@ export const UserInfoContextProvider = ({
     if (apiIsSuccess && apiUserInfo) {
       setCachedUserInfo(apiUserInfo);
       setAuthStatus(AuthStatus.AUTHENTICATED);
+      // Track user in New Relic
+      setUser(apiUserInfo.email);
     }
     if (apiIsError) {
       deleteCachedUserInfo();
       setAuthStatus(AuthStatus.UNAUTHENTICATED);
+      // Clear user from New Relic
+      clearUser();
     }
   }, [
     apiIsSuccess,

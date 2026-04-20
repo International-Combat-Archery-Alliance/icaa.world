@@ -1,5 +1,6 @@
 import type { components } from '@/api/login';
 import { useLogin, useLogout } from '@/hooks/useLogin';
+import { trackEvent } from '@/lib/newrelic';
 import { GoogleLogin } from '@react-oauth/google';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
@@ -61,6 +62,7 @@ function SignedIn({
           disabled={isPending}
           onClick={() => {
             logoutMutate({ credentials: 'include' });
+            trackEvent('user_logout');
           }}
         >
           Log out

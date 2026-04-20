@@ -4,6 +4,7 @@ import {
   useRegisterForEventWithPayment,
   type Event,
 } from '@/hooks/useEvent';
+import { trackEvent } from '@/lib/newrelic';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -113,6 +114,11 @@ function FreeAgentForm({ event }: { event: Event }) {
           setPaymentInfo({
             clientSecret: resp.info.clientSecret,
             expiresAt: resp.info.expiresAt,
+          });
+          trackEvent('event_registration', {
+            eventId: event.id,
+            eventName: event.name,
+            registrationType: 'free_agent',
           });
           navigate(`/events/${event.id}/payment`);
           form.reset();

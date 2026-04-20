@@ -4,6 +4,7 @@ import {
   useRegisterForEventWithPayment,
   type Event,
 } from '@/hooks/useEvent';
+import { trackEvent } from '@/lib/newrelic';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -109,6 +110,11 @@ function TeamForm({ event }: { event: Event }) {
           setPaymentInfo({
             clientSecret: resp.info.clientSecret,
             expiresAt: resp.info.expiresAt,
+          });
+          trackEvent('event_registration', {
+            eventId: event.id,
+            eventName: event.name,
+            registrationType: 'team',
           });
           navigate(`/events/${event.id}/payment`);
           // Reset the form on the original page after opening the payment link

@@ -1,4 +1,5 @@
 import { Component, type ReactNode, type ErrorInfo } from 'react';
+import { trackError } from '@/lib/newrelic';
 
 interface Props {
   children: ReactNode;
@@ -26,6 +27,12 @@ export default class ErrorBoundary extends Component<Props, State> {
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error('ErrorBoundary caught error:', error, errorInfo);
     this.setState({ errorInfo });
+
+    // Report to New Relic
+    trackError(error, {
+      componentStack: errorInfo.componentStack || 'N/A',
+      errorBoundary: 'ErrorBoundary',
+    });
   }
 
   render() {
