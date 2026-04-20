@@ -4,7 +4,7 @@ declare global {
   interface Window {
     newrelic?: {
       // User identification
-      setUserId(userId: string): void;
+      setUserId(value: string | null, resetSession?: boolean): void;
       setUserEmail(email: string): void;
 
       // Custom attributes
