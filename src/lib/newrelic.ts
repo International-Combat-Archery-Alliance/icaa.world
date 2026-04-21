@@ -149,13 +149,9 @@ export function setCustomAttribute(
  * Per New Relic docs: https://docs.newrelic.com/docs/browser/new-relic-browser/browser-apis/setuserid/
  */
 export function setUser(userId: string): void {
-  if (!isNewRelicAvailable()) {
-    console.log('[New Relic] setUser called but not available yet');
-    return;
-  }
+  if (!isNewRelicAvailable()) return;
   const nr = getNewRelic();
   if (nr) {
-    console.log('[New Relic] Setting user ID:', userId);
     nr.setUserId(userId);
   }
 }

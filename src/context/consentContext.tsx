@@ -38,12 +38,15 @@ export function ConsentProvider({ children }: { children: ReactNode }) {
   // Load consent preference from localStorage on mount and sync with New Relic
   useEffect(() => {
     if (storedConsent) {
+      // We have a stored consent value
       setConsentStatus(storedConsent);
       setNewRelicConsent(storedConsent === ConsentStatus.GRANTED);
-    } else {
-      // Show banner if no preference stored
+      setShowBanner(false);
+    } else if (storedConsent === null) {
+      // Explicitly null means localStorage was checked and is empty
       setShowBanner(true);
     }
+    // If undefined, react-use hasn't finished reading localStorage yet, wait
   }, [storedConsent]);
 
   const grantConsent = () => {
