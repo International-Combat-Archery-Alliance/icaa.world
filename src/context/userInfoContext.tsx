@@ -49,6 +49,13 @@ export const UserInfoContextProvider = ({
     }
   }, [cachedUserInfo, deleteCachedUserInfo, setAuthStatus]);
 
+  // Set New Relic user when we have cached user info
+  useEffect(() => {
+    if (cachedUserInfo?.userEmail) {
+      setUser(cachedUserInfo.userEmail);
+    }
+  }, [cachedUserInfo]);
+
   const shouldFetchFromAPI =
     authStatus === undefined ||
     authStatus === null ||
@@ -71,7 +78,7 @@ export const UserInfoContextProvider = ({
       setCachedUserInfo(apiUserInfo);
       setAuthStatus(AuthStatus.AUTHENTICATED);
       // Track user in New Relic
-      setUser(apiUserInfo.email);
+      setUser(apiUserInfo.userEmail);
     }
     if (apiIsError) {
       deleteCachedUserInfo();
