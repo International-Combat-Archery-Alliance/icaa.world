@@ -16,24 +16,30 @@ function hasRequiredConfig(): boolean {
 }
 
 function getNewRelic(): Window['newrelic'] | undefined {
-  if (typeof window === 'undefined') return undefined;
   return window.newrelic;
 }
 
 function checkStoredConsent(): boolean | null {
-  if (typeof window === 'undefined') return null;
-  const stored = localStorage.getItem('icaa_analytics_consent');
-  if (stored === 'granted') return true;
-  if (stored === 'denied') return false;
-  return null;
+  try {
+    const stored = localStorage.getItem('icaa_analytics_consent');
+    if (stored === 'granted') return true;
+    if (stored === 'denied') return false;
+    return null;
+  } catch {
+    // localStorage not available (e.g., iOS Safari private browsing)
+    return null;
+  }
 }
 
 function saveConsentPreference(granted: boolean): void {
-  if (typeof window === 'undefined') return;
-  localStorage.setItem(
-    'icaa_analytics_consent',
-    granted ? 'granted' : 'denied',
-  );
+  try {
+    localStorage.setItem(
+      'icaa_analytics_consent',
+      granted ? 'granted' : 'denied',
+    );
+  } catch {
+    // localStorage not available (e.g., iOS Safari private browsing)
+  }
 }
 
 /**
@@ -84,15 +90,15 @@ export async function initNewRelic(): Promise<void> {
     setCustomAttribute('environment', 'production');
 
     const storedConsent = checkStoredConsent();
-    applyConsent(storedConsent || false);
+    applyConsent(storedConsent);
   } catch (error) {
     console.error('[New Relic] Failed to initialize:', error);
   }
 }
 
-function applyConsent(granted: boolean): void {
+function applyConsent(granted: boolean | null): void {
   const nr = getNewRelic();
-  if (!nr) return;
+  if (!nr || granted === null) return;
 
   if (granted) {
     nr.consent();
@@ -121,7 +127,7 @@ export function hasUserConsent(): boolean {
  * Check if New Relic is available and initialized
  */
 export function isNewRelicAvailable(): boolean {
-  return isInitialized && typeof window !== 'undefined' && !!window.newrelic;
+  return isInitialized && !!window.newrelic;
 }
 
 /**
@@ -143,6 +149,7 @@ export function setCustomAttribute(
  * Per New Relic docs: https://docs.newrelic.com/docs/browser/new-relic-browser/browser-apis/setuserid/
  */
 export function setUser(userId: string): void {
+  if (!isNewRelicAvailable()) return;
   const nr = getNewRelic();
   if (nr) {
     nr.setUserId(userId);
