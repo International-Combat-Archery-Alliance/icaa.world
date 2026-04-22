@@ -11,11 +11,12 @@
     "lint:fix": "bun lint --fix",
     "format": "prettier --write .",
     "prepare": "husky",
+    "run-shared-infra": "docker compose up -d",
     "run-login-service": "cd ../login && make local",
     "run-event-service": "cd ../event-registration && make local",
     "run-assets-service": "cd ../assets-api && make local",
     "run-donation-service": "cd ../donation-api && make local",
-    "run-all-backend": "concurrently \"bun run-login-service\" \"bun run-event-service\" \"bun run-assets-service\" \"bun run-donation-service\""
+    "run-all-backend": "bun run-shared-infra && concurrently \"bun run-login-service\" \"bun run-event-service\" \"bun run-assets-service\" \"bun run-donation-service\""
   },
   "devDependencies": {
     "@eslint/js": "9",
@@ -44,6 +45,12 @@
     "@formspree/react": "^3.0.0",
     "@hookform/resolvers": "^5.2.2",
     "@newrelic/browser-agent": "^1.313.0",
+    "@opentelemetry/auto-instrumentations-web": "^0.45.0",
+    "@opentelemetry/core": "^1.30.0",
+    "@opentelemetry/exporter-trace-otlp-http": "^0.57.0",
+    "@opentelemetry/resources": "^1.30.0",
+    "@opentelemetry/sdk-trace-base": "^1.30.0",
+    "@opentelemetry/sdk-trace-web": "^1.30.0",
     "@radix-ui/react-accordion": "^1.2.12",
     "@radix-ui/react-alert-dialog": "^1.1.15",
     "@radix-ui/react-avatar": "^1.1.11",
