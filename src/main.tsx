@@ -2,9 +2,11 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App.tsx';
 import { initNewRelic } from '@/lib/newrelic';
+import { initOtel } from '@/lib/otel';
 
-// Initialize New Relic before React render (production only)
+// Initialize observability before React render
 initNewRelic().then(() => {
+  initOtel();
   ReactDOM.createRoot(document.getElementById('root')!).render(
     <React.StrictMode>
       <App />
