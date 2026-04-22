@@ -29,10 +29,11 @@ bun run build       # Production build
 **Development:**
 
 ```bash
-bun run dev         # Start dev server
-bun run preview     # Preview production build
-bun run codegen     # Generate API types from OpenAPI
-bun run full-dev    # Frontend + all backend services
+bun run dev              # Start dev server
+bun run preview          # Preview production build
+bun run codegen          # Generate API types from OpenAPI
+bun run full-dev         # Frontend + all backend services (starts shared Docker infra automatically)
+bun run run-shared-infra # Start shared Docker infrastructure only (DynamoDB, Jaeger, LocalStack)
 ```
 
 **Linting:**

@@ -11,4 +11,12 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  server: {
+    proxy: {
+      '/v1/traces': {
+        target: 'http://localhost:4318',
+        changeOrigin: true,
+      },
+    },
+  },
 });
