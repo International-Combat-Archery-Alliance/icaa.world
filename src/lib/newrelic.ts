@@ -77,6 +77,7 @@ export async function initNewRelic(): Promise<void> {
         distributed_tracing: {
           enabled: true,
           allowed_origins: ['https://api.icaa.world'],
+          cors_use_tracecontext_headers: true,
         },
         session_replay: { enabled: false },
         privacy: { cookies_enabled: true },
