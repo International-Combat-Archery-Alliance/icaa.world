@@ -15,7 +15,7 @@ export default function AdminOnlyRoute({
   return (
     <ProtectedRoute
       isAuthenticated={
-        isSuccess && (userInfo?.roles.includes('ADMIN') ?? false)
+        isSuccess && (userInfo?.roles?.includes('ADMIN') ?? false)
       }
       redirectTo={redirectTo}
     >

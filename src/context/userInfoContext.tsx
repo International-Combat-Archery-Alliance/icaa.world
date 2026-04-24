@@ -95,7 +95,10 @@ export const UserInfoContextProvider = ({
     setAuthStatus,
   ]);
 
-  const userInfo = cachedUserInfo || apiUserInfo;
+  const rawUserInfo = cachedUserInfo || apiUserInfo;
+  const userInfo = rawUserInfo
+    ? { ...rawUserInfo, roles: rawUserInfo.roles ?? [] }
+    : undefined;
   const isSuccess = authStatus === AuthStatus.AUTHENTICATED && !!userInfo;
   const isError =
     authStatus === AuthStatus.UNAUTHENTICATED ||
