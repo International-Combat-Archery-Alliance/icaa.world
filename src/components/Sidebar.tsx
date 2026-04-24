@@ -43,7 +43,7 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
 
   const visibleNavItems = navItems.filter(
     (item) =>
-      !item.adminOnly || (isSuccess && userInfo?.roles.includes('ADMIN')),
+      !item.adminOnly || (isSuccess && userInfo?.roles?.includes('ADMIN')),
   );
 
   return (
