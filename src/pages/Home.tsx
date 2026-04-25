@@ -18,16 +18,14 @@ const Home = () => {
         </p>
       </header>
 
-      <div className="mt-8 grid grid-cols-1 pb-6 px-4 gap-4 lg:px-12 lg:grid-cols-2">
-        <div className="lg:col-span-2 flex justify-center">
-          <div className="w-full max-w-[1016px]">
-            <CarouselImages assetPath="/Carousel-Images" />
-          </div>
+      <div className="mt-8 pb-6 px-4 flex flex-col items-center gap-4 lg:px-12">
+        <div className="w-full max-w-[1016px]">
+          <CarouselImages assetPath="/Carousel-Images" />
         </div>
-
-        <NewsContainer className="lg:justify-self-end lg:max-w-[500px]" />
-
-        <EventsContainer className="lg:max-w-[500px]" />
+        <div className="w-full max-w-[1016px] flex flex-col gap-4 lg:flex-row">
+          <NewsContainer className="flex-1 min-w-0 h-auto" />
+          <EventsContainer className="flex-1 min-w-0 h-auto" />
+        </div>
       </div>
     </>
   );

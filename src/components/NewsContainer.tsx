@@ -1,67 +1,19 @@
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 
 import { Newspaper, Share2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-
-const newsItems = [
-  {
-    id: 'icaa-launch',
-    to: '/news/icaa-launch',
-    title: 'ICAA to Launch with Inaugural Boston Play Ins',
-    date: 'August 29, 2025',
-    excerpt:
-      'The ICAA is proud to announce its official launch with the first-ever Boston Play Ins Tournament this fall.',
-  },
-  {
-    id: 'rules',
-    to: '/news/rules',
-    title: 'Official Tournament Rules Announced!',
-    date: 'August 30, 2025',
-    excerpt:
-      'The official rulebook for competitive tournament play has been released, outlining standardized regulations for all ICAA-sanctioned events.',
-  },
-  {
-    id: 'play-ins-results',
-    to: '/news/play-ins-results',
-    title: 'Boston Play-In Results Are In!',
-    date: 'September 7, 2025',
-    excerpt:
-      "The inaugural Boston Play-Ins have concluded! Three teams have punched their ticket to the international tournament. Find out who came out on top and see the full breakdown of the day's action.",
-  },
-  {
-    id: 'boston-championship-registration',
-    to: '/news/boston-championship-registration',
-    title: 'Registration is Now Open for the Boston Championships 2025!',
-    date: 'September 20, 2025',
-    excerpt:
-      'The stage is set! Registration for the premier Boston Championships 2025 is now open to teams and free agents. Secure your spot to compete against the best in North America.',
-  },
-  {
-    id: 'boston-championship-results',
-    to: '/news/boston-championship-results',
-    title: 'Boston Renegades Win the 2025 Boston Championships!',
-    date: 'October 26, 2025',
-    excerpt:
-      'The inaugural ICAA Boston Championships have concluded! The Boston Renegades have been crowned champions after a thrilling day of competition. See the final standings and read the full recap.',
-  },
-  {
-    id: 'ICAA-volunteer-updates',
-    to: '/news/ICAA-volunteer-updates',
-    title: 'The ICAA needs help! Come Join Us!',
-    date: 'March 14, 2026',
-    excerpt:
-      'The ICAA is officially opening volunteer roles and announcing a major milestone. Learn how you can get involved and help us grow the sport of Combat Archery.',
-  },
-];
+import { useGetArticles } from '@/hooks/useArticles';
 
 const NewsContainer = ({ className }: { className?: string }) => {
-  const sortedNews = [...newsItems].sort(
-    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
-  );
+  const { data, isLoading } = useGetArticles(10);
 
-  const isRecent = (dateString: string) => {
+  const articles = data?.pages.flatMap((p) => p.data) ?? [];
+
+  const isRecent = (dateString: string | undefined) => {
+    if (!dateString) return false;
     const date = new Date(dateString);
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
@@ -70,13 +22,13 @@ const NewsContainer = ({ className }: { className?: string }) => {
 
   const handleShare = async (
     e: React.MouseEvent,
-    item: (typeof newsItems)[0],
+    article: { slug: string; title: string; excerpt: string },
   ) => {
     e.preventDefault();
-    const url = `${window.location.origin}${item.to}`;
+    const url = `${window.location.origin}/news/${article.slug}`;
     const shareData = {
-      title: item.title,
-      text: item.excerpt,
+      title: article.title,
+      text: article.excerpt,
       url,
     };
 
@@ -101,24 +53,45 @@ const NewsContainer = ({ className }: { className?: string }) => {
         </CardTitle>
       </CardHeader>
       <CardContent className="grid flex-grow gap-4 overflow-y-auto max-h-[450px]">
-        {sortedNews.map((item) => (
+        {isLoading && (
+          <>
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className="space-y-2">
+                <Skeleton className="h-4 w-24" />
+                <Skeleton className="h-5 w-full" />
+                <Skeleton className="h-4 w-3/4" />
+              </div>
+            ))}
+          </>
+        )}
+        {!isLoading && articles.length === 0 && (
+          <p className="text-muted-foreground text-sm">No articles yet.</p>
+        )}
+        {articles.map((item) => (
           <div
-            key={item.id}
+            key={item.slug}
             className="group relative rounded-lg p-2 transition-colors hover:bg-muted/50"
           >
-            <Link to={item.to} className="grid gap-1">
+            <Link to={`/news/${item.slug}`} className="grid gap-1">
               <div className="pr-8">
-                <p className="text-sm text-muted-foreground">{item.date}</p>
+                <p className="text-sm text-muted-foreground">
+                  {item.publishedAt
+                    ? new Date(item.publishedAt).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                      })
+                    : ''}
+                </p>
               </div>
               <h4 className="font-semibold group-hover:text-primary">
                 {item.title}
-                {isRecent(item.date) && (
+                {isRecent(item.publishedAt) && (
                   <span className="ml-2 inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors border-transparent bg-primary text-primary-foreground shadow">
                     New
                   </span>
                 )}
               </h4>
-              {/* Need the wrapper dive for the line clamp to work correctly for some reason */}
               <div>
                 <p className="text-sm text-muted-foreground line-clamp-2">
                   {item.excerpt}

@@ -6,7 +6,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "test:ts": "tsc --noEmit",
-    "codegen": "openapi-typescript https://api.icaa.world/events/openapi.json -o ./src/api/events-v1.d.ts; openapi-typescript https://api.icaa.world/login/openapi.json -o ./src/api/login.d.ts; openapi-typescript https://api.icaa.world/assets/openapi.json -o ./src/api/assets-api-v1.d.ts; openapi-typescript https://api.icaa.world/donations/openapi.json -o ./src/api/donations-v1.d.ts",
+    "codegen": "openapi-typescript https://api.icaa.world/events/openapi.json -o ./src/api/events-v1.d.ts; openapi-typescript https://api.icaa.world/login/openapi.json -o ./src/api/login.d.ts; openapi-typescript https://api.icaa.world/assets/openapi.json -o ./src/api/assets-api-v1.d.ts; openapi-typescript https://api.icaa.world/donations/openapi.json -o ./src/api/donations-v1.d.ts; openapi-typescript https://api.icaa.world/articles/openapi.json -o ./src/api/articles-v1.d.ts",
     "lint": "eslint . --report-unused-disable-directives --max-warnings 0",
     "lint:fix": "bun lint --fix",
     "format": "prettier --write .",
@@ -15,8 +15,9 @@
     "run-login-service": "cd ../login && make local",
     "run-event-service": "cd ../event-registration && make local",
     "run-assets-service": "cd ../assets-api && make local",
+    "run-articles-service": "cd ../articles-api && make local",
     "run-donation-service": "cd ../donation-api && make local",
-    "run-all-backend": "bun run-shared-infra && concurrently \"bun run-login-service\" \"bun run-event-service\" \"bun run-assets-service\" \"bun run-donation-service\""
+    "run-all-backend": "bun run-shared-infra && concurrently \"bun run-login-service\" \"bun run-event-service\" \"bun run-assets-service\" \"bun run-articles-service\" \"bun run-donation-service\""
   },
   "devDependencies": {
     "@eslint/js": "9",
@@ -42,6 +43,16 @@
     "wrangler": "^4.65.0"
   },
   "dependencies": {
+    "@editorjs/delimiter": "^1.4.2",
+    "@editorjs/editorjs": "^2.31.6",
+    "@editorjs/embed": "^2.8.0",
+    "@editorjs/header": "^2.8.8",
+    "@editorjs/image": "^2.10.3",
+    "@editorjs/link": "^2.6.2",
+    "@editorjs/list": "^2.0.9",
+    "@editorjs/quote": "^2.7.6",
+    "@editorjs/table": "^2.4.5",
+    "@editorjs/underline": "^1.2.1",
     "@formspree/react": "^3.0.0",
     "@hookform/resolvers": "^5.2.2",
     "@newrelic/browser-agent": "^1.313.0",

@@ -34,10 +34,14 @@ import {
 } from '@/components/ui/select';
 import EventRegistrationTable from '@/components/EventRegistrationTable';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from '@/components/ui/button';
 import { AdminEventForm, AdminEventMode } from '@/components/AdminEventForm';
 import { AssetBrowser } from '@/components/AssetBrowser';
 import { DonationList } from '@/components/DonationList';
 import { DonationByState } from '@/components/DonationByState';
+import { ArticleEditor } from '@/components/ArticleEditor';
+import { ArticleList } from '@/components/ArticleList';
+import type { Article } from '@/hooks/useArticles';
 import { DateRangePicker } from '@/components/DateRangePicker';
 import { cn } from '@/lib/utils';
 import {
@@ -46,6 +50,7 @@ import {
   Users,
   FolderOpen,
   Heart,
+  FileText,
 } from 'lucide-react';
 
 const adminTabs = [
@@ -53,6 +58,7 @@ const adminTabs = [
   { id: 'edit-event', label: 'Edit Event', icon: CalendarCog },
   { id: 'view-registration', label: 'View Registration', icon: Users },
   { id: 'assets', label: 'Assets', icon: FolderOpen },
+  { id: 'articles', label: 'Articles', icon: FileText },
   { id: 'donations', label: 'Donations', icon: Heart },
 ] as const;
 
@@ -65,6 +71,9 @@ export function AdminPage() {
   const [eventId, setEventId] = useState<string | undefined>(undefined);
   const [donationDateRange, setDonationDateRange] = useState<
     DateRange | undefined
+  >(undefined);
+  const [editingArticle, setEditingArticle] = useState<
+    Article | undefined | null
   >(undefined);
 
   const hash = location.hash.replace('#', '') as AdminTabId;
@@ -138,6 +147,39 @@ export function AdminPage() {
               <AssetBrowser />
             </CardContent>
           </Card>
+        </TabsContent>
+        <TabsContent value="articles" className="mt-0">
+          {editingArticle === undefined && (
+            <ArticleList
+              onEdit={(article: Article) => setEditingArticle(article)}
+              onNew={() => setEditingArticle(null)}
+            />
+          )}
+          {editingArticle !== undefined && (
+            <Card key={editingArticle?.slug ?? 'new'}>
+              <CardHeader className="flex flex-row items-center justify-between">
+                <CardTitle>
+                  {editingArticle
+                    ? `Edit: ${editingArticle.title}`
+                    : 'New Article'}
+                </CardTitle>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setEditingArticle(undefined)}
+                >
+                  Back to List
+                </Button>
+              </CardHeader>
+              <CardContent>
+                <ArticleEditor
+                  article={editingArticle ?? undefined}
+                  isNew={editingArticle === null}
+                  onSaved={() => setEditingArticle(undefined)}
+                />
+              </CardContent>
+            </Card>
+          )}
         </TabsContent>
         <TabsContent value="donations" className="mt-0">
           <div className="space-y-6">
