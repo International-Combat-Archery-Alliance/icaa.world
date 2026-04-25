@@ -22,23 +22,14 @@ function getNewRelic(): Window['newrelic'] | undefined {
 function checkStoredConsent(): boolean | null {
   try {
     const stored = localStorage.getItem('icaa_analytics_consent');
-    if (stored === 'granted') return true;
-    if (stored === 'denied') return false;
+    if (stored === null) return null;
+    const parsed = JSON.parse(stored);
+    if (parsed === 'granted') return true;
+    if (parsed === 'denied') return false;
     return null;
   } catch {
-    // localStorage not available (e.g., iOS Safari private browsing)
+    // localStorage not available or invalid format
     return null;
-  }
-}
-
-function saveConsentPreference(granted: boolean): void {
-  try {
-    localStorage.setItem(
-      'icaa_analytics_consent',
-      granted ? 'granted' : 'denied',
-    );
-  } catch {
-    // localStorage not available (e.g., iOS Safari private browsing)
   }
 }
 
@@ -109,11 +100,11 @@ function applyConsent(granted: boolean | null): void {
 }
 
 /**
- * Set user consent for analytics tracking
- * Call this when user accepts or declines the consent banner
+ * Set user consent for analytics tracking.
+ * Applies consent to the New Relic agent (without writing to localStorage —
+ * that is handled by ConsentProvider via useLocalStorage).
  */
 export function setConsent(hasConsent: boolean): void {
-  saveConsentPreference(hasConsent);
   applyConsent(hasConsent);
 }
 

@@ -29,7 +29,7 @@ const ConsentContext = createContext<ConsentContextValue | null>(null);
 
 export function ConsentProvider({ children }: { children: ReactNode }) {
   const [storedConsent, setStoredConsent, removeStoredConsent] =
-    useLocalStorage<ConsentStatus>(CONSENT_STORAGE_KEY);
+    useLocalStorage<ConsentStatus | null>(CONSENT_STORAGE_KEY, null);
   const [consentStatus, setConsentStatus] = useState<ConsentStatus>(
     ConsentStatus.PENDING,
   );
