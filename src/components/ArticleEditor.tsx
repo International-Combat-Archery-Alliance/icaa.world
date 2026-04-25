@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import {
   Form,
@@ -23,14 +23,21 @@ import z from 'zod';
 import type { OutputData } from '@editorjs/editorjs';
 import Header from '@editorjs/header';
 import List from '@editorjs/list';
-import ImageTool from '@editorjs/image';
+import CustomImageTool from '@/components/editorjs-plugins/CustomImageTool';
 import Quote from '@editorjs/quote';
 import Embed from '@editorjs/embed';
 import Table from '@editorjs/table';
 import LinkTool from '@editorjs/link';
 import Delimiter from '@editorjs/delimiter';
 import Underline from '@editorjs/underline';
+import BoldInlineTool from '@/components/editorjs-plugins/Bold';
+import ItalicInlineTool from '@/components/editorjs-plugins/Italic';
+import StrikethroughInlineTool from '@/components/editorjs-plugins/Strikethrough';
+import InlineCodeTool from '@/components/editorjs-plugins/InlineCode';
 import useEditor from '@/hooks/useEditor';
+import { ImagePickerModal } from '@/components/ImagePickerModal';
+import { EditorToolbar } from '@/components/EditorToolbar';
+import { getAssetsFetchClient } from '@/context/assetsQueryClientContext';
 
 const articleSchema = z.object({
   title: z.string().min(1, 'Title is required').max(500),
@@ -77,32 +84,33 @@ function parseContent(content: unknown): OutputData | undefined {
 }
 
 const tools = {
+  bold: BoldInlineTool,
+  italic: ItalicInlineTool,
+  strikethrough: StrikethroughInlineTool,
+  inlineCode: InlineCodeTool,
+  underline: Underline,
   header: Header,
   list: List,
   image: {
-    class: ImageTool,
+    class: CustomImageTool,
     config: {
       uploader: {
         async uploadByFile(file: File) {
-          const assetsUrl = import.meta.env.VITE_ASSETS_API_URL;
+          const client = getAssetsFetchClient();
 
-          const uploadReq = await fetch(`${assetsUrl}/assets/v1/upload-url`, {
-            method: 'POST',
-            credentials: 'include',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
+          const uploadResult = await client.POST('/assets/v1/upload-url', {
+            body: {
               path: '/articles/images',
               fileName: file.name,
               contentType: file.type,
-            }),
+            },
           });
 
-          if (!uploadReq.ok) {
-            const err = await uploadReq.json();
-            throw new Error(err.message || 'Upload failed');
+          if (uploadResult.error) {
+            throw new Error(uploadResult.error.message || 'Upload failed');
           }
 
-          const { uploadUrl, formFields } = await uploadReq.json();
+          const { uploadUrl, formFields } = uploadResult.data;
 
           const uploadForm = new FormData();
           for (const [key, value] of Object.entries(formFields)) {
@@ -119,31 +127,30 @@ const tools = {
             throw new Error('S3 upload failed');
           }
 
-          const confirmReq = await fetch(
-            `${assetsUrl}/assets/v1/by-path/confirm?path=/articles/images/${file.name}`,
-            { method: 'POST', credentials: 'include' },
+          const confirmResult = await client.POST(
+            '/assets/v1/by-path/confirm',
+            {
+              params: {
+                query: { path: `/articles/images/${file.name}` },
+              },
+            },
           );
 
-          if (!confirmReq.ok) {
-            throw new Error('Confirm failed');
+          if (confirmResult.error) {
+            throw new Error(confirmResult.error.message || 'Confirm failed');
           }
-
-          const assetResp = await fetch(
-            `${assetsUrl}/assets/v1/by-path?path=/articles/images/${file.name}`,
-            { credentials: 'include' },
-          );
-
-          if (!assetResp.ok) {
-            throw new Error('Failed to get asset URL');
-          }
-
-          const assetData = await assetResp.json();
 
           return {
             success: 1,
             file: {
-              url: assetData.asset.url,
+              url: confirmResult.data.file.url,
             },
+          };
+        },
+        async uploadByUrl(url: string) {
+          return {
+            success: 1,
+            file: { url },
           };
         },
       },
@@ -154,7 +161,6 @@ const tools = {
   table: Table,
   linkTool: LinkTool,
   delimiter: Delimiter,
-  underline: Underline,
 } as const;
 
 interface ArticleEditorProps {
@@ -181,7 +187,29 @@ export function ArticleEditor({
   });
 
   const [saving, setSaving] = useState(false);
+  const [imageModalOpen, setImageModalOpen] = useState(false);
   const slugManuallyEditedRef = useRef(false);
+
+  useEffect(() => {
+    const handler = () => {
+      const count = editor?.blocks.getBlocksCount() ?? 0;
+      if (count > 0) {
+        editor?.blocks.delete(count - 1);
+      }
+      setImageModalOpen(true);
+    };
+    document.addEventListener('editorjs:request-image', handler);
+    return () => {
+      document.removeEventListener('editorjs:request-image', handler);
+    };
+  }, [editor]);
+
+  const handleInsertImage = (url: string) => {
+    editor?.blocks.insert('image', {
+      file: { url },
+      caption: '',
+    });
+  };
 
   const form = useForm<ArticleFormData>({
     resolver: zodResolver(articleSchema),
@@ -338,9 +366,14 @@ export function ArticleEditor({
 
           <div>
             <FormLabel>Content</FormLabel>
+            <EditorToolbar
+              editor={editor}
+              onInsertImage={() => setImageModalOpen(true)}
+              className="mt-1"
+            />
             <div
               id="editorjs-container"
-              className="min-h-[300px] border rounded-md p-4 bg-background"
+              className="min-h-[300px] border border-t-0 rounded-b-md p-4 bg-background"
             />
           </div>
 
@@ -363,6 +396,13 @@ export function ArticleEditor({
           </div>
         </form>
       </Form>
+
+      <ImagePickerModal
+        open={imageModalOpen}
+        onOpenChange={setImageModalOpen}
+        onSelect={handleInsertImage}
+        folderPath="/articles/images"
+      />
     </div>
   );
 }

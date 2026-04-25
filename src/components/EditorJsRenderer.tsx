@@ -101,6 +101,14 @@ function BlockRenderer({ block }: { block: EditorJsBlock }) {
       const file = block.data.file as { url?: string } | undefined;
       const caption = block.data.caption as string | undefined;
       const url = file?.url;
+      const size = block.data.size as string | undefined;
+
+      const sizeClass = {
+        small: 'w-1/4',
+        medium: 'w-1/2',
+        large: 'w-3/4',
+        full: 'w-full',
+      }[size || 'full'];
 
       if (!url) return null;
 
@@ -109,7 +117,7 @@ function BlockRenderer({ block }: { block: EditorJsBlock }) {
           <img
             src={url}
             alt={caption || ''}
-            className="max-w-full h-auto rounded-md"
+            className={`${sizeClass} max-w-full h-auto rounded-md`}
           />
           {caption && (
             <figcaption className="text-sm text-muted-foreground mt-2 text-center">

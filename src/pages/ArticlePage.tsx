@@ -65,12 +65,6 @@ export default function ArticlePage() {
             {article.title}
           </h1>
           <p className="text-sm text-muted-foreground">
-            {article.author && (
-              <span>
-                By {article.author}
-                {' · '}
-              </span>
-            )}
             {formatDate(article.publishedAt ?? article.createdAt)}
           </p>
         </header>

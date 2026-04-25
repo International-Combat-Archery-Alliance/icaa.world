@@ -50,7 +50,7 @@ bun run lint:fix    # Fix lint issues
 ### General
 
 - **TypeScript**: Strict mode, avoid `any`, explicit return types on exports
-- **No semicolons**: Omit semicolons at end of statements
+- **Semicolons**: Prettier requires semicolons
 - **Quotes**: Single quotes for strings
 - **Imports**: Use `@/` alias for src (e.g., `import { cn } from '@/lib/utils'`)
 - **Styling**: Tailwind classes with `cn()` utility for conditionals
