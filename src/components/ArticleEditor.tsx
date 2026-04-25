@@ -24,6 +24,8 @@ import type { OutputData } from '@editorjs/editorjs';
 import Header from '@editorjs/header';
 import List from '@editorjs/list';
 import CustomImageTool from '@/components/editorjs-plugins/CustomImageTool';
+import AlignmentTune from '@/components/editorjs-plugins/AlignmentTune';
+import Paragraph from '@editorjs/paragraph';
 import Quote from '@editorjs/quote';
 import Embed from '@editorjs/embed';
 import Table from '@editorjs/table';
@@ -89,10 +91,23 @@ const tools = {
   strikethrough: StrikethroughInlineTool,
   inlineCode: InlineCodeTool,
   underline: Underline,
-  header: Header,
-  list: List,
+  alignmentTune: AlignmentTune,
+  paragraph: {
+    class: Paragraph,
+    inlineToolbar: true,
+    tunes: ['alignmentTune'],
+  },
+  header: {
+    class: Header,
+    tunes: ['alignmentTune'],
+  },
+  list: {
+    class: List,
+    tunes: ['alignmentTune'],
+  },
   image: {
     class: CustomImageTool,
+    tunes: ['alignmentTune'],
     config: {
       uploader: {
         async uploadByFile(file: File) {
@@ -156,7 +171,10 @@ const tools = {
       },
     },
   },
-  quote: Quote,
+  quote: {
+    class: Quote,
+    tunes: ['alignmentTune'],
+  },
   embed: Embed,
   table: Table,
   linkTool: LinkTool,
@@ -308,6 +326,7 @@ export function ArticleEditor({
                 <FormLabel>Title</FormLabel>
                 <FormControl>
                   <Input
+                    className="bg-white"
                     placeholder="Article title"
                     {...field}
                     onChange={handleTitleChange}
@@ -329,6 +348,7 @@ export function ArticleEditor({
                 </FormDescription>
                 <FormControl>
                   <Input
+                    className="bg-white"
                     placeholder="article-slug"
                     disabled={!isNew}
                     value={field.value}
@@ -354,6 +374,7 @@ export function ArticleEditor({
                 <FormLabel>Excerpt</FormLabel>
                 <FormControl>
                   <Textarea
+                    className="bg-white"
                     placeholder="Brief description of the article..."
                     rows={3}
                     {...field}

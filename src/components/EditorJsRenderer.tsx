@@ -3,6 +3,17 @@ import * as React from 'react';
 interface EditorJsBlock {
   type: string;
   data: Record<string, unknown>;
+  tunes?: Record<string, { alignment?: string }>;
+}
+
+function getAlignment(block: EditorJsBlock): string {
+  return block.tunes?.alignmentTune?.alignment || 'left';
+}
+
+function alignClass(alignment: string): string {
+  if (alignment === 'center') return 'text-center';
+  if (alignment === 'right') return 'text-right';
+  return '';
 }
 
 interface EditorJsData {
@@ -61,6 +72,7 @@ function BlockRenderer({ block }: { block: EditorJsBlock }) {
     case 'paragraph':
       return (
         <p
+          className={alignClass(getAlignment(block))}
           dangerouslySetInnerHTML={{
             __html: (block.data.text as string) || '',
           }}
@@ -72,13 +84,13 @@ function BlockRenderer({ block }: { block: EditorJsBlock }) {
       const Tag = `h${level}` as keyof React.JSX.IntrinsicElements;
       return (
         <Tag
-          className={
+          className={`${
             level === 1
               ? 'text-3xl font-bold'
               : level === 2
                 ? 'text-2xl font-bold'
                 : 'text-xl font-semibold'
-          }
+          } ${alignClass(getAlignment(block))}`.trim()}
           dangerouslySetInnerHTML={{
             __html: (block.data.text as string) || '',
           }}
@@ -89,7 +101,8 @@ function BlockRenderer({ block }: { block: EditorJsBlock }) {
     case 'list': {
       const style = (block.data.style as string) || 'unordered';
       const ListTag = style === 'ordered' ? 'ol' : 'ul';
-      const listClass = style === 'ordered' ? 'list-decimal' : 'list-disc';
+      const listClass =
+        `${style === 'ordered' ? 'list-decimal' : 'list-disc'} ${alignClass(getAlignment(block))}`.trim();
       return renderListItems(
         (block.data.items as unknown[]) || [],
         ListTag,
@@ -102,6 +115,7 @@ function BlockRenderer({ block }: { block: EditorJsBlock }) {
       const caption = block.data.caption as string | undefined;
       const url = file?.url;
       const size = block.data.size as string | undefined;
+      const alignment = getAlignment(block);
 
       const sizeClass = {
         small: 'w-1/4',
@@ -112,15 +126,24 @@ function BlockRenderer({ block }: { block: EditorJsBlock }) {
 
       if (!url) return null;
 
+      const imgAlignClass =
+        alignment === 'center'
+          ? 'mx-auto'
+          : alignment === 'right'
+            ? 'ml-auto'
+            : '';
+
       return (
         <figure className="my-4">
           <img
             src={url}
             alt={caption || ''}
-            className={`${sizeClass} max-w-full h-auto rounded-md`}
+            className={`${sizeClass} max-w-full h-auto rounded-md ${imgAlignClass}`}
           />
           {caption && (
-            <figcaption className="text-sm text-muted-foreground mt-2 text-center">
+            <figcaption
+              className={`text-sm text-muted-foreground mt-2 ${alignClass(alignment)}`}
+            >
               {caption}
             </figcaption>
           )}
@@ -131,17 +154,11 @@ function BlockRenderer({ block }: { block: EditorJsBlock }) {
     case 'quote': {
       const text = block.data.text as string;
       const caption = block.data.caption as string | undefined;
-      const alignment = (block.data.alignment as string) || 'left';
-      const alignClass =
-        alignment === 'center'
-          ? 'text-center'
-          : alignment === 'right'
-            ? 'text-right'
-            : 'text-left';
+      const alignment = getAlignment(block);
 
       return (
         <blockquote
-          className={`border-l-4 border-primary pl-4 py-2 my-4 ${alignClass}`}
+          className={`border-l-4 border-primary pl-4 py-2 my-4 ${alignClass(alignment)}`}
         >
           <p
             className="italic"
