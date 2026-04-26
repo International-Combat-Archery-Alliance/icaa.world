@@ -72,8 +72,7 @@ export default function ArticlePage() {
         <div className="flex flex-col gap-6 text-lg text-justify">
           {article.content &&
             typeof article.content === 'object' &&
-            'blocks' in article.content &&
-            'blocks' in (article.content as Record<string, unknown>) && (
+            'blocks' in article.content && (
               <EditorJsRenderer
                 data={article.content as { blocks: unknown[] }}
               />

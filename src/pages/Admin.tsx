@@ -175,6 +175,7 @@ export function AdminPage() {
                 <ArticleEditor
                   article={editingArticle ?? undefined}
                   isNew={editingArticle === null}
+                  onDelete={() => setEditingArticle(undefined)}
                 />
               </CardContent>
             </Card>

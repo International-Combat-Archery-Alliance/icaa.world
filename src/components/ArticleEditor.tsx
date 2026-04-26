@@ -197,16 +197,24 @@ const tools = {
 interface ArticleEditorProps {
   article?: Article;
   isNew?: boolean;
+  onDelete?: () => void;
 }
 
-export function ArticleEditor({ article, isNew = false }: ArticleEditorProps) {
-  const { mutate: createMutate, isPending: createPending } = useCreateArticle();
-  const { mutate: updateMutate, isPending: updatePending } = useUpdateArticle();
-  const { mutate: publishMutate, isPending: publishPending } =
+export function ArticleEditor({
+  article,
+  isNew = false,
+  onDelete,
+}: ArticleEditorProps) {
+  const { mutateAsync: createMutateAsync, isPending: createPending } =
+    useCreateArticle();
+  const { mutateAsync: updateMutateAsync, isPending: updatePending } =
+    useUpdateArticle();
+  const { mutateAsync: publishMutateAsync, isPending: publishPending } =
     usePublishArticle();
-  const { mutate: unpublishMutate, isPending: unpublishPending } =
+  const { mutateAsync: unpublishMutateAsync, isPending: unpublishPending } =
     useUnpublishArticle();
-  const { mutate: deleteMutate, isPending: deletePending } = useDeleteArticle();
+  const { mutateAsync: deleteMutateAsync, isPending: deletePending } =
+    useDeleteArticle();
 
   const { editor } = useEditor({
     holder: 'editorjs-container',
@@ -218,10 +226,13 @@ export function ArticleEditor({ article, isNew = false }: ArticleEditorProps) {
   const [saving, setSaving] = useState(false);
   const [imageModalOpen, setImageModalOpen] = useState(false);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [publishConfirmOpen, setPublishConfirmOpen] = useState(false);
+  const [unpublishConfirmOpen, setUnpublishConfirmOpen] = useState(false);
   const [articleStatus, setArticleStatus] = useState(
     article?.status ?? 'draft',
   );
   const slugManuallyEditedRef = useRef(false);
+  const pendingPublishDataRef = useRef<ArticleFormData | null>(null);
 
   useEffect(() => {
     const handler = () => {
@@ -275,7 +286,7 @@ export function ArticleEditor({ article, isNew = false }: ArticleEditorProps) {
       const content: OutputData = (await editor?.save()) ?? { blocks: [] };
 
       if (isNew) {
-        createMutate({
+        await createMutateAsync({
           body: {
             slug: data.slug,
             title: data.title,
@@ -284,7 +295,7 @@ export function ArticleEditor({ article, isNew = false }: ArticleEditorProps) {
           },
         });
       } else {
-        updateMutate({
+        await updateMutateAsync({
           params: { path: { slug: article!.slug } },
           body: {
             title: data.title,
@@ -294,6 +305,8 @@ export function ArticleEditor({ article, isNew = false }: ArticleEditorProps) {
         });
       }
       toast.success('Draft saved');
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Failed to save draft');
     } finally {
       setSaving(false);
     }
@@ -305,7 +318,7 @@ export function ArticleEditor({ article, isNew = false }: ArticleEditorProps) {
       const content: OutputData = (await editor?.save()) ?? { blocks: [] };
 
       if (isNew) {
-        createMutate({
+        await createMutateAsync({
           body: {
             slug: data.slug,
             title: data.title,
@@ -313,11 +326,11 @@ export function ArticleEditor({ article, isNew = false }: ArticleEditorProps) {
             content,
           },
         });
-        publishMutate({
+        await publishMutateAsync({
           params: { path: { slug: data.slug } },
         });
       } else {
-        updateMutate({
+        await updateMutateAsync({
           params: { path: { slug: article!.slug } },
           body: {
             title: data.title,
@@ -325,12 +338,15 @@ export function ArticleEditor({ article, isNew = false }: ArticleEditorProps) {
             content,
           },
         });
-        publishMutate({
+        await publishMutateAsync({
           params: { path: { slug: article!.slug } },
         });
       }
       toast.success('Article published');
       setArticleStatus('published');
+      setPublishConfirmOpen(false);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Failed to publish');
     } finally {
       setSaving(false);
     }
@@ -340,24 +356,39 @@ export function ArticleEditor({ article, isNew = false }: ArticleEditorProps) {
     if (!article) return;
     setSaving(true);
     try {
-      unpublishMutate({
+      await unpublishMutateAsync({
         params: { path: { slug: article.slug } },
       });
       toast.success('Article unpublished');
       setArticleStatus('draft');
+      setUnpublishConfirmOpen(false);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Failed to unpublish');
     } finally {
       setSaving(false);
     }
+  };
+
+  const handlePublishClick = (data: ArticleFormData) => {
+    pendingPublishDataRef.current = data;
+    setPublishConfirmOpen(true);
+  };
+
+  const handleUnpublishClick = () => {
+    setUnpublishConfirmOpen(true);
   };
 
   const handleDelete = async () => {
     if (!article) return;
     setSaving(true);
     try {
-      deleteMutate({
+      await deleteMutateAsync({
         params: { path: { slug: article.slug } },
       });
       toast.success('Article deleted');
+      onDelete?.();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Failed to delete');
     } finally {
       setSaving(false);
       setDeleteConfirmOpen(false);
@@ -463,7 +494,7 @@ export function ArticleEditor({ article, isNew = false }: ArticleEditorProps) {
                   type="button"
                   variant="destructive"
                   disabled={isPending}
-                  onClick={handleUnpublish}
+                  onClick={handleUnpublishClick}
                 >
                   {isPending ? 'Unpublishing...' : 'Unpublish'}
                 </Button>
@@ -481,7 +512,7 @@ export function ArticleEditor({ article, isNew = false }: ArticleEditorProps) {
                 <Button
                   type="button"
                   disabled={isPending}
-                  onClick={form.handleSubmit(handlePublish)}
+                  onClick={form.handleSubmit(handlePublishClick)}
                 >
                   {isPending ? 'Publishing...' : 'Publish'}
                 </Button>
@@ -498,6 +529,62 @@ export function ArticleEditor({ article, isNew = false }: ArticleEditorProps) {
               </>
             )}
           </div>
+
+          <AlertDialog
+            open={publishConfirmOpen}
+            onOpenChange={setPublishConfirmOpen}
+          >
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Publish Article</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Are you sure you want to publish &ldquo;
+                  {article?.title ?? pendingPublishDataRef.current?.title}
+                  &rdquo;? It will be visible to the public.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel disabled={isPending}>
+                  Cancel
+                </AlertDialogCancel>
+                <AlertDialogAction
+                  disabled={isPending}
+                  onClick={() => {
+                    const data = pendingPublishDataRef.current;
+                    if (data) handlePublish(data);
+                  }}
+                >
+                  {isPending ? 'Publishing...' : 'Publish'}
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+
+          <AlertDialog
+            open={unpublishConfirmOpen}
+            onOpenChange={setUnpublishConfirmOpen}
+          >
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Unpublish Article</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Are you sure you want to unpublish &ldquo;{article?.title}
+                  &rdquo;? It will no longer be visible to the public.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel disabled={isPending}>
+                  Cancel
+                </AlertDialogCancel>
+                <AlertDialogAction
+                  disabled={isPending}
+                  onClick={handleUnpublish}
+                >
+                  {isPending ? 'Unpublishing...' : 'Unpublish'}
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
 
           <AlertDialog
             open={deleteConfirmOpen}
@@ -518,7 +605,7 @@ export function ArticleEditor({ article, isNew = false }: ArticleEditorProps) {
                 <AlertDialogAction
                   disabled={isPending}
                   onClick={handleDelete}
-                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                  className="bg-destructive text-white hover:bg-destructive/90"
                 >
                   {isPending ? 'Deleting...' : 'Delete'}
                 </AlertDialogAction>

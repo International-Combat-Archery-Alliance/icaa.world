@@ -195,7 +195,12 @@ function EditorToolbar({
         variant="ghost"
         size="icon"
         disabled={!isReady}
-        onClick={() => insertBlock('list', { style: 'unordered', items: [''] })}
+        onClick={() =>
+          insertBlock('list', {
+            style: 'unordered',
+            items: [{ content: '', items: [] }],
+          })
+        }
         title="Add List"
       >
         <List className="h-4 w-4" />
