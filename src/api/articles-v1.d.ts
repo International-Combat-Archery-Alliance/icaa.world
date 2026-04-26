@@ -13,125 +13,15 @@ export interface paths {
         };
         /**
          * List published articles
-         * @description Retrieves a paginated list of published articles sorted by publishedAt descending.
+         * @description Retrieves a paginated list of published articles sorted by updatedAt descending.
          */
-        get: {
-            parameters: {
-                query?: {
-                    /** @description Cursor for pagination */
-                    cursor?: string;
-                    /** @description Max number of articles to fetch */
-                    limit?: number;
-                };
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description A list of published articles. */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            data: components["schemas"]["Article"][];
-                            /** @example Y29uZ3JhdHMsIHlvdSBmb3VuZCB0aGUgZWFzdGVyIGVnZw== */
-                            cursor?: string;
-                            /** @example true */
-                            hasNextPage: boolean;
-                        };
-                    };
-                };
-                /** @description Bad request. */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                /** @description Unknown server error. */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-            };
-        };
+        get: operations["GetArticlesV1"];
         put?: never;
         /**
          * Create a new article
          * @description Creates a new article. Defaults to draft status. Admin only.
          */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            /** @description Article creation details */
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["CreateArticleRequest"];
-                };
-            };
-            responses: {
-                /** @description Article created successfully. */
-                201: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            article: components["schemas"]["Article"];
-                        };
-                    };
-                };
-                /** @description Bad request. */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                /** @description Unauthorized. */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                /** @description Article with this slug already exists. */
-                409: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                /** @description Unknown server error. */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-            };
-        };
+        post: operations["PostArticlesV1"];
         delete?: never;
         options?: never;
         head?: never;
@@ -149,64 +39,7 @@ export interface paths {
          * List all articles (admin)
          * @description Retrieves a paginated list of all articles (draft and published) sorted by updatedAt descending. Admin only.
          */
-        get: {
-            parameters: {
-                query?: {
-                    /** @description Cursor for pagination */
-                    cursor?: string;
-                    /** @description Max number of articles to fetch */
-                    limit?: number;
-                };
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description A list of all articles. */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            data: components["schemas"]["Article"][];
-                            /** @example Y29uZ3JhdHMsIHlvdSBmb3VuZCB0aGUgZWFzdGVyIGVnZw== */
-                            cursor?: string;
-                            /** @example true */
-                            hasNextPage: boolean;
-                        };
-                    };
-                };
-                /** @description Bad request. */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                /** @description Unauthorized. */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                /** @description Unknown server error. */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-            };
-        };
+        get: operations["GetArticlesV1Admin"];
         put?: never;
         post?: never;
         delete?: never;
@@ -226,172 +59,21 @@ export interface paths {
          * Get a published article by slug
          * @description Retrieves a single published article by its slug.
          */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    slug: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description The article. */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            article: components["schemas"]["Article"];
-                        };
-                    };
-                };
-                /** @description Article not found. */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                /** @description Unknown server error. */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-            };
-        };
+        get: operations["GetArticlesV1Slug"];
         put?: never;
         post?: never;
         /**
          * Delete an article
          * @description Deletes an article by slug. Admin only.
          */
-        delete: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    slug: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Article deleted successfully. */
-                204: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description Unauthorized. */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                /** @description Article not found. */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                /** @description Unknown server error. */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-            };
-        };
+        delete: operations["DeleteArticlesV1Slug"];
         options?: never;
         head?: never;
         /**
          * Update an article
          * @description Updates an existing article. Admin only.
          */
-        patch: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    slug: string;
-                };
-                cookie?: never;
-            };
-            /** @description Article update details */
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["UpdateArticleRequest"];
-                };
-            };
-            responses: {
-                /** @description Article updated successfully. */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            article: components["schemas"]["Article"];
-                        };
-                    };
-                };
-                /** @description Bad request. */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                /** @description Unauthorized. */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                /** @description Article not found. */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                /** @description Unknown server error. */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-            };
-        };
+        patch: operations["PatchArticlesV1Slug"];
         trace?: never;
     };
     "/articles/v1/{slug}/publish": {
@@ -407,57 +89,7 @@ export interface paths {
          * Publish an article
          * @description Sets an article's status to published and sets the publishedAt timestamp. Admin only.
          */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    slug: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Article published successfully. */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            article: components["schemas"]["Article"];
-                        };
-                    };
-                };
-                /** @description Unauthorized. */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                /** @description Article not found. */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                /** @description Unknown server error. */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-            };
-        };
+        post: operations["PostArticlesV1SlugPublish"];
         delete?: never;
         options?: never;
         head?: never;
@@ -477,57 +109,7 @@ export interface paths {
          * Unpublish an article
          * @description Sets an article's status back to draft and clears the publishedAt timestamp. Admin only.
          */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    slug: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Article unpublished successfully. */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            article: components["schemas"]["Article"];
-                        };
-                    };
-                };
-                /** @description Unauthorized. */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                /** @description Article not found. */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                /** @description Unknown server error. */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-            };
-        };
+        post: operations["PostArticlesV1SlugUnpublish"];
         delete?: never;
         options?: never;
         head?: never;
@@ -538,70 +120,69 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
-        /**
-         * @example published
-         * @enum {string}
-         */
-        ArticleStatus: "draft" | "published";
         Article: {
-            /**
-             * @description URL-friendly slug, immutable after creation
-             * @example icaa-launch
-             */
-            slug: string;
-            /** @example ICAA Launch Announcement */
-            title: string;
-            /** @example The ICAA is proud to announce its official launch... */
-            excerpt: string;
-            /** @description Editor.js JSON block data */
-            content: Record<string, never>;
-            status: components["schemas"]["ArticleStatus"];
             /**
              * @description Email of the admin who created the article
              * @example admin@icaa.world
              */
             readonly author: string;
+            /** @description Editor.js JSON block data */
+            content: Record<string, never>;
             /**
              * Format: date-time
              * @example 2025-08-29T12:00:00Z
              */
             readonly createdAt: string;
-            /**
-             * Format: date-time
-             * @example 2025-08-30T15:30:00Z
-             */
-            readonly updatedAt: string;
+            /** @example The ICAA is proud to announce its official launch... */
+            excerpt: string;
             /**
              * Format: date-time
              * @description When the article was published, null if draft
              * @example 2025-08-29T12:00:00Z
              */
             readonly publishedAt?: string | null;
+            /**
+             * @description URL-friendly slug, immutable after creation
+             * @example icaa-launch
+             */
+            slug: string;
+            status: components["schemas"]["ArticleStatus"];
+            /** @example ICAA Launch Announcement */
+            title: string;
+            /**
+             * Format: date-time
+             * @example 2025-08-30T15:30:00Z
+             */
+            readonly updatedAt: string;
             /** @example 1 */
             readonly version: number;
         };
+        /**
+         * @example published
+         * @enum {string}
+         */
+        ArticleStatus: "draft" | "published";
         CreateArticleRequest: {
+            content: Record<string, never>;
+            /** @example The ICAA is proud to announce its official launch... */
+            excerpt: string;
             /** @example icaa-launch */
             slug: string;
             /** @example ICAA Launch Announcement */
             title: string;
-            /** @example The ICAA is proud to announce its official launch... */
-            excerpt: string;
-            content: Record<string, never>;
         };
-        UpdateArticleRequest: {
-            /** @example Updated ICAA Launch Announcement */
-            title?: string;
-            excerpt?: string;
-            content?: Record<string, never>;
-        };
-        /** @enum {string} */
-        ErrorCode: "InternalError" | "LimitOutOfBounds" | "InvalidCursor" | "NotFound" | "EmptyBody" | "InvalidBody" | "AlreadyExists" | "InputValidationError" | "AuthError";
         Error: {
-            /** @example InternalError */
             code: components["schemas"]["ErrorCode"];
             /** @example An unexpected error occurred. */
             message: string;
+        };
+        /** @enum {string} */
+        ErrorCode: "InternalError" | "LimitOutOfBounds" | "InvalidCursor" | "NotFound" | "EmptyBody" | "InvalidBody" | "AlreadyExists" | "InputValidationError" | "AuthError";
+        UpdateArticleRequest: {
+            content?: Record<string, never>;
+            excerpt?: string;
+            /** @example Updated ICAA Launch Announcement */
+            title?: string;
         };
     };
     responses: never;
@@ -611,4 +192,431 @@ export interface components {
     pathItems: never;
 }
 export type $defs = Record<string, never>;
-export type operations = Record<string, never>;
+export interface operations {
+    GetArticlesV1: {
+        parameters: {
+            query?: {
+                /** @description Cursor for pagination */
+                cursor?: string;
+                /** @description Max number of articles to fetch */
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description A list of published articles. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example Y29uZ3JhdHMsIHlvdSBmb3VuZCB0aGUgZWFzdGVyIGVnZw== */
+                        cursor?: string;
+                        data: components["schemas"]["Article"][];
+                        /** @example true */
+                        hasNextPage: boolean;
+                    };
+                };
+            };
+            /** @description Bad request. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Unknown server error. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    PostArticlesV1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Article creation details */
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateArticleRequest"];
+            };
+        };
+        responses: {
+            /** @description Article created successfully. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        article: components["schemas"]["Article"];
+                    };
+                };
+            };
+            /** @description Bad request. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Unauthorized. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Article with this slug already exists. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Unknown server error. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    GetArticlesV1Admin: {
+        parameters: {
+            query?: {
+                /** @description Cursor for pagination */
+                cursor?: string;
+                /** @description Max number of articles to fetch */
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description A list of all articles. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example Y29uZ3JhdHMsIHlvdSBmb3VuZCB0aGUgZWFzdGVyIGVnZw== */
+                        cursor?: string;
+                        data: components["schemas"]["Article"][];
+                        /** @example true */
+                        hasNextPage: boolean;
+                    };
+                };
+            };
+            /** @description Bad request. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Unauthorized. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Unknown server error. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    GetArticlesV1Slug: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The article. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        article: components["schemas"]["Article"];
+                    };
+                };
+            };
+            /** @description Article not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Unknown server error. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    DeleteArticlesV1Slug: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Article deleted successfully. */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unauthorized. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Article not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Unknown server error. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    PatchArticlesV1Slug: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        /** @description Article update details */
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateArticleRequest"];
+            };
+        };
+        responses: {
+            /** @description Article updated successfully. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        article: components["schemas"]["Article"];
+                    };
+                };
+            };
+            /** @description Bad request. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Unauthorized. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Article not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Unknown server error. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    PostArticlesV1SlugPublish: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Article published successfully. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        article: components["schemas"]["Article"];
+                    };
+                };
+            };
+            /** @description Unauthorized. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Article not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Unknown server error. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    PostArticlesV1SlugUnpublish: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Article unpublished successfully. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        article: components["schemas"]["Article"];
+                    };
+                };
+            };
+            /** @description Unauthorized. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Article not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Unknown server error. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+}
