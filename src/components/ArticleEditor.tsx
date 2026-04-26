@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 import {
   Form,
   FormControl,
@@ -16,6 +17,8 @@ import {
   useCreateArticle,
   useUpdateArticle,
   usePublishArticle,
+  useUnpublishArticle,
+  useDeleteArticle,
   type Article,
 } from '@/hooks/useArticles';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -40,6 +43,16 @@ import useEditor from '@/hooks/useEditor';
 import { ImagePickerModal } from '@/components/ImagePickerModal';
 import { EditorToolbar } from '@/components/EditorToolbar';
 import { getAssetsFetchClient } from '@/context/assetsQueryClientContext';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from './ui/alert-dialog';
 
 const articleSchema = z.object({
   title: z.string().min(1, 'Title is required').max(500),
@@ -48,8 +61,8 @@ const articleSchema = z.object({
     .min(1, 'Slug is required')
     .max(200)
     .regex(
-      /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
-      'Slug must be lowercase letters, numbers, and hyphens only',
+      /^[a-zA-Z0-9]+(?:-[a-zA-Z0-9]+)*$/,
+      'Slug must be letters, numbers, and hyphens only',
     ),
   excerpt: z.string().min(1, 'Excerpt is required').max(1000),
 });
@@ -184,18 +197,16 @@ const tools = {
 interface ArticleEditorProps {
   article?: Article;
   isNew?: boolean;
-  onSaved?: () => void;
 }
 
-export function ArticleEditor({
-  article,
-  isNew = false,
-  onSaved,
-}: ArticleEditorProps) {
+export function ArticleEditor({ article, isNew = false }: ArticleEditorProps) {
   const { mutate: createMutate, isPending: createPending } = useCreateArticle();
   const { mutate: updateMutate, isPending: updatePending } = useUpdateArticle();
   const { mutate: publishMutate, isPending: publishPending } =
     usePublishArticle();
+  const { mutate: unpublishMutate, isPending: unpublishPending } =
+    useUnpublishArticle();
+  const { mutate: deleteMutate, isPending: deletePending } = useDeleteArticle();
 
   const { editor } = useEditor({
     holder: 'editorjs-container',
@@ -206,6 +217,10 @@ export function ArticleEditor({
 
   const [saving, setSaving] = useState(false);
   const [imageModalOpen, setImageModalOpen] = useState(false);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [articleStatus, setArticleStatus] = useState(
+    article?.status ?? 'draft',
+  );
   const slugManuallyEditedRef = useRef(false);
 
   useEffect(() => {
@@ -238,7 +253,13 @@ export function ArticleEditor({
     },
   });
 
-  const isPending = createPending || updatePending || publishPending || saving;
+  const isPending =
+    createPending ||
+    updatePending ||
+    publishPending ||
+    unpublishPending ||
+    deletePending ||
+    saving;
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const title = e.target.value;
@@ -272,7 +293,7 @@ export function ArticleEditor({
           },
         });
       }
-      onSaved?.();
+      toast.success('Draft saved');
     } finally {
       setSaving(false);
     }
@@ -308,9 +329,38 @@ export function ArticleEditor({
           params: { path: { slug: article!.slug } },
         });
       }
-      onSaved?.();
+      toast.success('Article published');
+      setArticleStatus('published');
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleUnpublish = async () => {
+    if (!article) return;
+    setSaving(true);
+    try {
+      unpublishMutate({
+        params: { path: { slug: article.slug } },
+      });
+      toast.success('Article unpublished');
+      setArticleStatus('draft');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!article) return;
+    setSaving(true);
+    try {
+      deleteMutate({
+        params: { path: { slug: article.slug } },
+      });
+      toast.success('Article deleted');
+    } finally {
+      setSaving(false);
+      setDeleteConfirmOpen(false);
     }
   };
 
@@ -399,22 +449,82 @@ export function ArticleEditor({
           </div>
 
           <div className="flex gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              disabled={isPending}
-              onClick={form.handleSubmit(handleSaveDraft)}
-            >
-              {isPending ? 'Saving...' : 'Save Draft'}
-            </Button>
-            <Button
-              type="button"
-              disabled={isPending}
-              onClick={form.handleSubmit(handlePublish)}
-            >
-              {isPending ? 'Publishing...' : 'Publish'}
-            </Button>
+            {articleStatus === 'published' ? (
+              <>
+                <Button
+                  type="button"
+                  variant="outline"
+                  disabled={isPending}
+                  onClick={form.handleSubmit(handleSaveDraft)}
+                >
+                  {isPending ? 'Updating...' : 'Update'}
+                </Button>
+                <Button
+                  type="button"
+                  variant="destructive"
+                  disabled={isPending}
+                  onClick={handleUnpublish}
+                >
+                  {isPending ? 'Unpublishing...' : 'Unpublish'}
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button
+                  type="button"
+                  variant="outline"
+                  disabled={isPending}
+                  onClick={form.handleSubmit(handleSaveDraft)}
+                >
+                  {isPending ? 'Saving...' : 'Save Draft'}
+                </Button>
+                <Button
+                  type="button"
+                  disabled={isPending}
+                  onClick={form.handleSubmit(handlePublish)}
+                >
+                  {isPending ? 'Publishing...' : 'Publish'}
+                </Button>
+                {!isNew && (
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    disabled={isPending}
+                    onClick={() => setDeleteConfirmOpen(true)}
+                  >
+                    {isPending ? 'Deleting...' : 'Delete'}
+                  </Button>
+                )}
+              </>
+            )}
           </div>
+
+          <AlertDialog
+            open={deleteConfirmOpen}
+            onOpenChange={setDeleteConfirmOpen}
+          >
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Delete Article</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Are you sure you want to delete &ldquo;{article?.title}
+                  &rdquo;? This action cannot be undone.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel disabled={isPending}>
+                  Cancel
+                </AlertDialogCancel>
+                <AlertDialogAction
+                  disabled={isPending}
+                  onClick={handleDelete}
+                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                >
+                  {isPending ? 'Deleting...' : 'Delete'}
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </form>
       </Form>
 
