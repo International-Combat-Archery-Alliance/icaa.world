@@ -1,7 +1,9 @@
 import { useParams, Link } from 'react-router-dom';
 import { useTitle } from 'react-use';
+import { ArrowLeft } from 'lucide-react';
 import { useGetArticle } from '@/hooks/useArticles';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from '@/components/ui/button';
 import { EditorJsRenderer } from '@/components/EditorJsRenderer';
 
 function formatDate(dateStr: string | undefined): string {
@@ -46,9 +48,12 @@ export default function ArticlePage() {
           <p className="text-muted-foreground mb-6">
             The article you are looking for does not exist or has been removed.
           </p>
-          <Link to="/" className="text-primary underline">
-            Back to Home
-          </Link>
+          <Button size="sm" asChild>
+            <Link to="/">
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back to Home
+            </Link>
+          </Button>
         </div>
       </section>
     );
@@ -56,9 +61,14 @@ export default function ArticlePage() {
 
   return (
     <section className="content-section news-page">
-      <Link to="/" className="back-btn ml-4 md:ml-8 mt-4 inline-block">
-        &larr; Back to Home
-      </Link>
+      <div className="ml-4 md:ml-8 mt-4">
+        <Button size="sm" asChild>
+          <Link to="/">
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back to Home
+          </Link>
+        </Button>
+      </div>
       <div className="content-wrapper max-w-screen-lg mx-auto p-4 md:p-8">
         <header className="mb-8 text-center">
           <h1 className="text-3xl md:text-4xl font-bold text-primary mb-2">
@@ -69,7 +79,7 @@ export default function ArticlePage() {
           </p>
         </header>
 
-        <div className="flex flex-col gap-6 text-lg text-justify">
+        <div className="flex flex-col gap-6 text-lg">
           {article.content &&
             typeof article.content === 'object' &&
             'blocks' in article.content && (
