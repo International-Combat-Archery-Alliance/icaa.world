@@ -1,3 +1,5 @@
+import { buttonVariants } from '@/components/ui/button';
+
 type ButtonVariant = 'default' | 'secondary' | 'outline' | 'destructive';
 
 interface ButtonLinkData {
@@ -12,17 +14,6 @@ const VARIANTS: { value: ButtonVariant; label: string }[] = [
   { value: 'outline', label: 'Outline' },
   { value: 'destructive', label: 'Destructive' },
 ];
-
-const VARIANT_PREVIEW_STYLES: Record<ButtonVariant, string> = {
-  default:
-    'background-color: hsl(221 83% 53%); color: white; padding: 8px 16px; border-radius: 6px; font-size: 14px; font-weight: 500; text-decoration: none; display: inline-block;',
-  secondary:
-    'background-color: hsl(210 40% 96%); color: hsl(222 47% 11%); padding: 8px 16px; border-radius: 6px; font-size: 14px; font-weight: 500; text-decoration: none; display: inline-block;',
-  outline:
-    'background-color: transparent; color: hsl(221 83% 53%); padding: 8px 16px; border-radius: 6px; font-size: 14px; font-weight: 500; text-decoration: none; display: inline-block; border: 1px solid hsl(221 83% 53%);',
-  destructive:
-    'background-color: hsl(0 72% 51%); color: white; padding: 8px 16px; border-radius: 6px; font-size: 14px; font-weight: 500; text-decoration: none; display: inline-block;',
-};
 
 export default class ButtonLinkTool {
   private data: ButtonLinkData;
@@ -155,13 +146,13 @@ export default class ButtonLinkTool {
   private updatePreview(): void {
     if (!this.previewEl) return;
     const { url, text, variant } = this.data;
-    const style = VARIANT_PREVIEW_STYLES[variant];
 
     if (url && text) {
-      this.previewEl.innerHTML = `<a href="${url}" target="_blank" style="${style}">${text}</a>`;
+      const classes = buttonVariants({ variant });
+      this.previewEl.innerHTML = `<a href="${url}" target="_blank" rel="noopener noreferrer" class="${classes} pointer-events-none">${text}</a>`;
     } else {
       this.previewEl.innerHTML =
-        '<span style="color:#94a3b8;font-size:13px;">Enter a URL and button text to see a preview</span>';
+        '<span class="text-slate-400 text-[13px]">Enter a URL and button text to see a preview</span>';
     }
   }
 }
