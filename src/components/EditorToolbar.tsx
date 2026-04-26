@@ -21,6 +21,7 @@ import { cn } from '@/lib/utils';
 interface EditorToolbarProps {
   editor: EditorJS | null;
   onInsertImage?: () => void;
+  onInsertEmbed?: () => void;
   className?: string;
 }
 
@@ -56,6 +57,7 @@ function findParentTag(
 function EditorToolbar({
   editor,
   onInsertImage,
+  onInsertEmbed,
   className,
 }: EditorToolbarProps) {
   const [activeFormats, setActiveFormats] = useState<
@@ -247,7 +249,7 @@ function EditorToolbar({
         variant="ghost"
         size="icon"
         disabled={!isReady}
-        onClick={() => insertBlock('embed', { service: 'youtube', url: '' })}
+        onClick={onInsertEmbed}
         title="Add Embed"
       >
         <Video className="h-4 w-4" />

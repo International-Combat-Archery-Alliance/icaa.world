@@ -28,6 +28,7 @@ import Header from '@editorjs/header';
 import List from '@editorjs/list';
 import CustomImageTool from '@/components/editorjs-plugins/CustomImageTool';
 import AlignmentTune from '@/components/editorjs-plugins/AlignmentTune';
+import EmbedSizeTune from '@/components/editorjs-plugins/EmbedSizeTune';
 import Paragraph from '@editorjs/paragraph';
 import Quote from '@editorjs/quote';
 import Embed from '@editorjs/embed';
@@ -42,6 +43,8 @@ import InlineCodeTool from '@/components/editorjs-plugins/InlineCode';
 import useEditor from '@/hooks/useEditor';
 import { ImagePickerModal } from '@/components/ImagePickerModal';
 import { EditorToolbar } from '@/components/EditorToolbar';
+import { EmbedUrlDialog } from '@/components/EmbedUrlDialog';
+import { type EmbedBlockData } from '@/lib/embedUtils';
 import { getAssetsFetchClient } from '@/context/assetsQueryClientContext';
 import {
   AlertDialog,
@@ -105,6 +108,7 @@ const tools = {
   inlineCode: InlineCodeTool,
   underline: Underline,
   alignmentTune: AlignmentTune,
+  embedSizeTune: EmbedSizeTune,
   paragraph: {
     class: Paragraph,
     inlineToolbar: true,
@@ -188,7 +192,31 @@ const tools = {
     class: Quote,
     tunes: ['alignmentTune'],
   },
-  embed: Embed,
+  embed: {
+    class: Embed,
+    tunes: ['alignmentTune', 'embedSizeTune'],
+    config: {
+      services: {
+        'google-drive-viewer': {
+          regex: /^(https?:\/\/.+\.pdf(?:\?.*)?)$/i,
+          embedUrl:
+            'https://drive.google.com/viewerng/viewer?embedded=true&url=<%= remote_id %>',
+          html: '<iframe style="width:100%;" height="600" frameborder="0" allowfullscreen></iframe>',
+          height: 600,
+          width: 600,
+          id: (groups: string[]) => encodeURIComponent(groups[0]),
+        },
+        generic: {
+          regex: /^$/,
+          embedUrl: '<%= remote_id %>',
+          html: '<iframe style="width:100%;" height="400" frameborder="0" allowfullscreen></iframe>',
+          height: 400,
+          width: 600,
+          id: (groups: string[]) => groups[0],
+        },
+      },
+    },
+  },
   table: Table,
   linkTool: LinkTool,
   delimiter: Delimiter,
@@ -225,6 +253,7 @@ export function ArticleEditor({
 
   const [saving, setSaving] = useState(false);
   const [imageModalOpen, setImageModalOpen] = useState(false);
+  const [embedDialogOpen, setEmbedDialogOpen] = useState(false);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [publishConfirmOpen, setPublishConfirmOpen] = useState(false);
   const [unpublishConfirmOpen, setUnpublishConfirmOpen] = useState(false);
@@ -253,6 +282,24 @@ export function ArticleEditor({
       file: { url },
       caption: '',
     });
+  };
+
+  const handleInsertEmbed = (data: EmbedBlockData) => {
+    const currentIndex = editor?.blocks.getCurrentBlockIndex() ?? 0;
+    editor?.blocks.insert(
+      'embed',
+      {
+        service: data.service,
+        source: data.source,
+        embed: data.embed,
+        width: data.width,
+        height: data.height,
+        caption: '',
+      },
+      {},
+      currentIndex + 1,
+      true,
+    );
   };
 
   const form = useForm<ArticleFormData>({
@@ -471,6 +518,7 @@ export function ArticleEditor({
             <EditorToolbar
               editor={editor}
               onInsertImage={() => setImageModalOpen(true)}
+              onInsertEmbed={() => setEmbedDialogOpen(true)}
               className="mt-1"
             />
             <div
@@ -614,6 +662,12 @@ export function ArticleEditor({
           </AlertDialog>
         </form>
       </Form>
+
+      <EmbedUrlDialog
+        open={embedDialogOpen}
+        onOpenChange={setEmbedDialogOpen}
+        onInsert={handleInsertEmbed}
+      />
 
       <ImagePickerModal
         open={imageModalOpen}

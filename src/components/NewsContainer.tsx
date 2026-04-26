@@ -16,7 +16,7 @@ const NewsContainer = ({ className }: { className?: string }) => {
     if (!dateString) return false;
     const date = new Date(dateString);
     const thirtyDaysAgo = new Date();
-    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 7);
     return date >= thirtyDaysAgo;
   };
 

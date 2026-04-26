@@ -1,9 +1,10 @@
 import * as React from 'react';
+import { cn } from '@/lib/utils';
 
 interface EditorJsBlock {
   type: string;
   data: Record<string, unknown>;
-  tunes?: Record<string, { alignment?: string }>;
+  tunes?: Record<string, { alignment?: string; size?: string }>;
 }
 
 function getAlignment(block: EditorJsBlock): string {
@@ -177,17 +178,38 @@ function BlockRenderer({ block }: { block: EditorJsBlock }) {
       return <hr className="my-6 border-t border-border" />;
 
     case 'embed': {
-      const embedHtml = block.data.embed as string | undefined;
+      const embedUrl = block.data.embed as string | undefined;
       const caption = block.data.caption as string | undefined;
+      const width = (block.data.width as number) ?? 600;
+      const height = (block.data.height as number) ?? 400;
+      const alignment = getAlignment(block);
+      const size = block.tunes?.embedSizeTune?.size as string | undefined;
+      const sizeWidth: Record<string, string> = {
+        small: '400px',
+        medium: '600px',
+        large: '900px',
+        fill: '100%',
+      };
+      const appliedWidth = size ? (sizeWidth[size] ?? width) : width;
 
-      if (!embedHtml) return null;
+      if (!embedUrl) return null;
 
       return (
-        <figure className="my-4">
-          <div
-            className="overflow-hidden rounded-md"
-            dangerouslySetInnerHTML={{ __html: embedHtml }}
-          />
+        <figure className={cn('my-4', alignClass(alignment))}>
+          <div className="overflow-hidden rounded-md">
+            <iframe
+              src={embedUrl}
+              width={appliedWidth}
+              height={height}
+              className={cn(
+                'max-w-full',
+                alignment === 'center' && 'mx-auto block',
+                alignment === 'right' && 'ml-auto block',
+              )}
+              allowFullScreen
+              frameBorder="0"
+            />
+          </div>
           {caption && (
             <figcaption className="text-sm text-muted-foreground mt-2 text-center">
               {caption}
