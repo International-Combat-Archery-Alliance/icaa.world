@@ -468,3 +468,61 @@ footer {
     @apply bg-background text-foreground;
   }
 }
+
+/* EditorJS header levels — restore heading sizes inside the editor */
+#editorjs-container h1.ce-header {
+  font-size: 2.25rem;
+  font-weight: 800;
+}
+#editorjs-container h2.ce-header {
+  font-size: 1.875rem;
+  font-weight: 700;
+}
+#editorjs-container h3.ce-header {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+#editorjs-container h4.ce-header {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+#editorjs-container h5.ce-header {
+  font-size: 1.125rem;
+  font-weight: 500;
+}
+#editorjs-container h6.ce-header {
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+/* EditorJS inline formatting */
+.cdx-bold {
+  font-weight: bold;
+}
+
+.cdx-italic {
+  font-style: italic;
+}
+
+.cdx-strikethrough {
+  text-decoration: line-through;
+}
+
+.cdx-inline-code {
+  font-family: monospace;
+  background-color: var(--muted);
+  padding: 0.1em 0.3em;
+  border-radius: 3px;
+  font-size: 0.9em;
+}
+
+/* Image block size variants */
+.image-tool--size-sm .image-tool__image-picture {
+  width: 25%;
+}
+.image-tool--size-md .image-tool__image-picture {
+  width: 50%;
+}
+.image-tool--size-lg .image-tool__image-picture {
+  width: 75%;
+}
