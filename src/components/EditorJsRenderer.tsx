@@ -316,7 +316,7 @@ function EditorJsRenderer({ data }: EditorJsRendererProps) {
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 [&_a]:text-orange-500 [&_a]:underline">
       {data.blocks.map((block, index) => (
         <BlockRenderer key={index} block={block} />
       ))}
