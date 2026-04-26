@@ -1,5 +1,14 @@
 import * as React from 'react';
 import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+} from '@/components/ui/table';
 
 interface EditorJsBlock {
   type: string;
@@ -175,7 +184,7 @@ function BlockRenderer({ block }: { block: EditorJsBlock }) {
     }
 
     case 'delimiter':
-      return <hr className="my-6 border-t border-border" />;
+      return <Separator className="my-6" />;
 
     case 'embed': {
       const embedUrl = block.data.embed as string | undefined;
@@ -226,26 +235,29 @@ function BlockRenderer({ block }: { block: EditorJsBlock }) {
       if (!content || content.length === 0) return null;
 
       return (
-        <div className="overflow-x-auto my-4">
-          <table className="w-full border-collapse border border-border">
-            <tbody>
-              {content.map((row, rowIndex) => {
-                const CellTag = withHeadings && rowIndex === 0 ? 'th' : 'td';
-                return (
-                  <tr key={rowIndex}>
-                    {row.map((cell, cellIndex) => (
-                      <CellTag
-                        key={cellIndex}
-                        className="border border-border px-3 py-2"
-                        dangerouslySetInnerHTML={{ __html: cell }}
-                      />
-                    ))}
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+        <Table className="my-4">
+          <TableBody>
+            {content.map((row, rowIndex) => (
+              <TableRow key={rowIndex}>
+                {row.map((cell, cellIndex) =>
+                  withHeadings && rowIndex === 0 ? (
+                    <TableHead
+                      key={cellIndex}
+                      className="border border-border"
+                      dangerouslySetInnerHTML={{ __html: cell }}
+                    />
+                  ) : (
+                    <TableCell
+                      key={cellIndex}
+                      className="border border-border"
+                      dangerouslySetInnerHTML={{ __html: cell }}
+                    />
+                  ),
+                )}
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
       );
     }
 
@@ -285,6 +297,41 @@ function BlockRenderer({ block }: { block: EditorJsBlock }) {
             </div>
           </div>
         </a>
+      );
+    }
+
+    case 'buttonLink': {
+      const url = block.data.url as string;
+      const text = block.data.text as string;
+      const variant = (block.data.variant as string) || 'default';
+
+      if (!url || !text) return null;
+
+      const forcedTextColor: Record<string, string> = {
+        default: '!text-primary-foreground',
+        secondary: '!text-secondary-foreground',
+        outline: '!text-foreground',
+        destructive: '!text-white',
+      };
+
+      return (
+        <div className={`my-4 ${alignClass(getAlignment(block))}`.trim()}>
+          <Button
+            variant={
+              variant as 'default' | 'secondary' | 'outline' | 'destructive'
+            }
+            asChild
+          >
+            <a
+              href={url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={forcedTextColor[variant] || forcedTextColor.default}
+            >
+              {text}
+            </a>
+          </Button>
+        </div>
       );
     }
 

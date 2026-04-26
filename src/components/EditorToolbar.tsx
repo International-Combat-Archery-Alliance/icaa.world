@@ -9,6 +9,7 @@ import {
   Table,
   Video,
   Link,
+  MousePointerClick,
   Bold,
   Italic,
   Underline,
@@ -263,6 +264,22 @@ function EditorToolbar({
         title="Add Link"
       >
         <Link className="h-4 w-4" />
+      </Button>
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        disabled={!isReady}
+        onClick={() =>
+          insertBlock('buttonLink', {
+            url: '',
+            text: '',
+            variant: 'default',
+          })
+        }
+        title="Add Button Link"
+      >
+        <MousePointerClick className="h-4 w-4" />
       </Button>
       {onInsertImage && (
         <Button

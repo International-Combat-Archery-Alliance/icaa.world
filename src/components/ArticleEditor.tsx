@@ -40,6 +40,7 @@ import BoldInlineTool from '@/components/editorjs-plugins/Bold';
 import ItalicInlineTool from '@/components/editorjs-plugins/Italic';
 import StrikethroughInlineTool from '@/components/editorjs-plugins/Strikethrough';
 import InlineCodeTool from '@/components/editorjs-plugins/InlineCode';
+import ButtonLinkTool from '@/components/editorjs-plugins/ButtonLinkTool';
 import useEditor from '@/hooks/useEditor';
 import { ImagePickerModal } from '@/components/ImagePickerModal';
 import { EditorToolbar } from '@/components/EditorToolbar';
@@ -219,6 +220,10 @@ const tools = {
   },
   table: Table,
   linkTool: LinkTool,
+  buttonLink: {
+    class: ButtonLinkTool,
+    tunes: ['alignmentTune'],
+  },
   delimiter: Delimiter,
 } as const;
 
