@@ -24,6 +24,8 @@ import {
 import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useCreateDonation } from '@/hooks/useDonation';
+import { useSignupForMailingList } from '@/hooks/useMailingListSignup';
+import { TurnstileFormField } from '@/components/TurnstileFormField';
 import { formatCurrencyAmount } from '@/api/money';
 import { Money } from 'ts-money';
 import StripeEmbeddedCheckout from '@/components/StripeEmbeddedCheckout';
@@ -38,22 +40,35 @@ export default function Donation() {
   );
   const [isCustomAmount, setIsCustomAmount] = useState(false);
   const { mutate, isPending } = useCreateDonation();
+  const { mutate: signupForMailingList } = useSignupForMailingList();
 
   const SUPPORTED_CURRENCIES = ['USD', 'EUR', 'GBP', 'CAD', 'AUD'] as const;
 
-  const formSchema = z.object({
-    donorEmail: z.email({ error: 'Email is required.' }),
-    amount: z.coerce
-      .number({ error: 'Amount must be a number.' })
-      .min(1, { error: 'Amount must be at least $1.' })
-      .max(10000, { error: 'Amount cannot exceed $10,000.' }),
-    currency: z.enum(SUPPORTED_CURRENCIES).default('USD'),
-    acceptedPolicies: z.boolean().refine((val) => val === true, {
-      error:
-        'You must accept the Privacy Policy and Terms of Service to continue.',
-    }),
-    coverProcessingFees: z.boolean().default(false),
-  });
+  const formSchema = z
+    .object({
+      donorEmail: z.email({ error: 'Email is required.' }),
+      amount: z.coerce
+        .number({ error: 'Amount must be a number.' })
+        .min(1, { error: 'Amount must be at least $1.' })
+        .max(10000, { error: 'Amount cannot exceed $10,000.' }),
+      currency: z.enum(SUPPORTED_CURRENCIES).default('USD'),
+      acceptedPolicies: z.boolean().refine((val) => val === true, {
+        error:
+          'You must accept the Privacy Policy and Terms of Service to continue.',
+      }),
+      coverProcessingFees: z.boolean().default(false),
+      subscribeToMailingList: z.boolean().default(false),
+      turnstileToken: z.string().optional(),
+    })
+    .refine(
+      (data) =>
+        !data.subscribeToMailingList ||
+        (data.turnstileToken && data.turnstileToken.length > 0),
+      {
+        message: "You must verify you're human to sign up for the mailing list",
+        path: ['turnstileToken'],
+      },
+    );
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -96,6 +111,22 @@ export default function Donation() {
         onSuccess: (data) => {
           if (data?.clientSecret) {
             setClientSecret(data.clientSecret);
+            if (values.subscribeToMailingList) {
+              signupForMailingList(
+                {
+                  params: {
+                    header: {
+                      'cf-turnstile-response': values.turnstileToken || '',
+                    },
+                  },
+                  body: { email: values.donorEmail },
+                },
+                {
+                  onError: (err) =>
+                    console.error('Mailing list signup failed:', err),
+                },
+              );
+            }
           } else {
             console.error('No clientSecret in response:', data);
             alert('Something went wrong. Please try again.');
@@ -341,6 +372,32 @@ export default function Donation() {
                       </FormItem>
                     )}
                   />
+                  <FormField
+                    control={form.control}
+                    name="subscribeToMailingList"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                        <FormControl>
+                          <Checkbox
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
+                        <div className="space-y-1 leading-none">
+                          <FormLabel className="text-sm font-normal">
+                            Sign up for our mailing list to receive updates
+                            about events, tournaments, and ICAA news
+                          </FormLabel>
+                        </div>
+                      </FormItem>
+                    )}
+                  />
+                  {form.watch('subscribeToMailingList') && (
+                    <TurnstileFormField
+                      form={form}
+                      fieldName="turnstileToken"
+                    />
+                  )}
                   <div className="bg-muted p-4 rounded-lg border border-border space-y-3 text-sm">
                     <h4 className="font-semibold text-base">Donation Notice</h4>
                     <div className="space-y-2 text-muted-foreground">
