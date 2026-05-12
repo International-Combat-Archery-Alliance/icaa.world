@@ -1,53 +1,58 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Label } from '@/components/ui/label';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
+import { TurnstileFormField } from '@/components/TurnstileFormField';
+import { useSignupForMailingList } from '@/hooks/useMailingListSignup';
+
+const formSchema = z.object({
+  email: z.string().email({ message: 'Please enter a valid email address.' }),
+  name: z.string().optional(),
+  turnstileToken: z
+    .string()
+    .min(1, { message: "You must verify you're human" }),
+});
 
 const MailingListForm = () => {
-  const [email, setEmail] = useState('');
-  const [agreed, setAgreed] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const { mutate, isPending, error } = useSignupForMailingList();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      email: '',
+      name: '',
+      turnstileToken: '',
+    },
+  });
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      alert('Please enter a valid email address.');
-      return;
-    }
-
-    if (!agreed) {
-      alert('Please confirm that you agree to receive updates.');
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append('email', email);
-    formData.append('agreed', 'true');
-    formData.append('_subject', 'New Newsletter Subscription');
-    formData.append('_replyto', email);
-
-    try {
-      const response = await fetch('https://formspree.io/f/xblkevky', {
-        method: 'POST',
-        body: formData,
-        headers: {
-          Accept: 'application/json',
+  const onSubmit = (values: z.infer<typeof formSchema>) => {
+    mutate(
+      {
+        params: {
+          header: { 'cf-turnstile-response': values.turnstileToken },
         },
-      });
-
-      if (response.ok) {
-        setIsSubmitted(true);
-      } else {
-        alert('There was an error sending your message. Please try again.');
-      }
-    } catch {
-      alert(
-        'A network error occurred. Please check your connection and try again.',
-      );
-    }
+        body: {
+          email: values.email,
+          name: values.name || undefined,
+        },
+      },
+      {
+        onSuccess: () => {
+          setIsSubmitted(true);
+        },
+      },
+    );
   };
 
   if (isSubmitted) {
@@ -62,39 +67,58 @@ const MailingListForm = () => {
   }
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="space-y-6 p-6 border rounded-lg shadow-sm bg-card text-card-foreground"
-    >
-      <div className="space-y-2">
-        <Label htmlFor="email">Email address:</Label>
-        <Input
-          id="email"
+    <Form {...form}>
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="space-y-6 p-6 border rounded-lg shadow-sm bg-card text-card-foreground"
+      >
+        <FormField
+          control={form.control}
           name="email"
-          type="email"
-          placeholder="you@example.com"
-          required
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Email address</FormLabel>
+              <FormControl>
+                <Input
+                  {...field}
+                  type="email"
+                  placeholder="you@example.com"
+                  autoComplete="email"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
         />
-      </div>
-      <div className="flex items-center space-x-2">
-        <Checkbox
-          id="terms"
-          checked={agreed}
-          onCheckedChange={(checked) => setAgreed(checked as boolean)}
+        <FormField
+          control={form.control}
+          name="name"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Name (optional)</FormLabel>
+              <FormControl>
+                <Input
+                  {...field}
+                  type="text"
+                  placeholder="Your name"
+                  autoComplete="name"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
         />
-        <Label
-          htmlFor="terms"
-          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-        >
-          I agree to receive emails regarding ICAA events, news, and updates.
-        </Label>
-      </div>
-      <Button type="submit" disabled={!agreed} className="w-full">
-        Sign Up
-      </Button>
-    </form>
+        <TurnstileFormField form={form} fieldName="turnstileToken" />
+        {error && (
+          <p className="text-sm text-destructive">
+            {error.message || 'An error occurred. Please try again.'}
+          </p>
+        )}
+        <Button type="submit" disabled={isPending} className="w-full">
+          {isPending ? 'Signing up...' : 'Sign Up'}
+        </Button>
+      </form>
+    </Form>
   );
 };
 
