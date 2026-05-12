@@ -4,100 +4,109 @@
  */
 
 export interface paths {
-  '/mailing-list/signup': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/mailing-list/signup": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Sign up for the ICAA mailing list */
+        post: operations["SignupForMailingList"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    get?: never;
-    put?: never;
-    /** Sign up for the ICAA mailing list */
-    post: {
-      parameters: {
-        query?: never;
-        header: {
-          /** Cloudflare Turnstile CAPTCHA token */
-          'cf-turnstile-response': string;
-        };
-        path?: never;
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          'application/json': {
-            email: string;
-            name?: string;
-          };
-        };
-      };
-      responses: {
-        /** @description Successfully signed up for the mailing list */
-        200: {
-          content: {
-            'application/json': {
-              message?: string;
-            };
-          };
-        };
-        /** @description Bad request (invalid captcha) */
-        400: {
-          content: {
-            'application/json': components['schemas']['Error'];
-          };
-        };
-        /** @description Invalid email address */
-        422: {
-          content: {
-            'application/json': components['schemas']['Error'];
-          };
-        };
-        /** @description Rate limited */
-        429: {
-          content: {
-            'application/json': components['schemas']['Error'];
-          };
-        };
-        /** @description Internal server error */
-        500: {
-          content: {
-            'application/json': components['schemas']['Error'];
-          };
-        };
-      };
-    };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
 }
-
 export type webhooks = Record<string, never>;
-
 export interface components {
-  schemas: {
-    ErrorCode:
-      | 'InternalError'
-      | 'InputValidationError'
-      | 'InvalidEmail'
-      | 'RateLimited'
-      | 'ServiceError'
-      | 'CaptchaInvalid';
-    Error: {
-      code: components['schemas']['ErrorCode'];
-      message: string;
+    schemas: {
+        Error: {
+            code: components["schemas"]["ErrorCode"];
+            message: string;
+        };
+        /** @enum {string} */
+        ErrorCode: "InternalError" | "InputValidationError" | "InvalidEmail" | "RateLimited" | "ServiceError" | "CaptchaInvalid";
     };
-  };
-  responses: never;
-  parameters: never;
-  requestBodies: never;
-  headers: never;
-  pathItems: never;
+    responses: never;
+    parameters: never;
+    requestBodies: never;
+    headers: never;
+    pathItems: never;
 }
-
 export type $defs = Record<string, never>;
-
-export type operations = Record<string, never>;
+export interface operations {
+    SignupForMailingList: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Cloudflare Turnstile CAPTCHA token */
+                "cf-turnstile-response": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** Format: email */
+                    email: string;
+                    name?: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Successfully signed up for the mailing list */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Bad request (invalid captcha) */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Invalid email address */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Rate limited */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+}
