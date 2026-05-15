@@ -127,7 +127,11 @@ const EventRegistrationTable = ({
           extra = reg.experience || '';
         } else if (reg.registrationType === 'ByTeam' && reg.players) {
           extra = reg.players
-            .map((p) => `${p.firstName} ${p.lastName}`)
+            .map((p) =>
+              p.email
+                ? `${p.firstName} ${p.lastName} (${p.email})`
+                : `${p.firstName} ${p.lastName}`,
+            )
             .join('; ');
         }
 
@@ -349,6 +353,7 @@ const EventRegistrationTable = ({
                                     key={`${registration.id}-player-${index}`}
                                   >
                                     {player.firstName} {player.lastName}
+                                    {player.email ? ` (${player.email})` : ''}
                                   </li>
                                 ))}
                               </ul>
