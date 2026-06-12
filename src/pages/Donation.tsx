@@ -406,12 +406,11 @@ export default function Donation() {
                         securely by Stripe.
                       </p>
                       <p>
-                        <strong>Tax-exempt status pending:</strong> ICAA&apos;s
-                        501(c)(3) application is pending. If approved, exempt
-                        status is generally recognized back to ICAA&apos;s
-                        formation date; donations are generally deductible to
-                        the extent allowed by law. Please consult a tax
-                        professional.
+                        <strong>Tax-exempt status:</strong> International Combat
+                        Archery Alliance Inc is a 501(c)(3) tax-exempt
+                        organization (EIN: 39-3658857). Donations are generally
+                        deductible to the extent allowed by law. Please consult
+                        a tax professional.
                       </p>
                       <p>
                         <strong>No goods or services:</strong> No goods or
