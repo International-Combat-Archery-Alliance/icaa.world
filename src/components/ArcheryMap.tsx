@@ -1,5 +1,6 @@
-import { useState } from 'react';
-import Map, { Marker, Popup } from 'react-map-gl/maplibre';
+import { useState, useCallback } from 'react';
+import Map, { Marker, Popup, NavigationControl } from 'react-map-gl/maplibre';
+import type { ViewStateChangeEvent } from 'react-map-gl/maplibre';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 
@@ -76,8 +77,17 @@ const MAP_STYLE = {
   ],
 };
 
+const LABEL_ZOOM_THRESHOLD = 6;
+
 function ArcheryMap() {
   const [popupInfo, setPopupInfo] = useState<Community | null>(null);
+  const [zoom, setZoom] = useState(4);
+
+  const showLabels = zoom >= LABEL_ZOOM_THRESHOLD;
+
+  const handleZoom = useCallback((e: ViewStateChangeEvent) => {
+    setZoom(e.viewState.zoom);
+  }, []);
 
   return (
     <Map
@@ -90,7 +100,9 @@ function ArcheryMap() {
       style={{ height: '400px', width: '100%' }}
       mapStyle={MAP_STYLE}
       scrollZoom={false}
+      onZoom={handleZoom}
     >
+      <NavigationControl position="top-left" />
       {communities.map((community) => (
         <Marker
           key={community.name}
@@ -102,10 +114,12 @@ function ArcheryMap() {
           }}
         >
           <div className="flex cursor-pointer items-center gap-1.5">
-            <div className="h-5 w-5 shrink-0 rounded-full border-[3px] border-white bg-red-600 shadow-md" />
-            <span className="whitespace-nowrap rounded px-1.5 py-0.5 text-xs font-semibold text-gray-900 shadow-sm backdrop-blur-xs bg-white/80">
-              {community.label}
-            </span>
+            <div className="h-5 w-5 shrink-0 rounded-full border-[3px] border-white bg-primary shadow-md" />
+            {showLabels && (
+              <span className="whitespace-nowrap rounded px-1.5 py-0.5 text-xs font-semibold text-gray-900 shadow-sm bg-white/80">
+                {community.label}
+              </span>
+            )}
           </div>
         </Marker>
       ))}
