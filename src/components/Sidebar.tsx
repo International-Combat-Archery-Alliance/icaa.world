@@ -23,7 +23,7 @@ const navItems: NavItem[] = [
   { to: '/', label: 'Home' },
   { to: '/about-icaa', label: 'About The ICAA' },
   { to: '/about-sport', label: 'About The Sport' },
-  { to: '/our-communities', label: 'The Alliance', adminOnly: true },
+  { to: '/our-communities', label: 'The Alliance' },
   { to: '/events', label: 'Events' },
   { to: '/donate', label: 'Donate' },
   { to: '/contact', label: 'Contact Us' },

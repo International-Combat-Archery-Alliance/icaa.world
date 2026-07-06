@@ -78,11 +78,7 @@ const App = () => {
                                   />
                                   <Route
                                     path="/our-communities"
-                                    element={
-                                      <AdminOnlyRoute>
-                                        <OurCommunities />
-                                      </AdminOnlyRoute>
-                                    }
+                                    element={<OurCommunities />}
                                   />
                                   <Route path="/events" element={<Events />} />
                                   <Route
