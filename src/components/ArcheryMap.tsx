@@ -171,10 +171,10 @@ function ArcheryMap() {
             setPopupInfo(community);
           }}
         >
-          <div className="flex cursor-pointer items-center gap-1.5">
-            <div className="h-5 w-5 shrink-0 rounded-full border-[3px] border-white bg-primary shadow-md" />
+          <div className="relative cursor-pointer">
+            <div className="h-5 w-5 rounded-full border-[3px] border-white bg-primary shadow-md" />
             {showLabels && (
-              <span className="whitespace-nowrap rounded px-1.5 py-0.5 text-xs font-semibold text-gray-900 shadow-sm bg-white/80">
+              <span className="absolute left-full top-1/2 ml-1.5 -translate-y-1/2 whitespace-nowrap rounded px-1.5 py-0.5 text-xs font-semibold text-gray-900 shadow-sm bg-white/80">
                 {community.name}
               </span>
             )}
