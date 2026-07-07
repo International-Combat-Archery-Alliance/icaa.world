@@ -132,7 +132,7 @@ function ArcheryMap() {
         bounds.extend([nearest.lng, nearest.lat]);
         mapRef.current?.fitBounds(bounds, {
           padding: 100,
-          maxZoom: 12,
+          maxZoom: 6,
           duration: 0,
         });
       },
