@@ -1,7 +1,7 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import Map, { Marker, Popup, NavigationControl } from 'react-map-gl/maplibre';
-import type { ViewStateChangeEvent } from 'react-map-gl/maplibre';
-import maplibregl from 'maplibre-gl';
+import type { ViewStateChangeEvent, MapRef } from 'react-map-gl/maplibre';
+import maplibregl, { LngLatBounds } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 
 interface Community {
@@ -72,9 +72,42 @@ const MAP_STYLE = {
 
 const LABEL_ZOOM_THRESHOLD = 6;
 
+function haversineDistance(
+  lat1: number,
+  lng1: number,
+  lat2: number,
+  lng2: number,
+): number {
+  const R = 6371;
+  const toRad = (deg: number) => (deg * Math.PI) / 180;
+  const dLat = toRad(lat2 - lat1);
+  const dLng = toRad(lng2 - lng1);
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(toRad(lat1)) *
+      Math.cos(toRad(lat2)) *
+      Math.sin(dLng / 2) *
+      Math.sin(dLng / 2);
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+function findNearestCommunity(lat: number, lng: number): Community {
+  let nearest = communities[0];
+  let minDist = Infinity;
+  for (const c of communities) {
+    const dist = haversineDistance(lat, lng, c.lat, c.lng);
+    if (dist < minDist) {
+      minDist = dist;
+      nearest = c;
+    }
+  }
+  return nearest;
+}
+
 function ArcheryMap() {
   const [popupInfo, setPopupInfo] = useState<Community | null>(null);
   const [zoom, setZoom] = useState(4);
+  const mapRef = useRef<MapRef>(null);
 
   const showLabels = zoom >= LABEL_ZOOM_THRESHOLD;
 
@@ -82,8 +115,40 @@ function ArcheryMap() {
     setZoom(e.viewState.zoom);
   }, []);
 
+  useEffect(() => {
+    if (!navigator.geolocation) return;
+
+    const timeoutId = setTimeout(() => {
+      // fall through to default view
+    }, 5000);
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        clearTimeout(timeoutId);
+        const { latitude, longitude } = position.coords;
+        const nearest = findNearestCommunity(latitude, longitude);
+        const bounds = new LngLatBounds();
+        bounds.extend([longitude, latitude]);
+        bounds.extend([nearest.lng, nearest.lat]);
+        mapRef.current?.fitBounds(bounds, {
+          padding: 100,
+          maxZoom: 12,
+          duration: 0,
+        });
+      },
+      () => {
+        clearTimeout(timeoutId);
+        // permission denied or error, use default view
+      },
+      { timeout: 5000, enableHighAccuracy: false },
+    );
+
+    return () => clearTimeout(timeoutId);
+  }, []);
+
   return (
     <Map
+      ref={mapRef}
       mapLib={maplibregl}
       initialViewState={{
         longitude: -71.018,
