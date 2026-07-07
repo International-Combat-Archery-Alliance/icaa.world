@@ -6,7 +6,6 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 
 interface Community {
   name: string;
-  label: string;
   lat: number;
   lng: number;
   content: string;
@@ -15,42 +14,36 @@ interface Community {
 const communities: Community[] = [
   {
     name: 'Archery Games Boston',
-    label: 'Boston',
     lat: 42.385,
     lng: -71.018,
     content: 'Chelsea, MA',
   },
   {
     name: 'Archery Games Ottawa',
-    label: 'Ottawa',
     lat: 45.421,
     lng: -75.698,
     content: 'Ottawa, ON',
   },
   {
     name: 'Archery Games Denver',
-    label: 'Denver',
     lat: 39.805,
     lng: -105.087,
     content: 'Denver, CO',
   },
   {
     name: "Combat d'Archers",
-    label: 'Montréal',
     lat: 45.501,
     lng: -73.567,
     content: 'Montréal, QC',
   },
   {
     name: "Combat d'Archers Sherbrooke",
-    label: 'Sherbrooke',
     lat: 45.405,
     lng: -71.88,
     content: 'Sherbrooke, QC',
   },
   {
     name: 'Archers Arena',
-    label: 'Toronto',
     lat: 43.7,
     lng: -79.412,
     content: 'Toronto, ON',
@@ -117,7 +110,7 @@ function ArcheryMap() {
             <div className="h-5 w-5 shrink-0 rounded-full border-[3px] border-white bg-primary shadow-md" />
             {showLabels && (
               <span className="whitespace-nowrap rounded px-1.5 py-0.5 text-xs font-semibold text-gray-900 shadow-sm bg-white/80">
-                {community.label}
+                {community.name}
               </span>
             )}
           </div>
