@@ -9,6 +9,7 @@ interface Community {
   lat: number;
   lng: number;
   content: string;
+  url?: string;
 }
 
 const communities: Community[] = [
@@ -17,36 +18,77 @@ const communities: Community[] = [
     lat: 42.4016,
     lng: -71.0243,
     content: 'Chelsea, MA',
+    url: 'https://www.archerygamesboston.com/',
   },
   {
     name: 'Archery Games Ottawa',
     lat: 45.369,
     lng: -75.6637,
     content: 'Ottawa, ON',
+    url: 'https://www.archerygames.ca/',
   },
   {
     name: 'Archery Games Denver',
     lat: 39.8005,
     lng: -105.0556,
     content: 'Denver, CO',
+    url: 'https://archerygamesdenver.com/',
+  },
+  {
+    name: 'Archery Games Omaha',
+    lat: 41.2565,
+    lng: -95.9345,
+    content: 'Omaha, NE',
+    url: 'https://www.archerygamesomaha.com/',
   },
   {
     name: "Combat d'Archers",
     lat: 45.5505,
     lng: -73.5458,
     content: 'Montréal, QC',
+    url: 'https://combatdarchers.ca/en/combat-archery/',
   },
   {
     name: "Combat d'Archers Sherbrooke",
     lat: 45.4087,
     lng: -71.8533,
     content: 'Sherbrooke, QC',
+    url: 'https://combatdarcherssherbrooke.ca/en/booking-combat-archery/',
   },
   {
     name: 'Archers Arena',
     lat: 43.754,
     lng: -79.4669,
     content: 'Toronto, ON',
+    url: 'https://archersarena.com/',
+  },
+  {
+    name: 'Archery Arena',
+    lat: 39.1031,
+    lng: -84.512,
+    content: 'Cincinnati, OH',
+    url: 'https://www.archery-arena.com/',
+  },
+  {
+    name: 'Sherwood Showdown',
+    lat: 38.8339,
+    lng: -104.8214,
+    content: 'Colorado Springs, CO',
+    url: 'https://www.sherwoodshowdown.com/',
+  },
+  {
+    name: 'Archers Battlefield',
+    lat: 43.8384,
+    lng: -79.0868,
+    content: 'Pickering, ON',
+    url: 'https://www.archersbattlefield.com/',
+  },
+  {
+    name: 'Archery Battles',
+    lat: 30.178,
+    lng: -97.8206,
+    content: 'Austin, TX',
+    url: 'https://archery-battles.com/',
   },
 ];
 
@@ -191,7 +233,18 @@ function ArcheryMap() {
           offset={20}
         >
           <div className="text-center">
-            <strong>{popupInfo.name}</strong>
+            {popupInfo.url ? (
+              <a
+                href={popupInfo.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-semibold text-primary hover:underline"
+              >
+                {popupInfo.name}
+              </a>
+            ) : (
+              <strong>{popupInfo.name}</strong>
+            )}
             <br />
             {popupInfo.content}
           </div>

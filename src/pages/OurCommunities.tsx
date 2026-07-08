@@ -122,6 +122,66 @@ const OurCommunities = () => {
           <h3>Archers Arena</h3>
           <p>Toronto, ON, Canada</p>
         </a>
+
+        <a
+          id="ago2-card"
+          href="https://www.archerygamesomaha.com/"
+          className="community-card"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <img
+            src="images/logos/AG-Ottawa.avif"
+            alt="Archery Games Omaha Logo"
+            className="max-w-[100px] h-auto mb-4 inline-block"
+          />
+          <h3>Archery Games Omaha</h3>
+          <p>Omaha, NE, United States</p>
+        </a>
+
+        <a
+          id="aac-card"
+          href="https://www.archery-arena.com/"
+          className="community-card"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <h3>Archery Arena</h3>
+          <p>Cincinnati, OH, United States</p>
+        </a>
+
+        <a
+          id="ss-card"
+          href="https://www.sherwoodshowdown.com/"
+          className="community-card"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <h3>Sherwood Showdown</h3>
+          <p>Colorado Springs, CO, United States</p>
+        </a>
+
+        <a
+          id="abf-card"
+          href="https://www.archersbattlefield.com/"
+          className="community-card"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <h3>Archers Battlefield</h3>
+          <p>Pickering, ON, Canada</p>
+        </a>
+
+        <a
+          id="abat-card"
+          href="https://archery-battles.com/"
+          className="community-card"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <h3>Archery Battles</h3>
+          <p>Austin, TX, United States</p>
+        </a>
       </div>
     </section>
   );
