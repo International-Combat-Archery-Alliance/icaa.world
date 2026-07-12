@@ -16,6 +16,7 @@ import Events from './pages/Events';
 import ArticlePage from './pages/ArticlePage';
 import Contact from './pages/Contact';
 import AdminPage from './pages/Admin';
+import AllStarsPage from './pages/AllStars';
 import { EventQueryClientProvider } from './context/eventQueryClientContext';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import EventRegistrationFreeAgent from './pages/EventRegistrationFreeAgent';
@@ -132,6 +133,10 @@ const App = () => {
                                   <Route
                                     path="/donation/success"
                                     element={<DonationSuccess />}
+                                  />
+                                  <Route
+                                    path="/espn8-all-stars-2026"
+                                    element={<AllStarsPage />}
                                   />
                                 </Routes>
                               </main>

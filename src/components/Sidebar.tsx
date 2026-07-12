@@ -25,6 +25,7 @@ const navItems: NavItem[] = [
   { to: '/about-sport', label: 'About The Sport' },
   { to: '/our-communities', label: 'The Alliance', adminOnly: true },
   { to: '/events', label: 'Events' },
+  { to: '/espn8-all-stars-2026', label: 'ESPN8: All Stars 2026' },
   { to: '/donate', label: 'Donate' },
   { to: '/contact', label: 'Contact Us' },
   { to: '/admin', label: 'Admin', adminOnly: true },
