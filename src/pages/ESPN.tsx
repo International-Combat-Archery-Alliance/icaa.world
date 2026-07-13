@@ -363,7 +363,7 @@ export default function ESPNPage() {
     <section className="container mx-auto px-4 py-8 space-y-8">
       <div className="flex justify-center">
         <img
-          src="/images/espn/full_logo.png"
+          src="https://assets.icaa.world/1b266230-4d77-4360-8bb4-af814f83e2ec.png"
           alt="All Stars 2026"
           className="w-full max-w-4xl h-auto rounded-lg"
         />
