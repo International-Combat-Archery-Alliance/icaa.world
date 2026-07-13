@@ -16,7 +16,7 @@ import Events from './pages/Events';
 import ArticlePage from './pages/ArticlePage';
 import Contact from './pages/Contact';
 import AdminPage from './pages/Admin';
-import AllStarsPage from './pages/AllStars';
+import ESPNPage from './pages/ESPN';
 import { EventQueryClientProvider } from './context/eventQueryClientContext';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import EventRegistrationFreeAgent from './pages/EventRegistrationFreeAgent';
@@ -38,6 +38,7 @@ import Donation from './pages/Donation';
 import DonationSuccess from './pages/DonationSuccess';
 import { DonationQueryClientProvider } from './context/donationQueryClientContext';
 import { MailingListQueryClientProvider } from './context/mailingListQueryClientContext';
+import VotePage from './pages/VotePage';
 import ErrorBoundary from './components/ErrorBoundary';
 import ConsentBanner from './components/ConsentBanner';
 import { ConsentProvider } from './context/consentContext';
@@ -134,10 +135,8 @@ const App = () => {
                                     path="/donation/success"
                                     element={<DonationSuccess />}
                                   />
-                                  <Route
-                                    path="/espn8-all-stars-2026"
-                                    element={<AllStarsPage />}
-                                  />
+                                  <Route path="/espn" element={<ESPNPage />} />
+                                  <Route path="/vote" element={<VotePage />} />
                                 </Routes>
                               </main>
                               <footer className="md:ml-64">

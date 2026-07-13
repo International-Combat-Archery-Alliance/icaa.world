@@ -10,8 +10,9 @@ const routeToHeaderMap: Record<string, string> = {
   '/admin': 'Admin',
   '/mailing-list': 'Mailing List Sign Up',
   '/donate': 'Donate',
-  '/espn8-all-stars-2026': 'ESPN8: The Ocho - Combat Archery All Stars 2026',
+  '/espn': 'ESPN8: The Ocho - Combat Archery All Stars 2026',
   '/donation/success': 'Thank You!',
+  '/vote': 'MVP Voting',
 };
 
 function getHeaderTextForParameterizedRoute(pathname: string): string | null {

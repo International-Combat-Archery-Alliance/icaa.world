@@ -6,6 +6,13 @@ import { Separator } from '@/components/ui/separator';
 import { CountdownTimer } from '@/components/CountdownTimer';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion';
+import ArcheryMap from '@/components/ArcheryMap';
 
 const matches = [
   {
@@ -252,7 +259,7 @@ const matches = [
           {
             imageUrl: '/images/espn/player.png',
             firstName: 'Robert',
-            lastName: 'Shitzu',
+            lastName: 'Chitiu',
             number: '3',
             position: 'Flex',
             city: 'Ottawa',
@@ -300,8 +307,8 @@ const matches = [
   },
 ];
 
-export default function AllStarsPage() {
-  useTitle('All Stars 2026 - ICAA');
+export default function ESPNPage() {
+  useTitle('ESPN8: All Stars 2026 - ICAA');
 
   const sponsors = [
     {
@@ -358,6 +365,78 @@ export default function AllStarsPage() {
       </Card>
 
       <CountdownTimer targetDate="2026-08-07T19:00:00" />
+
+      <Accordion
+        type="multiple"
+        className="w-full max-w-4xl mx-auto"
+        defaultValue={['summary']}
+      >
+        <AccordionItem value="summary">
+          <AccordionTrigger className="text-primary text-2xl md:text-3xl font-bold">
+            What Is Combat Archery?
+          </AccordionTrigger>
+          <AccordionContent className="flex flex-col gap-4 text-justify text-lg">
+            <p>
+              Combat Archery is a high-energy, team-based sport that merges the
+              fast-paced, elimination-style action of dodgeball with the
+              precision and skill of archery. Using safe, foam-tipped arrows,
+              players work to eliminate opponents while also having the
+              opportunity to catch an arrow to revive a fallen teammate. While
+              the sport is safe and accessible for all skill levels, it demands
+              a high degree of strategy and teamplay to succeed, boasting a
+              competitive ceiling that requires technical proficiency in
+              shooting under pressure, quick strategic thinking, and the
+              athleticism to catch an arrow mid-flight.
+            </p>
+            <iframe
+              className="w-full aspect-video my-4 self-center rounded-lg"
+              src="https://www.youtube.com/embed/f-7pI_mnzVM"
+              title="What is Combat Archery?"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowFullScreen
+            ></iframe>
+          </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="rules">
+          <AccordionTrigger className="text-primary text-2xl md:text-3xl font-bold">
+            The Basic Rules
+          </AccordionTrigger>
+          <AccordionContent className="flex flex-col gap-4 text-justify text-lg">
+            <div>
+              <li>There are 6 players per team on the field</li>
+              <li>If you get hit with an arrow you are eliminated</li>
+              <li>
+                You can revive a teammate by:
+                <li className="ml-8">Catching an arrow</li>
+                <li className="ml-8">Knocking out a Revive Target</li>
+                <li className="ml-8">Hitting the Jailbreak Gong</li>
+              </li>
+              <li>
+                Teams earn score for either fully eliminating a team or by
+                having more players alive at the end of the round timer{' '}
+              </li>
+            </div>
+            <iframe
+              className="w-full aspect-video my-4 self-center rounded-lg"
+              src="https://www.youtube.com/embed/cmSo02-i3zY"
+              title="Combat Archery Rules"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowFullScreen
+            ></iframe>
+            <Button className="self-center text-xl" asChild>
+              <Link to="/official-rules">Full Official Rules</Link>
+            </Button>
+          </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="locations">
+          <AccordionTrigger className="text-primary text-2xl md:text-3xl font-bold">
+            Our Communities
+          </AccordionTrigger>
+          <AccordionContent>
+            <ArcheryMap />
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
 
       <div className="space-y-16 pt-16">
         {matches.map((match, matchIndex) => (

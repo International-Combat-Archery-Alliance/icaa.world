@@ -33,25 +33,33 @@ export function PlayerRoster({ players }: PlayerRosterProps) {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[80px]"></TableHead>
-            <TableHead className="text-lg">Name</TableHead>
-            <TableHead className="text-center text-lg">#</TableHead>
-            <TableHead className="text-center text-lg">Position</TableHead>
-            <TableHead className="text-lg">Home City</TableHead>
-            <TableHead className="text-right text-lg">Exp (years)</TableHead>
+            <TableHead className="w-[60px] md:w-[80px]"></TableHead>
+            <TableHead className="text-base md:text-lg">Name</TableHead>
+            <TableHead className="text-center text-base md:text-lg">
+              #
+            </TableHead>
+            <TableHead className="text-center text-base md:text-lg">
+              Position
+            </TableHead>
+            <TableHead className="hidden md:table-cell text-lg">
+              Home City
+            </TableHead>
+            <TableHead className="hidden md:table-cell text-right text-lg">
+              Exp (years)
+            </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {players.map((player, index) => (
-            <TableRow key={index} className="h-24">
+            <TableRow key={index} className="h-20 md:h-24">
               <TableCell>
-                <Avatar className="h-16 w-16">
+                <Avatar className="h-12 w-12 md:h-16 md:w-16">
                   <AvatarImage src={player.imageUrl} alt={player.firstName} />
                   <AvatarFallback>{player.firstName[0]}</AvatarFallback>
                 </Avatar>
               </TableCell>
-              <TableCell className="font-medium text-lg">{`${player.firstName} ${player.lastName}`}</TableCell>
-              <TableCell className="text-center text-lg">
+              <TableCell className="font-medium text-base md:text-lg">{`${player.firstName} ${player.lastName}`}</TableCell>
+              <TableCell className="text-center text-base md:text-lg">
                 {player.number}
               </TableCell>
               <TableCell className="text-center">
@@ -59,12 +67,14 @@ export function PlayerRoster({ players }: PlayerRosterProps) {
                   <img
                     src={getPositionIcon(player.position)}
                     alt={player.position}
-                    className="h-10 w-10 object-contain"
+                    className="h-8 w-8 md:h-10 md:w-10 object-contain"
                   />
                 </div>
               </TableCell>
-              <TableCell className="text-lg">{player.city}</TableCell>
-              <TableCell className="text-right text-lg">
+              <TableCell className="hidden md:table-cell text-lg">
+                {player.city}
+              </TableCell>
+              <TableCell className="hidden md:table-cell text-right text-lg">
                 {player.experience}
               </TableCell>
             </TableRow>
