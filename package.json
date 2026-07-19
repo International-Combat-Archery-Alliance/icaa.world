@@ -6,7 +6,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "test:ts": "tsc --noEmit",
-    "codegen": "openapi-typescript https://api.icaa.world/events/openapi.json -o ./src/api/events-v1.d.ts; openapi-typescript https://api.icaa.world/login/openapi.json -o ./src/api/login.d.ts; openapi-typescript https://api.icaa.world/assets/openapi.json -o ./src/api/assets-api-v1.d.ts; openapi-typescript https://api.icaa.world/donations/openapi.json -o ./src/api/donations-v1.d.ts; openapi-typescript https://api.icaa.world/articles/openapi.json -o ./src/api/articles-v1.d.ts; openapi-typescript https://api.icaa.world/mailing-list/openapi.json -o ./src/api/mailing-list-v1.d.ts",
+    "codegen": "openapi-typescript https://api.icaa.world/events/openapi.json -o ./src/api/events-v1.d.ts; openapi-typescript https://api.icaa.world/login/openapi.json -o ./src/api/login.d.ts; openapi-typescript https://api.icaa.world/assets/openapi.json -o ./src/api/assets-api-v1.d.ts; openapi-typescript https://api.icaa.world/donations/openapi.json -o ./src/api/donations-v1.d.ts; openapi-typescript https://api.icaa.world/articles/openapi.json -o ./src/api/articles-v1.d.ts; openapi-typescript https://api.icaa.world/mailing-list/openapi.json -o ./src/api/mailing-list-v1.d.ts; openapi-typescript https://api.icaa.world/voting/openapi.json -o ./src/api/voting-v1.d.ts",
     "lint": "eslint . --report-unused-disable-directives --max-warnings 0",
     "lint:fix": "bun lint --fix",
     "format": "prettier --write .",
@@ -18,7 +18,8 @@
     "run-articles-service": "cd ../articles-api && make local",
     "run-donation-service": "cd ../donation-api && make local",
     "run-mailing-list-service": "cd ../mailing-list-api && make local",
-    "run-all-backend": "bun run-shared-infra && concurrently \"bun run-login-service\" \"bun run-event-service\" \"bun run-assets-service\" \"bun run-articles-service\" \"bun run-donation-service\" \"bun run-mailing-list-service\""
+    "run-voting-service": "cd ../voting-api && make local",
+    "run-all-backend": "bun run-shared-infra && concurrently \"bun run-login-service\" \"bun run-event-service\" \"bun run-assets-service\" \"bun run-articles-service\" \"bun run-donation-service\" \"bun run-mailing-list-service\" \"bun run-voting-service\""
   },
   "devDependencies": {
     "@eslint/js": "9",

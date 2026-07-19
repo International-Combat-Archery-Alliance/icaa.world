@@ -14,7 +14,7 @@ import { ArrowLeft, CheckCircle, User } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const VOTE_TIMELOCK_ENABLED =
-  (import.meta as any).env.VITE_ENABLE_VOTE_TIMELOCK === 'true';
+  import.meta.env.VITE_ENABLE_VOTE_TIMELOCK === 'true';
 
 const matches = [
   {
