@@ -415,17 +415,16 @@ export default function ESPNPage() {
         </Card>
         <Card className="flex flex-col">
           <CardHeader>
-            <CardTitle>Full Rules</CardTitle>
+            <CardTitle>Event Format & Rules</CardTitle>
           </CardHeader>
           <CardContent className="flex-grow">
             <p className="text-muted-foreground">
-              Get a quick overview of the rules or dive into the official ICAA
-              rulebook.
+              Get a quick overview of the rules and format for the event!
             </p>
           </CardContent>
           <div className="p-6 pt-0">
             <Button asChild className="w-full">
-              <Link to="/official-rules">View Rules</Link>
+              <Link to="/espn/rules">View Rules</Link>
             </Button>
           </div>
         </Card>
@@ -525,11 +524,6 @@ export default function ESPNPage() {
                   teamColor={match.teams[1].color}
                 />
               </div>
-            </div>
-            <div className="flex justify-center mt-8">
-              <Button asChild>
-                <Link to="/vote">Vote for {match.name} MVP!</Link>
-              </Button>
             </div>
             {matchIndex < matches.length - 1}
           </div>
