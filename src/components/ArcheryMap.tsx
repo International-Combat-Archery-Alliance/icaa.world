@@ -1,10 +1,10 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import Map, { Marker, Popup, NavigationControl } from 'react-map-gl/maplibre';
 import type { ViewStateChangeEvent, MapRef } from 'react-map-gl/maplibre';
-import maplibregl, { LngLatBounds } from 'maplibre-gl';
+import maplibregl, { type StyleSpecification, LngLatBounds } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 
-interface Community {
+export interface Community {
   name: string;
   lat: number;
   lng: number;
@@ -12,7 +12,7 @@ interface Community {
   url?: string;
 }
 
-const communities: Community[] = [
+export const communities: Community[] = [
   {
     name: 'Archery Games Boston',
     lat: 42.4016,
@@ -92,7 +92,7 @@ const communities: Community[] = [
   },
 ];
 
-const MAP_STYLE = {
+const MAP_STYLE: StyleSpecification = {
   version: 8,
   sources: {
     'osm-tiles': {
@@ -146,8 +146,15 @@ function findNearestCommunity(lat: number, lng: number): Community {
   return nearest;
 }
 
-function ArcheryMap() {
-  const [popupInfo, setPopupInfo] = useState<Community | null>(null);
+interface ArcheryMapProps {
+  hoveredCommunity: Community | null;
+  setHoveredCommunity: (community: Community | null) => void;
+}
+
+function ArcheryMap({
+  hoveredCommunity,
+  setHoveredCommunity,
+}: ArcheryMapProps) {
   const [zoom, setZoom] = useState(4);
   const mapRef = useRef<MapRef>(null);
 
@@ -210,7 +217,7 @@ function ArcheryMap() {
           latitude={community.lat}
           onClick={(e) => {
             e.originalEvent.stopPropagation();
-            setPopupInfo(community);
+            setHoveredCommunity(community);
           }}
         >
           <div className="relative cursor-pointer">
@@ -223,30 +230,30 @@ function ArcheryMap() {
           </div>
         </Marker>
       ))}
-      {popupInfo && (
+      {hoveredCommunity && (
         <Popup
-          longitude={popupInfo.lng}
-          latitude={popupInfo.lat}
+          longitude={hoveredCommunity.lng}
+          latitude={hoveredCommunity.lat}
           anchor="bottom"
-          onClose={() => setPopupInfo(null)}
+          onClose={() => setHoveredCommunity(null)}
           closeButton={false}
           offset={20}
         >
           <div className="text-center">
-            {popupInfo.url ? (
+            {hoveredCommunity.url ? (
               <a
-                href={popupInfo.url}
+                href={hoveredCommunity.url}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="font-semibold text-primary hover:underline"
               >
-                {popupInfo.name}
+                {hoveredCommunity.name}
               </a>
             ) : (
-              <strong>{popupInfo.name}</strong>
+              <strong>{hoveredCommunity.name}</strong>
             )}
             <br />
-            {popupInfo.content}
+            {hoveredCommunity.content}
           </div>
         </Popup>
       )}
