@@ -40,7 +40,6 @@ import { DonationQueryClientProvider } from './context/donationQueryClientContex
 import { MailingListQueryClientProvider } from './context/mailingListQueryClientContext';
 import { VotingQueryClientProvider } from './context/votingQueryClientContext';
 import VotePage from './pages/VotePage';
-import PollVotePage from './pages/PollVotePage';
 import ErrorBoundary from './components/ErrorBoundary';
 import ConsentBanner from './components/ConsentBanner';
 import { ConsentProvider } from './context/consentContext';
@@ -146,12 +145,8 @@ const App = () => {
                                       element={<ESPNPage />}
                                     />
                                     <Route
-                                      path="/vote"
-                                      element={<VotePage />}
-                                    />
-                                    <Route
                                       path="/vote/:pollId"
-                                      element={<PollVotePage />}
+                                      element={<VotePage />}
                                     />
                                   </Routes>
                                 </main>
