@@ -12,6 +12,7 @@ const routeToHeaderMap: Record<string, string> = {
   '/donate': 'Donate',
   '/espn': 'ESPN8: The Ocho - Combat Archery All Stars 2026',
   '/donation/success': 'Thank You!',
+  '/vote': 'MVP Voting',
 };
 
 function getHeaderTextForParameterizedRoute(pathname: string): string | null {
