@@ -419,7 +419,7 @@ export default function ESPNPage() {
       {activeMatches.length > 0 && (
         <div className="rounded-lg border-2 border-primary bg-primary/10 px-6 py-4 text-center">
           <p className="mb-3 text-lg font-bold text-primary">
-            Polls are open! Cast your vote now:
+            Polls are open! Cast your vote for MVP now:
           </p>
           <div className="flex flex-wrap items-center justify-center gap-3">
             {activeMatches.map((m) => (

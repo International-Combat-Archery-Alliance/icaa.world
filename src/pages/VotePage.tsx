@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useTitle } from 'react-use';
 import Turnstile from 'react-turnstile';
@@ -127,6 +127,37 @@ function PollSkeleton() {
         </div>
       </CardContent>
     </Card>
+  );
+}
+
+function PollCountdown({ endTime }: { endTime: string }) {
+  const [now, setNow] = useState(Date.now());
+
+  useEffect(() => {
+    const timer = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const remaining = new Date(endTime).getTime() - now;
+
+  if (remaining <= 0) {
+    return (
+      <div className="flex items-center justify-center gap-1.5 text-sm text-muted-foreground">
+        <Clock className="h-4 w-4" />
+        Poll has closed
+      </div>
+    );
+  }
+
+  const hours = Math.floor(remaining / 3600000);
+  const minutes = Math.floor((remaining % 3600000) / 60000);
+  const seconds = Math.floor((remaining % 60000) / 1000);
+
+  return (
+    <div className="flex items-center justify-center gap-1.5 text-sm tabular-nums text-muted-foreground">
+      <Clock className="h-4 w-4" />
+      Closes in {hours}h {minutes}m {seconds}s
+    </div>
   );
 }
 
@@ -308,10 +339,7 @@ function PollVoteCard({ poll }: { poll: Poll }) {
           </div>
         )}
         {poll.status === 'Active' && poll.endTime && (
-          <div className="flex items-center justify-center gap-1.5 text-sm text-muted-foreground">
-            <Clock className="h-4 w-4" />
-            Closes {new Date(poll.endTime).toLocaleString()}
-          </div>
+          <PollCountdown endTime={poll.endTime} />
         )}
       </CardHeader>
       <CardContent className="space-y-6">
