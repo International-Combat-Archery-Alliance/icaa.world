@@ -412,12 +412,20 @@ export interface paths {
         };
         /**
          * Get the results of a poll
-         * @description Gets the current vote counts for a poll.
+         * @description Gets the vote results for a poll at the detail level determined by the poll's settings.
          *
-         *     Access depends on the poll's results visibility setting:
+         *     Access depends on the poll's results visibility:
          *     - Live: anyone can view results at any time
-         *     - AfterClose: anyone can view results after the poll's end time, admins can view them at any time
+         *     - AfterClose: anyone can view results after the poll's end time, admins at any time
          *     - AdminOnly: only admins can view results
+         *
+         *     Non-admin users see results at the detail level specified by the poll's publicResultsLevel:
+         *     - Full: option counts and total votes
+         *     - Percentages: percentages per option without raw counts
+         *     - Rankings: ordered ranking (1, 2, 3…) without any numbers
+         *     - None: no results visible to non-admin users
+         *
+         *     Admins always receive Full results.
          */
         get: {
             parameters: {
@@ -504,6 +512,7 @@ export interface components {
              */
             endTime: string;
             resultsVisibility: components["schemas"]["ResultsVisibility"];
+            publicResultsLevel?: components["schemas"]["PublicResultsLevel"];
             voteConfig?: components["schemas"]["VoteConfig"];
             /** @description Optional groups that options belong to, e.g. teams. Options are nested inside their group. */
             groups?: components["schemas"]["PollGroup"][];
@@ -520,6 +529,16 @@ export interface components {
          * @enum {string}
          */
         ResultsVisibility: "Live" | "AfterClose" | "AdminOnly";
+        /**
+         * @description Controls what level of results detail non-admin users can see:
+         *     - Full: option counts and total votes are visible (admins always see this)
+         *     - Percentages: percentages per option without raw counts or total votes
+         *     - Rankings: ordered ranking per option without any numbers
+         *     - None: no results visible to non-admin users
+         * @example Full
+         * @enum {string}
+         */
+        PublicResultsLevel: "Full" | "Percentages" | "Rankings" | "None";
         /**
          * @description Computed status of a poll based on the current time
          * @example Active
@@ -602,11 +621,12 @@ export interface components {
              * @example 00000000-0000-0000-0000-000000000000
              */
             pollId: string;
+            level: components["schemas"]["PublicResultsLevel"];
             /**
-             * @description Total amount of ballots cast
+             * @description Total amount of ballots cast. Only present when level is Full.
              * @example 42
              */
-            totalVotes: number;
+            totalVotes?: number;
             results: components["schemas"]["OptionResult"][];
         };
         OptionResult: {
@@ -615,8 +635,21 @@ export interface components {
              * @example 00000000-0000-0000-0000-000000000000
              */
             optionId: string;
-            /** @example 10 */
-            count: number;
+            /**
+             * @description Vote count for this option. Only present when level is Full.
+             * @example 10
+             */
+            count?: number;
+            /**
+             * @description Percentage of votes for this option (0-100). Only present when level is Percentages.
+             * @example 42
+             */
+            percentage?: number;
+            /**
+             * @description Rank of this option (1-based, ties share rank). Only present when level is Rankings.
+             * @example 1
+             */
+            rank?: number;
         };
         /** @enum {string} */
         ErrorCode: "InternalError" | "LimitOutOfBounds" | "InvalidCursor" | "NotFound" | "InvalidBody" | "InputValidationError" | "AuthError" | "CaptchaInvalid" | "PollNotActive" | "InvalidBallot" | "IdempotencyConflict" | "VersionConflict";
