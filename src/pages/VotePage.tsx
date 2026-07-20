@@ -1,5 +1,8 @@
-import { useState } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { useTitle } from 'react-use';
+import { Link } from 'react-router-dom';
+import Turnstile from 'react-turnstile';
+import { ArrowLeft, CheckCircle, Clock, User } from 'lucide-react';
 import {
   Card,
   CardContent,
@@ -9,373 +12,460 @@ import {
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { cn } from '@/lib/utils';
-import { ArrowLeft, CheckCircle, User } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
+import { cn, generateUUID } from '@/lib/utils';
+import {
+  useGetPolls,
+  useGetPollResults,
+  useVoteOnPoll,
+} from '@/hooks/useVoting';
+import type { Poll, PollResults } from '@/hooks/useVoting';
 
-const VOTE_TIMELOCK_ENABLED =
-  import.meta.env.VITE_ENABLE_VOTE_TIMELOCK === 'true';
+const VOTED_POLLS_KEY = 'icaa_voted_polls';
 
-const matches = [
-  {
-    name: 'EASTERN FINALS',
-    startTime: '2026-08-07T19:00:00-04:00', // 7:00 PM EDT
-    teams: [
+function getVotedPollIds(): string[] {
+  try {
+    return JSON.parse(localStorage.getItem(VOTED_POLLS_KEY) || '[]');
+  } catch {
+    return [];
+  }
+}
+
+function markPollVoted(pollId: string) {
+  const voted = getVotedPollIds();
+  if (!voted.includes(pollId)) {
+    voted.push(pollId);
+    localStorage.setItem(VOTED_POLLS_KEY, JSON.stringify(voted));
+  }
+}
+
+function statusVariant(
+  status: Poll['status'],
+): 'default' | 'secondary' | 'outline' {
+  switch (status) {
+    case 'Active':
+      return 'default';
+    case 'Upcoming':
+      return 'secondary';
+    case 'Closed':
+      return 'outline';
+  }
+}
+
+function PollResultsDisplay({ results }: { results: PollResults }) {
+  const sorted = [...results.results].sort((a, b) => {
+    if (results.level === 'Rankings') return (a.rank ?? 0) - (b.rank ?? 0);
+    if (results.level === 'Full' || results.level === 'Percentages') {
+      return (b.count ?? b.percentage ?? 0) - (a.count ?? a.percentage ?? 0);
+    }
+    return 0;
+  });
+
+  if (results.level === 'None') {
+    return (
+      <p className="text-center text-muted-foreground">
+        Results are not available for this poll.
+      </p>
+    );
+  }
+
+  return (
+    <div className="space-y-2">
+      {results.level === 'Full' && results.totalVotes !== undefined && (
+        <p className="text-sm text-muted-foreground">
+          Total votes: {results.totalVotes}
+        </p>
+      )}
+      <div className="space-y-1">
+        {sorted.map((r) => (
+          <div
+            key={r.optionId}
+            className="flex items-center justify-between rounded-md bg-muted/50 px-3 py-1.5"
+          >
+            <span className="text-sm font-medium">{r.optionId}</span>
+            <span className="text-sm tabular-nums text-muted-foreground">
+              {results.level === 'Full' && r.count !== undefined && r.count}
+              {results.level === 'Percentages' &&
+                r.percentage !== undefined &&
+                `${r.percentage}%`}
+              {results.level === 'Rankings' &&
+                r.rank !== undefined &&
+                `#${r.rank}`}
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function PollCard({ poll }: { poll: Poll }) {
+  const [selectedOptionIds, setSelectedOptionIds] = useState<string[]>([]);
+  const [hasVoted, setHasVoted] = useState(() =>
+    getVotedPollIds().includes(poll.id),
+  );
+  const [showTurnstile, setShowTurnstile] = useState(false);
+  const [voteError, setVoteError] = useState<string | null>(null);
+
+  const voteMutation = useVoteOnPoll();
+  const showResults =
+    hasVoted || poll.status === 'Closed' || poll.resultsVisibility === 'Live';
+  const { data: results } = useGetPollResults(
+    showResults ? poll.id : undefined,
+  );
+
+  const voteConfig = poll.voteConfig ?? { maxSelections: 1 };
+  const groups = poll.groups ?? [];
+  const ungroupedOptions = poll.options ?? [];
+
+  const optionGroupMap = useMemo(() => {
+    const map = new Map<string, number>();
+    groups.forEach((group, groupIdx) => {
+      group.options.forEach((opt) => {
+        if (opt.id) map.set(opt.id, groupIdx);
+      });
+    });
+    return map;
+  }, [groups]);
+
+  const handleOptionToggle = useCallback(
+    (optionId: string) => {
+      setSelectedOptionIds((prev) => {
+        if (prev.includes(optionId)) {
+          return prev.filter((id) => id !== optionId);
+        }
+        if (prev.length >= voteConfig.maxSelections) return prev;
+
+        if (voteConfig.maxSelectionsPerGroup !== undefined) {
+          const groupIdx = optionGroupMap.get(optionId);
+          if (groupIdx !== undefined) {
+            const groupOptionIds = new Set(
+              groups[groupIdx].options.map((o) => o.id).filter(Boolean),
+            );
+            const selectedInGroup = prev.filter((id) =>
+              groupOptionIds.has(id),
+            ).length;
+            if (selectedInGroup >= voteConfig.maxSelectionsPerGroup)
+              return prev;
+          }
+        }
+
+        return [...prev, optionId];
+      });
+    },
+    [voteConfig, optionGroupMap, groups],
+  );
+
+  const canSubmit =
+    selectedOptionIds.length > 0 &&
+    poll.status === 'Active' &&
+    !voteMutation.isPending;
+
+  const handleTurnstileVerify = (token: string) => {
+    const idempotencyKey = generateUUID();
+    setVoteError(null);
+
+    voteMutation.mutate(
       {
-        name: 'Team Boston',
-        color: '#70b2e0',
-        logoUrl:
-          'https://assets.icaa.world/42e777a4-2757-4bbf-bdaa-79303aafc9ba.png',
-        logoClassName: 'h-32 md:h-40',
-        players: [
-          {
-            imageUrl:
-              'https://assets.icaa.world/9ccd9c08-d3cb-4a25-a386-675c9c299c61.jpg',
-            firstName: 'Cameron',
-            lastName: 'Cardwell',
-            number: '17',
+        params: {
+          path: { id: poll.id },
+          header: {
+            'cf-turnstile-response': token,
+            'Idempotency-Key': idempotencyKey,
           },
-          {
-            imageUrl:
-              'https://assets.icaa.world/b7eccda4-f047-4ea8-911c-3a243fc9aa48.jpeg',
-            firstName: 'Nate',
-            lastName: 'Langh',
-            number: '3',
-          },
-          {
-            imageUrl:
-              'https://assets.icaa.world/2b18bf29-bf2a-4d78-b32c-5aa51dc500e6.png',
-            firstName: 'Bob',
-            lastName: 'Beng',
-            number: '80',
-          },
-          {
-            imageUrl:
-              'https://assets.icaa.world/2e13269a-5570-4618-9e34-1321933d12de.jpeg',
-            firstName: 'Andrew',
-            lastName: 'Mellen',
-            number: '45',
-          },
-          {
-            imageUrl:
-              'https://assets.icaa.world/32fc6646-16cc-4017-a6df-8046641eaef9.jpg',
-            firstName: 'Katt',
-            lastName: 'H.',
-            number: '13',
-          },
-          {
-            imageUrl:
-              'https://assets.icaa.world/701cc5fa-6695-4706-afc3-3607f684264a.jpg',
-            firstName: 'David',
-            lastName: 'McMillan',
-            number: '20',
-          },
-          {
-            imageUrl: '',
-            firstName: 'Nick',
-            lastName: 'Rancourt',
-            number: '5',
-          },
-        ],
+        },
+        body: { optionIds: selectedOptionIds },
       },
       {
-        name: 'Team Ottawa',
-        color: '#33593a',
-        logoUrl:
-          'https://assets.icaa.world/e135fd46-636c-4758-b78b-4729d182a4fc.png',
-        logoClassName: 'h-32 md:h-40',
-        players: [
-          {
-            imageUrl: '',
-            firstName: 'Kyle',
-            lastName: 'White',
-            number: '13',
-          },
-          {
-            imageUrl:
-              'https://assets.icaa.world/b0da1aed-85d5-4705-bb09-00956dd01a39.png',
-            firstName: 'Brandon',
-            lastName: 'Nemeth',
-            number: '7',
-          },
-          {
-            imageUrl: '',
-            firstName: 'Angel',
-            lastName: 'MacEachern',
-            number: '1',
-          },
-          {
-            imageUrl:
-              'https://assets.icaa.world/93ebc1f8-147a-4983-b37b-848b3138042d.jpg',
-            firstName: 'Andrew',
-            lastName: 'Bui',
-            number: '23',
-          },
-          {
-            imageUrl:
-              'https://assets.icaa.world/e90de502-456c-48b4-88d7-62d9fd768d99.jpg',
-            firstName: 'Kyle',
-            lastName: 'Best',
-            number: '6',
-          },
-          {
-            imageUrl: '',
-            firstName: 'Danny',
-            lastName: 'Pleshek',
-            number: '4',
-          },
-          {
-            imageUrl:
-              'https://assets.icaa.world/29b61f2a-caed-4f10-96ed-57db5f1a95f2.jpg',
-            firstName: 'Mark',
-            lastName: 'Elrod',
-            number: '8',
-          },
-        ],
+        onSuccess: () => {
+          setHasVoted(true);
+          setShowTurnstile(false);
+          markPollVoted(poll.id);
+        },
+        onError: () => {
+          setVoteError('Vote submission failed. Please try again.');
+          setShowTurnstile(false);
+        },
       },
-    ],
-  },
-  {
-    name: 'WESTERN FINALS',
-    startTime: '2026-08-07T19:00:00-04:00', // 7:00 PM EDT
-    teams: [
-      {
-        name: 'Team Toronto',
-        color: '#b02026',
-        logoUrl:
-          'https://assets.icaa.world/b9715dc3-dd6a-4be4-8df7-eb63bc1cd771.png',
-        logoClassName: 'h-32 md:h-40',
-        players: [
-          {
-            imageUrl:
-              'https://assets.icaa.world/19639410-208f-4b44-bcf2-fec0f8ecd5c1.jpg',
-            firstName: 'James',
-            lastName: 'McDougall',
-            number: '3',
-          },
-          {
-            imageUrl: '',
-            firstName: 'Tim',
-            lastName: 'Ahong',
-            number: '21',
-          },
-          {
-            imageUrl: '',
-            firstName: 'Russel',
-            lastName: 'Padua',
-            number: '13',
-          },
-          {
-            imageUrl:
-              'https://assets.icaa.world/2775b4c8-e476-4382-9dc0-a4484d5b0a99.png',
-            firstName: 'Daniel',
-            lastName: 'Martinez',
-            number: '28',
-          },
-          {
-            imageUrl: '',
-            firstName: 'Christina',
-            lastName: 'Laconsay',
-            number: '14',
-          },
-          {
-            imageUrl:
-              'https://assets.icaa.world/320a250f-f069-4ca2-97c5-d7133640d2ae.JPG',
-            firstName: 'Yousef',
-            lastName: 'Hariri',
-            number: '76',
-          },
-          {
-            imageUrl:
-              'https://assets.icaa.world/578f8d21-5ca0-4287-9b39-b881206be767.jpg',
-            firstName: 'Sim',
-            lastName: 'Singh',
-            number: '25',
-          },
-        ],
-      },
-      {
-        name: 'Team Barrie',
-        color: '#3163a6',
-        logoUrl:
-          'https://assets.icaa.world/fa86e579-203d-4361-83e6-77c2ac405bb4.png',
-        logoClassName: 'h-24 md:h-32',
-        players: [
-          {
-            imageUrl:
-              'https://assets.icaa.world/e5c921e5-dc44-49ad-be25-9b7629a2f72c.jpeg',
-            firstName: 'Thomas',
-            lastName: 'Parker',
-            number: '6',
-          },
-          {
-            imageUrl:
-              'https://assets.icaa.world/4cd090bb-4f3d-4702-bd2e-1e2867744418.jpeg',
-            firstName: 'Kristin',
-            lastName: 'Drescher',
-            number: '5',
-          },
-          {
-            imageUrl:
-              'https://assets.icaa.world/57765442-59c3-494a-b284-7013ea85f969.jpeg',
-            firstName: 'Robert',
-            lastName: 'Chitiu',
-            number: '3',
-          },
-          {
-            imageUrl:
-              'https://assets.icaa.world/8803d050-b749-4905-9033-b9bbdf473059.png',
-            firstName: 'BJ',
-            lastName: 'Thompson',
-            number: '28',
-          },
-          {
-            imageUrl:
-              'https://assets.icaa.world/e9f9bdbb-a687-450a-b630-d73dcf68d315.jpeg',
-            firstName: 'Dayton',
-            lastName: 'Marchese',
-            number: '53',
-          },
-          {
-            imageUrl:
-              'https://assets.icaa.world/ff9d01d2-ae5a-4256-8805-2b6fc4488f32.jpg',
-            firstName: 'Dave',
-            lastName: 'Brown',
-            number: '64',
-          },
-          {
-            imageUrl:
-              'https://assets.icaa.world/9d106066-b24f-4009-89e4-93d101e3e7c2.jpeg',
-            firstName: 'Jay',
-            lastName: 'Pusateri',
-            number: '84',
-          },
-        ],
-      },
-    ],
-  },
-];
+    );
+  };
+
+  if (hasVoted) {
+    return (
+      <Card className="max-w-3xl mx-auto">
+        <CardContent className="flex flex-col items-center gap-4 p-8 text-center">
+          <CheckCircle className="h-16 w-16 text-green-500" />
+          <h3 className="text-2xl font-bold">Vote Submitted!</h3>
+          <p className="text-muted-foreground">
+            Your vote for {poll.name} has been recorded.
+          </p>
+          {results && (
+            <div className="mt-4 w-full">
+              <h4 className="mb-2 font-semibold">Results</h4>
+              <PollResultsDisplay results={results} />
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <Card className="max-w-5xl mx-auto">
+      <CardHeader className="text-center">
+        <div className="mb-2 flex items-center justify-center gap-2">
+          <CardTitle>{poll.name}</CardTitle>
+          <Badge variant={statusVariant(poll.status)}>{poll.status}</Badge>
+        </div>
+        {poll.description && (
+          <CardDescription>{poll.description}</CardDescription>
+        )}
+        {poll.status === 'Upcoming' && (
+          <div className="flex items-center justify-center gap-1.5 text-sm text-muted-foreground">
+            <Clock className="h-4 w-4" />
+            Opens {new Date(poll.startTime).toLocaleString()}
+          </div>
+        )}
+        {poll.status === 'Active' && poll.endTime && (
+          <div className="flex items-center justify-center gap-1.5 text-sm text-muted-foreground">
+            <Clock className="h-4 w-4" />
+            Closes {new Date(poll.endTime).toLocaleString()}
+          </div>
+        )}
+      </CardHeader>
+      <CardContent className="space-y-6">
+        {groups.map((group) => (
+          <div key={group.id ?? group.name}>
+            {group.imageUrl && (
+              <div
+                className="mx-auto mb-4 flex max-w-sm items-center justify-center rounded-lg p-4"
+                style={{
+                  backgroundColor: group.color ?? undefined,
+                }}
+              >
+                <img
+                  src={group.imageUrl}
+                  alt={`${group.name} Logo`}
+                  className="h-32 w-auto md:h-40"
+                />
+              </div>
+            )}
+            {!group.imageUrl && group.name && (
+              <h3 className="mb-3 text-center text-lg font-semibold">
+                {group.name}
+              </h3>
+            )}
+            <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+              {group.options.map((option) => {
+                const isSelected = option.id
+                  ? selectedOptionIds.includes(option.id)
+                  : false;
+                return (
+                  <div
+                    key={option.id ?? option.name}
+                    className={cn(
+                      'flex cursor-pointer flex-col items-center space-y-2 rounded-lg border p-4 text-center transition-all hover:bg-muted/50',
+                      isSelected && 'border-primary ring-2 ring-primary',
+                      poll.status !== 'Active' &&
+                        'cursor-not-allowed opacity-60',
+                    )}
+                    onClick={() => {
+                      if (poll.status === 'Active' && option.id) {
+                        handleOptionToggle(option.id);
+                      }
+                    }}
+                  >
+                    <Avatar className="h-28 w-28">
+                      <AvatarImage src={option.imageUrl} />
+                      <AvatarFallback className="bg-muted">
+                        <User className="h-14 w-14 text-muted-foreground" />
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="font-medium">{option.name}</div>
+                    {option.subtitle && (
+                      <div className="text-sm text-muted-foreground">
+                        {option.subtitle}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        ))}
+
+        {ungroupedOptions.length > 0 && (
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+            {ungroupedOptions.map((option) => {
+              const isSelected = option.id
+                ? selectedOptionIds.includes(option.id)
+                : false;
+              return (
+                <div
+                  key={option.id ?? option.name}
+                  className={cn(
+                    'flex cursor-pointer flex-col items-center space-y-2 rounded-lg border p-4 text-center transition-all hover:bg-muted/50',
+                    isSelected && 'border-primary ring-2 ring-primary',
+                    poll.status !== 'Active' && 'cursor-not-allowed opacity-60',
+                  )}
+                  onClick={() => {
+                    if (poll.status === 'Active' && option.id) {
+                      handleOptionToggle(option.id);
+                    }
+                  }}
+                >
+                  <Avatar className="h-28 w-28">
+                    <AvatarImage src={option.imageUrl} />
+                    <AvatarFallback className="bg-muted">
+                      <User className="h-14 w-14 text-muted-foreground" />
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="font-medium">{option.name}</div>
+                  {option.subtitle && (
+                    <div className="text-sm text-muted-foreground">
+                      {option.subtitle}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {poll.status === 'Active' && (
+          <div className="flex flex-col items-center gap-4 pt-4">
+            <p className="text-sm text-muted-foreground">
+              {selectedOptionIds.length} of {voteConfig.maxSelections} selected
+            </p>
+            {!showTurnstile ? (
+              <Button
+                size="lg"
+                disabled={!canSubmit}
+                onClick={() => setShowTurnstile(true)}
+              >
+                Submit Vote
+              </Button>
+            ) : (
+              <div className="flex flex-col items-center gap-2">
+                <p className="text-sm text-muted-foreground">
+                  Verify you are human to submit your vote:
+                </p>
+                <Turnstile
+                  theme="light"
+                  sitekey={import.meta.env.VITE_TURNSTILE_SITE_KEY}
+                  onVerify={handleTurnstileVerify}
+                  onError={() => {
+                    setVoteError(
+                      'Captcha verification failed. Please try again.',
+                    );
+                    setShowTurnstile(false);
+                  }}
+                  onExpire={() => {
+                    setShowTurnstile(false);
+                  }}
+                />
+              </div>
+            )}
+            {voteError && (
+              <p className="text-sm text-destructive">{voteError}</p>
+            )}
+          </div>
+        )}
+
+        {poll.status === 'Closed' && results && (
+          <div className="mt-4">
+            <h4 className="mb-2 text-center font-semibold">Results</h4>
+            <PollResultsDisplay results={results} />
+          </div>
+        )}
+
+        {poll.status === 'Closed' && !results && (
+          <p className="text-center text-muted-foreground">
+            This poll has closed.
+          </p>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+function PollSkeleton() {
+  return (
+    <Card className="max-w-5xl mx-auto">
+      <CardHeader className="text-center">
+        <Skeleton className="mx-auto h-8 w-64" />
+        <Skeleton className="mx-auto h-4 w-96" />
+      </CardHeader>
+      <CardContent className="space-y-6">
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+          {Array.from({ length: 7 }).map((_, i) => (
+            <div key={i} className="flex flex-col items-center space-y-2 p-4">
+              <Skeleton className="h-28 w-28 rounded-full" />
+              <Skeleton className="h-4 w-24" />
+              <Skeleton className="h-3 w-12" />
+            </div>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
 
 export default function VotePage() {
   useTitle('MVP Voting - ICAA');
 
-  const [votes, setVotes] = useState<{ [matchName: string]: string }>({});
-  const [submitted, setSubmitted] = useState<{ [matchName: string]: boolean }>(
-    {},
+  const { data, isLoading, isError } = useGetPolls();
+  const polls = useMemo(
+    () => data?.pages.flatMap((page) => page.data) ?? [],
+    [data],
   );
-
-  const handleVote = (matchName: string, playerIdentifier: string) => {
-    setVotes((prev) => ({
-      ...prev,
-      [matchName]: playerIdentifier,
-    }));
-  };
-
-  const handleSubmit = (matchName: string) => {
-    setSubmitted((prev) => ({ ...prev, [matchName]: true }));
-  };
-
-  const eventHasStarted = (startTime: string) =>
-    new Date() >= new Date(startTime);
-  const canSubmit = (startTime: string) =>
-    !VOTE_TIMELOCK_ENABLED || eventHasStarted(startTime);
 
   return (
     <section className="container mx-auto space-y-12 px-4 py-8">
       <div className="mb-4">
-        <Button asChild>
+        <Button asChild variant="outline">
           <Link to="/espn">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to ESPN Page
           </Link>
         </Button>
       </div>
+
       <div className="text-center">
         <h1 className="text-4xl font-bold text-primary">MVP Voting</h1>
-        <p className="text-muted-foreground">Select one MVP for each match.</p>
+        <p className="text-muted-foreground">Select your MVP for each match.</p>
       </div>
 
-      {matches.map((match) => (
-        <Card key={match.name} className="max-w-5xl mx-auto">
-          {submitted[match.name] ? (
-            <div className="flex flex-col items-center gap-4 p-8 text-center">
-              <CheckCircle className="h-16 w-16 text-green-500" />
-              <h3 className="text-2xl font-bold">Thank You For Voting!</h3>
-              <p className="text-muted-foreground">
-                Your MVP vote for the {match.name} has been cast.
-              </p>
-            </div>
-          ) : (
-            <>
-              <CardHeader className="text-center">
-                <CardTitle>{match.name} MVP</CardTitle>
-                <CardDescription>
-                  Choose the player you think was the Most Valuable Player.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                {match.teams.map((team) => (
-                  <div key={team.name}>
-                    <div
-                      className="flex items-center justify-center rounded-lg p-4 mb-4 mx-auto max-w-sm"
-                      style={{ backgroundColor: team.color }}
-                    >
-                      <img
-                        src={team.logoUrl}
-                        alt={`${team.name} Logo`}
-                        className={cn('w-auto', team.logoClassName)}
-                      />
-                    </div>
-                    <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
-                      {team.players.map((player) => {
-                        const playerIdentifier = `${player.firstName}-${player.lastName}`;
-                        const isSelected =
-                          votes[match.name] === playerIdentifier;
-                        return (
-                          <div
-                            key={playerIdentifier}
-                            className={cn(
-                              'flex flex-col cursor-pointer items-center space-y-2 rounded-lg border p-4 transition-all hover:bg-muted/50 text-center',
-                              isSelected &&
-                                'border-primary ring-2 ring-primary',
-                            )}
-                            onClick={() =>
-                              handleVote(match.name, playerIdentifier)
-                            }
-                          >
-                            <Avatar className="h-28 w-28">
-                              <AvatarImage src={player.imageUrl} />
-                              <AvatarFallback className="bg-muted">
-                                <User className="h-14 w-14 text-muted-foreground" />
-                              </AvatarFallback>
-                            </Avatar>
-                            <div className="font-medium">{`${player.firstName} ${player.lastName}`}</div>
-                            <div className="text-sm text-muted-foreground">
-                              #{player.number}
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                ))}
-                <div className="flex justify-center pt-4">
-                  <Button
-                    size="lg"
-                    onClick={() =>
-                      canSubmit(match.startTime) && handleSubmit(match.name)
-                    }
-                    disabled={!votes[match.name] || !canSubmit(match.startTime)}
-                  >
-                    {canSubmit(match.startTime)
-                      ? `Submit Vote for ${match.name}`
-                      : 'Voting will open when the event starts'}
-                  </Button>
-                </div>
-              </CardContent>
-            </>
-          )}
+      {isLoading && (
+        <div className="space-y-8">
+          <PollSkeleton />
+          <PollSkeleton />
+        </div>
+      )}
+
+      {isError && (
+        <Card className="max-w-lg mx-auto">
+          <CardContent className="p-8 text-center">
+            <p className="text-muted-foreground">
+              Failed to load polls. Please try again later.
+            </p>
+          </CardContent>
         </Card>
+      )}
+
+      {!isLoading && !isError && polls.length === 0 && (
+        <Card className="max-w-lg mx-auto">
+          <CardContent className="p-8 text-center">
+            <p className="text-muted-foreground">
+              No active polls at this time. Check back later!
+            </p>
+          </CardContent>
+        </Card>
+      )}
+
+      {polls.map((poll) => (
+        <PollCard key={poll.id} poll={poll} />
       ))}
     </section>
   );
