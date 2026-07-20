@@ -8,6 +8,29 @@ import { Button } from '@/components/ui/button';
 import { useGetPolls } from '@/hooks/useVoting';
 import { useMemo } from 'react';
 
+function VoteBanner({
+  matches,
+}: {
+  matches: { pollId: string; name: string }[];
+}) {
+  if (matches.length === 0) return null;
+
+  return (
+    <div className="rounded-lg border-2 border-primary bg-primary/10 px-6 py-4 text-center">
+      <p className="mb-3 text-lg font-bold text-primary">
+        Polls are open! Cast your vote for MVP now:
+      </p>
+      <div className="flex flex-wrap items-center justify-center gap-3">
+        {matches.map((m) => (
+          <Button key={m.pollId} asChild size="lg" variant="default">
+            <Link to={`/vote/${m.pollId}`}>Vote for {m.name} MVP!</Link>
+          </Button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 const matches = [
   {
     name: 'EASTERN FINALS',
@@ -379,20 +402,7 @@ export default function ESPNPage() {
 
   return (
     <section className="container mx-auto px-4 py-8 space-y-8">
-      {activeMatches.length > 0 && (
-        <div className="rounded-lg border-2 border-primary bg-primary/10 px-6 py-4 text-center">
-          <p className="mb-3 text-lg font-bold text-primary">
-            Polls are open! Cast your vote for MVP now:
-          </p>
-          <div className="flex flex-wrap items-center justify-center gap-3">
-            {activeMatches.map((m) => (
-              <Button key={m.pollId} asChild size="lg" variant="default">
-                <Link to={`/vote/${m.pollId}`}>Vote for {m.name} MVP!</Link>
-              </Button>
-            ))}
-          </div>
-        </div>
-      )}
+      <VoteBanner matches={activeMatches} />
       <div className="flex justify-center">
         <img
           src="https://assets.icaa.world/1b266230-4d77-4360-8bb4-af814f83e2ec.png"
