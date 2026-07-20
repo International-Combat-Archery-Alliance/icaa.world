@@ -341,21 +341,23 @@ function PollCard({ poll }: { poll: Poll }) {
                       }
                     }}
                   >
-                    <Avatar className="h-12 w-12 shrink-0">
-                      <AvatarImage src={option.imageUrl} />
-                      <AvatarFallback className="bg-muted">
-                        <User className="h-6 w-6 text-muted-foreground" />
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="min-w-0">
-                      <div className="truncate text-sm font-medium leading-tight">
-                        {option.name}
-                      </div>
-                      {option.subtitle && (
-                        <div className="text-xs text-muted-foreground">
-                          {option.subtitle}
+                    <div className="flex items-center gap-3 min-w-0">
+                      <Avatar className="h-14 w-14 shrink-0">
+                        <AvatarImage src={option.imageUrl} />
+                        <AvatarFallback className="bg-muted">
+                          <User className="h-7 w-7 text-muted-foreground" />
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="min-w-0">
+                        <div className="text-sm font-medium leading-tight">
+                          {option.name}
                         </div>
-                      )}
+                        {option.subtitle && (
+                          <div className="text-xs text-muted-foreground">
+                            {option.subtitle}
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
                 );
@@ -384,21 +386,23 @@ function PollCard({ poll }: { poll: Poll }) {
                     }
                   }}
                 >
-                  <Avatar className="h-12 w-12 shrink-0">
-                    <AvatarImage src={option.imageUrl} />
-                    <AvatarFallback className="bg-muted">
-                      <User className="h-6 w-6 text-muted-foreground" />
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="min-w-0">
-                    <div className="truncate text-sm font-medium leading-tight">
-                      {option.name}
-                    </div>
-                    {option.subtitle && (
-                      <div className="text-xs text-muted-foreground">
-                        {option.subtitle}
+                  <div className="flex items-center gap-3 min-w-0">
+                    <Avatar className="h-14 w-14 shrink-0">
+                      <AvatarImage src={option.imageUrl} />
+                      <AvatarFallback className="bg-muted">
+                        <User className="h-7 w-7 text-muted-foreground" />
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="min-w-0">
+                      <div className="text-sm font-medium leading-tight">
+                        {option.name}
                       </div>
-                    )}
+                      {option.subtitle && (
+                        <div className="text-xs text-muted-foreground">
+                          {option.subtitle}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               );
