@@ -119,7 +119,7 @@ const matches = [
             firstName: 'Angel',
             lastName: 'MacEachern',
             number: '1',
-            position: 'Centerback',
+            position: 'Flex',
             city: 'Ottawa',
             experience: '2.5',
           },
