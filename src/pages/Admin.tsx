@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useTitle } from 'react-use';
 import { useLocation, useNavigate } from 'react-router-dom';
 import type { DateRange } from 'react-day-picker';
@@ -43,10 +43,13 @@ import { DonationByState } from '@/components/DonationByState';
 import { ArticleEditor } from '@/components/ArticleEditor';
 import { ArticleList } from '@/components/ArticleList';
 import { AdminPollForm } from '@/components/AdminPollForm';
+import { PollResultsDisplay } from '@/components/PollResultsDisplay';
+import type { OptionMeta } from '@/components/PollResultsDisplay';
 import type { Article } from '@/hooks/useArticles';
 import {
   useGetPolls,
   useDeletePoll,
+  useGetPollResults,
   useUpdatePollDataAfterMutate,
 } from '@/hooks/useVoting';
 import type { Poll } from '@/hooks/useVoting';
@@ -407,8 +410,6 @@ function PollManager({
   onEditPoll: (p: Poll | undefined) => void;
 }) {
   const { data, isLoading } = useGetPolls();
-  const deleteMutation = useDeletePoll();
-  const updatePollCache = useUpdatePollDataAfterMutate();
 
   const polls = data?.pages.flatMap((page) => page.data) ?? [];
 
@@ -479,68 +480,96 @@ function PollManager({
           </p>
         )}
         {polls.map((poll) => (
-          <div
-            key={poll.id}
-            className="flex items-center justify-between rounded-lg border p-4 mb-2"
-          >
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="font-medium">{poll.name}</span>
-                <Badge
-                  variant={
-                    poll.status === 'Active'
-                      ? 'default'
-                      : poll.status === 'Upcoming'
-                        ? 'secondary'
-                        : 'outline'
-                  }
-                >
-                  {poll.status}
-                </Badge>
-              </div>
-              <p className="text-sm text-muted-foreground">
-                {new Date(poll.startTime).toLocaleString()} —{' '}
-                {new Date(poll.endTime).toLocaleString()}
-              </p>
-            </div>
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  onEditPoll(poll);
-                  onActionChange('edit');
-                }}
-              >
-                Edit
-              </Button>
-              <Button
-                variant="destructive"
-                size="sm"
-                disabled={deleteMutation.isPending}
-                onClick={() => {
-                  if (
-                    !window.confirm(
-                      `Delete poll "${poll.name}"? This cannot be undone.`,
-                    )
-                  )
-                    return;
-                  deleteMutation.mutate(
-                    {
-                      params: { path: { id: poll.id } },
-                    },
-                    {
-                      onSuccess: () => updatePollCache(poll),
-                    },
-                  );
-                }}
-              >
-                Delete
-              </Button>
-            </div>
-          </div>
+          <PollRow key={poll.id} poll={poll} onEdit={onEditPoll} />
         ))}
       </CardContent>
     </Card>
+  );
+}
+
+function PollRow({ poll, onEdit }: { poll: Poll; onEdit: (p: Poll) => void }) {
+  const [showResults, setShowResults] = useState(false);
+  const deleteMutation = useDeletePoll();
+  const updatePollCache = useUpdatePollDataAfterMutate();
+
+  const { data: results } = useGetPollResults(
+    showResults ? poll.id : undefined,
+  );
+
+  const optionMeta = useMemo(() => {
+    const map = new Map<string, OptionMeta>();
+    const options = poll.options ?? [];
+    for (const opt of options) {
+      if (opt.id) map.set(opt.id, opt);
+    }
+    for (const group of poll.groups ?? []) {
+      for (const opt of group.options) {
+        if (opt.id) map.set(opt.id, opt);
+      }
+    }
+    return map;
+  }, [poll]);
+
+  return (
+    <div className="mb-2 rounded-lg border p-4">
+      <div className="flex items-center justify-between">
+        <div>
+          <div className="flex items-center gap-2">
+            <span className="font-medium">{poll.name}</span>
+            <Badge
+              variant={
+                poll.status === 'Active'
+                  ? 'default'
+                  : poll.status === 'Upcoming'
+                    ? 'secondary'
+                    : 'outline'
+              }
+            >
+              {poll.status}
+            </Badge>
+          </div>
+          <p className="text-sm text-muted-foreground">
+            {new Date(poll.startTime).toLocaleString()} —{' '}
+            {new Date(poll.endTime).toLocaleString()}
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setShowResults(!showResults)}
+          >
+            {showResults ? 'Hide Results' : 'Results'}
+          </Button>
+          <Button variant="outline" size="sm" onClick={() => onEdit(poll)}>
+            Edit
+          </Button>
+          <Button
+            variant="destructive"
+            size="sm"
+            disabled={deleteMutation.isPending}
+            onClick={() => {
+              if (
+                !window.confirm(
+                  `Delete poll "${poll.name}"? This cannot be undone.`,
+                )
+              )
+                return;
+              deleteMutation.mutate(
+                { params: { path: { id: poll.id } } },
+                { onSuccess: () => updatePollCache(poll) },
+              );
+            }}
+          >
+            Delete
+          </Button>
+        </div>
+      </div>
+      {showResults && results && (
+        <div className="mt-4 border-t pt-4">
+          <PollResultsDisplay results={results} optionMeta={optionMeta} />
+        </div>
+      )}
+    </div>
   );
 }

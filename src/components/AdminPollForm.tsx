@@ -588,7 +588,7 @@ function OptionsSubForm({
                 <FormControl>
                   <Input
                     placeholder="Player name"
-                    className="h-8 text-sm"
+                    className="h-8 text-sm bg-background"
                     {...field}
                   />
                 </FormControl>
@@ -607,7 +607,7 @@ function OptionsSubForm({
                   <FormControl>
                     <Input
                       placeholder="#17"
-                      className="h-8 text-sm"
+                      className="h-8 text-sm bg-background"
                       {...field}
                     />
                   </FormControl>
@@ -625,7 +625,7 @@ function OptionsSubForm({
                   <FormControl>
                     <Input
                       placeholder="Image URL"
-                      className="h-8 text-sm"
+                      className="h-8 text-sm bg-background"
                       {...field}
                     />
                   </FormControl>
