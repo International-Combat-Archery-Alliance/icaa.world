@@ -53,7 +53,26 @@ function statusVariant(
   }
 }
 
-function PollResultsDisplay({ results }: { results: PollResults }) {
+interface OptionMeta {
+  name: string;
+  subtitle?: string;
+  imageUrl?: string;
+}
+
+function PollResultsDisplay({
+  results,
+  optionMeta,
+}: {
+  results: PollResults;
+  optionMeta: Map<string, OptionMeta>;
+}) {
+  const maxCount =
+    results.level === 'Full'
+      ? Math.max(...results.results.map((r) => r.count ?? 0), 1)
+      : results.level === 'Percentages'
+        ? 100
+        : 0;
+
   const sorted = [...results.results].sort((a, b) => {
     if (results.level === 'Rankings') return (a.rank ?? 0) - (b.rank ?? 0);
     if (results.level === 'Full' || results.level === 'Percentages') {
@@ -71,30 +90,61 @@ function PollResultsDisplay({ results }: { results: PollResults }) {
   }
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-3">
       {results.level === 'Full' && results.totalVotes !== undefined && (
-        <p className="text-sm text-muted-foreground">
-          Total votes: {results.totalVotes}
+        <p className="text-center text-sm text-muted-foreground">
+          {results.totalVotes} total vote{results.totalVotes !== 1 ? 's' : ''}
         </p>
       )}
-      <div className="space-y-1">
-        {sorted.map((r) => (
-          <div
-            key={r.optionId}
-            className="flex items-center justify-between rounded-md bg-muted/50 px-3 py-1.5"
-          >
-            <span className="text-sm font-medium">{r.optionId}</span>
-            <span className="text-sm tabular-nums text-muted-foreground">
-              {results.level === 'Full' && r.count !== undefined && r.count}
-              {results.level === 'Percentages' &&
-                r.percentage !== undefined &&
-                `${r.percentage}%`}
-              {results.level === 'Rankings' &&
-                r.rank !== undefined &&
-                `#${r.rank}`}
-            </span>
-          </div>
-        ))}
+      <div className="space-y-2">
+        {sorted.map((r) => {
+          const meta = optionMeta.get(r.optionId);
+          const value =
+            results.level === 'Full'
+              ? (r.count ?? 0)
+              : results.level === 'Percentages'
+                ? (r.percentage ?? 0)
+                : 0;
+          const barWidth =
+            results.level === 'Rankings'
+              ? 0
+              : Math.round((value / maxCount) * 100);
+
+          return (
+            <div key={r.optionId} className="space-y-1">
+              <div className="flex items-center gap-2">
+                {meta?.imageUrl && (
+                  <Avatar className="h-8 w-8">
+                    <AvatarImage src={meta.imageUrl} />
+                    <AvatarFallback>
+                      <User className="h-4 w-4" />
+                    </AvatarFallback>
+                  </Avatar>
+                )}
+                <span className="flex-1 text-sm font-medium">
+                  {meta?.name ?? r.optionId}
+                </span>
+                <span className="text-sm tabular-nums text-muted-foreground">
+                  {results.level === 'Full' && r.count !== undefined && r.count}
+                  {results.level === 'Percentages' &&
+                    r.percentage !== undefined &&
+                    `${r.percentage}%`}
+                  {results.level === 'Rankings' &&
+                    r.rank !== undefined &&
+                    `#${r.rank}`}
+                </span>
+              </div>
+              {results.level !== 'Rankings' && (
+                <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
+                  <div
+                    className="h-full rounded-full bg-primary transition-all"
+                    style={{ width: `${barWidth}%` }}
+                  />
+                </div>
+              )}
+            </div>
+          );
+        })}
       </div>
     </div>
   );
@@ -118,6 +168,19 @@ function PollCard({ poll }: { poll: Poll }) {
   const voteConfig = poll.voteConfig ?? { maxSelections: 1 };
   const groups = poll.groups ?? [];
   const ungroupedOptions = poll.options ?? [];
+
+  const optionMeta = useMemo(() => {
+    const map = new Map<string, OptionMeta>();
+    for (const opt of ungroupedOptions) {
+      if (opt.id) map.set(opt.id, opt);
+    }
+    for (const group of groups) {
+      for (const opt of group.options) {
+        if (opt.id) map.set(opt.id, opt);
+      }
+    }
+    return map;
+  }, [ungroupedOptions, groups]);
 
   const optionGroupMap = useMemo(() => {
     const map = new Map<string, number>();
@@ -203,7 +266,7 @@ function PollCard({ poll }: { poll: Poll }) {
           {results && (
             <div className="mt-4 w-full">
               <h4 className="mb-2 font-semibold">Results</h4>
-              <PollResultsDisplay results={results} />
+              <PollResultsDisplay results={results} optionMeta={optionMeta} />
             </div>
           )}
         </CardContent>
@@ -376,7 +439,7 @@ function PollCard({ poll }: { poll: Poll }) {
         {poll.status === 'Closed' && results && (
           <div className="mt-4">
             <h4 className="mb-2 text-center font-semibold">Results</h4>
-            <PollResultsDisplay results={results} />
+            <PollResultsDisplay results={results} optionMeta={optionMeta} />
           </div>
         )}
 
