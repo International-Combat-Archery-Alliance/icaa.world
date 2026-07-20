@@ -5,6 +5,8 @@ import { PlayerRoster } from '@/components/PlayerRoster';
 import { CountdownTimer } from '@/components/CountdownTimer';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { useGetPolls } from '@/hooks/useVoting';
+import { useMemo } from 'react';
 
 const matches = [
   {
@@ -333,6 +335,20 @@ const matches = [
 export default function ESPNPage() {
   useTitle('ESPN8: All Stars 2026 - ICAA');
 
+  const { data: pollsData } = useGetPolls();
+  const pollStatusById = useMemo(() => {
+    const map = new Map<string, string>();
+    const polls = pollsData?.pages.flatMap((p) => p.data) ?? [];
+    for (const poll of polls) {
+      map.set(poll.id, poll.status);
+    }
+    return map;
+  }, [pollsData]);
+
+  const activeMatches = matches.filter(
+    (m) => pollStatusById.get(m.pollId) === 'Active',
+  );
+
   const sponsors = [
     {
       logoUrl:
@@ -399,6 +415,22 @@ export default function ESPNPage() {
       </Card>
 
       <CountdownTimer targetDate="2026-08-07T19:00:00" />
+
+      {activeMatches.length > 0 && (
+        <div className="rounded-lg border-2 border-primary bg-primary/10 px-6 py-4 text-center">
+          <p className="mb-3 text-lg font-bold text-primary">
+            Polls are open! Cast your vote now:
+          </p>
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            {activeMatches.map((m) => (
+              <Button key={m.pollId} asChild size="lg" variant="default">
+                <Link to={`/vote/${m.pollId}`}>Vote for {m.name} MVP!</Link>
+              </Button>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 my-12">
         <Card className="flex flex-col">
           <CardHeader>
@@ -465,7 +497,7 @@ export default function ESPNPage() {
       </div>
 
       <div className="space-y-16 pt-16">
-        {matches.map((match, matchIndex) => (
+        {matches.map((match) => (
           <div key={match.name} className="space-y-8">
             <div className="relative text-center my-12">
               <div
@@ -528,14 +560,6 @@ export default function ESPNPage() {
                 />
               </div>
             </div>
-            <div className="flex justify-center mt-8">
-              <Button asChild>
-                <Link to={`/vote/${match.pollId}`}>
-                  Vote for {match.name} MVP!
-                </Link>
-              </Button>
-            </div>
-            {matchIndex < matches.length - 1}
           </div>
         ))}
       </div>

@@ -480,14 +480,21 @@ function PollManager({
           </p>
         )}
         {polls.map((poll) => (
-          <PollRow key={poll.id} poll={poll} onEdit={onEditPoll} />
+          <PollRow
+            key={poll.id}
+            poll={poll}
+            onEdit={() => {
+              onEditPoll(poll);
+              onActionChange('edit');
+            }}
+          />
         ))}
       </CardContent>
     </Card>
   );
 }
 
-function PollRow({ poll, onEdit }: { poll: Poll; onEdit: (p: Poll) => void }) {
+function PollRow({ poll, onEdit }: { poll: Poll; onEdit: () => void }) {
   const [showResults, setShowResults] = useState(false);
   const deleteMutation = useDeletePoll();
   const updatePollCache = useUpdatePollDataAfterMutate();
@@ -541,7 +548,7 @@ function PollRow({ poll, onEdit }: { poll: Poll; onEdit: (p: Poll) => void }) {
           >
             {showResults ? 'Hide Results' : 'Results'}
           </Button>
-          <Button variant="outline" size="sm" onClick={() => onEdit(poll)}>
+          <Button variant="outline" size="sm" onClick={onEdit}>
             Edit
           </Button>
           <Button

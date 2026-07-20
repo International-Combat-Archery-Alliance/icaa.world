@@ -214,7 +214,11 @@ function AdminPollForm({ mode, poll, onSuccess }: AdminPollFormProps) {
             <FormItem>
               <FormLabel>Poll Name</FormLabel>
               <FormControl>
-                <Input placeholder="Eastern Finals MVP" {...field} />
+                <Input
+                  className="bg-background"
+                  placeholder="Eastern Finals MVP"
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -229,6 +233,7 @@ function AdminPollForm({ mode, poll, onSuccess }: AdminPollFormProps) {
               <FormLabel>Description</FormLabel>
               <FormControl>
                 <Textarea
+                  className="bg-background"
                   placeholder="Vote for the Most Valuable Player..."
                   {...field}
                 />
@@ -246,7 +251,11 @@ function AdminPollForm({ mode, poll, onSuccess }: AdminPollFormProps) {
               <FormItem>
                 <FormLabel>Start Time</FormLabel>
                 <FormControl>
-                  <Input type="datetime-local" {...field} />
+                  <Input
+                    className="bg-background"
+                    type="datetime-local"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -260,7 +269,11 @@ function AdminPollForm({ mode, poll, onSuccess }: AdminPollFormProps) {
               <FormItem>
                 <FormLabel>End Time</FormLabel>
                 <FormControl>
-                  <Input type="datetime-local" {...field} />
+                  <Input
+                    className="bg-background"
+                    type="datetime-local"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -280,7 +293,7 @@ function AdminPollForm({ mode, poll, onSuccess }: AdminPollFormProps) {
                   defaultValue={field.value}
                 >
                   <FormControl>
-                    <SelectTrigger>
+                    <SelectTrigger className="bg-background">
                       <SelectValue placeholder="Select visibility" />
                     </SelectTrigger>
                   </FormControl>
@@ -306,7 +319,7 @@ function AdminPollForm({ mode, poll, onSuccess }: AdminPollFormProps) {
                   defaultValue={field.value}
                 >
                   <FormControl>
-                    <SelectTrigger>
+                    <SelectTrigger className="bg-background">
                       <SelectValue placeholder="Select level" />
                     </SelectTrigger>
                   </FormControl>
@@ -331,7 +344,12 @@ function AdminPollForm({ mode, poll, onSuccess }: AdminPollFormProps) {
               <FormItem>
                 <FormLabel>Max Selections</FormLabel>
                 <FormControl>
-                  <Input type="number" min={1} {...field} />
+                  <Input
+                    className="bg-background"
+                    type="number"
+                    min={1}
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -345,7 +363,12 @@ function AdminPollForm({ mode, poll, onSuccess }: AdminPollFormProps) {
               <FormItem>
                 <FormLabel>Max Per Group (0 for no limit)</FormLabel>
                 <FormControl>
-                  <Input type="number" min={0} {...field} />
+                  <Input
+                    className="bg-background"
+                    type="number"
+                    min={0}
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -397,7 +420,11 @@ function AdminPollForm({ mode, poll, onSuccess }: AdminPollFormProps) {
                   <FormItem>
                     <FormLabel>Name</FormLabel>
                     <FormControl>
-                      <Input placeholder="Team Boston" {...field} />
+                      <Input
+                        className="bg-background"
+                        placeholder="Team Boston"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -412,7 +439,11 @@ function AdminPollForm({ mode, poll, onSuccess }: AdminPollFormProps) {
                     <FormItem>
                       <FormLabel>Color</FormLabel>
                       <FormControl>
-                        <Input placeholder="#70b2e0" {...field} />
+                        <Input
+                          className="bg-background"
+                          placeholder="#70b2e0"
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -425,7 +456,11 @@ function AdminPollForm({ mode, poll, onSuccess }: AdminPollFormProps) {
                     <FormItem>
                       <FormLabel>Logo URL</FormLabel>
                       <FormControl>
-                        <Input placeholder="https://..." {...field} />
+                        <Input
+                          className="bg-background"
+                          placeholder="https://..."
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -483,7 +518,11 @@ function AdminPollForm({ mode, poll, onSuccess }: AdminPollFormProps) {
                   <FormItem>
                     <FormLabel>Name</FormLabel>
                     <FormControl>
-                      <Input placeholder="Cameron Cardwell" {...field} />
+                      <Input
+                        className="bg-background"
+                        placeholder="Cameron Cardwell"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -497,7 +536,11 @@ function AdminPollForm({ mode, poll, onSuccess }: AdminPollFormProps) {
                     <FormItem>
                       <FormLabel>Subtitle</FormLabel>
                       <FormControl>
-                        <Input placeholder="#17" {...field} />
+                        <Input
+                          className="bg-background"
+                          placeholder="#17"
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -510,7 +553,11 @@ function AdminPollForm({ mode, poll, onSuccess }: AdminPollFormProps) {
                     <FormItem>
                       <FormLabel>Image URL</FormLabel>
                       <FormControl>
-                        <Input placeholder="https://..." {...field} />
+                        <Input
+                          className="bg-background"
+                          placeholder="https://..."
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
