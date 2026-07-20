@@ -112,19 +112,21 @@ function PollResultsDisplay({
 
           return (
             <div key={r.optionId} className="space-y-1">
-              <div className="flex items-center gap-2">
-                {meta?.imageUrl && (
-                  <Avatar className="h-8 w-8">
-                    <AvatarImage src={meta.imageUrl} />
-                    <AvatarFallback>
-                      <User className="h-4 w-4" />
-                    </AvatarFallback>
-                  </Avatar>
-                )}
-                <span className="flex-1 text-sm font-medium">
-                  {meta?.name ?? r.optionId}
-                </span>
-                <span className="text-sm tabular-nums text-muted-foreground">
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex min-w-0 items-center gap-2">
+                  {meta?.imageUrl && (
+                    <Avatar className="h-8 w-8 shrink-0">
+                      <AvatarImage src={meta.imageUrl} />
+                      <AvatarFallback>
+                        <User className="h-4 w-4" />
+                      </AvatarFallback>
+                    </Avatar>
+                  )}
+                  <span className="truncate text-sm font-medium">
+                    {meta?.name ?? r.optionId}
+                  </span>
+                </div>
+                <span className="shrink-0 text-sm tabular-nums text-muted-foreground">
                   {results.level === 'Full' && r.count !== undefined && r.count}
                   {results.level === 'Percentages' &&
                     r.percentage !== undefined &&
@@ -319,7 +321,7 @@ function PollCard({ poll }: { poll: Poll }) {
                 {group.name}
               </h3>
             )}
-            <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+            <div className="grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-4">
               {group.options.map((option) => {
                 const isSelected = option.id
                   ? selectedOptionIds.includes(option.id)
@@ -328,7 +330,7 @@ function PollCard({ poll }: { poll: Poll }) {
                   <div
                     key={option.id ?? option.name}
                     className={cn(
-                      'flex h-full cursor-pointer flex-row items-center gap-3 rounded-lg border p-3 text-left transition-all hover:bg-muted/50',
+                      'flex cursor-pointer flex-row items-center gap-3 rounded-lg border p-2.5 transition-all hover:bg-muted/50',
                       isSelected && 'border-primary ring-2 ring-primary',
                       poll.status !== 'Active' &&
                         'cursor-not-allowed opacity-60',
@@ -363,7 +365,7 @@ function PollCard({ poll }: { poll: Poll }) {
         ))}
 
         {ungroupedOptions.length > 0 && (
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+          <div className="grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-4">
             {ungroupedOptions.map((option) => {
               const isSelected = option.id
                 ? selectedOptionIds.includes(option.id)
@@ -372,7 +374,7 @@ function PollCard({ poll }: { poll: Poll }) {
                 <div
                   key={option.id ?? option.name}
                   className={cn(
-                    'flex h-full cursor-pointer flex-row items-center gap-3 rounded-lg border p-3 text-left transition-all hover:bg-muted/50',
+                    'flex cursor-pointer flex-row items-center gap-3 rounded-lg border p-2.5 transition-all hover:bg-muted/50',
                     isSelected && 'border-primary ring-2 ring-primary',
                     poll.status !== 'Active' && 'cursor-not-allowed opacity-60',
                   )}
