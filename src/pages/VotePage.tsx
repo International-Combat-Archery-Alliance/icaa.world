@@ -13,9 +13,6 @@ import { cn } from '@/lib/utils';
 import { ArrowLeft, CheckCircle, User } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-const VOTE_TIMELOCK_ENABLED =
-  (import.meta as any).env.VITE_ENABLE_VOTE_TIMELOCK === 'true';
-
 const matches = [
   {
     name: 'EASTERN FINALS',
@@ -275,11 +272,6 @@ export default function VotePage() {
     setSubmitted((prev) => ({ ...prev, [matchName]: true }));
   };
 
-  const eventHasStarted = (startTime: string) =>
-    new Date() >= new Date(startTime);
-  const canSubmit = (startTime: string) =>
-    !VOTE_TIMELOCK_ENABLED || eventHasStarted(startTime);
-
   return (
     <section className="container mx-auto space-y-12 px-4 py-8">
       <div className="mb-4">
@@ -362,14 +354,10 @@ export default function VotePage() {
                 <div className="flex justify-center pt-4">
                   <Button
                     size="lg"
-                    onClick={() =>
-                      canSubmit(match.startTime) && handleSubmit(match.name)
-                    }
-                    disabled={!votes[match.name] || !canSubmit(match.startTime)}
+                    onClick={() => handleSubmit(match.name)}
+                    disabled={!votes[match.name]}
                   >
-                    {canSubmit(match.startTime)
-                      ? `Submit Vote for ${match.name}`
-                      : 'Voting will open when the event starts'}
+                    Submit Vote for {match.name}
                   </Button>
                 </div>
               </CardContent>

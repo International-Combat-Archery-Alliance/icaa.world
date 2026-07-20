@@ -39,7 +39,6 @@ import Donation from './pages/Donation';
 import DonationSuccess from './pages/DonationSuccess';
 import { DonationQueryClientProvider } from './context/donationQueryClientContext';
 import { MailingListQueryClientProvider } from './context/mailingListQueryClientContext';
-import VotePage from './pages/VotePage';
 import ErrorBoundary from './components/ErrorBoundary';
 import ConsentBanner from './components/ConsentBanner';
 import { ConsentProvider } from './context/consentContext';
@@ -133,10 +132,6 @@ const App = () => {
                                     element={<DonationSuccess />}
                                   />
                                   <Route path="/espn" element={<ESPNPage />} />
-                                  <Route
-                                    path="/espn/vote"
-                                    element={<VotePage />}
-                                  />
                                   <Route
                                     path="/espn/rules"
                                     element={<ESPNRules />}
