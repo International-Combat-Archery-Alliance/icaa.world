@@ -234,7 +234,10 @@ export interface paths {
          */
         patch: {
             parameters: {
-                query?: never;
+                query: {
+                    /** @description The version of the poll you last read, used for optimistic locking. The update will only succeed if this matches the current version on the server. */
+                    version: number;
+                };
                 header?: never;
                 path: {
                     /** @description ID of the poll */

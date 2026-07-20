@@ -149,14 +149,20 @@ function PollCountdown({ endTime }: { endTime: string }) {
     );
   }
 
-  const hours = Math.floor(remaining / 3600000);
+  const days = Math.floor(remaining / 86400000);
+  const hours = Math.floor((remaining % 86400000) / 3600000);
   const minutes = Math.floor((remaining % 3600000) / 60000);
   const seconds = Math.floor((remaining % 60000) / 1000);
+
+  const parts = [];
+  if (days > 0) parts.push(`${days}d`);
+  if (hours > 0 || days > 0) parts.push(`${hours}h`);
+  parts.push(`${minutes}m`, `${seconds}s`);
 
   return (
     <div className="flex items-center justify-center gap-1.5 text-sm tabular-nums text-muted-foreground">
       <Clock className="h-4 w-4" />
-      Closes in {hours}h {minutes}m {seconds}s
+      Closes in {parts.join(' ')}
     </div>
   );
 }

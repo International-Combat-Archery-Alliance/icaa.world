@@ -2,6 +2,7 @@ import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Plus, Trash2 } from 'lucide-react';
+import { toast } from 'sonner';
 import {
   Form,
   FormControl,
@@ -184,20 +185,35 @@ function AdminPollForm({ mode, poll, onSuccess }: AdminPollFormProps) {
         {
           onSuccess: (created) => {
             updatePollCache(created);
+            toast.success('Poll created');
             onSuccess?.();
+          },
+          onError: (err) => {
+            toast.error(
+              err instanceof Error ? err.message : 'Failed to create poll',
+            );
           },
         },
       );
     } else if (poll) {
       updateMutation.mutate(
         {
-          params: { path: { id: poll.id } },
-          body: { ...body, id: poll.id, version: poll.version } as Poll,
+          params: {
+            path: { id: poll.id },
+            query: { version: poll.version },
+          },
+          body: body as Poll,
         },
         {
           onSuccess: (updated) => {
             updatePollCache(updated.poll);
+            toast.success('Poll updated');
             onSuccess?.();
+          },
+          onError: (err) => {
+            toast.error(
+              err instanceof Error ? err.message : 'Failed to update poll',
+            );
           },
         },
       );
