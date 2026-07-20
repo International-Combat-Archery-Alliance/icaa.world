@@ -114,14 +114,12 @@ function PollResultsDisplay({
             <div key={r.optionId} className="space-y-1">
               <div className="flex items-center justify-between gap-2">
                 <div className="flex min-w-0 items-center gap-2">
-                  {meta?.imageUrl && (
-                    <Avatar className="h-8 w-8 shrink-0">
-                      <AvatarImage src={meta.imageUrl} />
-                      <AvatarFallback>
-                        <User className="h-4 w-4" />
-                      </AvatarFallback>
-                    </Avatar>
-                  )}
+                  <Avatar className="h-8 w-8 shrink-0">
+                    <AvatarImage src={meta?.imageUrl} />
+                    <AvatarFallback className="bg-muted">
+                      <User className="h-4 w-4 text-muted-foreground" />
+                    </AvatarFallback>
+                  </Avatar>
                   <span className="truncate text-sm font-medium">
                     {meta?.name ?? r.optionId}
                   </span>
