@@ -379,6 +379,20 @@ export default function ESPNPage() {
 
   return (
     <section className="container mx-auto px-4 py-8 space-y-8">
+      {activeMatches.length > 0 && (
+        <div className="rounded-lg border-2 border-primary bg-primary/10 px-6 py-4 text-center">
+          <p className="mb-3 text-lg font-bold text-primary">
+            Polls are open! Cast your vote for MVP now:
+          </p>
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            {activeMatches.map((m) => (
+              <Button key={m.pollId} asChild size="lg" variant="default">
+                <Link to={`/vote/${m.pollId}`}>Vote for {m.name} MVP!</Link>
+              </Button>
+            ))}
+          </div>
+        </div>
+      )}
       <div className="flex justify-center">
         <img
           src="https://assets.icaa.world/1b266230-4d77-4360-8bb4-af814f83e2ec.png"
@@ -415,21 +429,6 @@ export default function ESPNPage() {
       </Card>
 
       <CountdownTimer targetDate="2026-08-07T19:00:00" />
-
-      {activeMatches.length > 0 && (
-        <div className="rounded-lg border-2 border-primary bg-primary/10 px-6 py-4 text-center">
-          <p className="mb-3 text-lg font-bold text-primary">
-            Polls are open! Cast your vote for MVP now:
-          </p>
-          <div className="flex flex-wrap items-center justify-center gap-3">
-            {activeMatches.map((m) => (
-              <Button key={m.pollId} asChild size="lg" variant="default">
-                <Link to={`/vote/${m.pollId}`}>Vote for {m.name} MVP!</Link>
-              </Button>
-            ))}
-          </div>
-        </div>
-      )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 my-12">
         <Card className="flex flex-col">
