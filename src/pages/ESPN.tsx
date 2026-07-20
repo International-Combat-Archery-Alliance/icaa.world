@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 const matches = [
   {
     name: 'EASTERN FINALS',
+    pollVoteId: '3f6473dc-7a63-4980-babd-cc2dae862cdc',
     teams: [
       {
         name: 'Team Boston',
@@ -168,6 +169,7 @@ const matches = [
   },
   {
     name: 'WESTERN FINALS',
+    pollVoteId: 'e73fcd3c-2ed7-4c7c-8a54-996d10cd3a2f',
     teams: [
       {
         name: 'Team Toronto',
@@ -528,7 +530,9 @@ export default function ESPNPage() {
             </div>
             <div className="flex justify-center mt-8">
               <Button asChild>
-                <Link to="/vote">Vote for {match.name} MVP!</Link>
+                <Link to={`/vote/${match.pollVoteId}`}>
+                  Vote for {match.name} MVP!
+                </Link>
               </Button>
             </div>
             {matchIndex < matches.length - 1}
