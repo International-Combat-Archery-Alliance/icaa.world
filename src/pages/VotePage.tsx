@@ -328,7 +328,7 @@ function PollCard({ poll }: { poll: Poll }) {
                   <div
                     key={option.id ?? option.name}
                     className={cn(
-                      'flex cursor-pointer flex-col items-center space-y-2 rounded-lg border p-4 text-center transition-all hover:bg-muted/50',
+                      'flex h-full cursor-pointer flex-row items-center gap-3 rounded-lg border p-3 text-left transition-all hover:bg-muted/50',
                       isSelected && 'border-primary ring-2 ring-primary',
                       poll.status !== 'Active' &&
                         'cursor-not-allowed opacity-60',
@@ -339,18 +339,22 @@ function PollCard({ poll }: { poll: Poll }) {
                       }
                     }}
                   >
-                    <Avatar className="h-28 w-28">
+                    <Avatar className="h-12 w-12 shrink-0">
                       <AvatarImage src={option.imageUrl} />
                       <AvatarFallback className="bg-muted">
-                        <User className="h-14 w-14 text-muted-foreground" />
+                        <User className="h-6 w-6 text-muted-foreground" />
                       </AvatarFallback>
                     </Avatar>
-                    <div className="font-medium">{option.name}</div>
-                    {option.subtitle && (
-                      <div className="text-sm text-muted-foreground">
-                        {option.subtitle}
+                    <div className="min-w-0">
+                      <div className="truncate text-sm font-medium leading-tight">
+                        {option.name}
                       </div>
-                    )}
+                      {option.subtitle && (
+                        <div className="text-xs text-muted-foreground">
+                          {option.subtitle}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 );
               })}
@@ -368,7 +372,7 @@ function PollCard({ poll }: { poll: Poll }) {
                 <div
                   key={option.id ?? option.name}
                   className={cn(
-                    'flex cursor-pointer flex-col items-center space-y-2 rounded-lg border p-4 text-center transition-all hover:bg-muted/50',
+                    'flex h-full cursor-pointer flex-row items-center gap-3 rounded-lg border p-3 text-left transition-all hover:bg-muted/50',
                     isSelected && 'border-primary ring-2 ring-primary',
                     poll.status !== 'Active' && 'cursor-not-allowed opacity-60',
                   )}
@@ -378,18 +382,22 @@ function PollCard({ poll }: { poll: Poll }) {
                     }
                   }}
                 >
-                  <Avatar className="h-28 w-28">
+                  <Avatar className="h-12 w-12 shrink-0">
                     <AvatarImage src={option.imageUrl} />
                     <AvatarFallback className="bg-muted">
-                      <User className="h-14 w-14 text-muted-foreground" />
+                      <User className="h-6 w-6 text-muted-foreground" />
                     </AvatarFallback>
                   </Avatar>
-                  <div className="font-medium">{option.name}</div>
-                  {option.subtitle && (
-                    <div className="text-sm text-muted-foreground">
-                      {option.subtitle}
+                  <div className="min-w-0">
+                    <div className="truncate text-sm font-medium leading-tight">
+                      {option.name}
                     </div>
-                  )}
+                    {option.subtitle && (
+                      <div className="text-xs text-muted-foreground">
+                        {option.subtitle}
+                      </div>
+                    )}
+                  </div>
                 </div>
               );
             })}

@@ -528,7 +528,7 @@ export default function ESPNPage() {
             </div>
             <div className="flex justify-center mt-8">
               <Button asChild>
-                <Link to="/vote">Vote for {match.name} MVP!</Link>
+                <Link to="/espn/vote">Vote for {match.name} MVP!</Link>
               </Button>
             </div>
             {matchIndex < matches.length - 1}

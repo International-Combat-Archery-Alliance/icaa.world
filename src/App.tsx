@@ -145,7 +145,7 @@ const App = () => {
                                       element={<ESPNPage />}
                                     />
                                     <Route
-                                      path="/vote"
+                                      path="/espn/vote"
                                       element={<VotePage />}
                                     />
                                   </Routes>
