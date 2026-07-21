@@ -260,7 +260,13 @@ function PollVoteCard({ poll }: { poll: Poll }) {
         if (prev.includes(optionId)) {
           return prev.filter((id) => id !== optionId);
         }
-        if (prev.length >= voteConfig.maxSelections) return prev;
+
+        if (prev.length >= voteConfig.maxSelections) {
+          if (voteConfig.maxSelections === 1) {
+            return [optionId];
+          }
+          return prev;
+        }
 
         if (voteConfig.maxSelectionsPerGroup !== undefined) {
           const groupIdx = optionGroupMap.get(optionId);
@@ -349,8 +355,25 @@ function PollVoteCard({ poll }: { poll: Poll }) {
         )}
       </CardHeader>
       <CardContent className="space-y-6">
-        {groups.map((group) => (
+        {groups.length > 0 && (
+          <p className="text-center text-sm text-muted-foreground">
+            Select 1 player
+          </p>
+        )}
+        {groups.map((group, groupIdx) => (
           <div key={group.id ?? group.name}>
+            {groupIdx > 0 && (
+              <div className="relative mb-4 text-center">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-muted-foreground/30" />
+                </div>
+                <div className="relative flex justify-center">
+                  <span className="bg-card px-4 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+                    OR
+                  </span>
+                </div>
+              </div>
+            )}
             {group.imageUrl && (
               <div
                 className="mx-auto mb-4 flex max-w-sm items-center justify-center rounded-lg p-4"
