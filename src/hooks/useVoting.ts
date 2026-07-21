@@ -57,7 +57,15 @@ export function useGetPollResults(pollId: string | undefined) {
         path: { id: pollId! },
       },
     },
-    { enabled: !!pollId },
+    {
+      enabled: !!pollId,
+      retry(failureCount, error) {
+        if (error && typeof error === 'object' && 'code' in error) {
+          return error.code === 'InternalError' && failureCount < 3;
+        }
+        return failureCount < 3;
+      },
+    },
   );
 }
 

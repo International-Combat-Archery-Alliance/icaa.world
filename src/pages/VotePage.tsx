@@ -1,7 +1,8 @@
-import { useState, useCallback, useMemo, useEffect } from 'react';
+import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { useTitle } from 'react-use';
 import Turnstile from 'react-turnstile';
+import type { BoundTurnstileObject } from 'react-turnstile';
 import { CheckCircle, Clock, User } from 'lucide-react';
 import {
   Card,
@@ -218,8 +219,9 @@ function PollVoteCard({ poll }: { poll: Poll }) {
   const [selectedOptionIds, setSelectedOptionIds] = useState<string[]>([]);
   const storedVote = getStoredVote(poll.id);
   const [hasVoted, setHasVoted] = useState(!!storedVote);
-  const [showTurnstile, setShowTurnstile] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const [voteError, setVoteError] = useState<string | null>(null);
+  const boundTurnstileRef = useRef<BoundTurnstileObject | null>(null);
 
   const voteMutation = useVoteOnPoll();
   const queryClient = useQueryClient();
@@ -293,9 +295,16 @@ function PollVoteCard({ poll }: { poll: Poll }) {
   const canSubmit =
     selectedOptionIds.length > 0 &&
     poll.status === 'Active' &&
-    !voteMutation.isPending;
+    !voteMutation.isPending &&
+    !!turnstileToken;
 
   const handleTurnstileVerify = (token: string) => {
+    setTurnstileToken(token);
+    setVoteError(null);
+  };
+
+  const handleSubmit = () => {
+    if (!turnstileToken) return;
     const idempotencyKey = generateUUID();
     setVoteError(null);
 
@@ -304,7 +313,7 @@ function PollVoteCard({ poll }: { poll: Poll }) {
         params: {
           path: { id: poll.id },
           header: {
-            'cf-turnstile-response': token,
+            'cf-turnstile-response': turnstileToken,
             'Idempotency-Key': idempotencyKey,
           },
         },
@@ -323,11 +332,9 @@ function PollVoteCard({ poll }: { poll: Poll }) {
             queryKey: ['get', '/voting/v1/polls/{id}/results'],
           });
           setHasVoted(true);
-          setShowTurnstile(false);
         },
         onError: () => {
           setVoteError('Vote submission failed. Please try again.');
-          setShowTurnstile(false);
         },
       },
     );
@@ -358,6 +365,15 @@ function PollVoteCard({ poll }: { poll: Poll }) {
         {poll.status === 'Active' && poll.endTime && (
           <PollCountdown endTime={poll.endTime} />
         )}
+        {!hasVoted &&
+          poll.status !== 'Closed' &&
+          poll.resultsVisibility !== 'Live' && (
+            <p className="text-sm text-muted-foreground">
+              {poll.resultsVisibility === 'AfterClose'
+                ? 'Results will be available after the poll closes.'
+                : 'Results are only visible to administrators.'}
+            </p>
+          )}
       </CardHeader>
       <CardContent className="space-y-6">
         {groups.length > 0 && (
@@ -492,35 +508,33 @@ function PollVoteCard({ poll }: { poll: Poll }) {
             <p className="text-sm text-muted-foreground">
               {selectedOptionIds.length} of {voteConfig.maxSelections} selected
             </p>
-            {!showTurnstile ? (
-              <Button
-                size="lg"
-                disabled={!canSubmit}
-                onClick={() => setShowTurnstile(true)}
-              >
-                Submit Vote
-              </Button>
-            ) : (
-              <div className="flex flex-col items-center gap-2">
-                <p className="text-sm text-muted-foreground">
-                  Verify you are human to submit your vote:
-                </p>
-                <Turnstile
-                  theme="light"
-                  sitekey={import.meta.env.VITE_TURNSTILE_SITE_KEY}
-                  onVerify={handleTurnstileVerify}
-                  onError={() => {
-                    setVoteError(
-                      'Captcha verification failed. Please try again.',
-                    );
-                    setShowTurnstile(false);
-                  }}
-                  onExpire={() => {
-                    setShowTurnstile(false);
-                  }}
-                />
-              </div>
-            )}
+            <div className="flex flex-col items-center gap-2">
+              <p className="text-sm text-muted-foreground">
+                Verify you are human to submit your vote:
+              </p>
+              <Turnstile
+                theme="light"
+                sitekey={import.meta.env.VITE_TURNSTILE_SITE_KEY}
+                onLoad={(_widgetId, boundTurnstile) => {
+                  boundTurnstileRef.current = boundTurnstile;
+                }}
+                onVerify={handleTurnstileVerify}
+                onError={() => {
+                  setTurnstileToken(null);
+                  setVoteError(
+                    'Captcha verification failed. Please try again.',
+                  );
+                  boundTurnstileRef.current?.reset();
+                }}
+                onExpire={() => {
+                  setTurnstileToken(null);
+                  boundTurnstileRef.current?.reset();
+                }}
+              />
+            </div>
+            <Button size="lg" disabled={!canSubmit} onClick={handleSubmit}>
+              Submit Vote
+            </Button>
             {voteError && (
               <p className="text-sm text-destructive">{voteError}</p>
             )}
