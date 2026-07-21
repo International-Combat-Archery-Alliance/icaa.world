@@ -57,7 +57,7 @@ function ResultsBanner({
 const matches = [
   {
     name: 'EASTERN FINALS',
-    pollId: '3f6473dc-7a63-4980-babd-cc2dae862cdc',
+    pollId: '57b5138e-9944-4026-98be-29ac8f957a93',
     teams: [
       {
         name: 'Team Boston',
@@ -217,7 +217,7 @@ const matches = [
   },
   {
     name: 'WESTERN FINALS',
-    pollId: 'e73fcd3c-2ed7-4c7c-8a54-996d10cd3a2f',
+    pollId: 'df7f6289-8b52-4751-8b0f-54b914e3f70a',
     teams: [
       {
         name: 'Team Toronto',
