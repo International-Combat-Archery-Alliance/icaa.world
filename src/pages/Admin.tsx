@@ -63,6 +63,8 @@ import {
   Heart,
   FileText,
   Vote,
+  Link,
+  Check,
 } from 'lucide-react';
 
 const adminTabs = [
@@ -496,12 +498,21 @@ function PollManager({
 
 function PollRow({ poll, onEdit }: { poll: Poll; onEdit: () => void }) {
   const [showResults, setShowResults] = useState(false);
+  const [linkCopied, setLinkCopied] = useState(false);
   const deleteMutation = useDeletePoll();
   const updatePollCache = useUpdatePollDataAfterMutate();
 
   const { data: results } = useGetPollResults(
     showResults ? poll.id : undefined,
   );
+
+  const pollUrl = `${window.location.origin}/vote/${poll.id}`;
+
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(pollUrl);
+    setLinkCopied(true);
+    setTimeout(() => setLinkCopied(false), 2000);
+  };
 
   const optionMeta = useMemo(() => {
     const map = new Map<string, OptionMeta>();
@@ -547,6 +558,19 @@ function PollRow({ poll, onEdit }: { poll: Poll; onEdit: () => void }) {
             onClick={() => setShowResults(!showResults)}
           >
             {showResults ? 'Hide Results' : 'Results'}
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleCopyLink}
+            title="Copy poll link"
+          >
+            {linkCopied ? (
+              <Check className="h-4 w-4 text-green-600" />
+            ) : (
+              <Link className="h-4 w-4" />
+            )}
+            <span className="ml-1">Link</span>
           </Button>
           <Button variant="outline" size="sm" onClick={onEdit}>
             Edit
