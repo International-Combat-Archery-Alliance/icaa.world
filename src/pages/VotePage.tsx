@@ -25,6 +25,7 @@ import {
   PollResultsDisplay,
   type OptionMeta,
 } from '@/components/PollResultsDisplay';
+import { useQueryClient } from '@tanstack/react-query';
 
 const VOTES_KEY = 'icaa_votes';
 
@@ -221,6 +222,7 @@ function PollVoteCard({ poll }: { poll: Poll }) {
   const [voteError, setVoteError] = useState<string | null>(null);
 
   const voteMutation = useVoteOnPoll();
+  const queryClient = useQueryClient();
   const showResults =
     hasVoted || poll.status === 'Closed' || poll.resultsVisibility === 'Live';
   const { data: results } = useGetPollResults(
@@ -316,6 +318,9 @@ function PollVoteCard({ poll }: { poll: Poll }) {
             optionIds: selectedOptionIds,
             optionName: meta?.name ?? selectedOptionIds[0],
             optionImageUrl: meta?.imageUrl,
+          });
+          queryClient.invalidateQueries({
+            queryKey: ['get', '/voting/v1/polls/{id}/results'],
           });
           setHasVoted(true);
           setShowTurnstile(false);
