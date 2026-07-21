@@ -72,10 +72,12 @@ function VotedCard({
   vote,
   results,
   optionMeta,
+  poll,
 }: {
   vote: StoredVote;
   results?: ReturnType<typeof useGetPollResults>['data'];
   optionMeta: Map<string, OptionMeta>;
+  poll: Poll;
 }) {
   const votedOption = optionMeta.get(vote.optionIds[0]);
 
@@ -103,6 +105,13 @@ function VotedCard({
             <h4 className="mb-2 font-semibold">Results</h4>
             <PollResultsDisplay results={results} optionMeta={optionMeta} />
           </div>
+        )}
+        {!results && (
+          <p className="text-sm text-muted-foreground">
+            {poll.resultsVisibility === 'AfterClose'
+              ? 'Results will be available after the poll closes.'
+              : 'Results are only visible to administrators.'}
+          </p>
         )}
       </CardContent>
     </Card>
@@ -295,8 +304,7 @@ function PollVoteCard({ poll }: { poll: Poll }) {
   const canSubmit =
     selectedOptionIds.length > 0 &&
     poll.status === 'Active' &&
-    !voteMutation.isPending &&
-    !!turnstileToken;
+    !voteMutation.isPending;
 
   const handleTurnstileVerify = (token: string) => {
     setTurnstileToken(token);
@@ -304,7 +312,10 @@ function PollVoteCard({ poll }: { poll: Poll }) {
   };
 
   const handleSubmit = () => {
-    if (!turnstileToken) return;
+    if (!turnstileToken) {
+      setVoteError('Please complete the captcha verification.');
+      return;
+    }
     const idempotencyKey = generateUUID();
     setVoteError(null);
 
@@ -342,7 +353,12 @@ function PollVoteCard({ poll }: { poll: Poll }) {
 
   if (hasVoted && storedVote) {
     return (
-      <VotedCard vote={storedVote} results={results} optionMeta={optionMeta} />
+      <VotedCard
+        vote={storedVote}
+        results={results}
+        optionMeta={optionMeta}
+        poll={poll}
+      />
     );
   }
 
@@ -521,9 +537,6 @@ function PollVoteCard({ poll }: { poll: Poll }) {
                 onVerify={handleTurnstileVerify}
                 onError={() => {
                   setTurnstileToken(null);
-                  setVoteError(
-                    'Captcha verification failed. Please try again.',
-                  );
                   boundTurnstileRef.current?.reset();
                 }}
                 onExpire={() => {
@@ -541,6 +554,15 @@ function PollVoteCard({ poll }: { poll: Poll }) {
           </div>
         )}
 
+        {poll.status === 'Active' &&
+          poll.resultsVisibility === 'Live' &&
+          results && (
+            <div className="mt-4">
+              <h4 className="mb-2 text-center font-semibold">Results</h4>
+              <PollResultsDisplay results={results} optionMeta={optionMeta} />
+            </div>
+          )}
+
         {poll.status === 'Closed' && results && (
           <div className="mt-4">
             <h4 className="mb-2 text-center font-semibold">Results</h4>
@@ -548,9 +570,11 @@ function PollVoteCard({ poll }: { poll: Poll }) {
           </div>
         )}
 
-        {poll.status === 'Closed' && !results && (
+        {poll.status === 'Closed' && !results && !hasVoted && (
           <p className="text-center text-muted-foreground">
-            This poll has closed.
+            {poll.resultsVisibility === 'AdminOnly'
+              ? 'Results are only visible to administrators.'
+              : 'This poll has closed.'}
           </p>
         )}
       </CardContent>
