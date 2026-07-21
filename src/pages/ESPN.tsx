@@ -5,10 +5,59 @@ import { PlayerRoster } from '@/components/PlayerRoster';
 import { CountdownTimer } from '@/components/CountdownTimer';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { useGetPolls } from '@/hooks/useVoting';
+import { useMemo } from 'react';
+
+function VoteBanner({
+  matches,
+}: {
+  matches: { pollId: string; name: string }[];
+}) {
+  if (matches.length === 0) return null;
+
+  return (
+    <div className="rounded-lg border-2 border-primary bg-primary/10 px-6 py-4 text-center">
+      <p className="mb-3 text-lg font-bold text-primary">
+        Polls are open! Cast your vote for MVP now:
+      </p>
+      <div className="flex flex-wrap items-center justify-center gap-3">
+        {matches.map((m) => (
+          <Button key={m.pollId} asChild size="lg" variant="default">
+            <Link to={`/vote/${m.pollId}`}>Vote for {m.name} MVP!</Link>
+          </Button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ResultsBanner({
+  matches,
+}: {
+  matches: { pollId: string; name: string }[];
+}) {
+  if (matches.length === 0) return null;
+
+  return (
+    <div className="rounded-lg border-2 border-muted-foreground/30 bg-muted/30 px-6 py-4 text-center">
+      <p className="mb-3 text-lg font-bold">
+        Polls have closed. See the results:
+      </p>
+      <div className="flex flex-wrap items-center justify-center gap-3">
+        {matches.map((m) => (
+          <Button key={m.pollId} asChild size="lg" variant="outline">
+            <Link to={`/vote/${m.pollId}`}>{m.name} MVP Results</Link>
+          </Button>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 const matches = [
   {
     name: 'EASTERN FINALS',
+    pollId: '57b5138e-9944-4026-98be-29ac8f957a93',
     teams: [
       {
         name: 'Team Boston',
@@ -33,7 +82,7 @@ const matches = [
             firstName: 'Nate',
             lastName: 'Langh',
             number: '3',
-            position: 'Rear Guard',
+            position: 'Flex',
             city: 'Boston',
             experience: '3',
           },
@@ -119,7 +168,7 @@ const matches = [
             firstName: 'Angel',
             lastName: 'MacEachern',
             number: '1',
-            position: 'Flex',
+            position: 'Centerback',
             city: 'Ottawa',
             experience: '2.5',
           },
@@ -168,6 +217,7 @@ const matches = [
   },
   {
     name: 'WESTERN FINALS',
+    pollId: 'df7f6289-8b52-4751-8b0f-54b914e3f70a',
     teams: [
       {
         name: 'Team Toronto',
@@ -191,7 +241,7 @@ const matches = [
             firstName: 'Tim',
             lastName: 'Ahong',
             number: '21',
-            position: 'Forward',
+            position: 'Flex',
             city: 'Toronto',
             experience: '7',
           },
@@ -219,7 +269,7 @@ const matches = [
             firstName: 'Christina',
             lastName: 'Laconsay',
             number: '14',
-            position: 'Rear Guard',
+            position: 'Flex',
             city: 'Toronto',
             experience: '4',
           },
@@ -236,10 +286,10 @@ const matches = [
           {
             imageUrl:
               'https://assets.icaa.world/578f8d21-5ca0-4287-9b39-b881206be767.jpg',
-            firstName: 'Simran',
-            lastName: 'Singh',
+            firstName: 'Sim',
+            lastName: 'Singh', // Simran Singh
             number: '25',
-            position: 'Centerback',
+            position: 'Flex',
             city: 'Boston',
             experience: '6',
           },
@@ -331,6 +381,23 @@ const matches = [
 export default function ESPNPage() {
   useTitle('ESPN8: All Stars 2026 - ICAA');
 
+  const { data: pollsData } = useGetPolls();
+  const pollStatusById = useMemo(() => {
+    const map = new Map<string, string>();
+    const polls = pollsData?.pages.flatMap((p) => p.data) ?? [];
+    for (const poll of polls) {
+      map.set(poll.id, poll.status);
+    }
+    return map;
+  }, [pollsData]);
+
+  const activeMatches = matches.filter(
+    (m) => pollStatusById.get(m.pollId) === 'Active',
+  );
+  const closedMatches = matches.filter(
+    (m) => pollStatusById.get(m.pollId) === 'Closed',
+  );
+
   const sponsors = [
     {
       logoUrl:
@@ -361,6 +428,8 @@ export default function ESPNPage() {
 
   return (
     <section className="container mx-auto px-4 py-8 space-y-8">
+      <VoteBanner matches={activeMatches} />
+      <ResultsBanner matches={closedMatches} />
       <div className="flex justify-center">
         <img
           src="https://assets.icaa.world/1b266230-4d77-4360-8bb4-af814f83e2ec.png"
@@ -382,9 +451,9 @@ export default function ESPNPage() {
           </CardTitle>
         </CardHeader>
         <CardContent className="text-center text-lg space-y-2">
-          <p>Friday, August 7th. 3:00 PM EST</p>
+          <p>Friday, August 7th. 7:00 PM EST</p>
           <p>Filmed live at the ESPN World Wide of Sports Complex in Orlando</p>
-          <p>Watch the broadcast on ESPN2 @ 3:00 PM!</p>
+          <p>Watch the broadcast on ESPN2 @ 7:00 PM!</p>
           <a
             href="https://www.espnwwos.com/events/competitive-sports/espn8-the-ocho/"
             target="_blank"
@@ -397,6 +466,7 @@ export default function ESPNPage() {
       </Card>
 
       <CountdownTimer targetDate="2026-08-07T19:00:00" />
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 my-12">
         <Card className="flex flex-col">
           <CardHeader>
@@ -415,16 +485,17 @@ export default function ESPNPage() {
         </Card>
         <Card className="flex flex-col">
           <CardHeader>
-            <CardTitle>Event Format & Rules</CardTitle>
+            <CardTitle>Full Rules</CardTitle>
           </CardHeader>
           <CardContent className="flex-grow">
             <p className="text-muted-foreground">
-              Get a quick overview of the rules and format for the event!
+              Get a quick overview of the rules or dive into the official ICAA
+              rulebook.
             </p>
           </CardContent>
           <div className="p-6 pt-0">
             <Button asChild className="w-full">
-              <Link to="/espn/rules">View Rules</Link>
+              <Link to="/official-rules">View Rules</Link>
             </Button>
           </div>
         </Card>
@@ -462,7 +533,7 @@ export default function ESPNPage() {
       </div>
 
       <div className="space-y-16 pt-16">
-        {matches.map((match, matchIndex) => (
+        {matches.map((match) => (
           <div key={match.name} className="space-y-8">
             <div className="relative text-center my-12">
               <div
@@ -525,7 +596,6 @@ export default function ESPNPage() {
                 />
               </div>
             </div>
-            {matchIndex < matches.length - 1}
           </div>
         ))}
       </div>

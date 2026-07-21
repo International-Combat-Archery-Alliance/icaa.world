@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useTitle } from 'react-use';
 import { useLocation, useNavigate } from 'react-router-dom';
 import type { DateRange } from 'react-day-picker';
@@ -35,13 +35,24 @@ import {
 import EventRegistrationTable from '@/components/EventRegistrationTable';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { AdminEventForm, AdminEventMode } from '@/components/AdminEventForm';
 import { AssetBrowser } from '@/components/AssetBrowser';
 import { DonationList } from '@/components/DonationList';
 import { DonationByState } from '@/components/DonationByState';
 import { ArticleEditor } from '@/components/ArticleEditor';
 import { ArticleList } from '@/components/ArticleList';
+import { AdminPollForm } from '@/components/AdminPollForm';
+import { PollResultsDisplay } from '@/components/PollResultsDisplay';
+import type { OptionMeta } from '@/components/PollResultsDisplay';
 import type { Article } from '@/hooks/useArticles';
+import {
+  useGetPolls,
+  useDeletePoll,
+  useGetPollResults,
+  useUpdatePollDataAfterMutate,
+} from '@/hooks/useVoting';
+import type { Poll } from '@/hooks/useVoting';
 import { DateRangePicker } from '@/components/DateRangePicker';
 import { cn } from '@/lib/utils';
 import {
@@ -51,6 +62,7 @@ import {
   FolderOpen,
   Heart,
   FileText,
+  Vote,
 } from 'lucide-react';
 
 const adminTabs = [
@@ -60,6 +72,7 @@ const adminTabs = [
   { id: 'assets', label: 'Assets', icon: FolderOpen },
   { id: 'articles', label: 'Articles', icon: FileText },
   { id: 'donations', label: 'Donations', icon: Heart },
+  { id: 'polls', label: 'Polls', icon: Vote },
 ] as const;
 
 type AdminTabId = (typeof adminTabs)[number]['id'];
@@ -75,6 +88,10 @@ export function AdminPage() {
   const [editingArticle, setEditingArticle] = useState<
     Article | undefined | null
   >(undefined);
+  const [editingPoll, setEditingPoll] = useState<Poll | undefined>(undefined);
+  const [pollAction, setPollAction] = useState<'list' | 'create' | 'edit'>(
+    'list',
+  );
 
   const hash = location.hash.replace('#', '') as AdminTabId;
   const activeTab = adminTabs.find((tab) => tab.id === hash)
@@ -201,6 +218,14 @@ export function AdminPage() {
             <DonationList dateRange={donationDateRange} />
             <DonationByState dateRange={donationDateRange} />
           </div>
+        </TabsContent>
+        <TabsContent value="polls" className="mt-0">
+          <PollManager
+            action={pollAction}
+            editingPoll={editingPoll}
+            onActionChange={setPollAction}
+            onEditPoll={setEditingPoll}
+          />
         </TabsContent>
       </Tabs>
     </section>
@@ -372,3 +397,186 @@ function SignUpInfoCards({ eventId }: { eventId: string | undefined }) {
 }
 
 export default AdminPage;
+
+function PollManager({
+  action,
+  editingPoll,
+  onActionChange,
+  onEditPoll,
+}: {
+  action: 'list' | 'create' | 'edit';
+  editingPoll: Poll | undefined;
+  onActionChange: (a: 'list' | 'create' | 'edit') => void;
+  onEditPoll: (p: Poll | undefined) => void;
+}) {
+  const { data, isLoading } = useGetPolls();
+
+  const polls = data?.pages.flatMap((page) => page.data) ?? [];
+
+  if (action === 'create') {
+    return (
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle>Create Poll</CardTitle>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => onActionChange('list')}
+          >
+            Back to List
+          </Button>
+        </CardHeader>
+        <CardContent>
+          <AdminPollForm
+            mode="create"
+            onSuccess={() => onActionChange('list')}
+          />
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (action === 'edit' && editingPoll) {
+    return (
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle>Edit Poll: {editingPoll.name}</CardTitle>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              onEditPoll(undefined);
+              onActionChange('list');
+            }}
+          >
+            Back to List
+          </Button>
+        </CardHeader>
+        <CardContent>
+          <AdminPollForm
+            mode="edit"
+            poll={editingPoll}
+            onSuccess={() => {
+              onEditPoll(undefined);
+              onActionChange('list');
+            }}
+          />
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <Card>
+      <CardHeader className="flex flex-row items-center justify-between">
+        <CardTitle>Polls</CardTitle>
+        <Button onClick={() => onActionChange('create')}>Create Poll</Button>
+      </CardHeader>
+      <CardContent>
+        {isLoading && <Skeleton className="h-32 w-full" />}
+        {!isLoading && polls.length === 0 && (
+          <p className="text-center text-muted-foreground">
+            No polls yet. Create one to get started.
+          </p>
+        )}
+        {polls.map((poll) => (
+          <PollRow
+            key={poll.id}
+            poll={poll}
+            onEdit={() => {
+              onEditPoll(poll);
+              onActionChange('edit');
+            }}
+          />
+        ))}
+      </CardContent>
+    </Card>
+  );
+}
+
+function PollRow({ poll, onEdit }: { poll: Poll; onEdit: () => void }) {
+  const [showResults, setShowResults] = useState(false);
+  const deleteMutation = useDeletePoll();
+  const updatePollCache = useUpdatePollDataAfterMutate();
+
+  const { data: results } = useGetPollResults(
+    showResults ? poll.id : undefined,
+  );
+
+  const optionMeta = useMemo(() => {
+    const map = new Map<string, OptionMeta>();
+    const options = poll.options ?? [];
+    for (const opt of options) {
+      if (opt.id) map.set(opt.id, opt);
+    }
+    for (const group of poll.groups ?? []) {
+      for (const opt of group.options) {
+        if (opt.id) map.set(opt.id, opt);
+      }
+    }
+    return map;
+  }, [poll]);
+
+  return (
+    <div className="mb-2 rounded-lg border p-4">
+      <div className="flex items-center justify-between">
+        <div>
+          <div className="flex items-center gap-2">
+            <span className="font-medium">{poll.name}</span>
+            <Badge
+              variant={
+                poll.status === 'Active'
+                  ? 'default'
+                  : poll.status === 'Upcoming'
+                    ? 'secondary'
+                    : 'outline'
+              }
+            >
+              {poll.status}
+            </Badge>
+          </div>
+          <p className="text-sm text-muted-foreground">
+            {new Date(poll.startTime).toLocaleString()} —{' '}
+            {new Date(poll.endTime).toLocaleString()}
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setShowResults(!showResults)}
+          >
+            {showResults ? 'Hide Results' : 'Results'}
+          </Button>
+          <Button variant="outline" size="sm" onClick={onEdit}>
+            Edit
+          </Button>
+          <Button
+            variant="destructive"
+            size="sm"
+            disabled={deleteMutation.isPending}
+            onClick={() => {
+              if (
+                !window.confirm(
+                  `Delete poll "${poll.name}"? This cannot be undone.`,
+                )
+              )
+                return;
+              deleteMutation.mutate(
+                { params: { path: { id: poll.id } } },
+                { onSuccess: () => updatePollCache(poll) },
+              );
+            }}
+          >
+            Delete
+          </Button>
+        </div>
+      </div>
+      {showResults && results && (
+        <div className="mt-4 border-t pt-4">
+          <PollResultsDisplay results={results} optionMeta={optionMeta} />
+        </div>
+      )}
+    </div>
+  );
+}
