@@ -31,6 +31,29 @@ function VoteBanner({
   );
 }
 
+function ResultsBanner({
+  matches,
+}: {
+  matches: { pollId: string; name: string }[];
+}) {
+  if (matches.length === 0) return null;
+
+  return (
+    <div className="rounded-lg border-2 border-muted-foreground/30 bg-muted/30 px-6 py-4 text-center">
+      <p className="mb-3 text-lg font-bold">
+        Polls have closed. See the results:
+      </p>
+      <div className="flex flex-wrap items-center justify-center gap-3">
+        {matches.map((m) => (
+          <Button key={m.pollId} asChild size="lg" variant="outline">
+            <Link to={`/vote/${m.pollId}`}>{m.name} MVP Results</Link>
+          </Button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 const matches = [
   {
     name: 'EASTERN FINALS',
@@ -371,6 +394,9 @@ export default function ESPNPage() {
   const activeMatches = matches.filter(
     (m) => pollStatusById.get(m.pollId) === 'Active',
   );
+  const closedMatches = matches.filter(
+    (m) => pollStatusById.get(m.pollId) === 'Closed',
+  );
 
   const sponsors = [
     {
@@ -403,6 +429,7 @@ export default function ESPNPage() {
   return (
     <section className="container mx-auto px-4 py-8 space-y-8">
       <VoteBanner matches={activeMatches} />
+      <ResultsBanner matches={closedMatches} />
       <div className="flex justify-center">
         <img
           src="https://assets.icaa.world/1b266230-4d77-4360-8bb4-af814f83e2ec.png"
