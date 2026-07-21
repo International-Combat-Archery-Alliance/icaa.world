@@ -15,103 +15,13 @@ export interface paths {
          * Get all polls
          * @description Retrieves a list of all polls, sorted by start time descending
          */
-        get: {
-            parameters: {
-                query?: {
-                    /** @description Cursor of where to start from */
-                    cursor?: string;
-                    /** @description Max amount of polls to fetch */
-                    limit?: number;
-                };
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description A list of polls. */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            data: components["schemas"]["Poll"][];
-                            /** @example Y29uZ3JhdHMsIHlvdSBmb3VuZCB0aGUgZWFzdGVyIGVnZw== */
-                            cursor?: string;
-                            /** @example true */
-                            hasNextPage: boolean;
-                        };
-                    };
-                };
-                /** @description Bad request. */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                /** @description Unknown server error. */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-            };
-        };
+        get: operations["GetVotingV1Polls"];
         put?: never;
         /**
          * Create a new poll
          * @description Admin endpoint to create a new poll. IDs for the poll, groups, and options are assigned by the server.
          */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            /** @description Poll to be created */
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["Poll"];
-                };
-            };
-            responses: {
-                /** @description The created poll. */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Poll"];
-                    };
-                };
-                /** @description Bad request. */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                /** @description Unknown server error. */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-            };
-        };
+        post: operations["PostVotingV1Polls"];
         delete?: never;
         options?: never;
         head?: never;
@@ -129,281 +39,21 @@ export interface paths {
          * Get a poll
          * @description Get one poll by id
          */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    /** @description ID of the poll */
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description The poll */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            poll: components["schemas"]["Poll"];
-                        };
-                    };
-                };
-                /** @description Bad request. */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                /** @description Poll not found. */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                /** @description Unknown server error. */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-            };
-        };
+        get: operations["GetVotingV1PollsId"];
         put?: never;
         post?: never;
         /**
          * Delete a poll
          * @description Delete a poll and its results by id
          */
-        delete: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    /** @description ID of the poll */
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description The poll was deleted */
-                204: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description Poll not found. */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                /** @description Unknown server error. */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-            };
-        };
+        delete: operations["DeleteVotingV1PollsId"];
         options?: never;
         head?: never;
         /**
          * Update a poll
          * @description Update a poll by id. Groups and options keep their IDs across updates when they are included in the request so cast votes stay attributed. New groups/options without IDs are assigned IDs by the server.
          */
-        patch: {
-            parameters: {
-                query: {
-                    /** @description The version of the poll you last read, used for optimistic locking. The update will only succeed if this matches the current version on the server. */
-                    version: number;
-                };
-                header?: never;
-                path: {
-                    /** @description ID of the poll */
-                    id: string;
-                };
-                cookie?: never;
-            };
-            /** @description Poll to be updated */
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["Poll"];
-                };
-            };
-            responses: {
-                /** @description The updated poll */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            poll: components["schemas"]["Poll"];
-                        };
-                    };
-                };
-                /** @description Bad request. */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                /** @description Poll not found. */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                /** @description Poll was modified by another request, retry with the latest version. */
-                409: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                /** @description Unknown server error. */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-            };
-        };
-        trace?: never;
-    };
-    "/voting/v1/polls/{id}/votes": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Vote on a poll
-         * @description Casts a ballot of one or more options on a poll. The poll's vote config limits how many
-         *     options may be selected in total and per group.
-         *
-         *     Votes are only accepted between the poll's start and end times.
-         *
-         *     The Idempotency-Key header protects against accidental double counting from client retries:
-         *     a key may only ever be counted once. Reusing a key with a different ballot is rejected.
-         */
-        post: {
-            parameters: {
-                query?: never;
-                header: {
-                    /** @description Cloudflare turnstile CAPTCHA */
-                    "cf-turnstile-response": string;
-                    /** @description Client generated unique key for this ballot, used to deduplicate retried requests */
-                    "Idempotency-Key": string;
-                };
-                path: {
-                    /** @description ID of the poll */
-                    id: string;
-                };
-                cookie?: never;
-            };
-            /** @description Ballot of options to vote for */
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["VoteBallot"];
-                };
-            };
-            responses: {
-                /** @description The vote was recorded. Also returned when a ballot with the same Idempotency-Key was already recorded. */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["VoteConfirmation"];
-                    };
-                };
-                /** @description Bad request, invalid captcha, or invalid ballot. */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                /** @description The poll is not currently active. */
-                403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                /** @description Poll not found. */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                /** @description The Idempotency-Key was already used with a different ballot. */
-                409: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                /** @description Unknown server error. */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
+        patch: operations["PatchVotingV1PollsId"];
         trace?: never;
     };
     "/voting/v1/polls/{id}/results": {
@@ -430,58 +80,35 @@ export interface paths {
          *
          *     Admins always receive Full results.
          */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    /** @description ID of the poll */
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description The results of the poll */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["PollResults"];
-                    };
-                };
-                /** @description Results are not available for this poll. */
-                403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                /** @description Poll not found. */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                /** @description Unknown server error. */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-            };
-        };
+        get: operations["GetVotingV1PollsIdResults"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/voting/v1/polls/{id}/votes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Vote on a poll
+         * @description Casts a ballot of one or more options on a poll. The poll's vote config limits how many
+         *     options may be selected in total and per group.
+         *
+         *     Votes are only accepted between the poll's start and end times.
+         *
+         *     The Idempotency-Key header protects against accidental double counting from client retries:
+         *     a key may only ever be counted once. Reusing a key with a different ballot is rejected.
+         */
+        post: operations["PostVotingV1PollsIdVotes"];
         delete?: never;
         options?: never;
         head?: never;
@@ -492,46 +119,119 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
-        Poll: {
+        Error: {
+            code: components["schemas"]["ErrorCode"];
+            /** @example An unexpected error occurred. */
+            message: string;
+        };
+        /** @enum {string} */
+        ErrorCode: "InternalError" | "LimitOutOfBounds" | "InvalidCursor" | "NotFound" | "InvalidBody" | "InputValidationError" | "AuthError" | "CaptchaInvalid" | "PollNotActive" | "InvalidBallot" | "IdempotencyConflict" | "VersionConflict";
+        OptionResult: {
+            /**
+             * @description Vote count for this option. Only present when level is Full.
+             * @example 10
+             */
+            count?: number;
             /**
              * Format: uuid
              * @example 00000000-0000-0000-0000-000000000000
              */
-            readonly id: string;
-            /** @example 1 */
-            readonly version: number;
-            /** @example Eastern Finals MVP */
-            name: string;
+            optionId: string;
+            /**
+             * @description Percentage of votes for this option (0-100). Only present when level is Percentages.
+             * @example 42
+             */
+            percentage?: number;
+            /**
+             * @description Rank of this option (1-based, ties share rank). Only present when level is Rankings.
+             * @example 1
+             */
+            rank?: number;
+        };
+        Poll: {
             /** @example Vote for the Most Valuable Player of the Eastern Finals */
             description?: string;
-            /**
-             * Format: date-time
-             * @example 2026-08-07T19:00:00.000Z
-             */
-            startTime: string;
             /**
              * Format: date-time
              * @example 2026-08-08T00:00:00.000Z
              */
             endTime: string;
-            resultsVisibility: components["schemas"]["ResultsVisibility"];
-            publicResultsLevel?: components["schemas"]["PublicResultsLevel"];
-            voteConfig?: components["schemas"]["VoteConfig"];
             /** @description Optional groups that options belong to, e.g. teams. Options are nested inside their group. */
             groups?: components["schemas"]["PollGroup"][];
+            /**
+             * Format: uuid
+             * @example 00000000-0000-0000-0000-000000000000
+             */
+            readonly id: string;
+            /** @example Eastern Finals MVP */
+            name: string;
             /** @description Options that don't belong to a group */
             options?: components["schemas"]["PollOption"][];
+            publicResultsLevel?: components["schemas"]["PublicResultsLevel"];
+            resultsVisibility: components["schemas"]["ResultsVisibility"];
+            /**
+             * Format: date-time
+             * @example 2026-08-07T19:00:00.000Z
+             */
+            startTime: string;
             status: components["schemas"]["PollStatus"];
+            /** @example 1 */
+            readonly version: number;
+            voteConfig?: components["schemas"]["VoteConfig"];
+        };
+        PollGroup: {
+            /** @example #70b2e0 */
+            color?: string;
+            /**
+             * Format: uuid
+             * @description Assigned by the server when omitted. Include on updates to preserve the group's identity.
+             * @example 00000000-0000-0000-0000-000000000000
+             */
+            id?: string;
+            /** @example https://assets.icaa.world/42e777a4-2757-4bbf-bdaa-79303aafc9ba.png */
+            imageUrl?: string;
+            /** @example Team Boston */
+            name: string;
+            /** @description The options that belong to this group */
+            options: components["schemas"]["PollOption"][];
+        };
+        PollOption: {
+            /**
+             * Format: uuid
+             * @description Assigned by the server when omitted. Include on updates to preserve the option's identity and its votes.
+             * @example 00000000-0000-0000-0000-000000000000
+             */
+            id?: string;
+            /** @example https://assets.icaa.world/9ccd9c08-d3cb-4a25-a386-675c9c299c61.jpg */
+            imageUrl?: string;
+            /** @example Cameron Cardwell */
+            name: string;
+            /**
+             * @description Extra info about the option, e.g. a player's number
+             * @example #17
+             */
+            subtitle?: string;
+        };
+        PollResults: {
+            level: components["schemas"]["PublicResultsLevel"];
+            /**
+             * Format: uuid
+             * @example 00000000-0000-0000-0000-000000000000
+             */
+            pollId: string;
+            results: components["schemas"]["OptionResult"][];
+            /**
+             * @description Total amount of ballots cast. Only present when level is Full.
+             * @example 42
+             */
+            totalVotes?: number;
         };
         /**
-         * @description Controls who can view a poll's results and when:
-         *     - Live: anyone can view results at any time
-         *     - AfterClose: anyone can view results after the poll's end time, admins at any time
-         *     - AdminOnly: only admins can view results
-         * @example AfterClose
+         * @description Computed status of a poll based on the current time
+         * @example Active
          * @enum {string}
          */
-        ResultsVisibility: "Live" | "AfterClose" | "AdminOnly";
+        PollStatus: "Upcoming" | "Active" | "Closed";
         /**
          * @description Controls what level of results detail non-admin users can see:
          *     - Full: option counts and total votes are visible (admins always see this)
@@ -543,11 +243,23 @@ export interface components {
          */
         PublicResultsLevel: "Full" | "Percentages" | "Rankings" | "None";
         /**
-         * @description Computed status of a poll based on the current time
-         * @example Active
+         * @description Controls who can view a poll's results and when:
+         *     - Live: anyone can view results at any time
+         *     - AfterClose: anyone can view results after the poll's end time, admins at any time
+         *     - AdminOnly: only admins can view results
+         * @example AfterClose
          * @enum {string}
          */
-        PollStatus: "Upcoming" | "Active" | "Closed";
+        ResultsVisibility: "Live" | "AfterClose" | "AdminOnly";
+        VoteBallot: {
+            /**
+             * @description IDs of the options to vote for
+             * @example [
+             *       "00000000-0000-0000-0000-000000000000"
+             *     ]
+             */
+            optionIds: string[];
+        };
         /** @description Limits on how many options a single ballot can select. Defaults to one selection total. */
         VoteConfig: {
             /**
@@ -562,54 +274,7 @@ export interface components {
              */
             maxSelectionsPerGroup?: number;
         };
-        PollGroup: {
-            /**
-             * Format: uuid
-             * @description Assigned by the server when omitted. Include on updates to preserve the group's identity.
-             * @example 00000000-0000-0000-0000-000000000000
-             */
-            id?: string;
-            /** @example Team Boston */
-            name: string;
-            /** @example #70b2e0 */
-            color?: string;
-            /** @example https://assets.icaa.world/42e777a4-2757-4bbf-bdaa-79303aafc9ba.png */
-            imageUrl?: string;
-            /** @description The options that belong to this group */
-            options: components["schemas"]["PollOption"][];
-        };
-        PollOption: {
-            /**
-             * Format: uuid
-             * @description Assigned by the server when omitted. Include on updates to preserve the option's identity and its votes.
-             * @example 00000000-0000-0000-0000-000000000000
-             */
-            id?: string;
-            /** @example Cameron Cardwell */
-            name: string;
-            /**
-             * @description Extra info about the option, e.g. a player's number
-             * @example #17
-             */
-            subtitle?: string;
-            /** @example https://assets.icaa.world/9ccd9c08-d3cb-4a25-a386-675c9c299c61.jpg */
-            imageUrl?: string;
-        };
-        VoteBallot: {
-            /**
-             * @description IDs of the options to vote for
-             * @example [
-             *       "00000000-0000-0000-0000-000000000000"
-             *     ]
-             */
-            optionIds: string[];
-        };
         VoteConfirmation: {
-            /**
-             * Format: uuid
-             * @example 00000000-0000-0000-0000-000000000000
-             */
-            pollId: string;
             /**
              * @description The options that were recorded for this ballot
              * @example [
@@ -617,50 +282,11 @@ export interface components {
              *     ]
              */
             optionIds: string[];
-        };
-        PollResults: {
             /**
              * Format: uuid
              * @example 00000000-0000-0000-0000-000000000000
              */
             pollId: string;
-            level: components["schemas"]["PublicResultsLevel"];
-            /**
-             * @description Total amount of ballots cast. Only present when level is Full.
-             * @example 42
-             */
-            totalVotes?: number;
-            results: components["schemas"]["OptionResult"][];
-        };
-        OptionResult: {
-            /**
-             * Format: uuid
-             * @example 00000000-0000-0000-0000-000000000000
-             */
-            optionId: string;
-            /**
-             * @description Vote count for this option. Only present when level is Full.
-             * @example 10
-             */
-            count?: number;
-            /**
-             * @description Percentage of votes for this option (0-100). Only present when level is Percentages.
-             * @example 42
-             */
-            percentage?: number;
-            /**
-             * @description Rank of this option (1-based, ties share rank). Only present when level is Rankings.
-             * @example 1
-             */
-            rank?: number;
-        };
-        /** @enum {string} */
-        ErrorCode: "InternalError" | "LimitOutOfBounds" | "InvalidCursor" | "NotFound" | "InvalidBody" | "InputValidationError" | "AuthError" | "CaptchaInvalid" | "PollNotActive" | "InvalidBallot" | "IdempotencyConflict" | "VersionConflict";
-        Error: {
-            /** @example InternalError */
-            code: components["schemas"]["ErrorCode"];
-            /** @example An unexpected error occurred. */
-            message: string;
         };
     };
     responses: never;
@@ -670,4 +296,385 @@ export interface components {
     pathItems: never;
 }
 export type $defs = Record<string, never>;
-export type operations = Record<string, never>;
+export interface operations {
+    GetVotingV1Polls: {
+        parameters: {
+            query?: {
+                /** @description Cursor of where to start from */
+                cursor?: string;
+                /** @description Max amount of polls to fetch */
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description A list of polls. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example Y29uZ3JhdHMsIHlvdSBmb3VuZCB0aGUgZWFzdGVyIGVnZw== */
+                        cursor?: string;
+                        data: components["schemas"]["Poll"][];
+                        /** @example true */
+                        hasNextPage: boolean;
+                    };
+                };
+            };
+            /** @description Bad request. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Unknown server error. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    PostVotingV1Polls: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Poll to be created */
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Poll"];
+            };
+        };
+        responses: {
+            /** @description The created poll. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Poll"];
+                };
+            };
+            /** @description Bad request. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Unknown server error. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    GetVotingV1PollsId: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description ID of the poll */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The poll */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        poll: components["schemas"]["Poll"];
+                    };
+                };
+            };
+            /** @description Bad request. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Poll not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Unknown server error. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    DeleteVotingV1PollsId: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description ID of the poll */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The poll was deleted */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Poll not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Unknown server error. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    PatchVotingV1PollsId: {
+        parameters: {
+            query: {
+                /** @description The version of the poll you last read, used for optimistic locking. The update will only succeed if this matches the current version on the server. */
+                version: number;
+            };
+            header?: never;
+            path: {
+                /** @description ID of the poll */
+                id: string;
+            };
+            cookie?: never;
+        };
+        /** @description Poll to be updated */
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Poll"];
+            };
+        };
+        responses: {
+            /** @description The updated poll */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        poll: components["schemas"]["Poll"];
+                    };
+                };
+            };
+            /** @description Bad request. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Poll not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Poll was modified by another request, retry with the latest version. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Unknown server error. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    GetVotingV1PollsIdResults: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description ID of the poll */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The results of the poll */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PollResults"];
+                };
+            };
+            /** @description Results are not available for this poll. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Poll not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Unknown server error. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    PostVotingV1PollsIdVotes: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Cloudflare turnstile CAPTCHA */
+                "cf-turnstile-response": string;
+                /** @description Client generated unique key for this ballot, used to deduplicate retried requests */
+                "Idempotency-Key": string;
+            };
+            path: {
+                /** @description ID of the poll */
+                id: string;
+            };
+            cookie?: never;
+        };
+        /** @description Ballot of options to vote for */
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VoteBallot"];
+            };
+        };
+        responses: {
+            /** @description The vote was recorded. Also returned when a ballot with the same Idempotency-Key was already recorded. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VoteConfirmation"];
+                };
+            };
+            /** @description Bad request, invalid captcha, or invalid ballot. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description The poll is not currently active. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Poll not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description The Idempotency-Key was already used with a different ballot. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Unknown server error. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+}
