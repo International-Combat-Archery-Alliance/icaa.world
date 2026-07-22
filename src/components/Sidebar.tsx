@@ -70,8 +70,8 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
 
 function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   return (
-    <div className="flex h-full flex-col">
-      <nav className="flex-1 overflow-auto py-4">
+    <div className="flex min-h-0 flex-1 flex-col">
+      <nav className="min-h-0 flex-1 overflow-auto py-4">
         <NavLinks onNavigate={onNavigate} />
       </nav>
       <div className="px-6 pt-4">
