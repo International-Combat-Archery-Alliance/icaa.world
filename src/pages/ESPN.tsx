@@ -82,7 +82,7 @@ const matches = [
             firstName: 'Nate',
             lastName: 'Langh',
             number: '3',
-            position: 'Flex',
+            position: 'Rear Guard',
             city: 'Boston',
             experience: '3',
           },
@@ -168,7 +168,7 @@ const matches = [
             firstName: 'Angel',
             lastName: 'MacEachern',
             number: '1',
-            position: 'Centerback',
+            position: 'Flex',
             city: 'Ottawa',
             experience: '2.5',
           },
@@ -241,7 +241,7 @@ const matches = [
             firstName: 'Tim',
             lastName: 'Ahong',
             number: '21',
-            position: 'Flex',
+            position: 'Forward',
             city: 'Toronto',
             experience: '7',
           },
@@ -286,10 +286,10 @@ const matches = [
           {
             imageUrl:
               'https://assets.icaa.world/578f8d21-5ca0-4287-9b39-b881206be767.jpg',
-            firstName: 'Sim',
-            lastName: 'Singh', // Simran Singh
+            firstName: 'Simran',
+            lastName: 'Singh',
             number: '25',
-            position: 'Flex',
+            position: 'Centerback',
             city: 'Boston',
             experience: '6',
           },
@@ -451,9 +451,9 @@ export default function ESPNPage() {
           </CardTitle>
         </CardHeader>
         <CardContent className="text-center text-lg space-y-2">
-          <p>Friday, August 7th. 7:00 PM EST</p>
+          <p>Friday, August 7th. 3:00 PM EST</p>
           <p>Filmed live at the ESPN World Wide of Sports Complex in Orlando</p>
-          <p>Watch the broadcast on ESPN2 @ 7:00 PM!</p>
+          <p>Watch the broadcast on ESPN2 @ 3:00 PM!</p>
           <a
             href="https://www.espnwwos.com/events/competitive-sports/espn8-the-ocho/"
             target="_blank"
@@ -465,7 +465,7 @@ export default function ESPNPage() {
         </CardContent>
       </Card>
 
-      <CountdownTimer targetDate="2026-08-07T19:00:00" />
+      <CountdownTimer targetDate="2026-08-07T15:00:00" />
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 my-12">
         <Card className="flex flex-col">
@@ -485,17 +485,16 @@ export default function ESPNPage() {
         </Card>
         <Card className="flex flex-col">
           <CardHeader>
-            <CardTitle>Full Rules</CardTitle>
+            <CardTitle>Event Format and Rules</CardTitle>
           </CardHeader>
           <CardContent className="flex-grow">
             <p className="text-muted-foreground">
-              Get a quick overview of the rules or dive into the official ICAA
-              rulebook.
+              Get a quick overview of the rules and format for the event!
             </p>
           </CardContent>
           <div className="p-6 pt-0">
             <Button asChild className="w-full">
-              <Link to="/official-rules">View Rules</Link>
+              <Link to="/espn/rules">View Rules</Link>
             </Button>
           </div>
         </Card>
