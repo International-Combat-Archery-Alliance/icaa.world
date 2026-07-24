@@ -21,10 +21,10 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { to: '/', label: 'Home' },
-  { to: '/about-sport', label: 'What is Combat Archery?' },
+  { to: '/about-sport', label: 'What is Combat Archery' },
   { to: '/our-communities', label: 'Where To Play' },
-  { to: '/events', label: 'Events' },
   { to: '/espn', label: 'ESPN8: All Stars 2026' },
+  { to: '/events', label: 'Events' },
   { to: '/donate', label: 'Donate' },
   { to: '/about-icaa', label: 'Who are the ICAA' },
   { to: '/contact', label: 'Contact Us' },
