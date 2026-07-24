@@ -21,12 +21,12 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { to: '/', label: 'Home' },
-  { to: '/about-icaa', label: 'About The ICAA' },
-  { to: '/about-sport', label: 'About The Sport' },
-  { to: '/our-communities', label: 'The Alliance' },
+  { to: '/about-sport', label: 'What is Combat Archery?' },
+  { to: '/our-communities', label: 'Where To Play' },
   { to: '/events', label: 'Events' },
   { to: '/espn', label: 'ESPN8: All Stars 2026' },
   { to: '/donate', label: 'Donate' },
+  { to: '/about-icaa', label: 'Who are the ICAA' },
   { to: '/contact', label: 'Contact Us' },
   { to: '/admin', label: 'Admin', adminOnly: true },
 ];
