@@ -67,7 +67,7 @@ const Home = () => {
           <div className="p-6 text-center">
             <CardHeader className="p-0 mb-4">
               <CardTitle className="text-2xl md:text-3xl text-primary">
-                ESPN8: All Stars 2026
+                ESPN8: The Ocho - Combat Archery All Stars 2026
               </CardTitle>
               <CardDescription className="text-lg">
                 The biggest names in Combat Archery compete on the world stage.
@@ -80,7 +80,10 @@ const Home = () => {
                 battle it out for the title of All-Star Champion.
               </p>
               <p className="text-2xl md:text-3xl font-bold text-primary">
-                Watch live on ESPN2 at 3:00 PM EST!
+                Watch live on ESPN2 August 7th at 3:00 PM EST!
+              </p>
+              <p className="text-2xl md:text-3xl font-bold text-secondary">
+                Also Streaming on ESPN+!
               </p>
             </CardContent>
             <CardFooter className="p-0 flex justify-center">

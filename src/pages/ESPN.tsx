@@ -54,6 +54,42 @@ function ResultsBanner({
   );
 }
 
+const positionLegend = [
+  {
+    name: 'Forward',
+    iconUrl:
+      'https://assets.icaa.world/492fba5b-aed6-430b-9c97-2d6d56885eff.webp',
+  },
+  {
+    name: 'Rear Guard',
+    iconUrl:
+      'https://assets.icaa.world/912721cf-cbaf-4a83-b004-ab9ac6cec9c9.webp',
+  },
+  {
+    name: 'Centerback',
+    iconUrl:
+      'https://assets.icaa.world/e58af81b-af45-4e23-b82f-3c54839d0eff.webp',
+  },
+  {
+    name: 'Flex',
+    iconUrl:
+      'https://assets.icaa.world/714c4f1a-11f4-45d4-bdc8-2c1b9a10f65c.webp',
+  },
+];
+
+function PositionLegend() {
+  return (
+    <div className="mt-12 flex flex-wrap justify-center items-center gap-x-6 gap-y-4">
+      {positionLegend.map((pos) => (
+        <div key={pos.name} className="flex items-center gap-2">
+          <img src={pos.iconUrl} alt={pos.name} className="h-8 w-8" />
+          <span className="font-medium">{pos.name}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 const matches = [
   {
     name: 'EASTERN FINALS',
@@ -114,7 +150,7 @@ const matches = [
             number: '13',
             position: 'Rear Guard',
             city: 'Boston',
-            experience: '7',
+            experience: '8',
           },
           {
             imageUrl:
@@ -193,7 +229,8 @@ const matches = [
             experience: '2',
           },
           {
-            imageUrl: '', // No image provided for Danny Pleshek
+            imageUrl:
+              'https://assets.icaa.world/fa290987-f3e3-40fb-822d-bbb0b939a297.jpg',
             firstName: 'Danny',
             lastName: 'Pleshek',
             number: '4',
@@ -209,7 +246,7 @@ const matches = [
             number: '8',
             position: 'Forward',
             city: 'Boston',
-            experience: '8',
+            experience: '2',
           },
         ],
       },
@@ -237,7 +274,8 @@ const matches = [
             experience: '8',
           },
           {
-            imageUrl: '', // No image provided for Tim Ahong
+            imageUrl:
+              'https://assets.icaa.world/6c395357-943c-4703-bfe7-2c22552e4598.png',
             firstName: 'Tim',
             lastName: 'Ahong',
             number: '21',
@@ -246,7 +284,8 @@ const matches = [
             experience: '7',
           },
           {
-            imageUrl: '', // No image provided for Russel Padua
+            imageUrl:
+              'https://assets.icaa.world/beccaf2e-80d6-44b9-ac22-de78fd3b2dcf.jpg',
             firstName: 'Russel',
             lastName: 'Padua',
             number: '13',
@@ -265,13 +304,14 @@ const matches = [
             experience: '3',
           },
           {
-            imageUrl: '', // No image provided for Christina Laconsay
+            imageUrl:
+              'https://assets.icaa.world/86359b1c-2cc4-4f7c-bc59-2478fe057aaf.jpg',
             firstName: 'Christina',
             lastName: 'Laconsay',
             number: '14',
             position: 'Flex',
             city: 'Toronto',
-            experience: '4',
+            experience: '10',
           },
           {
             imageUrl:
@@ -475,6 +515,7 @@ export default function ESPNPage() {
           <CardContent className="flex-grow">
             <p className="text-muted-foreground">
               Learn about the fast-paced, high-energy sport of Combat Archery.
+              Also learn the differences about the positions!
             </p>
           </CardContent>
           <div className="p-6 pt-0">
@@ -598,6 +639,7 @@ export default function ESPNPage() {
           </div>
         ))}
       </div>
+      <PositionLegend />
       <SponsorsBanner sponsors={sponsors} />
     </section>
   );
