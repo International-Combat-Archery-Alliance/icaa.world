@@ -59,11 +59,15 @@ const Home = () => {
 
       <div className="mt-8 pb-6 px-4 flex flex-col items-center gap-4 lg:px-12">
         <Card className="w-full max-w-[1016px]">
-          <img
-            src="https://assets.icaa.world/1b266230-4d77-4360-8bb4-af814f83e2ec.png"
-            alt="All Stars 2026"
-            className="w-full h-auto object-cover rounded-t-lg"
-          />
+          <div className="aspect-video w-full rounded-t-lg overflow-hidden">
+            <iframe
+              src="https://www.youtube.com/embed/Aet-ZNe9X4E"
+              title="ESPN8: The Ocho - Combat Archery All Stars 2026"
+              className="w-full h-full"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowFullScreen
+            ></iframe>
+          </div>
           <div className="p-6 text-center">
             <CardHeader className="p-0 mb-4">
               <CardTitle className="text-2xl md:text-3xl text-primary">
