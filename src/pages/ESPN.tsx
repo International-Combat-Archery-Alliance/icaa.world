@@ -470,12 +470,14 @@ export default function ESPNPage() {
     <section className="container mx-auto px-4 py-8 space-y-8">
       <VoteBanner matches={activeMatches} />
       <ResultsBanner matches={closedMatches} />
-      <div className="flex justify-center">
-        <img
-          src="https://assets.icaa.world/1b266230-4d77-4360-8bb4-af814f83e2ec.png"
-          alt="All Stars 2026"
-          className="w-full max-w-4xl h-auto rounded-lg"
-        />
+      <div className="w-full max-w-4xl mx-auto aspect-video rounded-lg overflow-hidden">
+        <iframe
+          src="https://www.youtube.com/embed/Aet-ZNe9X4E"
+          title="ESPN8: The Ocho - Combat Archery All Stars 2026"
+          className="w-full h-full"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowFullScreen
+        ></iframe>
       </div>
       <div className="flex justify-center">
         <img
