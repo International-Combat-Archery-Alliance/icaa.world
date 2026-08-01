@@ -5,54 +5,6 @@ import { PlayerRoster } from '@/components/PlayerRoster';
 import { CountdownTimer } from '@/components/CountdownTimer';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { useGetPolls } from '@/hooks/useVoting';
-import { useMemo } from 'react';
-
-function VoteBanner({
-  matches,
-}: {
-  matches: { pollId: string; name: string }[];
-}) {
-  if (matches.length === 0) return null;
-
-  return (
-    <div className="rounded-lg border-2 border-primary bg-primary/10 px-6 py-4 text-center">
-      <p className="mb-3 text-lg font-bold text-primary">
-        Polls are open! Cast your vote for MVP now:
-      </p>
-      <div className="flex flex-wrap items-center justify-center gap-3">
-        {matches.map((m) => (
-          <Button key={m.pollId} asChild size="lg" variant="default">
-            <Link to={`/vote/${m.pollId}`}>Vote for {m.name} MVP!</Link>
-          </Button>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function ResultsBanner({
-  matches,
-}: {
-  matches: { pollId: string; name: string }[];
-}) {
-  if (matches.length === 0) return null;
-
-  return (
-    <div className="rounded-lg border-2 border-muted-foreground/30 bg-muted/30 px-6 py-4 text-center">
-      <p className="mb-3 text-lg font-bold">
-        Polls have closed. See the results:
-      </p>
-      <div className="flex flex-wrap items-center justify-center gap-3">
-        {matches.map((m) => (
-          <Button key={m.pollId} asChild size="lg" variant="outline">
-            <Link to={`/vote/${m.pollId}`}>{m.name} MVP Results</Link>
-          </Button>
-        ))}
-      </div>
-    </div>
-  );
-}
 
 const positionLegend = [
   {
@@ -92,168 +44,7 @@ function PositionLegend() {
 
 const matches = [
   {
-    name: 'EASTERN FINALS',
-    pollId: '57b5138e-9944-4026-98be-29ac8f957a93',
-    teams: [
-      {
-        name: 'Team Boston',
-        color: '#70b2e0',
-        logoUrl:
-          'https://assets.icaa.world/42e777a4-2757-4bbf-bdaa-79303aafc9ba.png',
-        logoClassName: 'h-48 md:h-64',
-        players: [
-          {
-            imageUrl:
-              'https://assets.icaa.world/9ccd9c08-d3cb-4a25-a386-675c9c299c61.jpg',
-            firstName: 'Cameron',
-            lastName: 'Cardwell',
-            number: '17',
-            position: 'Flex',
-            city: 'Boston',
-            experience: '5',
-          },
-          {
-            imageUrl:
-              'https://assets.icaa.world/b7eccda4-f047-4ea8-911c-3a243fc9aa48.jpeg',
-            firstName: 'Nate',
-            lastName: 'Langh',
-            number: '3',
-            position: 'Rear Guard',
-            city: 'Boston',
-            experience: '3',
-          },
-          {
-            imageUrl:
-              'https://assets.icaa.world/2b18bf29-bf2a-4d78-b32c-5aa51dc500e6.png',
-            firstName: 'Bob',
-            lastName: 'Beng',
-            number: '80',
-            position: 'Forward',
-            city: 'Boston',
-            experience: '8',
-          },
-          {
-            imageUrl:
-              'https://assets.icaa.world/2e13269a-5570-4618-9e34-1321933d12de.jpeg',
-            firstName: 'Andrew',
-            lastName: 'Mellen',
-            number: '45',
-            position: 'Flex',
-            city: 'Boston',
-            experience: '3',
-          },
-          {
-            imageUrl:
-              'https://assets.icaa.world/32fc6646-16cc-4017-a6df-8046641eaef9.jpg',
-            firstName: 'Katt',
-            lastName: 'H.',
-            number: '13',
-            position: 'Rear Guard',
-            city: 'Boston',
-            experience: '8',
-          },
-          {
-            imageUrl:
-              'https://assets.icaa.world/701cc5fa-6695-4706-afc3-3607f684264a.jpg',
-            firstName: 'David',
-            lastName: 'McMillan',
-            number: '20',
-            position: 'Centerback',
-            city: 'Ottawa',
-            experience: '10',
-          },
-          {
-            imageUrl: '', // No image provided for Nick Rancourt
-            firstName: 'Nick',
-            lastName: 'Rancourt',
-            number: '5',
-            position: 'Flex',
-            city: 'Ottawa',
-            experience: '3',
-          },
-        ],
-      },
-      {
-        name: 'Team Ottawa',
-        color: '#33593a',
-        logoUrl:
-          'https://assets.icaa.world/e135fd46-636c-4758-b78b-4729d182a4fc.png',
-        logoClassName: 'h-48 md:h-64',
-        players: [
-          {
-            imageUrl: '', // No image provided for Kyle White
-            firstName: 'Kyle',
-            lastName: 'White',
-            number: '13',
-            position: 'Forward',
-            city: 'Ottawa',
-            experience: '8',
-          },
-          {
-            imageUrl:
-              'https://assets.icaa.world/b0da1aed-85d5-4705-bb09-00956dd01a39.png',
-            firstName: 'Brandon',
-            lastName: 'Nemeth',
-            number: '7',
-            position: 'Flex',
-            city: 'Ottawa',
-            experience: '8',
-          },
-          {
-            imageUrl: '', // No image provided for Angel MacEachern
-            firstName: 'Angel',
-            lastName: 'MacEachern',
-            number: '1',
-            position: 'Flex',
-            city: 'Ottawa',
-            experience: '2.5',
-          },
-          {
-            imageUrl:
-              'https://assets.icaa.world/93ebc1f8-147a-4983-b37b-848b3138042d.jpg',
-            firstName: 'Andrew',
-            lastName: 'Bui',
-            number: '23',
-            position: 'Flex',
-            city: 'Ottawa',
-            experience: '1',
-          },
-          {
-            imageUrl:
-              'https://assets.icaa.world/e90de502-456c-48b4-88d7-62d9fd768d99.jpg',
-            firstName: 'Kyle',
-            lastName: 'Best',
-            number: '6',
-            position: 'Flex',
-            city: 'Boston',
-            experience: '2',
-          },
-          {
-            imageUrl:
-              'https://assets.icaa.world/fa290987-f3e3-40fb-822d-bbb0b939a297.jpg',
-            firstName: 'Danny',
-            lastName: 'Pleshek',
-            number: '4',
-            position: 'Forward',
-            city: 'Boston',
-            experience: '2',
-          },
-          {
-            imageUrl:
-              'https://assets.icaa.world/29b61f2a-caed-4f10-96ed-57db5f1a95f2.jpg',
-            firstName: 'Mark',
-            lastName: 'Elrod',
-            number: '8',
-            position: 'Forward',
-            city: 'Boston',
-            experience: '2',
-          },
-        ],
-      },
-    ],
-  },
-  {
-    name: 'WESTERN FINALS',
+    name: 'WESTERN CONFERENCE',
     pollId: 'df7f6289-8b52-4751-8b0f-54b914e3f70a',
     teams: [
       {
@@ -416,27 +207,171 @@ const matches = [
       },
     ],
   },
+  {
+    name: 'EASTERN CONFERENCE',
+    pollId: '57b5138e-9944-4026-98be-29ac8f957a93',
+    teams: [
+      {
+        name: 'Team Boston',
+        color: '#70b2e0',
+        logoUrl:
+          'https://assets.icaa.world/42e777a4-2757-4bbf-bdaa-79303aafc9ba.png',
+        logoClassName: 'h-48 md:h-64',
+        players: [
+          {
+            imageUrl:
+              'https://assets.icaa.world/9ccd9c08-d3cb-4a25-a386-675c9c299c61.jpg',
+            firstName: 'Cameron',
+            lastName: 'Cardwell',
+            number: '17',
+            position: 'Flex',
+            city: 'Boston',
+            experience: '5',
+          },
+          {
+            imageUrl:
+              'https://assets.icaa.world/b7eccda4-f047-4ea8-911c-3a243fc9aa48.jpeg',
+            firstName: 'Nate',
+            lastName: 'Langh',
+            number: '3',
+            position: 'Rear Guard',
+            city: 'Boston',
+            experience: '3',
+          },
+          {
+            imageUrl:
+              'https://assets.icaa.world/2b18bf29-bf2a-4d78-b32c-5aa51dc500e6.png',
+            firstName: 'Bob',
+            lastName: 'Beng',
+            number: '80',
+            position: 'Forward',
+            city: 'Boston',
+            experience: '8',
+          },
+          {
+            imageUrl:
+              'https://assets.icaa.world/2e13269a-5570-4618-9e34-1321933d12de.jpeg',
+            firstName: 'Andrew',
+            lastName: 'Mellen',
+            number: '45',
+            position: 'Flex',
+            city: 'Boston',
+            experience: '3',
+          },
+          {
+            imageUrl:
+              'https://assets.icaa.world/32fc6646-16cc-4017-a6df-8046641eaef9.jpg',
+            firstName: 'Katt',
+            lastName: 'H.',
+            number: '13',
+            position: 'Rear Guard',
+            city: 'Boston',
+            experience: '8',
+          },
+          {
+            imageUrl:
+              'https://assets.icaa.world/701cc5fa-6695-4706-afc3-3607f684264a.jpg',
+            firstName: 'David',
+            lastName: 'McMillan',
+            number: '20',
+            position: 'Centerback',
+            city: 'Ottawa',
+            experience: '10',
+          },
+          {
+            imageUrl: '', // No image provided for Nick Rancourt
+            firstName: 'Nick',
+            lastName: 'Rancourt',
+            number: '5',
+            position: 'Flex',
+            city: 'Ottawa',
+            experience: '3',
+          },
+        ],
+      },
+      {
+        name: 'Team Ottawa',
+        color: '#33593a',
+        logoUrl:
+          'https://assets.icaa.world/e135fd46-636c-4758-b78b-4729d182a4fc.png',
+        logoClassName: 'h-48 md:h-64',
+        players: [
+          {
+            imageUrl: '', // No image provided for Kyle White
+            firstName: 'Kyle',
+            lastName: 'White',
+            number: '13',
+            position: 'Forward',
+            city: 'Ottawa',
+            experience: '8',
+          },
+          {
+            imageUrl:
+              'https://assets.icaa.world/b0da1aed-85d5-4705-bb09-00956dd01a39.png',
+            firstName: 'Brandon',
+            lastName: 'Nemeth',
+            number: '7',
+            position: 'Flex',
+            city: 'Ottawa',
+            experience: '8',
+          },
+          {
+            imageUrl: '', // No image provided for Angel MacEachern
+            firstName: 'Angel',
+            lastName: 'MacEachern',
+            number: '1',
+            position: 'Flex',
+            city: 'Ottawa',
+            experience: '2.5',
+          },
+          {
+            imageUrl:
+              'https://assets.icaa.world/93ebc1f8-147a-4983-b37b-848b3138042d.jpg',
+            firstName: 'Andrew',
+            lastName: 'Bui',
+            number: '23',
+            position: 'Flex',
+            city: 'Ottawa',
+            experience: '1',
+          },
+          {
+            imageUrl:
+              'https://assets.icaa.world/e90de502-456c-48b4-88d7-62d9fd768d99.jpg',
+            firstName: 'Kyle',
+            lastName: 'Best',
+            number: '6',
+            position: 'Flex',
+            city: 'Boston',
+            experience: '2',
+          },
+          {
+            imageUrl:
+              'https://assets.icaa.world/fa290987-f3e3-40fb-822d-bbb0b939a297.jpg',
+            firstName: 'Danny',
+            lastName: 'Pleshek',
+            number: '4',
+            position: 'Forward',
+            city: 'Boston',
+            experience: '2',
+          },
+          {
+            imageUrl:
+              'https://assets.icaa.world/29b61f2a-caed-4f10-96ed-57db5f1a95f2.jpg',
+            firstName: 'Mark',
+            lastName: 'Elrod',
+            number: '8',
+            position: 'Forward',
+            city: 'Boston',
+            experience: '2',
+          },
+        ],
+      },
+    ],
+  },
 ];
 
 export default function ESPNPage() {
   useTitle('ESPN8: All Stars 2026 - ICAA');
-
-  const { data: pollsData } = useGetPolls();
-  const pollStatusById = useMemo(() => {
-    const map = new Map<string, string>();
-    const polls = pollsData?.pages.flatMap((p) => p.data) ?? [];
-    for (const poll of polls) {
-      map.set(poll.id, poll.status);
-    }
-    return map;
-  }, [pollsData]);
-
-  const activeMatches = matches.filter(
-    (m) => pollStatusById.get(m.pollId) === 'Active',
-  );
-  const closedMatches = matches.filter(
-    (m) => pollStatusById.get(m.pollId) === 'Closed',
-  );
 
   const sponsors = [
     {
@@ -468,8 +403,6 @@ export default function ESPNPage() {
 
   return (
     <section className="container mx-auto px-4 py-8 space-y-8">
-      <VoteBanner matches={activeMatches} />
-      <ResultsBanner matches={closedMatches} />
       <div className="w-full max-w-4xl mx-auto aspect-video rounded-lg overflow-hidden">
         <iframe
           src="https://www.youtube.com/embed/Aet-ZNe9X4E"
