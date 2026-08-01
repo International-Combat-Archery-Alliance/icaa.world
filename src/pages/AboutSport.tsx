@@ -39,7 +39,7 @@ export function AboutSport() {
             </p>
             <iframe
               className="w-auto aspect-video my-4 self-center"
-              src="https://www.youtube.com/embed/f-7pI_mnzVM"
+              src="https://www.youtube.com/embed/PxMN5otRui8"
               title="What is Combat Archery?"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
               allowFullScreen
