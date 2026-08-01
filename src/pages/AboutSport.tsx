@@ -38,9 +38,9 @@ export function AboutSport() {
               athleticism to catch an arrow mid-flight.
             </p>
             <iframe
+              className="w-auto aspect-video my-4 self-center"
               src="https://www.youtube.com/embed/PxMN5otRui8"
-              title="Combat Archery in 90 Seconds"
-              className="w-full h-full"
+              title="What is Combat Archery?"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
               allowFullScreen
             ></iframe>
