@@ -427,7 +427,7 @@ export default function ESPNPage() {
         </CardHeader>
         <CardContent className="text-center text-lg space-y-2">
           <p>Friday, August 7th. 3:00 PM EST</p>
-          <p>Filmed live at the ESPN World Wide of Sports Complex in Orlando</p>
+          <p>Filmed live at the ESPN Wide World of Sports Complex in Orlando</p>
           <p>Watch the broadcast on ESPN2 @ 3:00 PM!</p>
           <a
             href="https://www.espnwwos.com/events/competitive-sports/espn8-the-ocho/"
