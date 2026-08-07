@@ -41,17 +41,22 @@ function CommunityCard({
   };
 
   const cardClassName = cn(
-    'block rounded-lg bg-[var(--light-gray)] p-6 text-center text-[var(--navy-blue)] shadow-md hover:-translate-y-[5px] hover:shadow-lg scroll-mt-[472px] md:scroll-mt-[416px]',
+    'flex flex-col min-h-[290px] rounded-lg bg-[var(--light-gray)] p-6 text-center text-[var(--navy-blue)] shadow-md hover:-translate-y-[5px] hover:shadow-lg scroll-mt-[472px] md:scroll-mt-[416px]',
     isActive && 'ring-2 ring-primary',
   );
 
   const content = (
     <>
-      <img
-        src={logoUrl}
-        alt={logoAlt}
-        className={cn('max-w-[100px] h-auto mb-4 inline-block', logoClassName)}
-      />
+      <div className="mb-4 flex h-24 items-center justify-center">
+        <img
+          src={logoUrl}
+          alt={logoAlt}
+          className={cn(
+            'max-h-full max-w-[100px] h-auto w-auto',
+            logoClassName,
+          )}
+        />
+      </div>
       <h3 className="mb-1 text-[var(--navy-blue)]">{community.name}</h3>
       <p>{city}</p>
     </>
@@ -66,7 +71,12 @@ function CommunityCard({
         onMouseEnter={handleEnter}
         onMouseLeave={cardHover.handleLeave}
       >
-        <a href={community.url} target="_blank" rel="noopener noreferrer">
+        <a
+          href={community.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex-1"
+        >
           {content}
         </a>
         <div className="mt-4">
