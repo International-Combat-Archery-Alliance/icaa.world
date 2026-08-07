@@ -148,7 +148,6 @@ body {
 }
 
 /* Other Sections */
-.communities-section,
 .rules-page {
   background-color: var(--white);
 }
@@ -165,46 +164,6 @@ body {
 
 .rules-page li {
   margin-bottom: 1rem;
-}
-
-.community-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 2rem;
-  margin-top: 2rem;
-}
-
-.community-card {
-  background-color: var(--light-gray);
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  padding: 1.5rem;
-  text-align: center;
-  text-decoration: none;
-  color: var(--navy-blue);
-  display: block;
-}
-
-.community-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
-}
-
-.community-card h3 {
-  color: var(--navy-blue);
-  margin-bottom: 0.25rem;
-}
-
-.community-links {
-  margin-top: 1rem;
-}
-
-.community-links a {
-  display: block;
-  text-decoration: underline;
-  color: var(--electric-orange);
-  font-size: 0.9rem;
-  margin-top: 0.25rem;
 }
 
 .community-links a:hover {
