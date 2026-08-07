@@ -2,6 +2,7 @@ import { useState, useCallback, useRef, useEffect } from 'react';
 import Map, { Marker, Popup, NavigationControl } from 'react-map-gl/maplibre';
 import type { ViewStateChangeEvent, MapRef } from 'react-map-gl/maplibre';
 import maplibregl, { type StyleSpecification, LngLatBounds } from 'maplibre-gl';
+import { useScrollSafeHover } from '@/hooks/useScrollSafeHover';
 import 'maplibre-gl/dist/maplibre-gl.css';
 
 export interface Community {
@@ -9,7 +10,7 @@ export interface Community {
   lat: number;
   lng: number;
   content: string;
-  url?: string;
+  url: string;
 }
 
 export const communities: Community[] = [
@@ -149,20 +150,31 @@ function findNearestCommunity(lat: number, lng: number): Community {
 interface ArcheryMapProps {
   hoveredCommunity: Community | null;
   setHoveredCommunity: (community: Community | null) => void;
+  panTarget: Community | null;
 }
 
 function ArcheryMap({
   hoveredCommunity,
   setHoveredCommunity,
+  panTarget,
 }: ArcheryMapProps) {
   const [zoom, setZoom] = useState(4);
   const mapRef = useRef<MapRef>(null);
+  const markerHover = useScrollSafeHover(() => setHoveredCommunity(null));
 
   const showLabels = zoom >= LABEL_ZOOM_THRESHOLD;
 
   const handleZoom = useCallback((e: ViewStateChangeEvent) => {
     setZoom(e.viewState.zoom);
   }, []);
+
+  useEffect(() => {
+    if (!panTarget) return;
+    mapRef.current?.easeTo({
+      center: [panTarget.lng, panTarget.lat],
+      duration: 500,
+    });
+  }, [panTarget]);
 
   useEffect(() => {
     if (!navigator.geolocation) return;
@@ -206,7 +218,6 @@ function ArcheryMap({
       }}
       style={{ height: '400px', width: '100%' }}
       mapStyle={MAP_STYLE}
-      scrollZoom={false}
       onZoom={handleZoom}
     >
       <NavigationControl position="top-left" />
@@ -220,7 +231,14 @@ function ArcheryMap({
             setHoveredCommunity(community);
           }}
         >
-          <div className="relative cursor-pointer">
+          <div
+            className="relative cursor-pointer"
+            onMouseEnter={() => {
+              markerHover.handleEnter();
+              setHoveredCommunity(community);
+            }}
+            onMouseLeave={markerHover.handleLeave}
+          >
             <div className="h-5 w-5 rounded-full border-[3px] border-white bg-primary shadow-md" />
             {showLabels && (
               <span className="absolute left-full top-1/2 ml-1.5 -translate-y-1/2 whitespace-nowrap rounded px-1.5 py-0.5 text-xs font-semibold text-gray-900 shadow-sm bg-white/80">
@@ -237,21 +255,18 @@ function ArcheryMap({
           anchor="bottom"
           onClose={() => setHoveredCommunity(null)}
           closeButton={false}
+          focusAfterOpen={false}
           offset={20}
         >
           <div className="text-center">
-            {hoveredCommunity.url ? (
-              <a
-                href={hoveredCommunity.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-semibold text-primary hover:underline"
-              >
-                {hoveredCommunity.name}
-              </a>
-            ) : (
-              <strong>{hoveredCommunity.name}</strong>
-            )}
+            <a
+              href={hoveredCommunity.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-semibold text-primary hover:underline"
+            >
+              {hoveredCommunity.name}
+            </a>
             <br />
             {hoveredCommunity.content}
           </div>
