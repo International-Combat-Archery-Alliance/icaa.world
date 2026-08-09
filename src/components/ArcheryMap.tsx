@@ -91,6 +91,13 @@ export const communities: Community[] = [
     content: 'Austin, TX',
     url: 'https://archery-battles.com/',
   },
+  {
+    name: 'Barrie Archery Tag',
+    lat: 44.3897633,
+    lng: -79.691906,
+    content: 'Barrie, ON',
+    url: 'https://barriearcherytag.ca/',
+  },
 ];
 
 const MAP_STYLE: StyleSpecification = {
