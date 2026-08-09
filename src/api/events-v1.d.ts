@@ -28,6 +28,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/events/v1/admin/test-email": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Test email sending
+         * @description Sends a test registration confirmation email to the specified address. Admin only.
+         */
+        post: operations["PostEventsV1AdminTestEmail"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/events/v1/admin/test-mailerlite": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Test MailerLite integration
+         * @description Creates a test group in MailerLite and adds the given emails to it. For ByIndividual, each email is added as an individual subscriber. For ByTeam, the first email is the captain and the rest are team players. Names are auto-generated from email prefixes. Admin only.
+         */
+        post: operations["PostEventsV1AdminTestMailerlite"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/events/v1/{eventId}/register": {
         parameters: {
             query?: never;
@@ -403,6 +443,120 @@ export interface operations {
                 };
             };
             /** @description Unknown server error. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    PostEventsV1AdminTestEmail: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description The email address to send a test email to */
+        requestBody: {
+            content: {
+                "application/json": {
+                    /**
+                     * Format: email
+                     * @example test@example.com
+                     */
+                    email: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Test email was sent successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Bad request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Failed to send test email */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    PostEventsV1AdminTestMailerlite: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Emails and registration type to test with */
+        requestBody: {
+            content: {
+                "application/json": {
+                    /**
+                     * @example [
+                     *       "jane.archer@example.com",
+                     *       "john.doe@example.com"
+                     *     ]
+                     */
+                    emails: string[];
+                    /**
+                     * @description Name for the test group. Defaults to "MailerLite Test Group".
+                     * @example Test Group
+                     */
+                    groupName?: string;
+                    registrationType: components["schemas"]["RegistrationType"];
+                    /**
+                     * @description Team name required when registrationType is ByTeam.
+                     * @example The Archers
+                     */
+                    teamName?: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Successfully signed up emails to the group */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example 123456789 */
+                        groupId?: string;
+                        /** @example Test Group */
+                        groupName?: string;
+                    };
+                };
+            };
+            /** @description Bad request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Failed to test mailerlite integration */
             500: {
                 headers: {
                     [name: string]: unknown;

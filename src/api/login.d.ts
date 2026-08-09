@@ -15,28 +15,51 @@ export interface paths {
         put?: never;
         /** Logs in and returns the auth cookie */
         post: operations["PostLoginGoogle"];
-        /**
-         * Logs the user out
-         * @description For cookie based auth, deletes the cookie, effectively logging the user out.
-         */
-        delete: operations["DeleteLoginGoogle"];
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/login/google/userInfo": {
+    "/login/refresh": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Returns info about the logged in user */
-        get: operations["GetLoginGoogleUserInfo"];
+        get?: never;
+        put?: never;
+        /**
+         * Refreshes the access token using a refresh token
+         * @description Uses the refresh token cookie to generate a new access token. The old refresh token is invalidated and a new one is issued (token rotation).
+         */
+        post: operations["PostLoginRefresh"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/login/session": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Returns info about the current session/user
+         * @description Returns information about the currently logged in user.
+         */
+        get: operations["GetLoginSession"];
         put?: never;
         post?: never;
-        delete?: never;
+        /**
+         * Logs the user out
+         * @description For cookie based auth, deletes the cookies and revokes the refresh token, effectively logging the user out.
+         */
+        delete: operations["DeleteLoginSession"];
         options?: never;
         head?: never;
         patch?: never;
@@ -56,8 +79,9 @@ export interface components {
         UserInfo: {
             /** Format: date-time */
             expiresAt: string;
-            isAdmin: boolean;
             profilePicURL: string;
+            /** @description User's assigned roles */
+            roles: "ADMIN"[];
             userEmail: string;
         };
     };
@@ -85,10 +109,10 @@ export interface operations {
             };
         };
         responses: {
-            /** @description Auth successful. The JWT is returned in a cookie named `GOOGLE_AUTH_JWT`. You need to include this cookie subsequent requests if using cookie based auth. */
+            /** @description Auth successful. The access and refresh tokens are returned in cookies named `ICAA_ACCESS_TOKEN` and `ICAA_REFRESH_TOKEN`. */
             200: {
                 headers: {
-                    /** @description The google auth token cookie. */
+                    /** @description The ICAA auth token cookies. */
                     "Set-Cookie"?: string;
                     [name: string]: unknown;
                 };
@@ -107,7 +131,7 @@ export interface operations {
             };
         };
     };
-    DeleteLoginGoogle: {
+    PostLoginRefresh: {
         parameters: {
             query?: never;
             header?: never;
@@ -116,18 +140,29 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description User logged out */
+            /** @description Token refresh successful */
             200: {
                 headers: {
-                    /** @description Tells the browser to delete the cookie. */
+                    /** @description New access and refresh token cookies. */
                     "Set-Cookie"?: string;
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["UserInfo"];
+                };
+            };
+            /** @description Unauthorized - invalid or expired refresh token */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
             };
         };
     };
-    GetLoginGoogleUserInfo: {
+    GetLoginSession: {
         parameters: {
             query?: never;
             header?: never;
@@ -153,6 +188,26 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["Error"];
                 };
+            };
+        };
+    };
+    DeleteLoginSession: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description User logged out */
+            200: {
+                headers: {
+                    /** @description Tells the browser to delete the cookies. */
+                    "Set-Cookie"?: string;
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

@@ -2,9 +2,48 @@ import { useTitle } from 'react-use';
 import NewsContainer from '@/components/NewsContainer';
 import EventsContainer from '@/components/EventsContainer';
 import { CarouselImages } from '@/components/CarouselImages';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Link } from 'react-router-dom';
+import { SponsorsBanner } from '@/components/SponsorsBanner';
 
 const Home = () => {
   useTitle('ICAA - International Combat Archery Alliance');
+
+  const sponsors = [
+    {
+      logoUrl:
+        'https://assets.icaa.world/78939a33-6cda-4f07-9922-87419f18b861.png',
+      websiteUrl: 'https://www.silverscreendesign.com/',
+    },
+    {
+      logoUrl:
+        'https://assets.icaa.world/07d37824-656e-4975-95c7-36b6cf85de27.png',
+      websiteUrl: 'https://coastalelectricsarasota.com/',
+    },
+    {
+      logoUrl:
+        'https://assets.icaa.world/afec2749-f882-46a5-8e57-d4818b970062.png',
+      websiteUrl: 'https://combatdarchers.ca/en/',
+    },
+    {
+      logoUrl:
+        'https://assets.icaa.world/cb44df9c-ec30-493a-9b75-3dcf66e0444e.png',
+      websiteUrl: 'https://www.archerygamesboston.com/',
+    },
+    {
+      logoUrl:
+        'https://assets.icaa.world/934b85f0-2d0e-4c6a-bc8e-1bb8fa66b332.svg',
+      websiteUrl: 'https://www.experiencekissimmee.com/',
+    },
+  ];
 
   return (
     <>
@@ -18,16 +57,57 @@ const Home = () => {
         </p>
       </header>
 
-      <div className="mt-8 grid grid-cols-1 pb-6 px-4 gap-4 lg:px-12 lg:grid-cols-2">
-        <div className="lg:col-span-2 flex justify-center">
-          <div className="w-full max-w-[1016px]">
-            <CarouselImages assetPath="/Carousel-Images" />
+      <div className="mt-8 pb-6 px-4 flex flex-col items-center gap-4 lg:px-12">
+        <Card className="w-full max-w-[1016px]">
+          <div className="aspect-video w-full rounded-t-lg overflow-hidden">
+            <iframe
+              src="https://www.youtube.com/embed/Aet-ZNe9X4E"
+              title="ESPN8: The Ocho - Combat Archery All Stars 2026"
+              className="w-full h-full"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowFullScreen
+            ></iframe>
           </div>
+          <div className="p-6 text-center">
+            <CardHeader className="p-0 mb-4">
+              <CardTitle className="text-2xl md:text-3xl text-primary">
+                ESPN8: The Ocho - Combat Archery All Stars 2026
+              </CardTitle>
+              <CardDescription className="text-lg">
+                The biggest names in Combat Archery compete on the world stage.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="p-0 mb-6 space-y-4">
+              <p>
+                The ICAA is proud to partner with ESPN to bring Combat Archery
+                to The Ocho! Watch the top players from across North America
+                battle it out for the title of All-Star Champion.
+              </p>
+              <p className="text-2xl md:text-3xl font-bold text-primary">
+                Watch live on ESPN2 August 7th at 3:00 PM EST!
+              </p>
+              <p className="text-2xl md:text-3xl font-bold text-secondary">
+                Also Streaming on ESPN+!
+              </p>
+            </CardContent>
+            <CardFooter className="p-0 flex justify-center">
+              <Button asChild>
+                <Link to="/espn">See the Rosters & Event Info</Link>
+              </Button>
+            </CardFooter>
+          </div>
+        </Card>
+        <div className="w-full max-w-[1016px]">
+          <SponsorsBanner sponsors={sponsors} />
+        </div>
+        <div className="w-full max-w-[1016px]">
+          <CarouselImages assetPath="/Carousel-Images" />
         </div>
 
-        <NewsContainer className="lg:justify-self-end lg:max-w-[500px]" />
-
-        <EventsContainer className="lg:max-w-[500px]" />
+        <div className="w-full max-w-[1016px] flex flex-col gap-4 lg:flex-row">
+          <NewsContainer className="flex-1 min-w-0 h-auto" />
+          <EventsContainer className="flex-1 min-w-0 h-auto" />
+        </div>
       </div>
     </>
   );

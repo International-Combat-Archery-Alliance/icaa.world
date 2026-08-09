@@ -21,10 +21,12 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { to: '/', label: 'Home' },
-  { to: '/about-icaa', label: 'About The ICAA' },
-  { to: '/about-sport', label: 'About The Sport' },
-  { to: '/our-communities', label: 'The Alliance', adminOnly: true },
+  { to: '/about-sport', label: 'What is Combat Archery' },
+  { to: '/our-communities', label: 'Where To Play' },
+  { to: '/espn', label: 'ESPN8: All Stars 2026' },
   { to: '/events', label: 'Events' },
+  { to: '/donate', label: 'Donate' },
+  { to: '/about-icaa', label: 'Who are the ICAA' },
   { to: '/contact', label: 'Contact Us' },
   { to: '/admin', label: 'Admin', adminOnly: true },
 ];
@@ -41,7 +43,8 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
   };
 
   const visibleNavItems = navItems.filter(
-    (item) => !item.adminOnly || (isSuccess && userInfo?.isAdmin),
+    (item) =>
+      !item.adminOnly || (isSuccess && userInfo?.roles?.includes('ADMIN')),
   );
 
   return (
@@ -67,8 +70,8 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
 
 function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   return (
-    <div className="flex h-full flex-col">
-      <nav className="flex-1 overflow-auto py-4">
+    <div className="flex min-h-0 flex-1 flex-col">
+      <nav className="min-h-0 flex-1 overflow-auto py-4">
         <NavLinks onNavigate={onNavigate} />
       </nav>
       <div className="px-6 pt-4">

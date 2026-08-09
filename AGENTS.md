@@ -29,10 +29,11 @@ bun run build       # Production build
 **Development:**
 
 ```bash
-bun run dev         # Start dev server
-bun run preview     # Preview production build
-bun run codegen     # Generate API types from OpenAPI
-bun run full-dev    # Frontend + all backend services
+bun run dev              # Start dev server
+bun run preview          # Preview production build
+bun run codegen          # Generate API types from OpenAPI
+bun run full-dev         # Frontend + all backend services (starts shared Docker infra automatically)
+bun run run-shared-infra # Start shared Docker infrastructure only (DynamoDB, Jaeger, LocalStack)
 ```
 
 **Linting:**
@@ -49,7 +50,7 @@ bun run lint:fix    # Fix lint issues
 ### General
 
 - **TypeScript**: Strict mode, avoid `any`, explicit return types on exports
-- **No semicolons**: Omit semicolons at end of statements
+- **Semicolons**: Prettier requires semicolons
 - **Quotes**: Single quotes for strings
 - **Imports**: Use `@/` alias for src (e.g., `import { cn } from '@/lib/utils'`)
 - **Styling**: Tailwind classes with `cn()` utility for conditionals

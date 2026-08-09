@@ -6,6 +6,7 @@
 /* General & Typography */
 :root {
   --navy-blue: #0a1c4a;
+  --navy-blue-light: #e8eaf6;
   --electric-orange: #ff5722;
   --light-gray: #f4f4f4;
   --medium-gray: #9e9e9e;
@@ -23,11 +24,11 @@
   --secondary-foreground: var(--white);
   --muted: oklch(0.97 0 0);
   --muted-foreground: oklch(0.556 0 0);
-  --accent: var(--medium-gray);
+  --accent: var(--navy-blue-light);
   --accent-foreground: oklch(0.205 0 0);
   --destructive: oklch(0.577 0.245 27.325);
   --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
+  --input: var(--navy-blue);
   --ring: var(--navy-blue);
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
@@ -147,7 +148,6 @@ body {
 }
 
 /* Other Sections */
-.communities-section,
 .rules-page {
   background-color: var(--white);
 }
@@ -164,46 +164,6 @@ body {
 
 .rules-page li {
   margin-bottom: 1rem;
-}
-
-.community-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 2rem;
-  margin-top: 2rem;
-}
-
-.community-card {
-  background-color: var(--light-gray);
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  padding: 1.5rem;
-  text-align: center;
-  text-decoration: none;
-  color: var(--navy-blue);
-  display: block;
-}
-
-.community-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
-}
-
-.community-card h3 {
-  color: var(--navy-blue);
-  margin-bottom: 0.25rem;
-}
-
-.community-links {
-  margin-top: 1rem;
-}
-
-.community-links a {
-  display: block;
-  text-decoration: underline;
-  color: var(--electric-orange);
-  font-size: 0.9rem;
-  margin-top: 0.25rem;
 }
 
 .community-links a:hover {
@@ -366,22 +326,6 @@ footer {
   font-size: 0.8rem;
 }
 
-.social-links {
-  display: flex;
-  gap: 3.5rem;
-}
-
-.social-icon {
-  width: 30px;
-  height: 30px;
-  transition: transform 0.3s ease-in-out;
-  border-radius: 30%;
-}
-
-.social-icon:hover {
-  transform: scale(1.1);
-}
-
 /* Responsive Design */
 @media (min-width: 768px) {
   .logo {
@@ -482,4 +426,62 @@ footer {
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* EditorJS header levels — restore heading sizes inside the editor */
+#editorjs-container h1.ce-header {
+  font-size: 2.25rem;
+  font-weight: 800;
+}
+#editorjs-container h2.ce-header {
+  font-size: 1.875rem;
+  font-weight: 700;
+}
+#editorjs-container h3.ce-header {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+#editorjs-container h4.ce-header {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+#editorjs-container h5.ce-header {
+  font-size: 1.125rem;
+  font-weight: 500;
+}
+#editorjs-container h6.ce-header {
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+/* EditorJS inline formatting */
+.cdx-bold {
+  font-weight: bold;
+}
+
+.cdx-italic {
+  font-style: italic;
+}
+
+.cdx-strikethrough {
+  text-decoration: line-through;
+}
+
+.cdx-inline-code {
+  font-family: monospace;
+  background-color: var(--muted);
+  padding: 0.1em 0.3em;
+  border-radius: 3px;
+  font-size: 0.9em;
+}
+
+/* Image block size variants */
+.image-tool--size-sm .image-tool__image-picture {
+  width: 25%;
+}
+.image-tool--size-md .image-tool__image-picture {
+  width: 50%;
+}
+.image-tool--size-lg .image-tool__image-picture {
+  width: 75%;
 }

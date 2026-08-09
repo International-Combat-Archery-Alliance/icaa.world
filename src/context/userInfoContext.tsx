@@ -1,5 +1,6 @@
 import type { components } from '@/api/login';
-import { useLoginUserInfo } from '@/hooks/useLogin';
+import { useLoginSession } from '@/hooks/useLogin';
+import { setUser, clearUser } from '@/lib/newrelic';
 import { createContext, useContext, type ReactNode, useEffect } from 'react';
 import { useLocalStorage } from 'react-use';
 
@@ -48,11 +49,19 @@ export const UserInfoContextProvider = ({
     }
   }, [cachedUserInfo, deleteCachedUserInfo, setAuthStatus]);
 
+  // Set New Relic user when we have cached user info
+  useEffect(() => {
+    if (cachedUserInfo?.userEmail) {
+      setUser(cachedUserInfo.userEmail);
+    }
+  }, [cachedUserInfo]);
+
   const shouldFetchFromAPI =
     authStatus === undefined ||
     authStatus === null ||
     (authStatus === AuthStatus.AUTHENTICATED && !cachedUserInfo) ||
     (authStatus === AuthStatus.AUTHENTICATED &&
+      cachedUserInfo &&
       isUserInfoExpired(cachedUserInfo));
 
   const {
@@ -60,7 +69,7 @@ export const UserInfoContextProvider = ({
     isSuccess: apiIsSuccess,
     isError: apiIsError,
     isLoading: apiIsLoading,
-  } = useLoginUserInfo({
+  } = useLoginSession({
     enabled: shouldFetchFromAPI,
   });
 
@@ -68,10 +77,14 @@ export const UserInfoContextProvider = ({
     if (apiIsSuccess && apiUserInfo) {
       setCachedUserInfo(apiUserInfo);
       setAuthStatus(AuthStatus.AUTHENTICATED);
+      // Track user in New Relic
+      setUser(apiUserInfo.userEmail);
     }
     if (apiIsError) {
       deleteCachedUserInfo();
       setAuthStatus(AuthStatus.UNAUTHENTICATED);
+      // Clear user from New Relic
+      clearUser();
     }
   }, [
     apiIsSuccess,
@@ -79,9 +92,13 @@ export const UserInfoContextProvider = ({
     apiUserInfo,
     setCachedUserInfo,
     deleteCachedUserInfo,
+    setAuthStatus,
   ]);
 
-  const userInfo = cachedUserInfo || apiUserInfo;
+  const rawUserInfo = cachedUserInfo || apiUserInfo;
+  const userInfo = rawUserInfo
+    ? { ...rawUserInfo, roles: rawUserInfo.roles ?? [] }
+    : undefined;
   const isSuccess = authStatus === AuthStatus.AUTHENTICATED && !!userInfo;
   const isError =
     authStatus === AuthStatus.UNAUTHENTICATED ||

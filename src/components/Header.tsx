@@ -6,29 +6,34 @@ const routeToHeaderMap: Record<string, string> = {
   '/official-rules': 'Official Rules',
   '/our-communities': 'The Alliance',
   '/events': 'Events',
-  '/news/icaa-launch': 'The Launch of the ICAA',
-  '/news/rules': 'New Official Tournament Rules',
   '/contact': 'Contact Us',
   '/admin': 'Admin',
   '/mailing-list': 'Mailing List Sign Up',
+  '/donate': 'Donate',
+  '/espn': 'ESPN8: The Ocho - Combat Archery All Stars 2026',
+  '/donation/success': 'Thank You!',
+  '/vote': 'MVP Voting',
 };
 
 function getHeaderTextForParameterizedRoute(pathname: string): string | null {
-  // Handle event registration routes
-  if (pathname.match(/^\/events\/[^\/]+\/register-free-agent$/)) {
+  if (pathname.match(/^\/events\/[^/]+\/register-free-agent$/)) {
     return 'Free Agent Registration';
   }
 
-  if (pathname.match(/^\/events\/[^\/]+\/register-team$/)) {
+  if (pathname.match(/^\/events\/[^/]+\/register-team$/)) {
     return 'Team Registration';
   }
 
-  if (pathname.match(/^\/events\/[^\/]+\/payment$/)) {
+  if (pathname.match(/^\/events\/[^/]+\/payment$/)) {
     return 'Event Payment';
   }
 
-  if (pathname.match(/^\/events\/[^\/]+\/success$/)) {
+  if (pathname.match(/^\/events\/[^/]+\/success$/)) {
     return 'Thank you for signing up!';
+  }
+
+  if (pathname.match(/^\/vote\/[^/]+$/)) {
+    return 'Voting';
   }
 
   return null;
@@ -37,7 +42,6 @@ function getHeaderTextForParameterizedRoute(pathname: string): string | null {
 export default function Header() {
   const location = useLocation();
 
-  // Don't render header for home page - it has its own hero section
   if (location.pathname === '/') {
     return null;
   }
