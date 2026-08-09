@@ -7,7 +7,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { User } from 'lucide-react';
+import { ShieldQuestion, User } from 'lucide-react';
 
 interface Player {
   imageUrl: string;
@@ -34,7 +34,7 @@ const getPositionIcon = (position: string) => {
     'rear guard':
       'https://assets.icaa.world/912721cf-cbaf-4a83-b004-ab9ac6cec9c9.webp',
   };
-  return positionMap[position.toLowerCase()] || '/images/logos/Flex.png';
+  return positionMap[position.toLowerCase()] ?? null;
 };
 
 export function PlayerRoster({ players, teamColor }: PlayerRosterProps) {
@@ -91,11 +91,15 @@ export function PlayerRoster({ players, teamColor }: PlayerRosterProps) {
               </TableCell>
               <TableCell className="text-center">
                 <div className="flex justify-center">
-                  <img
-                    src={getPositionIcon(player.position)}
-                    alt={player.position}
-                    className="h-8 w-8 md:h-10 md:w-10 object-contain"
-                  />
+                  {getPositionIcon(player.position) ? (
+                    <img
+                      src={getPositionIcon(player.position)!}
+                      alt={player.position}
+                      className="h-8 w-8 md:h-10 md:w-10 object-contain"
+                    />
+                  ) : (
+                    <ShieldQuestion className="h-8 w-8 md:h-10 md:w-10 text-muted-foreground" />
+                  )}
                 </div>
               </TableCell>
               <TableCell className="hidden md:table-cell text-lg">
