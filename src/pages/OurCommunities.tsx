@@ -145,6 +145,15 @@ const OurCommunities = () => {
           city="Austin, TX, United States"
           onHover={handleCardHover}
         />
+        <CommunityCard
+          id="batl-card"
+          name="Barrie Archery Tag"
+          isActive={hoveredCommunity?.name === 'Barrie Archery Tag'}
+          logoUrl="https://assets.icaa.world/d59966c8-2302-4eae-ab66-08b08f8d69eb.webp"
+          logoAlt="Barrie Archery Tag Logo"
+          city="Barrie, ON, Canada"
+          onHover={handleCardHover}
+        />
       </div>
       <div className="content-wrapper">
         <Card className="max-w-lg mx-auto">
