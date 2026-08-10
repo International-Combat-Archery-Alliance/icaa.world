@@ -41,7 +41,7 @@ export function PlayerRoster({ players, teamColor }: PlayerRosterProps) {
   const headerTextColor = teamColor === '#70b2e0' ? 'text-black' : 'text-white';
 
   return (
-    <div className="overflow-hidden rounded-lg border">
+    <div className="overflow-x-auto rounded-lg border">
       <Table>
         <TableHeader>
           <TableRow

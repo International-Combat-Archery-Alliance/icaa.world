@@ -2,7 +2,7 @@ import { useTitle } from 'react-use';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { SponsorsBanner } from '@/components/SponsorsBanner';
 import { PlayerRoster } from '@/components/PlayerRoster';
-import { CountdownTimer } from '@/components/CountdownTimer';
+import { ESPNScoreboard } from '@/components/ESPNScoreboard';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 
@@ -402,7 +402,7 @@ export default function ESPNPage() {
   ];
 
   return (
-    <section className="container mx-auto px-4 py-8 space-y-8">
+    <section className="container mx-auto px-4 py-8 space-y-8 @container">
       <div className="w-full max-w-4xl mx-auto aspect-video rounded-lg overflow-hidden">
         <iframe
           src="https://www.youtube.com/embed/Aet-ZNe9X4E"
@@ -428,7 +428,7 @@ export default function ESPNPage() {
         <CardContent className="text-center text-lg space-y-2">
           <p>Friday, August 7th. 3:00 PM EST</p>
           <p>Filmed live at the ESPN Wide World of Sports Complex in Orlando</p>
-          <p>Watch the broadcast on ESPN2 @ 3:00 PM!</p>
+          <p>Aired on ESPN2</p>
           <a
             href="https://www.espnwwos.com/events/competitive-sports/espn8-the-ocho/"
             target="_blank"
@@ -440,7 +440,9 @@ export default function ESPNPage() {
         </CardContent>
       </Card>
 
-      <CountdownTimer targetDate="2026-08-07T15:00:00" />
+      <div className="max-w-4xl mx-auto">
+        <ESPNScoreboard />
+      </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 my-12">
         <Card className="flex flex-col">
@@ -523,7 +525,7 @@ export default function ESPNPage() {
                 </span>
               </div>
             </div>
-            <div className="relative grid grid-cols-1 lg:grid-cols-[1fr_auto_1fr] lg:gap-x-8">
+            <div className="relative grid grid-cols-1 @min-[1260px]:grid-cols-[1fr_auto_1fr] @min-[1260px]:gap-x-8">
               {/* Team 1 */}
               <div className="space-y-6">
                 <div
@@ -543,13 +545,13 @@ export default function ESPNPage() {
               </div>
 
               {/* "VS" separator for desktop */}
-              <div className="hidden lg:flex h-64 items-center justify-center">
+              <div className="hidden @min-[1260px]:flex h-64 items-center justify-center">
                 <span className="text-5xl font-bold text-muted-foreground">
                   VS
                 </span>
               </div>
               {/* "VS" separator for mobile */}
-              <div className="lg:hidden text-center text-3xl font-bold text-muted-foreground py-4">
+              <div className="@min-[1260px]:hidden text-center text-3xl font-bold text-muted-foreground py-4">
                 VS
               </div>
 
