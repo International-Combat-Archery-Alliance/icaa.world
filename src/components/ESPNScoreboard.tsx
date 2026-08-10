@@ -126,12 +126,12 @@ function HalfScoreboard({ half }: { half: HalfResult }) {
         <TableHeader>
           <TableRow>
             <TableHead className="text-center">Round</TableHead>
+            <TableHead className="text-center">Winner</TableHead>
             <TableHead className="text-center">Round Type</TableHead>
-            <TableHead className="text-center">
+            <TableHead className="hidden md:table-cell text-center">
               Round Length{' '}
               <span className="text-muted-foreground font-normal">(m:ss)</span>
             </TableHead>
-            <TableHead className="text-center">Winner</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -139,6 +139,23 @@ function HalfScoreboard({ half }: { half: HalfResult }) {
             <TableRow key={result.round}>
               <TableCell className="text-center font-medium">
                 {result.round}
+              </TableCell>
+              <TableCell className="text-center font-medium">
+                <span
+                  className="inline-flex flex-col items-center gap-0.5"
+                  style={{ color: teamColors[result.winner] }}
+                >
+                  <span className="inline-flex items-center gap-2">
+                    <span
+                      className="inline-block h-2.5 w-2.5 rounded-full"
+                      style={{ backgroundColor: teamColors[result.winner] }}
+                    />
+                    {result.winner}
+                  </span>
+                  <span className="md:hidden text-xs tabular-nums text-muted-foreground">
+                    Round Length: {formatDuration(result.lengthSec)}
+                  </span>
+                </span>
               </TableCell>
               <TableCell className="text-center">
                 <Badge
@@ -151,20 +168,8 @@ function HalfScoreboard({ half }: { half: HalfResult }) {
                   {result.roundType}
                 </Badge>
               </TableCell>
-              <TableCell className="text-center tabular-nums">
+              <TableCell className="hidden md:table-cell text-center tabular-nums">
                 {formatDuration(result.lengthSec)}
-              </TableCell>
-              <TableCell className="text-center font-medium">
-                <span
-                  className="inline-flex items-center gap-2"
-                  style={{ color: teamColors[result.winner] }}
-                >
-                  <span
-                    className="inline-block h-2.5 w-2.5 rounded-full"
-                    style={{ backgroundColor: teamColors[result.winner] }}
-                  />
-                  {result.winner}
-                </span>
               </TableCell>
             </TableRow>
           ))}
