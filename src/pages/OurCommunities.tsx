@@ -154,6 +154,16 @@ const OurCommunities = () => {
           city="Barrie, ON, Canada"
           onHover={handleCardHover}
         />
+        <CommunityCard
+          id="tat-card"
+          name="The Archertype"
+          isActive={hoveredCommunity?.name === 'The Archertype'}
+          logoUrl="https://assets.icaa.world/50b0adb3-663b-4ad7-afdf-52bd5fcdcf08.webp"
+          logoAlt="The Archertype Logo"
+          logoClassName="bg-black"
+          city="Manchester, UK"
+          onHover={handleCardHover}
+        />
       </div>
       <div className="content-wrapper">
         <Card className="max-w-lg mx-auto">
