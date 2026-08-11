@@ -1,7 +1,11 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import Map, { Marker, Popup, NavigationControl } from 'react-map-gl/maplibre';
 import type { ViewStateChangeEvent, MapRef } from 'react-map-gl/maplibre';
-import maplibregl, { type StyleSpecification, LngLatBounds } from 'maplibre-gl';
+import {
+  Map as MaplibreMap,
+  type StyleSpecification,
+  LngLatBounds,
+} from 'maplibre-gl';
 import { useScrollSafeHover } from '@/hooks/useScrollSafeHover';
 import 'maplibre-gl/dist/maplibre-gl.css';
 
@@ -224,7 +228,7 @@ function ArcheryMap({
   return (
     <Map
       ref={mapRef}
-      mapLib={maplibregl}
+      mapLib={MaplibreMap}
       initialViewState={{
         longitude: -71.018,
         latitude: 42.385,
