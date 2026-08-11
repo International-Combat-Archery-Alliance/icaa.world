@@ -98,6 +98,13 @@ export const communities: Community[] = [
     content: 'Barrie, ON',
     url: 'https://barriearcherytag.ca/',
   },
+  {
+    name: 'The Archertype',
+    lat: 53.4713,
+    lng: -2.2162,
+    content: 'Manchester, UK',
+    url: 'https://www.thearchertype.co.uk/',
+  },
 ];
 
 const MAP_STYLE: StyleSpecification = {
