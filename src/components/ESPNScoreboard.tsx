@@ -128,7 +128,7 @@ function HalfScoreboard({ half }: { half: HalfResult }) {
             <TableHead className="text-center">Round</TableHead>
             <TableHead className="text-center">Winner</TableHead>
             <TableHead className="text-center">Round Type</TableHead>
-            <TableHead className="hidden md:table-cell text-center">
+            <TableHead className="hidden text-center md:table-cell">
               Round Length{' '}
               <span className="text-muted-foreground font-normal">(m:ss)</span>
             </TableHead>
@@ -152,7 +152,7 @@ function HalfScoreboard({ half }: { half: HalfResult }) {
                     />
                     {result.winner}
                   </span>
-                  <span className="md:hidden text-xs tabular-nums text-muted-foreground">
+                  <span className="text-muted-foreground text-xs tabular-nums md:hidden">
                     Round Length: {formatDuration(result.lengthSec)}
                   </span>
                 </span>
@@ -168,7 +168,7 @@ function HalfScoreboard({ half }: { half: HalfResult }) {
                   {result.roundType}
                 </Badge>
               </TableCell>
-              <TableCell className="hidden md:table-cell text-center tabular-nums">
+              <TableCell className="hidden text-center tabular-nums md:table-cell">
                 {formatDuration(result.lengthSec)}
               </TableCell>
             </TableRow>
@@ -186,7 +186,7 @@ export function ESPNScoreboard() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-2xl md:text-3xl text-center text-primary">
+        <CardTitle className="text-primary text-center text-2xl md:text-3xl">
           Final Scoreboard
         </CardTitle>
       </CardHeader>
@@ -227,7 +227,7 @@ export function ESPNScoreboard() {
               1v1 Sudden Death
             </Badge>
           </div>
-          <div className="mt-4 grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] items-center gap-4 text-center">
+          <div className="mt-4 grid grid-cols-1 items-center gap-4 text-center md:grid-cols-[1fr_auto_1fr]">
             <div>
               <p className="font-semibold">Cameron Cardwell</p>
               <p
@@ -248,9 +248,9 @@ export function ESPNScoreboard() {
               </p>
             </div>
           </div>
-          <p className="mt-4 text-center text-muted-foreground">
+          <p className="text-muted-foreground mt-4 text-center">
             Winner:{' '}
-            <span className="font-semibold text-foreground">Andrew Bui</span>{' '}
+            <span className="text-foreground font-semibold">Andrew Bui</span>{' '}
             (Ottawa)
           </p>
         </div>

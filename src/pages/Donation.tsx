@@ -148,10 +148,10 @@ export default function Donation() {
   };
 
   return (
-    <div className="px-4 py-4 max-w-screen-lg mx-auto">
+    <div className="mx-auto max-w-screen-lg px-4 py-4">
       <Card className="w-full">
         <CardHeader>
-          <CardTitle className="text-center font-bold text-2xl">
+          <CardTitle className="text-center text-2xl font-bold">
             Support the ICAA
           </CardTitle>
         </CardHeader>
@@ -161,7 +161,7 @@ export default function Donation() {
               <img
                 src="https://assets.icaa.world/bd242bdf-283e-4b80-bbe5-f8d2c28b133e.webp"
                 alt="ICAA combat archery"
-                className="w-full h-48 md:h-80 rounded-lg object-cover"
+                className="h-48 w-full rounded-lg object-cover md:h-80"
               />
               <p className="text-center text-gray-600">
                 Your donation helps us grow Combat Archery worldwide and support
@@ -170,7 +170,7 @@ export default function Donation() {
               <Form {...form}>
                 <form
                   onSubmit={form.handleSubmit(onSubmit)}
-                  className="flex flex-col gap-6 w-full"
+                  className="flex w-full flex-col gap-6"
                 >
                   <FormField
                     control={form.control}
@@ -221,7 +221,7 @@ export default function Donation() {
                           <FormLabel>Donation Amount</FormLabel>
                           <FormControl>
                             <div className="space-y-4">
-                              <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
+                              <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
                                 {PRESET_AMOUNTS.map((amount) => (
                                   <Button
                                     key={amount}
@@ -251,7 +251,7 @@ export default function Donation() {
                               </div>
                               {isCustomAmount && (
                                 <div className="relative w-full max-w-xs">
-                                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
+                                  <span className="absolute top-1/2 left-3 -translate-y-1/2 text-gray-500">
                                     {currencySymbol}
                                   </span>
                                   <Input
@@ -260,8 +260,7 @@ export default function Donation() {
                                     min="1"
                                     step="0.01"
                                     placeholder="Enter amount"
-                                    className="bg-white pl-10 w-full"
-                                    autoFocus
+                                    className="w-full bg-white pl-10"
                                   />
                                 </div>
                               )}
@@ -303,7 +302,7 @@ export default function Donation() {
                     control={form.control}
                     name="acceptedPolicies"
                     render={({ field }) => (
-                      <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                      <FormItem className="flex flex-row items-start space-y-0 space-x-3">
                         <FormControl>
                           <Checkbox
                             checked={field.value}
@@ -342,7 +341,7 @@ export default function Donation() {
                     control={form.control}
                     name="coverProcessingFees"
                     render={({ field }) => (
-                      <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                      <FormItem className="flex flex-row items-start space-y-0 space-x-3">
                         <FormControl>
                           <Checkbox
                             checked={field.value}
@@ -355,7 +354,7 @@ export default function Donation() {
                             of my donation goes to ICAA
                           </FormLabel>
                           {field.value && Number(form.watch('amount')) > 0 && (
-                            <p className="text-xs text-muted-foreground">
+                            <p className="text-muted-foreground text-xs">
                               Your total will be{' '}
                               {formatCurrencyAmount(
                                 calculateTotalWithFees(
@@ -376,7 +375,7 @@ export default function Donation() {
                     control={form.control}
                     name="subscribeToMailingList"
                     render={({ field }) => (
-                      <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                      <FormItem className="flex flex-row items-start space-y-0 space-x-3">
                         <FormControl>
                           <Checkbox
                             checked={field.value}
@@ -398,9 +397,9 @@ export default function Donation() {
                       fieldName="turnstileToken"
                     />
                   )}
-                  <div className="bg-muted p-4 rounded-lg border border-border space-y-3 text-sm">
-                    <h4 className="font-semibold text-base">Donation Notice</h4>
-                    <div className="space-y-2 text-muted-foreground">
+                  <div className="bg-muted border-border space-y-3 rounded-lg border p-4 text-sm">
+                    <h4 className="text-base font-semibold">Donation Notice</h4>
+                    <div className="text-muted-foreground space-y-2">
                       <p>
                         <strong>Processing:</strong> Donations are processed
                         securely by Stripe.

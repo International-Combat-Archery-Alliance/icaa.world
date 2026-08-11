@@ -32,7 +32,7 @@ function PollResultsDisplay({
 
   if (results.level === 'None') {
     return (
-      <p className="text-center text-muted-foreground">
+      <p className="text-muted-foreground text-center">
         Results are not available for this poll.
       </p>
     );
@@ -41,7 +41,7 @@ function PollResultsDisplay({
   return (
     <div className="space-y-3">
       {results.level === 'Full' && results.totalVotes !== undefined && (
-        <p className="text-center text-sm text-muted-foreground">
+        <p className="text-muted-foreground text-center text-sm">
           {results.totalVotes} total vote{results.totalVotes !== 1 ? 's' : ''}
         </p>
       )}
@@ -66,14 +66,14 @@ function PollResultsDisplay({
                   <Avatar className="h-8 w-8 shrink-0">
                     <AvatarImage src={meta?.imageUrl} />
                     <AvatarFallback className="bg-muted">
-                      <User className="h-4 w-4 text-muted-foreground" />
+                      <User className="text-muted-foreground h-4 w-4" />
                     </AvatarFallback>
                   </Avatar>
                   <span className="truncate text-sm font-medium">
                     {meta?.name ?? r.optionId}
                   </span>
                 </div>
-                <span className="shrink-0 text-sm tabular-nums text-muted-foreground">
+                <span className="text-muted-foreground shrink-0 text-sm tabular-nums">
                   {results.level === 'Full' && r.count !== undefined && r.count}
                   {results.level === 'Percentages' &&
                     r.percentage !== undefined &&
@@ -84,9 +84,9 @@ function PollResultsDisplay({
                 </span>
               </div>
               {results.level !== 'Rankings' && (
-                <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
+                <div className="bg-muted h-1.5 w-full overflow-hidden rounded-full">
                   <div
-                    className="h-full rounded-full bg-primary transition-all"
+                    className="bg-primary h-full rounded-full transition-all"
                     style={{ width: `${barWidth}%` }}
                   />
                 </div>

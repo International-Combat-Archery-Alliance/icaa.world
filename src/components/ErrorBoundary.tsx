@@ -38,18 +38,18 @@ export default class ErrorBoundary extends Component<Props, State> {
   render() {
     if (this.state.hasError) {
       return (
-        <div className="min-h-screen flex items-center justify-center bg-[#0a1c4a] p-4">
-          <div className="max-w-2xl w-full bg-[#0a1c4a]/80 border border-[#ff5722]/30 rounded-lg p-8 text-center">
-            <h1 className="text-3xl font-bold text-[#ff5722] mb-4">
+        <div className="flex min-h-screen items-center justify-center bg-[#0a1c4a] p-4">
+          <div className="w-full max-w-2xl rounded-lg border border-[#ff5722]/30 bg-[#0a1c4a]/80 p-8 text-center">
+            <h1 className="mb-4 text-3xl font-bold text-[#ff5722]">
               Something went wrong
             </h1>
-            <p className="text-white/80 mb-6">
+            <p className="mb-6 text-white/80">
               We apologize for the inconvenience. Please try refreshing the
               page.
             </p>
             <button
               onClick={() => window.location.reload()}
-              className="px-6 py-2 bg-[#ff5722] text-white rounded hover:bg-[#ff5722]/90 transition-colors mb-6"
+              className="mb-6 rounded bg-[#ff5722] px-6 py-2 text-white transition-colors hover:bg-[#ff5722]/90"
             >
               Refresh Page
             </button>
@@ -60,13 +60,13 @@ export default class ErrorBoundary extends Component<Props, State> {
                   onClick={() =>
                     this.setState({ showDetails: !this.state.showDetails })
                   }
-                  className="text-sm text-[#ff5722] hover:text-[#ff5722]/80 underline"
+                  className="text-sm text-[#ff5722] underline hover:text-[#ff5722]/80"
                 >
                   {this.state.showDetails ? 'Hide' : 'Show'} error details
                 </button>
 
                 {this.state.showDetails && (
-                  <pre className="mt-3 p-4 bg-black/50 rounded text-left text-xs text-red-300 overflow-auto max-h-96 whitespace-pre-wrap break-words">
+                  <pre className="mt-3 max-h-96 overflow-auto rounded bg-black/50 p-4 text-left text-xs break-words whitespace-pre-wrap text-red-300">
                     {this.state.error?.toString()}
                     {'\n\n'}
                     {this.state.errorInfo?.componentStack}

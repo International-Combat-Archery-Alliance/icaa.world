@@ -62,7 +62,7 @@ function buildPdfEmbedData(url: string): EmbedBlockData {
 
 function buildGenericEmbedData(url: string): EmbedBlockData | null {
   try {
-    new URL(url);
+    void new URL(url);
   } catch {
     return null;
   }

@@ -26,10 +26,10 @@ export default function ArticlePage() {
   if (isLoading) {
     return (
       <section className="content-section news-page">
-        <div className="content-wrapper max-w-screen-lg mx-auto p-4 md:p-8">
-          <Skeleton className="h-8 w-48 mb-8" />
-          <Skeleton className="h-10 w-96 mb-4" />
-          <Skeleton className="h-5 w-32 mb-8" />
+        <div className="content-wrapper mx-auto max-w-screen-lg p-4 md:p-8">
+          <Skeleton className="mb-8 h-8 w-48" />
+          <Skeleton className="mb-4 h-10 w-96" />
+          <Skeleton className="mb-8 h-5 w-32" />
           <div className="space-y-4">
             <Skeleton className="h-4 w-full" />
             <Skeleton className="h-4 w-full" />
@@ -43,8 +43,8 @@ export default function ArticlePage() {
   if (error || !article) {
     return (
       <section className="content-section news-page">
-        <div className="content-wrapper max-w-screen-lg mx-auto p-4 md:p-8 text-center">
-          <h1 className="text-3xl font-bold mb-4">Article Not Found</h1>
+        <div className="content-wrapper mx-auto max-w-screen-lg p-4 text-center md:p-8">
+          <h1 className="mb-4 text-3xl font-bold">Article Not Found</h1>
           <p className="text-muted-foreground mb-6">
             The article you are looking for does not exist or has been removed.
           </p>
@@ -61,7 +61,7 @@ export default function ArticlePage() {
 
   return (
     <section className="content-section news-page">
-      <div className="ml-4 md:ml-8 mt-4">
+      <div className="mt-4 ml-4 md:ml-8">
         <Button size="sm" asChild>
           <Link to="/">
             <ArrowLeft className="mr-2 h-4 w-4" />
@@ -69,12 +69,12 @@ export default function ArticlePage() {
           </Link>
         </Button>
       </div>
-      <div className="content-wrapper max-w-screen-lg mx-auto p-4 md:p-8">
+      <div className="content-wrapper mx-auto max-w-screen-lg p-4 md:p-8">
         <header className="mb-8 text-center">
-          <h1 className="text-3xl md:text-4xl font-bold text-primary mb-2">
+          <h1 className="text-primary mb-2 text-3xl font-bold md:text-4xl">
             {article.title}
           </h1>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-muted-foreground text-sm">
             {formatDate(article.publishedAt ?? article.createdAt)}
           </p>
         </header>

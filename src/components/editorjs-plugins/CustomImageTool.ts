@@ -23,17 +23,14 @@ export default class CustomImageTool extends ImageTool {
     });
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   constructor(params: any) {
     super(params);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (this as any)._data.size =
       (params.data as Record<string, unknown>)?.size || 'full';
   }
 
   render() {
     const wrapper = super.render() as HTMLElement;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const size: ImageSize = (this as any)._data.size || 'full';
     if (size !== 'full') {
       wrapper.classList.add(`image-tool--${SIZE_CSS_SUFFIX[size]}`);
@@ -43,7 +40,6 @@ export default class CustomImageTool extends ImageTool {
 
   renderSettings() {
     const parentSettings = super.renderSettings() || [];
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const currentSize: ImageSize = (this as any)._data.size || 'full';
 
     const sizeTune = {
@@ -71,13 +67,11 @@ export default class CustomImageTool extends ImageTool {
     const data = super.save(blockContent);
     return {
       ...data,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       size: (this as any)._data.size || 'full',
     };
   }
 
   private _setSize(size: ImageSize): void {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const self = this as any;
     const oldSize: ImageSize = self._data.size || 'full';
     self._data.size = size;

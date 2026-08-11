@@ -61,7 +61,7 @@ export function DateRangePicker({
               onClick={() => onDateRangeChange(undefined)}
               aria-label="Clear date range"
             >
-              <X className="h-4 w-4 text-muted-foreground hover:text-foreground" />
+              <X className="text-muted-foreground hover:text-foreground h-4 w-4" />
             </Button>
           )}
         </div>

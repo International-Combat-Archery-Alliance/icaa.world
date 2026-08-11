@@ -148,11 +148,11 @@ function BlockRenderer({ block }: { block: EditorJsBlock }) {
           <img
             src={url}
             alt={caption || ''}
-            className={`${sizeClass} max-w-full h-auto rounded-md ${imgAlignClass}`}
+            className={`${sizeClass} h-auto max-w-full rounded-md ${imgAlignClass}`}
           />
           {caption && (
             <figcaption
-              className={`text-sm text-muted-foreground mt-2 ${alignClass(alignment)}`}
+              className={`text-muted-foreground mt-2 text-sm ${alignClass(alignment)}`}
             >
               {caption}
             </figcaption>
@@ -168,14 +168,14 @@ function BlockRenderer({ block }: { block: EditorJsBlock }) {
 
       return (
         <blockquote
-          className={`border-l-4 border-primary pl-4 py-2 my-4 ${alignClass(alignment)}`}
+          className={`border-primary my-4 border-l-4 py-2 pl-4 ${alignClass(alignment)}`}
         >
           <p
             className="italic"
             dangerouslySetInnerHTML={{ __html: text || '' }}
           />
           {caption && (
-            <cite className="block text-sm text-muted-foreground mt-2 not-italic">
+            <cite className="text-muted-foreground mt-2 block text-sm not-italic">
               — {caption}
             </cite>
           )}
@@ -208,6 +208,7 @@ function BlockRenderer({ block }: { block: EditorJsBlock }) {
           <div className="overflow-hidden rounded-md">
             <iframe
               src={embedUrl}
+              title="Embedded content"
               width={appliedWidth}
               height={height}
               className={cn(
@@ -216,11 +217,12 @@ function BlockRenderer({ block }: { block: EditorJsBlock }) {
                 alignment === 'right' && 'ml-auto block',
               )}
               allowFullScreen
+              sandbox="allow-scripts allow-popups allow-presentation"
               frameBorder="0"
             />
           </div>
           {caption && (
-            <figcaption className="text-sm text-muted-foreground mt-2 text-center">
+            <figcaption className="text-muted-foreground mt-2 text-center text-sm">
               {caption}
             </figcaption>
           )}
@@ -243,13 +245,13 @@ function BlockRenderer({ block }: { block: EditorJsBlock }) {
                   withHeadings && rowIndex === 0 ? (
                     <TableHead
                       key={cellIndex}
-                      className="border border-border"
+                      className="border-border border"
                       dangerouslySetInnerHTML={{ __html: cell }}
                     />
                   ) : (
                     <TableCell
                       key={cellIndex}
-                      className="border border-border"
+                      className="border-border border"
                       dangerouslySetInnerHTML={{ __html: cell }}
                     />
                   ),
@@ -274,24 +276,24 @@ function BlockRenderer({ block }: { block: EditorJsBlock }) {
           href={link}
           target="_blank"
           rel="noopener noreferrer"
-          className="block border rounded-md p-4 my-4 hover:bg-secondary/50 transition-colors no-underline"
+          className="hover:bg-secondary/50 my-4 block rounded-md border p-4 no-underline transition-colors"
         >
           <div className="flex gap-4">
             {meta?.image?.url && (
               <img
                 src={meta.image.url}
                 alt=""
-                className="w-24 h-24 object-cover rounded-md flex-shrink-0"
+                className="h-24 w-24 flex-shrink-0 rounded-md object-cover"
               />
             )}
             <div className="min-w-0">
-              <p className="font-medium truncate">{meta?.title || link}</p>
+              <p className="truncate font-medium">{meta?.title || link}</p>
               {meta?.description && (
-                <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
+                <p className="text-muted-foreground mt-1 line-clamp-2 text-sm">
                   {meta.description}
                 </p>
               )}
-              <p className="text-xs text-muted-foreground mt-1 truncate">
+              <p className="text-muted-foreground mt-1 truncate text-xs">
                 {link}
               </p>
             </div>
@@ -337,10 +339,10 @@ function BlockRenderer({ block }: { block: EditorJsBlock }) {
 
     case 'warning':
       return (
-        <div className="bg-yellow-50 border border-yellow-200 rounded-md p-4 my-4">
+        <div className="my-4 rounded-md border border-yellow-200 bg-yellow-50 p-4">
           <p className="font-medium text-yellow-800">Warning</p>
           <p
-            className="text-yellow-700 mt-1"
+            className="mt-1 text-yellow-700"
             dangerouslySetInnerHTML={{
               __html: (block.data.message as string) || '',
             }}
@@ -363,7 +365,7 @@ function EditorJsRenderer({ data }: EditorJsRendererProps) {
   }
 
   return (
-    <div className="flex flex-col gap-4 [&_a]:text-primary [&_a]:font-bold">
+    <div className="[&_a]:text-primary flex flex-col gap-4 [&_a]:font-bold">
       {data.blocks.map((block, index) => (
         <BlockRenderer key={index} block={block} />
       ))}

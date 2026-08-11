@@ -38,10 +38,10 @@ export function CountdownTimer({ targetDate }: CountdownTimerProps) {
 
     timerComponents.push(
       <div key={interval} className="flex flex-col items-center">
-        <span className="text-4xl md:text-5xl font-bold text-primary">
+        <span className="text-primary text-4xl font-bold md:text-5xl">
           {String(value).padStart(2, '0')}
         </span>
-        <span className="text-xs uppercase text-muted-foreground">
+        <span className="text-muted-foreground text-xs uppercase">
           {interval}
         </span>
       </div>,
@@ -49,7 +49,7 @@ export function CountdownTimer({ targetDate }: CountdownTimerProps) {
   });
 
   return (
-    <div className="flex justify-center gap-4 md:gap-8 my-4">
+    <div className="my-4 flex justify-center gap-4 md:gap-8">
       {timerComponents.length ? (
         timerComponents
       ) : (

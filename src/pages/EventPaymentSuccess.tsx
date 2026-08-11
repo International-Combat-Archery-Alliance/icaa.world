@@ -33,7 +33,7 @@ export default function EventPaymentSuccess() {
         </div>
         <div>
           Reach out to us at{' '}
-          <a href="mailto:info@icaa.world" className="font-bold text-primary">
+          <a href="mailto:info@icaa.world" className="text-primary font-bold">
             info@icaa.world
           </a>{' '}
           if you have any questions.

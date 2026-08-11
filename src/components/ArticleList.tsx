@@ -65,7 +65,7 @@ export function ArticleList({ onEdit, onNew }: ArticleListProps) {
                 <TableRow>
                   <TableCell
                     colSpan={6}
-                    className="text-center text-muted-foreground"
+                    className="text-muted-foreground text-center"
                   >
                     No articles yet. Create your first one!
                   </TableCell>

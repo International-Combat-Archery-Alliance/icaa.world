@@ -43,7 +43,7 @@ function SignedIn({
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Avatar className="ring-2 ring-primary">
+        <Avatar className="ring-primary ring-2">
           <AvatarImage
             src={userInfo?.profilePicURL}
             alt="Google user profile image"
@@ -54,7 +54,7 @@ function SignedIn({
       <PopoverContent
         side="top"
         align="start"
-        className="z-60 flex flex-col gap-4 text-center justify-center w-64"
+        className="z-60 flex w-64 flex-col justify-center gap-4 text-center"
       >
         <div className="font-bold">{userInfo?.userEmail}</div>
         <Button

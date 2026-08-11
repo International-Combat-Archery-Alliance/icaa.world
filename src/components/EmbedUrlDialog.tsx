@@ -43,12 +43,12 @@ function EmbedUrlDialog({ open, onOpenChange, onInsert }: EmbedUrlDialogProps) {
     onOpenChange(false);
   };
 
-  const handleOpenChange = (open: boolean) => {
-    if (!open) {
+  const handleOpenChange = (isOpen: boolean) => {
+    if (!isOpen) {
       setUrl('');
       setError(null);
     }
-    onOpenChange(open);
+    onOpenChange(isOpen);
   };
 
   return (
@@ -72,9 +72,8 @@ function EmbedUrlDialog({ open, onOpenChange, onInsert }: EmbedUrlDialogProps) {
                 setUrl(e.target.value);
                 setError(null);
               }}
-              autoFocus
             />
-            {error && <p className="text-sm text-destructive">{error}</p>}
+            {error && <p className="text-destructive text-sm">{error}</p>}
           </div>
           <DialogFooter className="mt-4">
             <Button

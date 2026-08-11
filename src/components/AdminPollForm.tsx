@@ -425,7 +425,7 @@ function AdminPollForm({ mode, poll, onSuccess }: AdminPollFormProps) {
                   size="icon"
                   onClick={() => groupsArray.remove(groupIdx)}
                 >
-                  <Trash2 className="h-4 w-4 text-destructive" />
+                  <Trash2 className="text-destructive h-4 w-4" />
                 </Button>
               </div>
 
@@ -523,7 +523,7 @@ function AdminPollForm({ mode, poll, onSuccess }: AdminPollFormProps) {
                   size="icon"
                   onClick={() => optionsArray.remove(optIdx)}
                 >
-                  <Trash2 className="h-4 w-4 text-destructive" />
+                  <Trash2 className="text-destructive h-4 w-4" />
                 </Button>
               </div>
 
@@ -613,7 +613,7 @@ function OptionsSubForm({
   return (
     <div className="space-y-2 pl-2">
       <div className="flex items-center justify-between">
-        <span className="text-xs font-medium text-muted-foreground">
+        <span className="text-muted-foreground text-xs font-medium">
           Options
         </span>
         <Button
@@ -631,14 +631,14 @@ function OptionsSubForm({
       {optionsArray.fields.map((option, optIdx) => (
         <div key={option.id} className="space-y-2 rounded border p-2">
           <div className="flex items-center justify-between">
-            <span className="text-xs text-muted-foreground">#{optIdx + 1}</span>
+            <span className="text-muted-foreground text-xs">#{optIdx + 1}</span>
             <Button
               type="button"
               variant="ghost"
               size="icon"
               onClick={() => optionsArray.remove(optIdx)}
             >
-              <Trash2 className="h-3 w-3 text-destructive" />
+              <Trash2 className="text-destructive h-3 w-3" />
             </Button>
           </div>
           <FormField
@@ -651,7 +651,7 @@ function OptionsSubForm({
                 <FormControl>
                   <Input
                     placeholder="Player name"
-                    className="h-8 text-sm bg-background"
+                    className="bg-background h-8 text-sm"
                     {...field}
                   />
                 </FormControl>
@@ -670,7 +670,7 @@ function OptionsSubForm({
                   <FormControl>
                     <Input
                       placeholder="#17"
-                      className="h-8 text-sm bg-background"
+                      className="bg-background h-8 text-sm"
                       {...field}
                     />
                   </FormControl>
@@ -688,7 +688,7 @@ function OptionsSubForm({
                   <FormControl>
                     <Input
                       placeholder="Image URL"
-                      className="h-8 text-sm bg-background"
+                      className="bg-background h-8 text-sm"
                       {...field}
                     />
                   </FormControl>

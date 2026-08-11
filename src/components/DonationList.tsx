@@ -71,7 +71,7 @@ export function DonationList({ dateRange }: DonationListProps) {
         <CardTitle>
           Donations
           {totalCount !== undefined && totalCount !== null && (
-            <span className="ml-2 text-sm font-normal text-muted-foreground">
+            <span className="text-muted-foreground ml-2 text-sm font-normal">
               ({totalCount} total)
             </span>
           )}
@@ -94,7 +94,7 @@ export function DonationList({ dateRange }: DonationListProps) {
                 <TableRow>
                   <TableCell
                     colSpan={5}
-                    className="text-center py-8 text-muted-foreground"
+                    className="text-muted-foreground py-8 text-center"
                   >
                     No donations found
                   </TableCell>
@@ -109,7 +109,7 @@ export function DonationList({ dateRange }: DonationListProps) {
                     </TableCell>
                     <TableCell>
                       <span
-                        className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                        className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
                           donation.status === 'succeeded'
                             ? 'bg-green-100 text-green-800'
                             : donation.status === 'pending'

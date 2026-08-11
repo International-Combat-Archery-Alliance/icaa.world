@@ -89,13 +89,13 @@ export function EventDetailsCard({ event }: EventDetailsCardProps) {
   };
 
   return (
-    <Card className="w-full max-w-screen-lg mx-auto mb-8">
-      <CardContent className="flex flex-col md:flex-row items-center gap-6 p-6">
+    <Card className="mx-auto mb-8 w-full max-w-screen-lg">
+      <CardContent className="flex flex-col items-center gap-6 p-6 md:flex-row">
         {event.imageName && (
           <img
             src={event.imageName}
             alt={`${event.name} logo`}
-            className="w-32 h-32 rounded-md object-contain flex-shrink-0"
+            className="h-32 w-32 flex-shrink-0 rounded-md object-contain"
           />
         )}
         <div className="grid gap-1 text-center md:text-left">
@@ -124,7 +124,7 @@ export function EventDetailsCard({ event }: EventDetailsCardProps) {
               <strong>Team Price:</strong> {formatMoney(byTeamOpt.price)}
             </p>
           )}
-          <div className="flex flex-col sm:flex-row gap-2 mt-4">
+          <div className="mt-4 flex flex-col gap-2 sm:flex-row">
             <Button
               variant="outline"
               className="w-full md:w-auto"

@@ -18,8 +18,8 @@ export const ArticlesQueryClientProvider = ({
       credentials: 'include',
     });
     articlesAPIFetchClient.use(createAuthMiddleware());
-    const articlesQueryClient = createClient(articlesAPIFetchClient);
-    return { articlesQueryClient };
+    const client = createClient(articlesAPIFetchClient);
+    return { articlesQueryClient: client };
   }, []);
 
   return (

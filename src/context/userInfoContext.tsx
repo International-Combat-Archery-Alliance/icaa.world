@@ -1,7 +1,13 @@
 import type { components } from '@/api/login';
 import { useLoginSession } from '@/hooks/useLogin';
 import { setUser, clearUser } from '@/lib/newrelic';
-import { createContext, useContext, type ReactNode, useEffect } from 'react';
+import {
+  createContext,
+  useContext,
+  useMemo,
+  type ReactNode,
+  useEffect,
+} from 'react';
 import { useLocalStorage } from 'react-use';
 
 export enum AuthStatus {
@@ -96,27 +102,39 @@ export const UserInfoContextProvider = ({
   ]);
 
   const rawUserInfo = cachedUserInfo || apiUserInfo;
-  const userInfo = rawUserInfo
-    ? { ...rawUserInfo, roles: rawUserInfo.roles ?? [] }
-    : undefined;
+  const userInfo = useMemo(() => {
+    if (!rawUserInfo) return undefined;
+    return { ...rawUserInfo, roles: rawUserInfo.roles ?? [] };
+  }, [rawUserInfo]);
   const isSuccess = authStatus === AuthStatus.AUTHENTICATED && !!userInfo;
   const isError =
     authStatus === AuthStatus.UNAUTHENTICATED ||
     (shouldFetchFromAPI && apiIsError);
   const isLoading = shouldFetchFromAPI && apiIsLoading;
 
+  const value = useMemo(
+    () => ({
+      userInfo,
+      isSuccess,
+      isError,
+      isLoading,
+      setCachedUserInfo,
+      setAuthStatus,
+      deleteCachedUserInfo,
+    }),
+    [
+      userInfo,
+      isSuccess,
+      isError,
+      isLoading,
+      setCachedUserInfo,
+      setAuthStatus,
+      deleteCachedUserInfo,
+    ],
+  );
+
   return (
-    <UserInfoContext.Provider
-      value={{
-        userInfo,
-        isSuccess,
-        isError,
-        isLoading,
-        setCachedUserInfo,
-        setAuthStatus,
-        deleteCachedUserInfo,
-      }}
-    >
+    <UserInfoContext.Provider value={value}>
       {children}
     </UserInfoContext.Provider>
   );

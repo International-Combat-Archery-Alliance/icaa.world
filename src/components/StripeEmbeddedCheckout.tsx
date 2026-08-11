@@ -18,7 +18,7 @@ export default function StripeEmbeddedCheckout({
   const options = { clientSecret, onComplete };
 
   return (
-    <div className="w-full mx-auto">
+    <div className="mx-auto w-full">
       <EmbeddedCheckoutProvider stripe={stripePromise} options={options}>
         <EmbeddedCheckout />
       </EmbeddedCheckoutProvider>

@@ -47,7 +47,7 @@ const EventsContainer = ({ className }: { className?: string }) => {
     }
     if (error) {
       return (
-        <p className="text-center text-red-600 p-4">Error loading events.</p>
+        <p className="p-4 text-center text-red-600">Error loading events.</p>
       );
     }
     if (eventList && eventList.length > 0) {
@@ -57,18 +57,18 @@ const EventsContainer = ({ className }: { className?: string }) => {
             <Link
               key={event.id}
               to={`/events/${event.id}/event-details`}
-              className="group grid gap-1 rounded-lg p-3 transition-colors hover:bg-muted/50"
+              className="group hover:bg-muted/50 grid gap-1 rounded-lg p-3 transition-colors"
             >
-              <p className="text-sm text-muted-foreground">
+              <p className="text-muted-foreground text-sm">
                 {DateTime.fromISO(event.startTime, {
                   zone: event.timeZone,
                 }).toLocaleString(DateTime.DATE_FULL)}
               </p>
-              <h4 className="font-semibold group-hover:text-primary transition-colors">
+              <h4 className="group-hover:text-primary font-semibold transition-colors">
                 {event.name}
               </h4>
               {event.location && (
-                <p className="text-sm text-muted-foreground line-clamp-2">
+                <p className="text-muted-foreground line-clamp-2 text-sm">
                   {`${event.location.name} - ${event.location.address.city}, ${event.location.address.state}`}
                 </p>
               )}
@@ -78,7 +78,7 @@ const EventsContainer = ({ className }: { className?: string }) => {
       );
     }
     return (
-      <p className="text-center text-muted-foreground p-4">{emptyMessage}</p>
+      <p className="text-muted-foreground p-4 text-center">{emptyMessage}</p>
     );
   };
 
@@ -86,18 +86,18 @@ const EventsContainer = ({ className }: { className?: string }) => {
     <Card className={cn('flex h-full flex-col', className)}>
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-2xl">
-          <CalendarDays className="h-6 w-6 text-primary" />
+          <CalendarDays className="text-primary h-6 w-6" />
           <span>Events</span>
         </CardTitle>
       </CardHeader>
-      <Tabs defaultValue="upcoming" className="flex flex-col flex-grow">
+      <Tabs defaultValue="upcoming" className="flex flex-grow flex-col">
         <div className="px-6">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
             <TabsTrigger value="past">Past</TabsTrigger>
           </TabsList>
         </div>
-        <div className="p-6 pt-4 flex-grow">
+        <div className="flex-grow p-6 pt-4">
           <TabsContent value="upcoming" className="mt-0">
             {renderEventList(upcomingEvents, 'No upcoming events scheduled.')}
           </TabsContent>

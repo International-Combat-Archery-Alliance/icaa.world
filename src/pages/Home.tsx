@@ -48,49 +48,50 @@ const Home = () => {
   return (
     <>
       <header id="hero-section" className="content-section active">
-        <h1 className="text-balance text-center text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl">
+        <h1 className="text-center text-4xl font-extrabold tracking-tight text-balance sm:text-5xl md:text-6xl">
           International <span className="text-primary">Combat Archery</span>{' '}
           Alliance
         </h1>
-        <p className="mx-auto mt-4 max-w-3xl text-center text-lg text-muted-foreground md:text-xl">
+        <p className="text-muted-foreground mx-auto mt-4 max-w-3xl text-center text-lg md:text-xl">
           Building a global alliance for the sport of Combat Archery.
         </p>
       </header>
 
-      <div className="mt-8 pb-6 px-4 flex flex-col items-center gap-4 lg:px-12">
+      <div className="mt-8 flex flex-col items-center gap-4 px-4 pb-6 lg:px-12">
         <Card className="w-full max-w-[1016px]">
-          <div className="aspect-video w-full rounded-t-lg overflow-hidden">
+          <div className="aspect-video w-full overflow-hidden rounded-t-lg">
             <iframe
               src="https://www.youtube.com/embed/Aet-ZNe9X4E"
               title="ESPN8: The Ocho - Combat Archery All Stars 2026"
-              className="w-full h-full"
+              className="h-full w-full"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
               allowFullScreen
+              sandbox="allow-scripts allow-presentation"
             ></iframe>
           </div>
           <div className="p-6 text-center">
-            <CardHeader className="p-0 mb-4">
-              <CardTitle className="text-2xl md:text-3xl text-primary">
+            <CardHeader className="mb-4 p-0">
+              <CardTitle className="text-primary text-2xl md:text-3xl">
                 ESPN8: The Ocho - Combat Archery All Stars 2026
               </CardTitle>
               <CardDescription className="text-lg">
                 The biggest names in Combat Archery compete on the world stage.
               </CardDescription>
             </CardHeader>
-            <CardContent className="p-0 mb-6 space-y-4">
+            <CardContent className="mb-6 space-y-4 p-0">
               <p>
                 The ICAA is proud to partner with ESPN to bring Combat Archery
                 to The Ocho! Watch the top players from across North America
                 battle it out for the title of All-Star Champion.
               </p>
-              <p className="text-2xl md:text-3xl font-bold text-primary">
+              <p className="text-primary text-2xl font-bold md:text-3xl">
                 Watch live on ESPN2 August 7th at 3:00 PM EST!
               </p>
-              <p className="text-2xl md:text-3xl font-bold text-secondary">
+              <p className="text-secondary text-2xl font-bold md:text-3xl">
                 Also Streaming on ESPN+!
               </p>
             </CardContent>
-            <CardFooter className="p-0 flex justify-center">
+            <CardFooter className="flex justify-center p-0">
               <Button asChild>
                 <Link to="/espn">See the Rosters & Event Info</Link>
               </Button>
@@ -104,9 +105,9 @@ const Home = () => {
           <CarouselImages assetPath="/Carousel-Images" />
         </div>
 
-        <div className="w-full max-w-[1016px] flex flex-col gap-4 lg:flex-row">
-          <NewsContainer className="flex-1 min-w-0 h-auto" />
-          <EventsContainer className="flex-1 min-w-0 h-auto" />
+        <div className="flex w-full max-w-[1016px] flex-col gap-4 lg:flex-row">
+          <NewsContainer className="h-auto min-w-0 flex-1" />
+          <EventsContainer className="h-auto min-w-0 flex-1" />
         </div>
       </div>
     </>

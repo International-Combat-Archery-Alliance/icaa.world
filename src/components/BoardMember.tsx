@@ -42,14 +42,14 @@ const BoardMember: React.FC<BoardMemberProps> = ({
         <a href={`mailto:${email}`}>{email}</a>
         <button
           onClick={handleCopy}
-          className="p-1 hover:bg-gray-200 rounded-full transition-colors"
+          className="rounded-full p-1 transition-colors hover:bg-gray-200"
           title="Copy email"
           type="button"
         >
           {copied ? (
-            <Check className="w-3 h-3 text-green-600" />
+            <Check className="h-3 w-3 text-green-600" />
           ) : (
-            <Copy className="w-3 h-3 text-gray-500" />
+            <Copy className="h-3 w-3 text-gray-500" />
           )}
         </button>
       </div>

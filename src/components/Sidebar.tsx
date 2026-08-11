@@ -56,8 +56,8 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
             onClick={onNavigate}
             className={
               isActive(item.to)
-                ? 'block px-6 py-4 text-lg font-bold text-white bg-[var(--primary)]/20 border-l-4 border-[var(--primary)] transition-colors hover:bg-[var(--primary)]/30'
-                : 'block px-6 py-4 text-lg font-medium text-white border-l-4 border-transparent transition-colors hover:bg-[var(--sidebar-accent)]'
+                ? 'block border-l-4 border-[var(--primary)] bg-[var(--primary)]/20 px-6 py-4 text-lg font-bold text-white transition-colors hover:bg-[var(--primary)]/30'
+                : 'block border-l-4 border-transparent px-6 py-4 text-lg font-medium text-white transition-colors hover:bg-[var(--sidebar-accent)]'
             }
           >
             {item.label}
@@ -97,7 +97,7 @@ export default function Sidebar() {
   return (
     <>
       {/* Desktop Sidebar */}
-      <aside className="fixed left-0 top-0 z-40 hidden h-screen w-64 flex-col bg-[#0a1c4a] md:flex">
+      <aside className="fixed top-0 left-0 z-40 hidden h-screen w-64 flex-col bg-[#0a1c4a] md:flex">
         <div className="flex h-full flex-col py-6">
           <div className="mb-6 px-6">
             <Link to="/" className="flex items-center gap-2">

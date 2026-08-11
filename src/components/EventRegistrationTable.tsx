@@ -181,7 +181,7 @@ const EventRegistrationTable = ({
 
   if (!eventId) {
     return (
-      <div className="text-center p-4 text-muted-foreground">
+      <div className="text-muted-foreground p-4 text-center">
         Please select an event to view registrations
       </div>
     );
@@ -189,7 +189,7 @@ const EventRegistrationTable = ({
 
   return (
     <>
-      <div className="flex justify-end mb-4">
+      <div className="mb-4 flex justify-end">
         <Button variant="outline" onClick={handleExportCSV}>
           <Download className="mr-2 h-4 w-4" />
           Export CSV
@@ -344,10 +344,10 @@ const EventRegistrationTable = ({
                           </PopoverTrigger>
                           <PopoverContent className="w-auto p-4">
                             <div className="grid gap-2">
-                              <p className="text-sm font-bold text-muted-foreground">
+                              <p className="text-muted-foreground text-sm font-bold">
                                 {registration.teamName} Roster
                               </p>
-                              <ul className="grid gap-1 text-sm list-inside">
+                              <ul className="grid list-inside gap-1 text-sm">
                                 {registration.players.map((player, index) => (
                                   <li
                                     key={`${registration.id}-player-${index}`}
@@ -410,21 +410,21 @@ const EventRegistrationTable = ({
 
       {/* Loading indicator */}
       {isFetchingNextPage && (
-        <div className="text-center p-4">
+        <div className="p-4 text-center">
           <span>Loading more registrations...</span>
         </div>
       )}
 
       {/* End of results indicator */}
       {!hasNextPage && registrations.length > 0 && (
-        <div className="text-center p-4 text-muted-foreground">
+        <div className="text-muted-foreground p-4 text-center">
           No more registrations to load
         </div>
       )}
 
       {/* Empty state */}
       {registrations.length === 0 && !isFetchingNextPage && (
-        <div className="text-center p-4 text-muted-foreground">
+        <div className="text-muted-foreground p-4 text-center">
           No registrations found for this event
         </div>
       )}
