@@ -528,7 +528,7 @@ export function ArticleEditor({
             />
             <div
               id="editorjs-container"
-              className="min-h-[300px] border border-t-0 rounded-b-md p-4 bg-background"
+              className="bg-background min-h-[300px] rounded-b-md border border-t-0 p-4"
             />
           </div>
 
@@ -658,7 +658,7 @@ export function ArticleEditor({
                 <AlertDialogAction
                   disabled={isPending}
                   onClick={handleDelete}
-                  className="bg-destructive text-white hover:bg-destructive/90"
+                  className="bg-destructive hover:bg-destructive/90 text-white"
                 >
                   {isPending ? 'Deleting...' : 'Delete'}
                 </AlertDialogAction>

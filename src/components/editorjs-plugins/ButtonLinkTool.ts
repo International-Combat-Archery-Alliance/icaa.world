@@ -138,7 +138,6 @@ export default class ButtonLinkTool {
     return wrapper;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   save(_blockContent: HTMLElement): ButtonLinkData {
     return { ...this.data };
   }

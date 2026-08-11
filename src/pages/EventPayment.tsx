@@ -21,7 +21,7 @@ export default function EventPayment() {
 
   if (paymentInfo === undefined) {
     return (
-      <div className="flex flex-col items-center pt-8 gap-y-2">
+      <div className="flex flex-col items-center gap-y-2 pt-8">
         <div>
           It looks like you do not have a pending payment for this event!
         </div>
@@ -34,7 +34,7 @@ export default function EventPayment() {
   }
 
   return (
-    <div className="p-4 flex flex-col items-center">
+    <div className="flex flex-col items-center p-4">
       <EventDetailsCard event={data.event} />
       <div className="pb-4">
         Note that if you do not pay within 30 minutes, your registration will be

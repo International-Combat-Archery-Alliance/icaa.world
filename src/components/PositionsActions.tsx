@@ -17,21 +17,21 @@ const Positions: React.FC<PositionProps> = ({
   const [isHovered, setIsHovered] = useState(false);
 
   return (
-    <Card className="w-full flex flex-col md:flex-row items-center p-4 gap-6">
+    <Card className="flex w-full flex-col items-center gap-6 p-4 md:flex-row">
       <img
         src={isHovered ? actionshot : icon}
         alt={`${position}'s Icon`}
-        className="flex-shrink-0 rounded-lg w-[150px] h-[150px] object-cover"
+        className="h-[150px] w-[150px] flex-shrink-0 rounded-lg object-cover"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       />
       <div className="flex flex-col">
         <CardHeader className="p-0">
-          <CardTitle className="text-xl font-bold text-secondary">
+          <CardTitle className="text-secondary text-xl font-bold">
             {position + ':'}
           </CardTitle>
         </CardHeader>
-        <CardContent className="p-0 mt-2">{description}</CardContent>
+        <CardContent className="mt-2 p-0">{description}</CardContent>
       </div>
     </Card>
   );

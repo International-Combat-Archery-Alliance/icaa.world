@@ -77,7 +77,7 @@ export async function initNewRelic(): Promise<void> {
       },
     };
 
-    new BrowserAgent(opts);
+    void new BrowserAgent(opts);
     isInitialized = true;
     setCustomAttribute('environment', 'production');
 

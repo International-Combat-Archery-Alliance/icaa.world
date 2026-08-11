@@ -85,7 +85,7 @@ function BrowseTab({
           onClick={navigateUp}
           disabled={isAtRoot}
         >
-          <ChevronLeft className="w-4 h-4" />
+          <ChevronLeft className="h-4 w-4" />
         </Button>
         <Input value={currentPath} readOnly className="font-mono text-sm" />
       </div>
@@ -100,7 +100,7 @@ function BrowseTab({
         <>
           {folders.length > 0 && (
             <div>
-              <p className="text-xs text-muted-foreground mb-2 font-medium">
+              <p className="text-muted-foreground mb-2 text-xs font-medium">
                 Folders
               </p>
               <div className="grid grid-cols-3 gap-2">
@@ -111,10 +111,10 @@ function BrowseTab({
                     onClick={() =>
                       navigateTo(joinPath(currentPath, folder.name))
                     }
-                    className="flex flex-col items-center gap-1 p-3 rounded-md border hover:bg-accent transition-colors"
+                    className="hover:bg-accent flex flex-col items-center gap-1 rounded-md border p-3 transition-colors"
                   >
-                    <Folder className="w-8 h-8 text-blue-500" />
-                    <span className="text-xs truncate w-full text-center">
+                    <Folder className="h-8 w-8 text-blue-500" />
+                    <span className="w-full truncate text-center text-xs">
                       {folder.name}
                     </span>
                   </button>
@@ -125,7 +125,7 @@ function BrowseTab({
 
           {images.length > 0 && (
             <div>
-              <p className="text-xs text-muted-foreground mb-2 font-medium">
+              <p className="text-muted-foreground mb-2 text-xs font-medium">
                 Images
               </p>
               <div className="grid grid-cols-3 gap-3">
@@ -141,19 +141,19 @@ function BrowseTab({
                       onClick={() => {
                         setSelectedPath(isSelected ? null : assetPath);
                       }}
-                      className={`relative aspect-square rounded-md overflow-hidden border-2 transition-all ${
+                      className={`relative aspect-square overflow-hidden rounded-md border-2 transition-all ${
                         isSelected
-                          ? 'border-primary ring-2 ring-primary/30'
-                          : 'border-transparent hover:border-muted-foreground/30'
+                          ? 'border-primary ring-primary/30 ring-2'
+                          : 'hover:border-muted-foreground/30 border-transparent'
                       }`}
                     >
                       <img
                         src={url}
                         alt={asset.name}
-                        className="w-full h-full object-cover"
+                        className="h-full w-full object-cover"
                       />
-                      <div className="absolute bottom-0 left-0 right-0 bg-black/50 px-1 py-0.5">
-                        <span className="text-[10px] text-white truncate block">
+                      <div className="absolute right-0 bottom-0 left-0 bg-black/50 px-1 py-0.5">
+                        <span className="block truncate text-[10px] text-white">
                           {asset.name}
                         </span>
                       </div>
@@ -165,15 +165,15 @@ function BrowseTab({
           )}
 
           {folders.length === 0 && images.length === 0 && (
-            <div className="text-center py-12 text-muted-foreground">
-              <ImageIcon className="w-12 h-12 mx-auto mb-3 opacity-30" />
+            <div className="text-muted-foreground py-12 text-center">
+              <ImageIcon className="mx-auto mb-3 h-12 w-12 opacity-30" />
               <p className="text-sm">No images in this folder</p>
             </div>
           )}
         </>
       )}
 
-      <div className="flex justify-end gap-2 pt-2 border-t">
+      <div className="flex justify-end gap-2 border-t pt-2">
         <Button
           disabled={!selectedPath}
           onClick={() => {
@@ -281,14 +281,14 @@ function UploadTab({
   return (
     <div className="space-y-4">
       <div
-        className="border-2 border-dashed rounded-lg p-12 text-center cursor-pointer hover:bg-accent/50 transition-colors"
+        className="hover:bg-accent/50 cursor-pointer rounded-lg border-2 border-dashed p-12 text-center transition-colors"
         onClick={() => fileInputRef.current?.click()}
       >
-        <Upload className="w-10 h-10 mx-auto mb-3 text-muted-foreground" />
+        <Upload className="text-muted-foreground mx-auto mb-3 h-10 w-10" />
         <p className="text-sm font-medium">
           {uploading ? 'Uploading...' : 'Click to upload an image'}
         </p>
-        <p className="text-xs text-muted-foreground mt-1">
+        <p className="text-muted-foreground mt-1 text-xs">
           Max file size: 25 MB
         </p>
       </div>
@@ -303,7 +303,7 @@ function UploadTab({
       />
 
       {uploading && (
-        <div className="bg-primary/10 border border-primary/20 rounded-md px-3 py-2 space-y-2">
+        <div className="bg-primary/10 border-primary/20 space-y-2 rounded-md border px-3 py-2">
           <div className="flex items-center justify-between text-sm">
             <span className="text-primary font-medium">
               Uploading {progress.file}...
@@ -317,7 +317,7 @@ function UploadTab({
       )}
 
       {error && (
-        <div className="bg-destructive/10 border border-destructive/20 rounded-md px-3 py-2 text-sm text-destructive">
+        <div className="bg-destructive/10 border-destructive/20 text-destructive rounded-md border px-3 py-2 text-sm">
           {error}
         </div>
       )}
@@ -333,12 +333,12 @@ export function ImagePickerModal({
 }: ImagePickerModalProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[80vh] flex flex-col">
+      <DialogContent className="flex max-h-[80vh] max-w-2xl flex-col">
         <DialogHeader>
           <DialogTitle>Insert Image</DialogTitle>
         </DialogHeader>
 
-        <Tabs defaultValue="browse" className="flex-1 flex flex-col min-h-0">
+        <Tabs defaultValue="browse" className="flex min-h-0 flex-1 flex-col">
           <TabsList className="w-full">
             <TabsTrigger value="browse" className="flex-1">
               Browse Assets
@@ -350,7 +350,7 @@ export function ImagePickerModal({
 
           <TabsContent
             value="browse"
-            className="flex-1 overflow-y-auto min-h-0 mt-4"
+            className="mt-4 min-h-0 flex-1 overflow-y-auto"
           >
             <BrowseTab
               rootFolder={folderPath}
@@ -363,7 +363,7 @@ export function ImagePickerModal({
 
           <TabsContent
             value="upload"
-            className="flex-1 overflow-y-auto min-h-0 mt-4"
+            className="mt-4 min-h-0 flex-1 overflow-y-auto"
           >
             <UploadTab
               folderPath={folderPath}

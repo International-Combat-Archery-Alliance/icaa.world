@@ -130,9 +130,9 @@ function TeamForm({ event }: { event: Event }) {
   return (
     <>
       <EventDetailsCard event={event} />
-      <Card className="w-full max-w-screen-lg mx-auto lg:p-15">
+      <Card className="mx-auto w-full max-w-screen-lg lg:p-15">
         <CardHeader>
-          <CardTitle className="text-center font-bold text-2xl">
+          <CardTitle className="text-center text-2xl font-bold">
             Team Registration
           </CardTitle>
         </CardHeader>
@@ -143,7 +143,7 @@ function TeamForm({ event }: { event: Event }) {
             <Form {...form}>
               <form
                 onSubmit={form.handleSubmit(onSubmit)}
-                className="flex flex-col gap-8 w-full"
+                className="flex w-full flex-col gap-8"
               >
                 <div className="flex flex-col gap-4 lg:flex-row">
                   <FormField
@@ -177,7 +177,7 @@ function TeamForm({ event }: { event: Event }) {
                 <div>
                   <div className="mb-4">
                     <FormLabel>Player Roster ({fields.length})</FormLabel>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-muted-foreground text-sm">
                       This event requires a team of at least{' '}
                       {event.allowedTeamSizeRange.min} and at most{' '}
                       {event.allowedTeamSizeRange.max} players.
@@ -187,13 +187,13 @@ function TeamForm({ event }: { event: Event }) {
                     {fields.map((field, index) => (
                       <div
                         key={field.id}
-                        className="flex items-start gap-4 p-4 border rounded-lg"
+                        className="flex items-start gap-4 rounded-lg border p-4"
                       >
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 flex-grow">
+                        <div className="grid flex-grow grid-cols-1 gap-4 md:grid-cols-3">
                           <FormField
                             control={form.control}
                             name={`players.${index}.firstName`}
-                            render={({ field }) => (
+                            render={({ field: playerField }) => (
                               <FormItem>
                                 <FormLabel>
                                   {index === 0
@@ -201,7 +201,10 @@ function TeamForm({ event }: { event: Event }) {
                                     : 'First Name'}
                                 </FormLabel>
                                 <FormControl>
-                                  <Input {...field} className="bg-white" />
+                                  <Input
+                                    {...playerField}
+                                    className="bg-white"
+                                  />
                                 </FormControl>
                                 <FormMessage />
                               </FormItem>
@@ -210,7 +213,7 @@ function TeamForm({ event }: { event: Event }) {
                           <FormField
                             control={form.control}
                             name={`players.${index}.lastName`}
-                            render={({ field }) => (
+                            render={({ field: playerField }) => (
                               <FormItem>
                                 <FormLabel>
                                   {index === 0
@@ -218,7 +221,10 @@ function TeamForm({ event }: { event: Event }) {
                                     : 'Last Name'}
                                 </FormLabel>
                                 <FormControl>
-                                  <Input {...field} className="bg-white" />
+                                  <Input
+                                    {...playerField}
+                                    className="bg-white"
+                                  />
                                 </FormControl>
                                 <FormMessage />
                               </FormItem>
@@ -228,12 +234,12 @@ function TeamForm({ event }: { event: Event }) {
                             <FormField
                               control={form.control}
                               name={`players.${index}.email`}
-                              render={({ field }) => (
+                              render={({ field: playerField }) => (
                                 <FormItem>
                                   <FormLabel>Captain Email</FormLabel>
                                   <FormControl>
                                     <Input
-                                      {...field}
+                                      {...playerField}
                                       className="bg-white"
                                       placeholder="captain@example.com"
                                     />
@@ -246,12 +252,12 @@ function TeamForm({ event }: { event: Event }) {
                             <FormField
                               control={form.control}
                               name={`players.${index}.email`}
-                              render={({ field }) => (
+                              render={({ field: playerField }) => (
                                 <FormItem>
                                   <FormLabel>Email</FormLabel>
                                   <FormControl>
                                     <Input
-                                      {...field}
+                                      {...playerField}
                                       className="bg-white"
                                       placeholder="player@example.com"
                                     />

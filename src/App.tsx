@@ -65,7 +65,7 @@ const App = () => {
                                 <Sidebar />
 
                                 <Header />
-                                <main className="flex-1 max-w-full md:ml-64">
+                                <main className="max-w-full flex-1 md:ml-64">
                                   <Routes>
                                     <Route path="/" element={<Home />} />
                                     <Route
@@ -151,13 +151,13 @@ const App = () => {
                                   </Routes>
                                 </main>
                                 <footer className="md:ml-64">
-                                  <div className="flex gap-6 items-center">
+                                  <div className="flex items-center gap-6">
                                     <a
                                       href="https://www.youtube.com/@Icaa-world"
                                       target="_blank"
                                       rel="noopener noreferrer"
                                       aria-label="YouTube"
-                                      className="text-white transition-all duration-300 flex items-center hover:scale-110 hover:opacity-80"
+                                      className="flex items-center text-white transition-all duration-300 hover:scale-110 hover:opacity-80"
                                     >
                                       <FaYoutube size={30} />
                                     </a>
@@ -166,7 +166,7 @@ const App = () => {
                                       target="_blank"
                                       rel="noopener noreferrer"
                                       aria-label="Instagram"
-                                      className="text-white transition-all duration-300 flex items-center hover:scale-110 hover:opacity-80"
+                                      className="flex items-center text-white transition-all duration-300 hover:scale-110 hover:opacity-80"
                                     >
                                       <FaInstagram size={30} />
                                     </a>
@@ -175,7 +175,7 @@ const App = () => {
                                       target="_blank"
                                       rel="noopener noreferrer"
                                       aria-label="Facebook"
-                                      className="text-white transition-all duration-300 flex items-center hover:scale-110 hover:opacity-80"
+                                      className="flex items-center text-white transition-all duration-300 hover:scale-110 hover:opacity-80"
                                     >
                                       <FaFacebook size={30} />
                                     </a>
@@ -184,7 +184,7 @@ const App = () => {
                                       target="_blank"
                                       rel="noopener noreferrer"
                                       aria-label="LinkedIn"
-                                      className="text-white transition-all duration-300 flex items-center hover:scale-110 hover:opacity-80"
+                                      className="flex items-center text-white transition-all duration-300 hover:scale-110 hover:opacity-80"
                                     >
                                       <FaLinkedin size={30} />
                                     </a>
@@ -193,7 +193,7 @@ const App = () => {
                                       target="_blank"
                                       rel="noopener noreferrer"
                                       aria-label="TikTok"
-                                      className="text-white transition-all duration-300 flex items-center hover:scale-110 hover:opacity-80"
+                                      className="flex items-center text-white transition-all duration-300 hover:scale-110 hover:opacity-80"
                                     >
                                       <FaTiktok size={30} />
                                     </a>
@@ -201,7 +201,7 @@ const App = () => {
                                   <div className="mb-4">
                                     <Link
                                       to="/mailing-list"
-                                      className="text-primary underline text-base"
+                                      className="text-primary text-base underline"
                                     >
                                       Join Our Mailing List!
                                     </Link>
@@ -211,7 +211,7 @@ const App = () => {
                                       href="https://assets.icaa.world/63275a84-7c75-4ea9-8849-4f3499f88335.pdf"
                                       target="_blank"
                                       rel="noopener noreferrer"
-                                      className="text-white hover:text-gray-300 underline"
+                                      className="text-white underline hover:text-gray-300"
                                     >
                                       Privacy Policy
                                     </a>
@@ -220,7 +220,7 @@ const App = () => {
                                       href="https://assets.icaa.world/ef2127a5-2b86-4790-8790-f3e2444d2ab4.pdf"
                                       target="_blank"
                                       rel="noopener noreferrer"
-                                      className="text-white hover:text-gray-300 underline"
+                                      className="text-white underline hover:text-gray-300"
                                     >
                                       Terms of Service
                                     </a>

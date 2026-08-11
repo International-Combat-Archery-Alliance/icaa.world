@@ -16,7 +16,7 @@ export function AboutSport() {
     <section id="about-sport" className="content-section">
       <Accordion
         type="multiple"
-        className="w-full max-w-screen-lg mx-auto p-8 md:p-15"
+        className="mx-auto w-full max-w-screen-lg p-8 md:p-15"
         defaultValue={['summary']}
       >
         <AccordionItem value="summary">
@@ -38,11 +38,13 @@ export function AboutSport() {
               athleticism to catch an arrow mid-flight.
             </p>
             <iframe
-              className="w-auto aspect-video my-4 self-center"
+              className="my-4 aspect-video w-auto self-center"
               src="https://www.youtube.com/embed/PxMN5otRui8"
               title="What is Combat Archery?"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
               allowFullScreen
+              // oxlint-disable-next-line react/iframe-missing-sandbox
+              sandbox="allow-scripts allow-same-origin allow-presentation"
             ></iframe>
           </AccordionContent>
         </AccordionItem>

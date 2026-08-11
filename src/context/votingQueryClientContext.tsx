@@ -19,8 +19,8 @@ export const VotingQueryClientProvider = ({
       credentials: 'include',
     });
     votingAPIFetchClient.use(createAuthMiddleware());
-    const votingQueryClient = createClient(votingAPIFetchClient);
-    return { votingQueryClient };
+    const client = createClient(votingAPIFetchClient);
+    return { votingQueryClient: client };
   }, []);
 
   return (

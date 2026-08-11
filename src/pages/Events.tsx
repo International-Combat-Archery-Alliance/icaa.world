@@ -39,6 +39,10 @@ export default function Events() {
   );
 }
 
+function CardGrid({ children }: { children: React.ReactNode[] }) {
+  return <div className="flex flex-wrap justify-evenly gap-2">{children}</div>;
+}
+
 function EventContent({
   events,
   isFetching,
@@ -48,10 +52,6 @@ function EventContent({
   isFetching: boolean;
   refetch: () => void;
 }) {
-  const CardGrid = ({ children }: { children: React.ReactNode[] }) => (
-    <div className="flex flex-wrap gap-2 justify-evenly">{children}</div>
-  );
-
   if (isFetching) {
     return (
       <CardGrid>
@@ -106,7 +106,7 @@ function EventCard({ event, className }: { event: Event; className?: string }) {
           <img
             src={event.imageName}
             alt="Boston International Championship Logo"
-            className="max-w-[100px] h-auto mb-4 inline-block justify-self-center"
+            className="mb-4 inline-block h-auto max-w-[100px] justify-self-center"
           />
         ) : null}
         <CardTitle>{event.name}</CardTitle>
@@ -133,7 +133,7 @@ function EventCard({ event, className }: { event: Event; className?: string }) {
       </CardContent>
       <CardFooter className="flex flex-col items-stretch gap-2">
         {isRegistrationClosed ? (
-          <p className="text-center font-semibold text-destructive pt-2">
+          <p className="text-destructive pt-2 text-center font-semibold">
             Registration has closed
           </p>
         ) : (
@@ -152,7 +152,7 @@ function EventCard({ event, className }: { event: Event; className?: string }) {
                 </Link>
               </Button>
             ) : null}
-            <p className="text-center text-sm text-muted-foreground pt-2">
+            <p className="text-muted-foreground pt-2 text-center text-sm">
               Registration Closes:{' '}
               {closeRegDate.toLocaleString(DateTime.DATE_HUGE)}
             </p>
@@ -165,27 +165,27 @@ function EventCard({ event, className }: { event: Event; className?: string }) {
 
 function EventCardSkeleton() {
   return (
-    <Card className="flex-grow w-full lg:max-w-[375px]">
+    <Card className="w-full flex-grow lg:max-w-[375px]">
       <CardHeader>
-        <Skeleton className="h-24 w-24 justify-self-center mb-2 rounded-xl" />
+        <Skeleton className="mb-2 h-24 w-24 justify-self-center rounded-xl" />
         <CardTitle>
-          <Skeleton className="w-3/4 h-4" />
+          <Skeleton className="h-4 w-3/4" />
         </CardTitle>
         <CardDescription>
           <div className="flex flex-col gap-1">
-            <Skeleton className="w-1/2 h-2" />
-            <Skeleton className="w-1/2 h-2" />
+            <Skeleton className="h-2 w-1/2" />
+            <Skeleton className="h-2 w-1/2" />
           </div>
         </CardDescription>
       </CardHeader>
       <CardContent>
         <div className="flex flex-col gap-2">
-          <Skeleton className="w-3/4 h-2" />
+          <Skeleton className="h-2 w-3/4" />
           <Skeleton className="h-10" />
         </div>
       </CardContent>
       <CardFooter>
-        <div className="flex flex-col gap-2 w-full">
+        <div className="flex w-full flex-col gap-2">
           <Skeleton className="h-10" />
         </div>
       </CardFooter>
@@ -203,9 +203,9 @@ function ErrorMessage({
   refetch: () => void;
 }) {
   return (
-    <div className="text-center p-8">
-      <h3 className="text-lg font-semibold text-red-600 mb-2">{mainMessage}</h3>
-      <p className="text-gray-600 mb-4">{subMessage} </p>
+    <div className="p-8 text-center">
+      <h3 className="mb-2 text-lg font-semibold text-red-600">{mainMessage}</h3>
+      <p className="mb-4 text-gray-600">{subMessage} </p>
       <Button onClick={() => refetch()}>Retry</Button>
     </div>
   );

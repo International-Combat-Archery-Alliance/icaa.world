@@ -18,9 +18,9 @@ import { DateTime } from 'luxon';
 
 function EventDetailsPageSkeleton() {
   return (
-    <div className="mx-auto max-w-screen-xl grid grid-cols-1 lg:grid-cols-3 gap-4">
+    <div className="mx-auto grid max-w-screen-xl grid-cols-1 gap-4 lg:grid-cols-3">
       {/* Right Column Skeleton */}
-      <div className="lg:col-start-3 lg:col-span-1 lg:row-span-3">
+      <div className="lg:col-span-1 lg:col-start-3 lg:row-span-3">
         <Card className="h-full">
           <CardHeader>
             <Skeleton className="h-8 w-32" />
@@ -299,7 +299,7 @@ function EventDetailsTemplate({ event }: { event: Event }) {
   const isBostonChampionships =
     event.id === '78af69ec-e323-436b-96b6-1b5dc9acf46b';
   return (
-    <div className="mx-auto max-w-screen-xl grid grid-cols-1 lg:grid-cols-3 gap-4">
+    <div className="mx-auto grid max-w-screen-xl grid-cols-1 gap-4 lg:grid-cols-3">
       {/* Details */}
       <div className="lg:col-span-2 lg:row-start-1">
         <Card>
@@ -310,12 +310,12 @@ function EventDetailsTemplate({ event }: { event: Event }) {
             <EventDetailsCard event={event} />
 
             {isRegistrationClosed ? (
-              <p className="text-center font-semibold text-destructive my-4 pt-2">
+              <p className="text-destructive my-4 pt-2 text-center font-semibold">
                 Registration has closed
               </p>
             ) : (
               <>
-                <div className="flex flex-col sm:flex-row justify-center gap-4 my-4">
+                <div className="my-4 flex flex-col justify-center gap-4 sm:flex-row">
                   {byIndividualOpt !== undefined ? (
                     <Button asChild>
                       <Link to={`/events/${event.id}/register-free-agent`}>
@@ -332,7 +332,7 @@ function EventDetailsTemplate({ event }: { event: Event }) {
                     </Button>
                   ) : null}
                 </div>
-                <p className="text-center text-sm text-muted-foreground pt-2">
+                <p className="text-muted-foreground pt-2 text-center text-sm">
                   Registration Closes:{' '}
                   {closeRegDate.toLocaleString(DateTime.DATE_HUGE)}
                 </p>
@@ -408,7 +408,7 @@ function EventDetailsTemplate({ event }: { event: Event }) {
         </Card>
       </div>
       {/* Schedule */}
-      <div className="lg:col-start-3 lg:col-span-1 lg:row-start-1 lg:row-span-3">
+      <div className="lg:col-span-1 lg:col-start-3 lg:row-span-3 lg:row-start-1">
         <Card className="h-full">
           <CardHeader>
             <CardTitle className="text-primary">Schedule</CardTitle>
@@ -498,7 +498,10 @@ function EventDetailsTemplate({ event }: { event: Event }) {
             {event.rulesDocLink ? (
               <iframe
                 src={`https://drive.google.com/viewerng/viewer?embedded=true&url=${event.rulesDocLink}`}
-                className="w-full h-[50vh] bg-white border-0 rounded-xl"
+                title="Event Rules"
+                className="h-[50vh] w-full rounded-xl border-0 bg-white"
+                // oxlint-disable-next-line react/iframe-missing-sandbox
+                sandbox="allow-scripts allow-same-origin allow-popups"
               />
             ) : (
               <p>Tournament Format coming soon.</p>

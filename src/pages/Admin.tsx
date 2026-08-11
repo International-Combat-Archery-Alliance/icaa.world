@@ -109,9 +109,9 @@ export function AdminPage() {
       <Tabs
         value={activeTab}
         onValueChange={handleTabChange}
-        className="w-full max-w-screen-lg mx-auto p-4 md:p-6 lg:p-15"
+        className="mx-auto w-full max-w-screen-lg p-4 md:p-6 lg:p-15"
       >
-        <TabsList className="w-full h-auto flex flex-wrap justify-start gap-1 p-1 bg-muted/50 rounded-lg mb-6">
+        <TabsList className="bg-muted/50 mb-6 flex h-auto w-full flex-wrap justify-start gap-1 rounded-lg p-1">
           {adminTabs.map((tab) => (
             <TabsTrigger
               key={tab.id}
@@ -125,7 +125,7 @@ export function AdminPage() {
             >
               <tab.icon className="h-4 w-4 md:h-5 md:w-5" />
               <span className="hidden sm:inline">{tab.label}</span>
-              <span className="sm:hidden text-xs">
+              <span className="text-xs sm:hidden">
                 {tab.label.split(' ')[0]}
               </span>
             </TabsTrigger>
@@ -239,9 +239,9 @@ function CreateEventForm() {
 
   return (
     <>
-      <Card className="w-full max-w-screen-lg mx-auto">
+      <Card className="mx-auto w-full max-w-screen-lg">
         <CardHeader>
-          <CardTitle className="text-center font-bold text-2xl">
+          <CardTitle className="text-center text-2xl font-bold">
             Create Event
           </CardTitle>
         </CardHeader>
@@ -350,16 +350,16 @@ function SignUpInfoCards({ eventId }: { eventId: string | undefined }) {
 
   if (isLoading) {
     return (
-      <div className="grid gap-2 grid-flow-col">
+      <div className="grid grid-flow-col gap-2">
         {Array.from({ length: 3 }).map((_, i) => (
           <Card key={i}>
             <CardHeader>
               <CardTitle>
-                <Skeleton className="w-full h-4" />
+                <Skeleton className="h-4 w-full" />
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <Skeleton className="w-1/4 h-2" />
+              <Skeleton className="h-2 w-1/4" />
             </CardContent>
           </Card>
         ))}
@@ -372,7 +372,7 @@ function SignUpInfoCards({ eventId }: { eventId: string | undefined }) {
   }
 
   return (
-    <div className="grid gap-2 grid-flow-row md:grid-flow-col">
+    <div className="grid grid-flow-row gap-2 md:grid-flow-col">
       <Card>
         <CardHeader>
           <CardTitle>Total players</CardTitle>
@@ -477,7 +477,7 @@ function PollManager({
       <CardContent>
         {isLoading && <Skeleton className="h-32 w-full" />}
         {!isLoading && polls.length === 0 && (
-          <p className="text-center text-muted-foreground">
+          <p className="text-muted-foreground text-center">
             No polls yet. Create one to get started.
           </p>
         )}
@@ -546,7 +546,7 @@ function PollRow({ poll, onEdit }: { poll: Poll; onEdit: () => void }) {
               {poll.status}
             </Badge>
           </div>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-muted-foreground text-sm">
             {new Date(poll.startTime).toLocaleString()} —{' '}
             {new Date(poll.endTime).toLocaleString()}
           </p>

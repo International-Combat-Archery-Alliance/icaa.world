@@ -20,8 +20,8 @@ export const LoginQueryClientProvider = ({
       credentials: 'include',
     });
     loginAPIFetchClient.use(createAuthMiddleware());
-    const loginQueryClient = createClient(loginAPIFetchClient);
-    return { loginQueryClient };
+    const client = createClient(loginAPIFetchClient);
+    return { loginQueryClient: client };
   }, []);
 
   return (

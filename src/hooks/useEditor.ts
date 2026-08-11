@@ -5,14 +5,16 @@ import type { EditorConfig } from '@editorjs/editorjs/types/configs';
 export default function useEditor(config: EditorConfig) {
   const [isEditorReady, setIsEditorReady] = useState(false);
   const editorInstance = useRef<EditorJS>(null);
+  const configRef = useRef(config);
+  configRef.current = config;
 
   useEffect(() => {
     if (!editorInstance.current) {
       editorInstance.current = new EditorJS({
-        ...config,
+        ...configRef.current,
         onReady: () => {
           setIsEditorReady(true);
-          config.onReady?.();
+          configRef.current.onReady?.();
         },
       });
     }

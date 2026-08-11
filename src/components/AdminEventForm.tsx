@@ -29,8 +29,10 @@ export enum AdminEventMode {
   EDIT,
 }
 
+const noop = () => {};
+
 export function AdminEventForm({
-  onSuccess = () => {},
+  onSuccess = noop,
   mode,
   editData,
 }: {
@@ -254,7 +256,7 @@ export function AdminEventForm({
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="flex flex-col gap-8 w-full"
+        className="flex w-full flex-col gap-8"
       >
         <FormField
           control={form.control}

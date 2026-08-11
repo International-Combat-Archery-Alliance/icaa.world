@@ -8,13 +8,13 @@ export default function DonationSuccess() {
   useTitle('Thank You for Your Donation - ICAA');
 
   return (
-    <div className="px-4 py-8 max-w-screen-lg mx-auto">
+    <div className="mx-auto max-w-screen-lg px-4 py-8">
       <Card className="w-full">
         <CardHeader className="text-center">
           <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-green-100">
             <Heart className="h-10 w-10 text-green-600" />
           </div>
-          <CardTitle className="text-center font-bold text-2xl">
+          <CardTitle className="text-center text-2xl font-bold">
             Thank You for Your Support!
           </CardTitle>
         </CardHeader>
@@ -27,9 +27,9 @@ export default function DonationSuccess() {
           <p className="text-gray-600">
             A receipt has been sent to your email address.
           </p>
-          <div className="bg-blue-50 p-4 rounded-lg border border-blue-100">
-            <p className="text-blue-800 font-medium mb-2">Stay Connected!</p>
-            <p className="text-blue-700 text-sm mb-3">
+          <div className="rounded-lg border border-blue-100 bg-blue-50 p-4">
+            <p className="mb-2 font-medium text-blue-800">Stay Connected!</p>
+            <p className="mb-3 text-sm text-blue-700">
               Want to receive updates about events, tournaments, and ICAA news?
               Join our mailing list to stay in the loop!
             </p>

@@ -32,8 +32,8 @@ export const AssetsQueryClientProvider = ({
     });
     assetsAPIFetchClient.use(createAuthMiddleware());
     _assetsFetchClient = assetsAPIFetchClient;
-    const assetsQueryClient = createClient(assetsAPIFetchClient);
-    return { assetsQueryClient };
+    const client = createClient(assetsAPIFetchClient);
+    return { assetsQueryClient: client };
   }, []);
 
   return (

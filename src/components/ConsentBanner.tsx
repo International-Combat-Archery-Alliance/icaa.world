@@ -7,15 +7,15 @@ export default function ConsentBanner() {
   if (!showBanner) return null;
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 p-3 bg-background/95 backdrop-blur-sm border-t">
-      <div className="max-w-4xl mx-auto flex flex-col sm:flex-row items-start sm:items-center gap-3 text-sm">
+    <div className="bg-background/95 fixed right-0 bottom-0 left-0 z-50 border-t p-3 backdrop-blur-sm">
+      <div className="mx-auto flex max-w-4xl flex-col items-start gap-3 text-sm sm:flex-row sm:items-center">
         <div className="flex-1">
           <span className="font-medium">Analytics & Performance</span>
           <span className="text-muted-foreground ml-2">
             We use cookies to monitor site performance and fix errors.
           </span>
         </div>
-        <div className="flex gap-2 shrink-0 self-center sm:self-auto">
+        <div className="flex shrink-0 gap-2 self-center sm:self-auto">
           <Button variant="ghost" size="sm" onClick={denyConsent}>
             Decline
           </Button>

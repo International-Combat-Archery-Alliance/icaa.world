@@ -20,9 +20,9 @@ Official website for the International Combat Archery Alliance (ICAA). React 19 
 **Required before committing:**
 
 ```bash
-bun run lint        # ESLint check (MUST pass)
+bun run lint        # Oxlint check (MUST pass)
 bun run test:ts     # TypeScript type check
-bun run format      # Prettier formatting
+bun run format      # Oxfmt formatting
 bun run build       # Production build
 ```
 
@@ -39,18 +39,21 @@ bun run run-shared-infra # Start shared Docker infrastructure only (DynamoDB, Ja
 **Linting:**
 
 ```bash
-bun run lint        # Check lint
-bun run lint:fix    # Fix lint issues
+bun run lint         # Check lint
+bun run lint:fix     # Fix lint issues
+bun run format:check # Check formatting
 ```
 
-**Note:** No unit tests currently configured. Husky runs `bun run lint:fix` pre-commit.
+**Note:** No unit tests currently configured. Husky runs `bun run format` + `bun run lint:fix` pre-commit.
+
+Lint/format configs live in `.oxlintrc.json` and `.oxfmtrc.json`. Oxfmt is Prettier-compatible with built-in Tailwind class sorting.
 
 ## Code Style
 
 ### General
 
 - **TypeScript**: Strict mode, avoid `any`, explicit return types on exports
-- **Semicolons**: Prettier requires semicolons
+- **Semicolons**: Oxfmt requires semicolons
 - **Quotes**: Single quotes for strings
 - **Imports**: Use `@/` alias for src (e.g., `import { cn } from '@/lib/utils'`)
 - **Styling**: Tailwind classes with `cn()` utility for conditionals

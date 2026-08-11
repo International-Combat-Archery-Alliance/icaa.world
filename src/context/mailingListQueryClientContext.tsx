@@ -16,8 +16,8 @@ export const MailingListQueryClientProvider = ({
       baseUrl: import.meta.env.VITE_MAILING_LIST_API_URL,
       credentials: 'include',
     });
-    const mailingListQueryClient = createClient(mailingListFetchClient);
-    return { mailingListQueryClient };
+    const client = createClient(mailingListFetchClient);
+    return { mailingListQueryClient: client };
   }, []);
 
   return (

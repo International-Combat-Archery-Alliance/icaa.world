@@ -19,8 +19,8 @@ export const DonationQueryClientProvider = ({
       credentials: 'include',
     });
     donationAPIFetchClient.use(createAuthMiddleware());
-    const donationQueryClient = createClient(donationAPIFetchClient);
-    return { donationQueryClient };
+    const client = createClient(donationAPIFetchClient);
+    return { donationQueryClient: client };
   }, []);
 
   return (

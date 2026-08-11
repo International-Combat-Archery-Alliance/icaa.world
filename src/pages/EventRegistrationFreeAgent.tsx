@@ -133,9 +133,9 @@ function FreeAgentForm({ event }: { event: Event }) {
   return (
     <>
       <EventDetailsCard event={event} />
-      <Card className="w-full max-w-screen-lg mx-auto lg:p-15">
+      <Card className="mx-auto w-full max-w-screen-lg lg:p-15">
         <CardHeader>
-          <CardTitle className="text-center font-bold text-2xl">
+          <CardTitle className="text-center text-2xl font-bold">
             Free Agent Registration
           </CardTitle>
         </CardHeader>
@@ -146,7 +146,7 @@ function FreeAgentForm({ event }: { event: Event }) {
             <Form {...form}>
               <form
                 onSubmit={form.handleSubmit(onSubmit)}
-                className="flex flex-col gap-8 w-full"
+                className="flex w-full flex-col gap-8"
               >
                 <FormField
                   control={form.control}

@@ -31,7 +31,7 @@ const positionLegend = [
 
 function PositionLegend() {
   return (
-    <div className="mt-12 flex flex-wrap justify-center items-center gap-x-6 gap-y-4">
+    <div className="mt-12 flex flex-wrap items-center justify-center gap-x-6 gap-y-4">
       {positionLegend.map((pos) => (
         <div key={pos.name} className="flex items-center gap-2">
           <img src={pos.iconUrl} alt={pos.name} className="h-8 w-8" />
@@ -402,30 +402,32 @@ export default function ESPNPage() {
   ];
 
   return (
-    <section className="container mx-auto px-4 py-8 space-y-8 @container">
-      <div className="w-full max-w-4xl mx-auto aspect-video rounded-lg overflow-hidden">
+    <section className="@container container mx-auto space-y-8 px-4 py-8">
+      <div className="mx-auto aspect-video w-full max-w-4xl overflow-hidden rounded-lg">
         <iframe
           src="https://www.youtube.com/embed/Aet-ZNe9X4E"
           title="ESPN8: The Ocho - Combat Archery All Stars 2026"
-          className="w-full h-full"
+          className="h-full w-full"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
           allowFullScreen
+          // oxlint-disable-next-line react/iframe-missing-sandbox
+          sandbox="allow-scripts allow-same-origin allow-presentation"
         ></iframe>
       </div>
       <div className="flex justify-center">
         <img
           src="https://assets.icaa.world/16e6fb58-ef7d-4c84-8799-d325fae6a343.png"
           alt="ESPN8 The Ocho"
-          className="w-full max-w-xs h-auto"
+          className="h-auto w-full max-w-xs"
         />
       </div>
-      <Card className="max-w-4xl mx-auto">
+      <Card className="mx-auto max-w-4xl">
         <CardHeader>
-          <CardTitle className="text-2xl md:text-3xl text-center">
+          <CardTitle className="text-center text-2xl md:text-3xl">
             ESPN8: The Ocho - Combat Archery All Stars 2026
           </CardTitle>
         </CardHeader>
-        <CardContent className="text-center text-lg space-y-2">
+        <CardContent className="space-y-2 text-center text-lg">
           <p>Friday, August 7th. 3:00 PM EST</p>
           <p>Filmed live at the ESPN Wide World of Sports Complex in Orlando</p>
           <p>Aired on ESPN2</p>
@@ -440,11 +442,11 @@ export default function ESPNPage() {
         </CardContent>
       </Card>
 
-      <div className="max-w-4xl mx-auto">
+      <div className="mx-auto max-w-4xl">
         <ESPNScoreboard />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 my-12">
+      <div className="my-12 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
         <Card className="flex flex-col">
           <CardHeader>
             <CardTitle>About The Sport</CardTitle>
@@ -512,15 +514,15 @@ export default function ESPNPage() {
       <div className="space-y-16 pt-16">
         {matches.map((match) => (
           <div key={match.name} className="space-y-8">
-            <div className="relative text-center my-12">
+            <div className="relative my-12 text-center">
               <div
                 className="absolute inset-0 flex items-center"
                 aria-hidden="true"
               >
-                <div className="w-full border-t-2 border-primary" />
+                <div className="border-primary w-full border-t-2" />
               </div>
               <div className="relative flex justify-center">
-                <span className="bg-primary px-6 text-5xl font-bold tracking-tight text-secondary">
+                <span className="bg-primary text-secondary px-6 text-5xl font-bold tracking-tight">
                   {match.name}
                 </span>
               </div>
@@ -535,7 +537,7 @@ export default function ESPNPage() {
                   <img
                     src={match.teams[0].logoUrl}
                     alt={`${match.teams[0].name} Logo`}
-                    className={`${match.teams[0].logoClassName} w-auto mx-auto object-contain`}
+                    className={`${match.teams[0].logoClassName} mx-auto w-auto object-contain`}
                   />
                 </div>
                 <PlayerRoster
@@ -545,13 +547,13 @@ export default function ESPNPage() {
               </div>
 
               {/* "VS" separator for desktop */}
-              <div className="hidden @min-[1260px]:flex h-64 items-center justify-center">
-                <span className="text-5xl font-bold text-muted-foreground">
+              <div className="hidden h-64 items-center justify-center @min-[1260px]:flex">
+                <span className="text-muted-foreground text-5xl font-bold">
                   VS
                 </span>
               </div>
               {/* "VS" separator for mobile */}
-              <div className="@min-[1260px]:hidden text-center text-3xl font-bold text-muted-foreground py-4">
+              <div className="text-muted-foreground py-4 text-center text-3xl font-bold @min-[1260px]:hidden">
                 VS
               </div>
 
@@ -564,7 +566,7 @@ export default function ESPNPage() {
                   <img
                     src={match.teams[1].logoUrl}
                     alt={`${match.teams[1].name} Logo`}
-                    className={`${match.teams[1].logoClassName} w-auto mx-auto object-contain`}
+                    className={`${match.teams[1].logoClassName} mx-auto w-auto object-contain`}
                   />
                 </div>
                 <PlayerRoster

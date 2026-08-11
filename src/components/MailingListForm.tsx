@@ -57,7 +57,7 @@ const MailingListForm = () => {
 
   if (isSubmitted) {
     return (
-      <div className="flex flex-col items-center justify-center space-y-4 p-6 border rounded-lg shadow-sm bg-card text-card-foreground">
+      <div className="bg-card text-card-foreground flex flex-col items-center justify-center space-y-4 rounded-lg border p-6 shadow-sm">
         <h3 className="text-xl font-semibold">Thank you for signing up!</h3>
         <Button onClick={() => setIsSubmitted(false)} variant="outline">
           Back
@@ -70,7 +70,7 @@ const MailingListForm = () => {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="space-y-6 p-6 border rounded-lg shadow-sm bg-card text-card-foreground"
+        className="bg-card text-card-foreground space-y-6 rounded-lg border p-6 shadow-sm"
       >
         <FormField
           control={form.control}
@@ -110,7 +110,7 @@ const MailingListForm = () => {
         />
         <TurnstileFormField form={form} fieldName="turnstileToken" />
         {error && (
-          <p className="text-sm text-destructive">
+          <p className="text-destructive text-sm">
             {error.message || 'An error occurred. Please try again.'}
           </p>
         )}

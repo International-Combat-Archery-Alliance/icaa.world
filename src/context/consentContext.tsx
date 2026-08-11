@@ -3,6 +3,8 @@ import {
   useContext,
   useState,
   useEffect,
+  useMemo,
+  useCallback,
   type ReactNode,
 } from 'react';
 import { useLocalStorage } from 'react-use';
@@ -49,42 +51,50 @@ export function ConsentProvider({ children }: { children: ReactNode }) {
     // If undefined, react-use hasn't finished reading localStorage yet, wait
   }, [storedConsent]);
 
-  const grantConsent = () => {
+  const grantConsent = useCallback(() => {
     setConsentStatus(ConsentStatus.GRANTED);
     setStoredConsent(ConsentStatus.GRANTED);
     setNewRelicConsent(true);
     setShowBanner(false);
-  };
+  }, [setStoredConsent]);
 
-  const denyConsent = () => {
+  const denyConsent = useCallback(() => {
     setConsentStatus(ConsentStatus.DENIED);
     setStoredConsent(ConsentStatus.DENIED);
     setNewRelicConsent(false);
     setShowBanner(false);
-  };
+  }, [setStoredConsent]);
 
-  const resetConsent = () => {
+  const resetConsent = useCallback(() => {
     removeStoredConsent();
     setConsentStatus(ConsentStatus.PENDING);
     setNewRelicConsent(false);
     setShowBanner(true);
-  };
+  }, [removeStoredConsent]);
 
   const hasConsent = consentStatus === ConsentStatus.GRANTED;
 
+  const value = useMemo(
+    () => ({
+      consentStatus,
+      hasConsent,
+      showBanner,
+      grantConsent,
+      denyConsent,
+      resetConsent,
+    }),
+    [
+      consentStatus,
+      hasConsent,
+      showBanner,
+      grantConsent,
+      denyConsent,
+      resetConsent,
+    ],
+  );
+
   return (
-    <ConsentContext.Provider
-      value={{
-        consentStatus,
-        hasConsent,
-        showBanner,
-        grantConsent,
-        denyConsent,
-        resetConsent,
-      }}
-    >
-      {children}
-    </ConsentContext.Provider>
+    <ConsentContext.Provider value={value}>{children}</ConsentContext.Provider>
   );
 }
 

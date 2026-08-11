@@ -1,5 +1,0 @@
-node_modules
-dist
-.wrangler
-.github
-src/api/*.d.ts

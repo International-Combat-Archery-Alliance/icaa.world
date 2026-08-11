@@ -26,14 +26,14 @@ const OurCommunities = () => {
 
   return (
     <section id="our-communities" className="content-section bg-white">
-      <div className="sticky top-14 md:top-0 z-10 bg-background pb-4 -mx-4 px-4 md:-mx-6 md:px-6">
+      <div className="bg-background sticky top-14 z-10 -mx-4 px-4 pb-4 md:top-0 md:-mx-6 md:px-6">
         <ArcheryMap
           hoveredCommunity={hoveredCommunity}
           setHoveredCommunity={setHoveredCommunity}
           panTarget={panTarget}
         />
       </div>
-      <div className="content-wrapper grid grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-8 mt-8!">
+      <div className="content-wrapper mt-8! grid grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-8">
         <CommunityCard
           id="agb-card"
           name="Archery Games Boston"
@@ -166,8 +166,8 @@ const OurCommunities = () => {
         />
       </div>
       <div className="content-wrapper">
-        <Card className="max-w-lg mx-auto">
-          <CardContent className="text-center text-sm text-muted-foreground">
+        <Card className="mx-auto max-w-lg">
+          <CardContent className="text-muted-foreground text-center text-sm">
             <p>
               Don&apos;t see a location near you?{' '}
               <Link to="/contact" className="text-primary hover:underline">

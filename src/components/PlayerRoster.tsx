@@ -63,12 +63,12 @@ export function PlayerRoster({ players, teamColor }: PlayerRosterProps) {
               Position
             </TableHead>
             <TableHead
-              className={`hidden md:table-cell text-lg ${headerTextColor}`}
+              className={`hidden text-lg md:table-cell ${headerTextColor}`}
             >
               Home City
             </TableHead>
             <TableHead
-              className={`hidden md:table-cell text-right text-lg ${headerTextColor}`}
+              className={`hidden text-right text-lg md:table-cell ${headerTextColor}`}
             >
               Exp (years)
             </TableHead>
@@ -81,11 +81,11 @@ export function PlayerRoster({ players, teamColor }: PlayerRosterProps) {
                 <Avatar className="h-12 w-12 md:h-16 md:w-16">
                   <AvatarImage src={player.imageUrl} alt={player.firstName} />
                   <AvatarFallback className="bg-muted">
-                    <User className="h-8 w-8 text-muted-foreground" />
+                    <User className="text-muted-foreground h-8 w-8" />
                   </AvatarFallback>
                 </Avatar>
               </TableCell>
-              <TableCell className="font-medium text-base md:text-lg">{`${player.firstName} ${player.lastName}`}</TableCell>
+              <TableCell className="text-base font-medium md:text-lg">{`${player.firstName} ${player.lastName}`}</TableCell>
               <TableCell className="text-center text-base md:text-lg">
                 {player.number}
               </TableCell>
@@ -95,17 +95,17 @@ export function PlayerRoster({ players, teamColor }: PlayerRosterProps) {
                     <img
                       src={getPositionIcon(player.position)!}
                       alt={player.position}
-                      className="h-8 w-8 md:h-10 md:w-10 object-contain"
+                      className="h-8 w-8 object-contain md:h-10 md:w-10"
                     />
                   ) : (
-                    <ShieldQuestion className="h-8 w-8 md:h-10 md:w-10 text-muted-foreground" />
+                    <ShieldQuestion className="text-muted-foreground h-8 w-8 md:h-10 md:w-10" />
                   )}
                 </div>
               </TableCell>
-              <TableCell className="hidden md:table-cell text-lg">
+              <TableCell className="hidden text-lg md:table-cell">
                 {player.city}
               </TableCell>
-              <TableCell className="hidden md:table-cell text-right text-lg">
+              <TableCell className="hidden text-right text-lg md:table-cell">
                 {player.experience}
               </TableCell>
             </TableRow>

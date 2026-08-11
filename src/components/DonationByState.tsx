@@ -33,7 +33,10 @@ export function DonationByState({ dateRange }: DonationByStateProps) {
     to: dateRange?.to,
   });
 
-  const aggregations: AggregationItem[] = data?.aggregations || [];
+  const aggregations = React.useMemo(
+    (): AggregationItem[] => data?.aggregations ?? [],
+    [data],
+  );
 
   // Group by country for display
   const groupedByCountry = React.useMemo(() => {
@@ -90,16 +93,16 @@ export function DonationByState({ dateRange }: DonationByStateProps) {
       </CardHeader>
       <CardContent>
         {aggregations.length === 0 ? (
-          <p className="text-center py-8 text-muted-foreground">
+          <p className="text-muted-foreground py-8 text-center">
             No donation data available
           </p>
         ) : (
           <div className="space-y-6">
             {Object.entries(groupedByCountry).map(([country, items]) => (
               <div key={country}>
-                <div className="flex items-center justify-between mb-2">
+                <div className="mb-2 flex items-center justify-between">
                   <h3 className="text-lg font-semibold">{country}</h3>
-                  <div className="text-sm text-muted-foreground">
+                  <div className="text-muted-foreground text-sm">
                     {countryTotals[country].count} donations |{' '}
                     {Object.entries(countryTotals[country].byCurrency).map(
                       ([currency, amount]) => (

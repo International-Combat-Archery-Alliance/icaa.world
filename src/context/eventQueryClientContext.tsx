@@ -20,8 +20,8 @@ export const EventQueryClientProvider = ({
       credentials: 'include',
     });
     eventAPIFetchClient.use(createAuthMiddleware());
-    const eventQueryClient = createClient(eventAPIFetchClient);
-    return { eventQueryClient };
+    const client = createClient(eventAPIFetchClient);
+    return { eventQueryClient: client };
   }, []);
 
   return (

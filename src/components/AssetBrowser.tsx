@@ -529,27 +529,27 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
 
   const getAssetIcon = (asset: Asset) => {
     if (asset.type === 'folder') {
-      return <Folder className="w-8 h-8 text-blue-500" />;
+      return <Folder className="h-8 w-8 text-blue-500" />;
     }
 
     const contentType = asset.contentType.toLowerCase();
     if (contentType.startsWith('image/')) {
-      return <ImageIcon className="w-8 h-8 text-green-500" />;
+      return <ImageIcon className="h-8 w-8 text-green-500" />;
     }
     if (contentType.startsWith('video/')) {
-      return <Film className="w-8 h-8 text-purple-500" />;
+      return <Film className="h-8 w-8 text-purple-500" />;
     }
     if (contentType.startsWith('audio/')) {
-      return <Music className="w-8 h-8 text-orange-500" />;
+      return <Music className="h-8 w-8 text-orange-500" />;
     }
     if (
       contentType.includes('zip') ||
       contentType.includes('tar') ||
       contentType.includes('rar')
     ) {
-      return <Archive className="w-8 h-8 text-yellow-600" />;
+      return <Archive className="h-8 w-8 text-yellow-600" />;
     }
-    return <FileText className="w-8 h-8 text-gray-500" />;
+    return <FileText className="h-8 w-8 text-gray-500" />;
   };
 
   const copyToClipboard = (text: string) => {
@@ -560,7 +560,7 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
     return (
       <div className="space-y-4">
         <Skeleton className="h-16 w-full" />
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
           {Array.from({ length: 6 }).map((_, i) => (
             <Skeleton key={i} className="h-32 w-full" />
           ))}
@@ -572,14 +572,14 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between gap-4">
-        <div className="flex items-center gap-2 flex-1">
+        <div className="flex flex-1 items-center gap-2">
           <Button
             variant="outline"
             size="icon"
             onClick={navigateUp}
             disabled={currentPath === '/'}
           >
-            <ChevronLeft className="w-4 h-4" />
+            <ChevronLeft className="h-4 w-4" />
           </Button>
           <Input
             value={currentPath}
@@ -593,13 +593,13 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
             variant="outline"
             onClick={() => setShowCreateFolderDialog(true)}
           >
-            <FolderPlus className="w-4 h-4 mr-2" />
+            <FolderPlus className="mr-2 h-4 w-4" />
             New Folder
           </Button>
-          <label htmlFor="file-upload">
+          <label htmlFor="file-upload" aria-label="Upload Files">
             <Button variant="outline" asChild>
               <span>
-                <Upload className="w-4 h-4 mr-2" />
+                <Upload className="mr-2 h-4 w-4" />
                 Upload Files
               </span>
             </Button>
@@ -617,13 +617,13 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
         </div>
       </div>
 
-      <div className="text-sm text-muted-foreground bg-muted/50 rounded-md px-3 py-2">
+      <div className="text-muted-foreground bg-muted/50 rounded-md px-3 py-2 text-sm">
         <span className="font-medium">Note:</span> Maximum file size is 25 MB.
         All uploaded files are publicly accessible to everyone.
       </div>
 
       {uploadProgress && (
-        <div className="bg-primary/10 border border-primary/20 rounded-md px-3 py-2 space-y-2">
+        <div className="bg-primary/10 border-primary/20 space-y-2 rounded-md border px-3 py-2">
           <div className="flex items-center justify-between text-sm">
             <span className="text-primary font-medium">
               Uploading {uploadProgress.currentFile}...
@@ -651,7 +651,7 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
                   e.target.value as 'name' | 'type' | 'size' | 'date',
                 )
               }
-              className="h-9 px-3 text-sm border rounded-md bg-background hover:bg-accent hover:text-accent-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-ring"
+              className="bg-background hover:bg-accent hover:text-accent-foreground focus:ring-ring h-9 rounded-md border px-3 text-sm transition-colors focus:ring-2 focus:outline-none"
             >
               <option value="name">Name</option>
               <option value="type">Type</option>
@@ -667,7 +667,7 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
               title={sortDirection === 'asc' ? 'Ascending' : 'Descending'}
             >
               <ArrowUpDown
-                className={`w-4 h-4 ${sortDirection === 'desc' ? 'rotate-180' : ''} transition-transform`}
+                className={`h-4 w-4 ${sortDirection === 'desc' ? 'rotate-180' : ''} transition-transform`}
               />
             </Button>
           </div>
@@ -678,7 +678,7 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
               onClick={() => setViewMode('grid')}
               title="Grid view"
             >
-              <LayoutGrid className="w-4 h-4" />
+              <LayoutGrid className="h-4 w-4" />
             </Button>
             <Button
               variant={viewMode === 'list' ? 'default' : 'outline'}
@@ -686,28 +686,28 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
               onClick={() => setViewMode('list')}
               title="List view"
             >
-              <List className="w-4 h-4" />
+              <List className="h-4 w-4" />
             </Button>
           </div>
         </div>
       </div>
 
       {sortedAssets.length === 0 ? (
-        <div className="text-center py-12 text-gray-500">
-          <Folder className="w-16 h-16 mx-auto mb-4 text-gray-300" />
+        <div className="py-12 text-center text-gray-500">
+          <Folder className="mx-auto mb-4 h-16 w-16 text-gray-300" />
           <p>This folder is empty</p>
         </div>
       ) : viewMode === 'grid' ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {sortedAssets.map((asset) => (
             <div
               key={isAssetAdmin(asset) ? asset.id : asset.name}
-              className={`border rounded-lg p-4 cursor-pointer transition-all hover:shadow-md ${
+              className={`cursor-pointer rounded-lg border p-4 transition-all hover:shadow-md ${
                 selectedAsset &&
                 isAssetAdmin(selectedAsset) &&
                 isAssetAdmin(asset)
                   ? selectedAsset.id === asset.id
-                    ? 'border-primary ring-2 ring-primary'
+                    ? 'border-primary ring-primary ring-2'
                     : ''
                   : ''
               }`}
@@ -729,7 +729,7 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
                   <img
                     src={getAssetUrl(asset)}
                     alt={asset.name}
-                    className="w-full h-32 object-cover rounded"
+                    className="h-32 w-full rounded object-cover"
                   />
                 </div>
               ) : (
@@ -739,29 +739,29 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
                   </div>
                 </div>
               )}
-              <div className="flex-1 min-w-0">
-                <p className="font-medium truncate">{asset.name}</p>
+              <div className="min-w-0 flex-1">
+                <p className="truncate font-medium">{asset.name}</p>
                 <p className="text-xs text-gray-500">{asset.type}</p>
               </div>
               {asset.type === 'file' && asset.description && (
-                <p className="text-sm text-gray-600 mt-2 line-clamp-2">
+                <p className="mt-2 line-clamp-2 text-sm text-gray-600">
                   {asset.description}
                 </p>
               )}
               {asset.type === 'file' && asset.size && (
-                <p className="text-xs text-gray-500 mt-2">
+                <p className="mt-2 text-xs text-gray-500">
                   {(asset.size / 1024).toFixed(2)} KB
                 </p>
               )}
               {asset.type === 'folder' && (
-                <p className="text-xs text-gray-500 mt-2">
+                <p className="mt-2 text-xs text-gray-500">
                   {asset.contentCount} items
                 </p>
               )}
               {'status' in asset && (
                 <div className="mt-2">
                   <span
-                    className={`text-xs px-2 py-1 rounded-full ${
+                    className={`rounded-full px-2 py-1 text-xs ${
                       asset.status === 'confirmed'
                         ? 'bg-green-100 text-green-800'
                         : 'bg-yellow-100 text-yellow-800'
@@ -772,7 +772,7 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
                 </div>
               )}
               {'createdAt' in asset && (
-                <p className="text-xs text-gray-500 mt-2">
+                <p className="mt-2 text-xs text-gray-500">
                   {new Date(asset.createdAt).toLocaleString()}
                 </p>
               )}
@@ -780,11 +780,11 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
           ))}
         </div>
       ) : (
-        <div className="border rounded-lg divide-y">
+        <div className="divide-y rounded-lg border">
           {sortedAssets.map((asset) => (
             <div
               key={isAssetAdmin(asset) ? asset.id : asset.name}
-              className={`flex items-center gap-4 p-3 cursor-pointer transition-all hover:bg-gray-50 ${
+              className={`flex cursor-pointer items-center gap-4 p-3 transition-all hover:bg-gray-50 ${
                 selectedAsset &&
                 isAssetAdmin(selectedAsset) &&
                 isAssetAdmin(asset)
@@ -811,16 +811,16 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
                   <img
                     src={getAssetUrl(asset)}
                     alt={asset.name}
-                    className="w-10 h-10 object-cover rounded"
+                    className="h-10 w-10 rounded object-cover"
                   />
                 ) : (
                   getAssetIcon(asset)
                 )}
               </div>
-              <div className="flex-1 min-w-0">
-                <p className="font-medium truncate">{asset.name}</p>
+              <div className="min-w-0 flex-1">
+                <p className="truncate font-medium">{asset.name}</p>
                 {asset.description && (
-                  <p className="text-xs text-gray-500 truncate">
+                  <p className="truncate text-xs text-gray-500">
                     {asset.description}
                   </p>
                 )}
@@ -834,7 +834,7 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
               </div>
               {'status' in asset && (
                 <span
-                  className={`flex-shrink-0 text-xs px-2 py-1 rounded-full ${
+                  className={`flex-shrink-0 rounded-full px-2 py-1 text-xs ${
                     asset.status === 'confirmed'
                       ? 'bg-green-100 text-green-800'
                       : 'bg-yellow-100 text-yellow-800'
@@ -844,7 +844,7 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
                 </span>
               )}
               {'createdAt' in asset && (
-                <div className="flex-shrink-0 text-xs text-gray-500 hidden md:block">
+                <div className="hidden flex-shrink-0 text-xs text-gray-500 md:block">
                   {new Date(asset.createdAt).toLocaleDateString()}
                 </div>
               )}
@@ -865,7 +865,7 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
             ) : (
               <>
                 Load More
-                <ChevronRight className="w-4 h-4 ml-2" />
+                <ChevronRight className="ml-2 h-4 w-4" />
               </>
             )}
           </Button>
@@ -873,15 +873,15 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
       )}
 
       {selectedAsset && (
-        <div className="border rounded-lg p-4 bg-gray-50">
-          <h3 className="font-semibold mb-2">Selected Asset</h3>
+        <div className="rounded-lg border bg-gray-50 p-4">
+          <h3 className="mb-2 font-semibold">Selected Asset</h3>
           <div className="flex gap-4">
             {isImageAsset(selectedAsset) && 'url' in selectedAsset && (
               <div className="flex-shrink-0">
                 <img
                   src={getAssetUrl(selectedAsset)}
                   alt={selectedAsset.name}
-                  className="w-48 h-48 object-contain rounded border bg-white"
+                  className="h-48 w-48 rounded border bg-white object-contain"
                 />
               </div>
             )}
@@ -890,7 +890,8 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
                 <iframe
                   src={getAssetUrl(selectedAsset)}
                   title={selectedAsset.name}
-                  className="w-64 h-80 rounded border bg-white"
+                  className="h-80 w-64 rounded border bg-white"
+                  sandbox="allow-same-origin allow-downloads"
                 />
               </div>
             )}
@@ -953,7 +954,7 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
                         window.open(selectedAsset.url as string, '_blank')
                       }
                     >
-                      <ExternalLink className="w-4 h-4 mr-2" />
+                      <ExternalLink className="mr-2 h-4 w-4" />
                       Open
                     </Button>
                     <Button
@@ -963,10 +964,10 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
                         copyToClipboard(selectedAsset.url as string)
                       }
                     >
-                      <Copy className="w-4 h-4 mr-2" />
+                      <Copy className="mr-2 h-4 w-4" />
                       Copy URL
                     </Button>
-                    <label htmlFor="file-replace">
+                    <label htmlFor="file-replace" aria-label="Replace file">
                       <Button
                         variant="outline"
                         size="sm"
@@ -977,7 +978,7 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
                         }
                       >
                         <span>
-                          <RefreshCw className="w-4 h-4 mr-2" />
+                          <RefreshCw className="mr-2 h-4 w-4" />
                           Update
                         </span>
                       </Button>
@@ -999,7 +1000,7 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
                   size="sm"
                   onClick={() => setShowDeleteDialog(true)}
                 >
-                  <Trash2 className="w-4 h-4 mr-2" />
+                  <Trash2 className="mr-2 h-4 w-4" />
                   Delete
                 </Button>
               </div>
@@ -1021,18 +1022,25 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
           </AlertDialogHeader>
           <div className="space-y-4">
             <div>
-              <label className="text-sm font-medium">Folder Name</label>
+              <label htmlFor="folder-name" className="text-sm font-medium">
+                Folder Name
+              </label>
               <Input
+                id="folder-name"
                 value={newFolderName}
                 onChange={(e) => setNewFolderName(e.target.value)}
                 placeholder="my-folder"
               />
             </div>
             <div>
-              <label className="text-sm font-medium">
+              <label
+                htmlFor="folder-description"
+                className="text-sm font-medium"
+              >
                 Description (optional)
               </label>
               <Input
+                id="folder-description"
                 value={newFolderDescription}
                 onChange={(e) => setNewFolderDescription(e.target.value)}
                 placeholder="Description of this folder"

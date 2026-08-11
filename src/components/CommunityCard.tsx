@@ -86,7 +86,7 @@ function CommunityCard({
               href={link.href}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-1 block text-[0.9rem] text-primary underline"
+              className="text-primary mt-1 block text-[0.9rem] underline"
             >
               {link.label}
             </a>

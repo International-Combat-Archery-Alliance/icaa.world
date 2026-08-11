@@ -253,9 +253,9 @@ function ArcheryMap({
             }}
             onMouseLeave={markerHover.handleLeave}
           >
-            <div className="h-5 w-5 rounded-full border-[3px] border-white bg-primary shadow-md" />
+            <div className="bg-primary h-5 w-5 rounded-full border-[3px] border-white shadow-md" />
             {showLabels && (
-              <span className="absolute left-full top-1/2 ml-1.5 -translate-y-1/2 whitespace-nowrap rounded px-1.5 py-0.5 text-xs font-semibold text-gray-900 shadow-sm bg-white/80">
+              <span className="absolute top-1/2 left-full ml-1.5 -translate-y-1/2 rounded bg-white/80 px-1.5 py-0.5 text-xs font-semibold whitespace-nowrap text-gray-900 shadow-sm">
                 {community.name}
               </span>
             )}
@@ -277,7 +277,7 @@ function ArcheryMap({
               href={hoveredCommunity.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="font-semibold text-primary hover:underline"
+              className="text-primary font-semibold hover:underline"
             >
               {hoveredCommunity.name}
             </a>

@@ -1,0 +1,39 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["react", "jsx_a11y"],
+  "jsPlugins": ["./node_modules/oxlint-plugin-query/dist/index.js"],
+  "categories": {
+    "correctness": "error",
+    "suspicious": "error",
+    "perf": "warn",
+    "nursery": "off",
+    "style": "off",
+    "restriction": "off"
+  },
+  "rules": {
+    "react/react-in-jsx-scope": "off",
+    "react/jsx-no-target-blank": "off",
+    "eslint/no-underscore-dangle": "off",
+    "eslint/no-await-in-loop": "off",
+    "react/no-array-index-key": "off",
+    "jsx-a11y/click-events-have-key-events": "off",
+    "jsx-a11y/no-static-element-interactions": "off",
+    "jsx-a11y/no-noninteractive-element-interactions": "off",
+    "oxlint-plugin-query/exhaustive-deps": "error",
+    "oxlint-plugin-query/no-rest-destructuring": "error",
+    "oxlint-plugin-query/stable-query-client": "error",
+    "oxlint-plugin-query/no-unstable-deps": "error",
+    "oxlint-plugin-query/infinite-query-property-order": "error",
+    "oxlint-plugin-query/mutation-property-order": "error"
+  },
+  "ignorePatterns": [
+    "node_modules/**",
+    "dist/**",
+    "src/components/ui/**",
+    ".vite/**",
+    "public/**",
+    "build/**",
+    "coverage/**",
+    "**/*.d.ts"
+  ]
+}

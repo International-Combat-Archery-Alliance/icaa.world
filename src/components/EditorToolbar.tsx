@@ -182,7 +182,7 @@ function EditorToolbar({
       {inlineButton('underline', Underline, 'Underline')}
       {inlineButton('strikethrough', Strikethrough, 'Strikethrough')}
       {inlineButton('inlineCode', Code, 'Inline Code')}
-      <div className="mx-0.5 h-6 w-px bg-border" />
+      <div className="bg-border mx-0.5 h-6 w-px" />
       <Button
         type="button"
         variant="ghost"

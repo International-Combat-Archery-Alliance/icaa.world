@@ -82,7 +82,7 @@ function VotedCard({
   const votedOption = optionMeta.get(vote.optionIds[0]);
 
   return (
-    <Card className="max-w-3xl mx-auto">
+    <Card className="mx-auto max-w-3xl">
       <CardContent className="flex flex-col items-center gap-4 p-8 text-center">
         <CheckCircle className="h-16 w-16 text-green-500" />
         <h3 className="text-2xl font-bold">Vote Submitted!</h3>
@@ -90,7 +90,7 @@ function VotedCard({
           <Avatar className="h-12 w-12">
             <AvatarImage src={votedOption?.imageUrl} />
             <AvatarFallback className="bg-muted">
-              <User className="h-6 w-6 text-muted-foreground" />
+              <User className="text-muted-foreground h-6 w-6" />
             </AvatarFallback>
           </Avatar>
           <p className="text-lg font-medium">
@@ -107,7 +107,7 @@ function VotedCard({
           </div>
         )}
         {!results && (
-          <p className="text-sm text-muted-foreground">
+          <p className="text-muted-foreground text-sm">
             {poll.resultsVisibility === 'AfterClose'
               ? 'Results will be available after the poll closes.'
               : 'Results are only visible to administrators.'}
@@ -120,7 +120,7 @@ function VotedCard({
 
 function PollSkeleton() {
   return (
-    <Card className="max-w-5xl mx-auto">
+    <Card className="mx-auto max-w-5xl">
       <CardHeader className="text-center">
         <Skeleton className="mx-auto h-8 w-64" />
         <Skeleton className="mx-auto h-4 w-96" />
@@ -153,7 +153,7 @@ function PollCountdown({ endTime }: { endTime: string }) {
 
   if (remaining <= 0) {
     return (
-      <div className="flex items-center justify-center gap-1.5 text-sm text-muted-foreground">
+      <div className="text-muted-foreground flex items-center justify-center gap-1.5 text-sm">
         <Clock className="h-4 w-4" />
         Poll has closed
       </div>
@@ -171,7 +171,7 @@ function PollCountdown({ endTime }: { endTime: string }) {
   parts.push(`${minutes}m`, `${seconds}s`);
 
   return (
-    <div className="flex items-center justify-center gap-1.5 text-sm tabular-nums text-muted-foreground">
+    <div className="text-muted-foreground flex items-center justify-center gap-1.5 text-sm tabular-nums">
       <Clock className="h-4 w-4" />
       Closes in {parts.join(' ')}
     </div>
@@ -188,7 +188,7 @@ export default function VotePage() {
   if (!pollId) {
     return (
       <section className="container mx-auto px-4 py-8">
-        <Card className="max-w-lg mx-auto">
+        <Card className="mx-auto max-w-lg">
           <CardContent className="p-8 text-center">
             <p className="text-muted-foreground">No poll specified.</p>
           </CardContent>
@@ -202,7 +202,7 @@ export default function VotePage() {
       {isLoading && <PollSkeleton />}
 
       {isError && (
-        <Card className="max-w-lg mx-auto">
+        <Card className="mx-auto max-w-lg">
           <CardContent className="p-8 text-center">
             <p className="text-muted-foreground">
               Failed to load poll. Please try again later.
@@ -212,7 +212,7 @@ export default function VotePage() {
       )}
 
       {!isLoading && !isError && !poll && (
-        <Card className="max-w-lg mx-auto">
+        <Card className="mx-auto max-w-lg">
           <CardContent className="p-8 text-center">
             <p className="text-muted-foreground">Poll not found.</p>
           </CardContent>
@@ -240,9 +240,12 @@ function PollVoteCard({ poll }: { poll: Poll }) {
     showResults ? poll.id : undefined,
   );
 
-  const voteConfig = poll.voteConfig ?? { maxSelections: 1 };
-  const groups = poll.groups ?? [];
-  const ungroupedOptions = poll.options ?? [];
+  const voteConfig = useMemo(
+    () => poll.voteConfig ?? { maxSelections: 1 },
+    [poll.voteConfig],
+  );
+  const groups = useMemo(() => poll.groups ?? [], [poll.groups]);
+  const ungroupedOptions = useMemo(() => poll.options ?? [], [poll.options]);
 
   const optionMeta = useMemo(() => {
     const map = new Map<string, OptionMeta>();
@@ -363,7 +366,7 @@ function PollVoteCard({ poll }: { poll: Poll }) {
   }
 
   return (
-    <Card className="max-w-5xl mx-auto">
+    <Card className="mx-auto max-w-5xl">
       <CardHeader className="text-center">
         <div className="mb-2 flex items-center justify-center gap-2">
           <CardTitle>{poll.name}</CardTitle>
@@ -373,7 +376,7 @@ function PollVoteCard({ poll }: { poll: Poll }) {
           <CardDescription>{poll.description}</CardDescription>
         )}
         {poll.status === 'Upcoming' && (
-          <div className="flex items-center justify-center gap-1.5 text-sm text-muted-foreground">
+          <div className="text-muted-foreground flex items-center justify-center gap-1.5 text-sm">
             <Clock className="h-4 w-4" />
             Opens {new Date(poll.startTime).toLocaleString()}
           </div>
@@ -384,7 +387,7 @@ function PollVoteCard({ poll }: { poll: Poll }) {
         {!hasVoted &&
           poll.status !== 'Closed' &&
           poll.resultsVisibility !== 'Live' && (
-            <p className="text-sm text-muted-foreground">
+            <p className="text-muted-foreground text-sm">
               {poll.resultsVisibility === 'AfterClose'
                 ? 'Results will be available after the poll closes.'
                 : 'Results are only visible to administrators.'}
@@ -393,7 +396,7 @@ function PollVoteCard({ poll }: { poll: Poll }) {
       </CardHeader>
       <CardContent className="space-y-6">
         {groups.length > 0 && (
-          <p className="text-center text-sm text-muted-foreground">
+          <p className="text-muted-foreground text-center text-sm">
             Select 1 player
           </p>
         )}
@@ -402,10 +405,10 @@ function PollVoteCard({ poll }: { poll: Poll }) {
             {groupIdx > 0 && (
               <div className="relative mb-4 text-center">
                 <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-muted-foreground/30" />
+                  <div className="border-muted-foreground/30 w-full border-t" />
                 </div>
                 <div className="relative flex justify-center">
-                  <span className="bg-card px-4 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+                  <span className="bg-card text-muted-foreground px-4 text-sm font-semibold tracking-wider uppercase">
                     OR
                   </span>
                 </div>
@@ -450,19 +453,19 @@ function PollVoteCard({ poll }: { poll: Poll }) {
                       }
                     }}
                   >
-                    <div className="flex items-center gap-3 min-w-0">
+                    <div className="flex min-w-0 items-center gap-3">
                       <Avatar className="h-14 w-14 shrink-0">
                         <AvatarImage src={option.imageUrl} />
                         <AvatarFallback className="bg-muted">
-                          <User className="h-7 w-7 text-muted-foreground" />
+                          <User className="text-muted-foreground h-7 w-7" />
                         </AvatarFallback>
                       </Avatar>
                       <div className="min-w-0">
-                        <div className="text-sm font-medium leading-tight">
+                        <div className="text-sm leading-tight font-medium">
                           {option.name}
                         </div>
                         {option.subtitle && (
-                          <div className="text-xs text-muted-foreground">
+                          <div className="text-muted-foreground text-xs">
                             {option.subtitle}
                           </div>
                         )}
@@ -495,19 +498,19 @@ function PollVoteCard({ poll }: { poll: Poll }) {
                     }
                   }}
                 >
-                  <div className="flex items-center gap-3 min-w-0">
+                  <div className="flex min-w-0 items-center gap-3">
                     <Avatar className="h-14 w-14 shrink-0">
                       <AvatarImage src={option.imageUrl} />
                       <AvatarFallback className="bg-muted">
-                        <User className="h-7 w-7 text-muted-foreground" />
+                        <User className="text-muted-foreground h-7 w-7" />
                       </AvatarFallback>
                     </Avatar>
                     <div className="min-w-0">
-                      <div className="text-sm font-medium leading-tight">
+                      <div className="text-sm leading-tight font-medium">
                         {option.name}
                       </div>
                       {option.subtitle && (
-                        <div className="text-xs text-muted-foreground">
+                        <div className="text-muted-foreground text-xs">
                           {option.subtitle}
                         </div>
                       )}
@@ -521,11 +524,11 @@ function PollVoteCard({ poll }: { poll: Poll }) {
 
         {poll.status === 'Active' && (
           <div className="flex flex-col items-center gap-4 pt-4">
-            <p className="text-sm text-muted-foreground">
+            <p className="text-muted-foreground text-sm">
               {selectedOptionIds.length} of {voteConfig.maxSelections} selected
             </p>
             <div className="flex flex-col items-center gap-2">
-              <p className="text-sm text-muted-foreground">
+              <p className="text-muted-foreground text-sm">
                 Verify you are human to submit your vote:
               </p>
               <Turnstile
@@ -549,7 +552,7 @@ function PollVoteCard({ poll }: { poll: Poll }) {
               Submit Vote
             </Button>
             {voteError && (
-              <p className="text-sm text-destructive">{voteError}</p>
+              <p className="text-destructive text-sm">{voteError}</p>
             )}
           </div>
         )}
@@ -571,7 +574,7 @@ function PollVoteCard({ poll }: { poll: Poll }) {
         )}
 
         {poll.status === 'Closed' && !results && !hasVoted && (
-          <p className="text-center text-muted-foreground">
+          <p className="text-muted-foreground text-center">
             {poll.resultsVisibility === 'AdminOnly'
               ? 'Results are only visible to administrators.'
               : 'This poll has closed.'}
