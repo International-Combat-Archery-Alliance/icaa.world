@@ -1,9 +1,14 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import Map, { Marker, Popup, NavigationControl } from 'react-map-gl/maplibre';
 import type { ViewStateChangeEvent, MapRef } from 'react-map-gl/maplibre';
-import maplibregl, { type StyleSpecification, LngLatBounds } from 'maplibre-gl';
+import * as maplibregl from 'maplibre-gl';
+import type { StyleSpecification } from 'maplibre-gl';
+import { LngLatBounds } from 'maplibre-gl';
+import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url';
 import { useScrollSafeHover } from '@/hooks/useScrollSafeHover';
 import 'maplibre-gl/dist/maplibre-gl.css';
+
+maplibregl.setWorkerUrl(workerUrl);
 
 export interface Community {
   name: string;
