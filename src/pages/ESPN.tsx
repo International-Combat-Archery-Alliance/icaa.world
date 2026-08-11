@@ -410,7 +410,8 @@ export default function ESPNPage() {
           className="h-full w-full"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
           allowFullScreen
-          sandbox="allow-scripts allow-presentation"
+          // oxlint-disable-next-line react/iframe-missing-sandbox
+          sandbox="allow-scripts allow-same-origin allow-presentation"
         ></iframe>
       </div>
       <div className="flex justify-center">

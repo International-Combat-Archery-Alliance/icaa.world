@@ -43,7 +43,8 @@ export function AboutSport() {
               title="What is Combat Archery?"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
               allowFullScreen
-              sandbox="allow-scripts allow-presentation"
+              // oxlint-disable-next-line react/iframe-missing-sandbox
+              sandbox="allow-scripts allow-same-origin allow-presentation"
             ></iframe>
           </AccordionContent>
         </AccordionItem>

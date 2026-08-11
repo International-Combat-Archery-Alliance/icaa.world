@@ -500,7 +500,8 @@ function EventDetailsTemplate({ event }: { event: Event }) {
                 src={`https://drive.google.com/viewerng/viewer?embedded=true&url=${event.rulesDocLink}`}
                 title="Event Rules"
                 className="h-[50vh] w-full rounded-xl border-0 bg-white"
-                sandbox="allow-scripts allow-popups"
+                // oxlint-disable-next-line react/iframe-missing-sandbox
+                sandbox="allow-scripts allow-same-origin allow-popups"
               />
             ) : (
               <p>Tournament Format coming soon.</p>

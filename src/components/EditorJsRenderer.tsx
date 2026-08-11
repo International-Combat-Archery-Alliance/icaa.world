@@ -217,7 +217,8 @@ function BlockRenderer({ block }: { block: EditorJsBlock }) {
                 alignment === 'right' && 'ml-auto block',
               )}
               allowFullScreen
-              sandbox="allow-scripts allow-popups allow-presentation"
+              // oxlint-disable-next-line react/iframe-missing-sandbox
+              sandbox="allow-scripts allow-same-origin allow-popups allow-presentation"
               frameBorder="0"
             />
           </div>

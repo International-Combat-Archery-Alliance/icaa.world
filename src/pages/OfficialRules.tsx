@@ -17,7 +17,8 @@ const OfficialRules = () => {
           width="100%"
           height="750"
           className="border-0 bg-white"
-          sandbox="allow-scripts allow-popups"
+          // oxlint-disable-next-line react/iframe-missing-sandbox
+          sandbox="allow-scripts allow-same-origin allow-popups"
         >
           <Skeleton className="h-[750px] w-full rounded-xl" />
         </iframe>
