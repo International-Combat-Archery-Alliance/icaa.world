@@ -249,7 +249,7 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
     if (!files || files.length === 0) return;
 
     const MAX_FILES = 50;
-    const MAX_SIZE_MB = 25;
+    const MAX_SIZE_MB = 50;
     const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
 
     // Check file count limit
@@ -618,7 +618,7 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
       </div>
 
       <div className="text-muted-foreground bg-muted/50 rounded-md px-3 py-2 text-sm">
-        <span className="font-medium">Note:</span> Maximum file size is 25 MB.
+        <span className="font-medium">Note:</span> Maximum file size is 50 MB.
         All uploaded files are publicly accessible to everyone.
       </div>
 
