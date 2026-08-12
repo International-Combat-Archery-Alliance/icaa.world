@@ -6,7 +6,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import type { FieldValues, Path, UseFormReturn } from 'react-hook-form';
-import Turnstile from 'react-turnstile';
+import { Turnstile } from 'react-turnstile';
 
 export function TurnstileFormField<T extends FieldValues>({
   form,

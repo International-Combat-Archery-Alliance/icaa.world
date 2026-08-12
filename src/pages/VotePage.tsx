@@ -1,7 +1,7 @@
 import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { useTitle } from 'react-use';
-import Turnstile from 'react-turnstile';
+import { Turnstile } from 'react-turnstile';
 import type { BoundTurnstileObject } from 'react-turnstile';
 import { CheckCircle, Clock, User } from 'lucide-react';
 import {
