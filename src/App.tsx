@@ -1,3 +1,4 @@
+import { lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import {
   FaYoutube,
@@ -6,43 +7,49 @@ import {
   FaFacebook,
   FaTiktok,
 } from 'react-icons/fa';
-
-import Home from './pages/Home';
-import AboutICAA from './pages/AboutICAA';
-import AboutSport from './pages/AboutSport';
-import OfficialRules from './pages/OfficialRules';
-import Events from './pages/Events';
-import ArticlePage from './pages/ArticlePage';
-import Contact from './pages/Contact';
-import AdminPage from './pages/Admin';
-import ESPNPage from './pages/ESPN';
-import ESPNRules from './pages/ESPNRules';
-import { EventQueryClientProvider } from './context/eventQueryClientContext';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import EventRegistrationFreeAgent from './pages/EventRegistrationFreeAgent';
-import EventRegistrationTeam from './pages/EventRegistrationTeam';
 import { GoogleOAuthProvider } from '@react-oauth/google';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { Loader2 } from 'lucide-react';
+
 import Header from './components/Header';
-import { LoginQueryClientProvider } from './context/loginQueryClientContext';
-import { AssetsQueryClientProvider } from './context/assetsQueryClientContext';
-import { ArticlesQueryClientProvider } from './context/articlesQueryClientContext';
-import AdminOnlyRoute from './components/auth/AdminOnlyRoute';
 import Sidebar from './components/Sidebar';
-import { UserInfoContextProvider } from './context/userInfoContext';
-import OurCommunities from './pages/OurCommunities';
-import EventDetailsPage from './components/EventPageTemplate';
-import EventPayment from './pages/EventPayment';
-import EventPaymentSuccess from './pages/EventPaymentSuccess';
-import MailingListPage from './pages/MailingListPage';
-import Donation from './pages/Donation';
-import DonationSuccess from './pages/DonationSuccess';
-import { DonationQueryClientProvider } from './context/donationQueryClientContext';
-import { MailingListQueryClientProvider } from './context/mailingListQueryClientContext';
-import { VotingQueryClientProvider } from './context/votingQueryClientContext';
-import VotePage from './pages/VotePage';
 import ErrorBoundary from './components/ErrorBoundary';
 import ConsentBanner from './components/ConsentBanner';
+import AdminOnlyRoute from './components/auth/AdminOnlyRoute';
 import { ConsentProvider } from './context/consentContext';
+import { UserInfoContextProvider } from './context/userInfoContext';
+import { ArticlesQueryClientProvider } from './context/articlesQueryClientContext';
+import { AssetsQueryClientProvider } from './context/assetsQueryClientContext';
+import { DonationQueryClientProvider } from './context/donationQueryClientContext';
+import { EventQueryClientProvider } from './context/eventQueryClientContext';
+import { LoginQueryClientProvider } from './context/loginQueryClientContext';
+import { MailingListQueryClientProvider } from './context/mailingListQueryClientContext';
+import { VotingQueryClientProvider } from './context/votingQueryClientContext';
+
+const Home = lazy(() => import('./pages/Home'));
+const AboutICAA = lazy(() => import('./pages/AboutICAA'));
+const AboutSport = lazy(() => import('./pages/AboutSport'));
+const OfficialRules = lazy(() => import('./pages/OfficialRules'));
+const Events = lazy(() => import('./pages/Events'));
+const ArticlePage = lazy(() => import('./pages/ArticlePage'));
+const Contact = lazy(() => import('./pages/Contact'));
+const AdminPage = lazy(() => import('./pages/Admin'));
+const ESPNPage = lazy(() => import('./pages/ESPN'));
+const ESPNRules = lazy(() => import('./pages/ESPNRules'));
+const EventRegistrationFreeAgent = lazy(
+  () => import('./pages/EventRegistrationFreeAgent'),
+);
+const EventRegistrationTeam = lazy(
+  () => import('./pages/EventRegistrationTeam'),
+);
+const OurCommunities = lazy(() => import('./pages/OurCommunities'));
+const EventDetailsPage = lazy(() => import('./components/EventPageTemplate'));
+const EventPayment = lazy(() => import('./pages/EventPayment'));
+const EventPaymentSuccess = lazy(() => import('./pages/EventPaymentSuccess'));
+const MailingListPage = lazy(() => import('./pages/MailingListPage'));
+const Donation = lazy(() => import('./pages/Donation'));
+const DonationSuccess = lazy(() => import('./pages/DonationSuccess'));
+const VotePage = lazy(() => import('./pages/VotePage'));
 
 const App = () => {
   const queryClient = new QueryClient();
@@ -66,89 +73,97 @@ const App = () => {
 
                                 <Header />
                                 <main className="max-w-full flex-1 md:ml-64">
-                                  <Routes>
-                                    <Route path="/" element={<Home />} />
-                                    <Route
-                                      path="/about-icaa"
-                                      element={<AboutICAA />}
-                                    />
-                                    <Route
-                                      path="/about-sport"
-                                      element={<AboutSport />}
-                                    />
-                                    <Route
-                                      path="/official-rules"
-                                      element={<OfficialRules />}
-                                    />
-                                    <Route
-                                      path="/our-communities"
-                                      element={<OurCommunities />}
-                                    />
-                                    <Route
-                                      path="/events"
-                                      element={<Events />}
-                                    />
-                                    <Route
-                                      path="/events/:eventId/event-details"
-                                      element={<EventDetailsPage />}
-                                    />
-                                    <Route
-                                      path="/events/:eventId/register-free-agent"
-                                      element={<EventRegistrationFreeAgent />}
-                                    />
-                                    <Route
-                                      path="/events/:eventId/register-team"
-                                      element={<EventRegistrationTeam />}
-                                    />
-                                    <Route
-                                      path="/events/:eventId/payment"
-                                      element={<EventPayment />}
-                                    />
-                                    <Route
-                                      path="/events/:eventId/success"
-                                      element={<EventPaymentSuccess />}
-                                    />
-                                    <Route
-                                      path="/contact"
-                                      element={<Contact />}
-                                    />
-                                    <Route
-                                      path="/news/:slug"
-                                      element={<ArticlePage />}
-                                    />
-                                    <Route
-                                      path="/mailing-list"
-                                      element={<MailingListPage />}
-                                    />
-                                    <Route
-                                      path="/admin"
-                                      element={
-                                        <AdminOnlyRoute>
-                                          <AdminPage />
-                                        </AdminOnlyRoute>
-                                      }
-                                    />
-                                    <Route
-                                      path="/donate"
-                                      element={<Donation />}
-                                    />
-                                    <Route
-                                      path="/donation/success"
-                                      element={<DonationSuccess />}
-                                    />
-                                    <Route
-                                      path="/espn"
-                                      element={<ESPNPage />}
-                                    />
-                                    <Route
-                                      path="/espn/rules"
-                                      element={<ESPNRules />}
-                                    />
-                                    <Route
-                                      path="/vote/:pollId"
-                                      element={<VotePage />}
-                                    />
-                                  </Routes>
+                                  <Suspense
+                                    fallback={
+                                      <div className="flex min-h-[50vh] items-center justify-center">
+                                        <Loader2 className="text-muted-foreground size-8 animate-spin" />
+                                      </div>
+                                    }
+                                  >
+                                    <Routes>
+                                      <Route path="/" element={<Home />} />
+                                      <Route
+                                        path="/about-icaa"
+                                        element={<AboutICAA />}
+                                      />
+                                      <Route
+                                        path="/about-sport"
+                                        element={<AboutSport />}
+                                      />
+                                      <Route
+                                        path="/official-rules"
+                                        element={<OfficialRules />}
+                                      />
+                                      <Route
+                                        path="/our-communities"
+                                        element={<OurCommunities />}
+                                      />
+                                      <Route
+                                        path="/events"
+                                        element={<Events />}
+                                      />
+                                      <Route
+                                        path="/events/:eventId/event-details"
+                                        element={<EventDetailsPage />}
+                                      />
+                                      <Route
+                                        path="/events/:eventId/register-free-agent"
+                                        element={<EventRegistrationFreeAgent />}
+                                      />
+                                      <Route
+                                        path="/events/:eventId/register-team"
+                                        element={<EventRegistrationTeam />}
+                                      />
+                                      <Route
+                                        path="/events/:eventId/payment"
+                                        element={<EventPayment />}
+                                      />
+                                      <Route
+                                        path="/events/:eventId/success"
+                                        element={<EventPaymentSuccess />}
+                                      />
+                                      <Route
+                                        path="/contact"
+                                        element={<Contact />}
+                                      />
+                                      <Route
+                                        path="/news/:slug"
+                                        element={<ArticlePage />}
+                                      />
+                                      <Route
+                                        path="/mailing-list"
+                                        element={<MailingListPage />}
+                                      />
+                                      <Route
+                                        path="/admin"
+                                        element={
+                                          <AdminOnlyRoute>
+                                            <AdminPage />
+                                          </AdminOnlyRoute>
+                                        }
+                                      />
+                                      <Route
+                                        path="/donate"
+                                        element={<Donation />}
+                                      />
+                                      <Route
+                                        path="/donation/success"
+                                        element={<DonationSuccess />}
+                                      />
+                                      <Route
+                                        path="/espn"
+                                        element={<ESPNPage />}
+                                      />
+                                      <Route
+                                        path="/espn/rules"
+                                        element={<ESPNRules />}
+                                      />
+                                      <Route
+                                        path="/vote/:pollId"
+                                        element={<VotePage />}
+                                      />
+                                    </Routes>
+                                  </Suspense>
                                 </main>
                                 <footer className="md:ml-64">
                                   <div className="flex items-center gap-6">
