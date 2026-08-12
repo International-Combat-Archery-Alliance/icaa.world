@@ -26,7 +26,7 @@ interface ImagePickerModalProps {
   folderPath?: string;
 }
 
-const MAX_SIZE_BYTES = 25 * 1024 * 1024;
+const MAX_SIZE_BYTES = 50 * 1024 * 1024;
 
 function joinPath(basePath: string, name: string): string {
   if (basePath === '/') return `/${name}`;
@@ -216,7 +216,7 @@ function UploadTab({
 
     if (file.size > MAX_SIZE_BYTES) {
       setError(
-        `File exceeds 25 MB limit (${(file.size / 1024 / 1024).toFixed(1)} MB)`,
+        `File exceeds 50 MB limit (${(file.size / 1024 / 1024).toFixed(1)} MB)`,
       );
       e.target.value = '';
       return;
@@ -289,7 +289,7 @@ function UploadTab({
           {uploading ? 'Uploading...' : 'Click to upload an image'}
         </p>
         <p className="text-muted-foreground mt-1 text-xs">
-          Max file size: 25 MB
+          Max file size: 50 MB
         </p>
       </div>
 
