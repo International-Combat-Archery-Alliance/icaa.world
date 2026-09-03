@@ -144,18 +144,18 @@ export function AdminPage() {
       <Tabs
         value={activeTab}
         onValueChange={handleTabChange}
-        className="mx-auto w-full max-w-screen-xl p-4 md:p-6"
+        className="mx-auto w-full max-w-screen-xl p-4 md:py-6 md:pr-6 md:pl-0"
       >
         <div className="flex flex-col gap-6 md:flex-row">
           <div
             className={cn(
-              'md:sticky md:top-4 md:self-start',
+              'md:sticky md:top-0 md:self-start',
               !navCollapsed && 'md:w-52 md:shrink-0',
             )}
           >
             <div
               className={cn(
-                'mb-2 hidden items-center md:flex',
+                'mb-2 hidden items-center md:flex md:pl-3',
                 navCollapsed ? 'md:justify-center' : 'md:justify-between',
               )}
             >
@@ -179,7 +179,7 @@ export function AdminPage() {
             </div>
             <TabsList
               className={cn(
-                'bg-muted/50 flex h-auto w-full flex-row justify-start gap-1 overflow-x-auto rounded-lg p-1 md:flex-col md:gap-0 md:overflow-visible',
+                'bg-muted/50 flex h-auto w-full flex-row justify-start gap-1 overflow-x-auto rounded-lg p-1 md:flex-col md:gap-0 md:overflow-visible md:rounded-none md:rounded-r-lg md:border-r',
                 !navCollapsed && 'md:w-full',
               )}
             >
