@@ -208,8 +208,9 @@ function M2MClientManager() {
         <CardHeader>
           <CardTitle>Create Client</CardTitle>
           <CardDescription>
-            Provisions a machine credential (bcrypt round + SSM param). The
-            secret is shown exactly once — copy it immediately.
+            Provisions a machine credential (bcrypt round + metadata). The
+            secret is shown exactly once — copy it immediately, then deliver it
+            to the caller yourself (e.g. its SSM param).
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -433,8 +434,8 @@ function M2MClientManager() {
             </AlertDialogTitle>
             <AlertDialogDescription>
               New tokens stop immediately, but callers cache the secret at
-              startup — roll or recycle them afterwards. The SSM param is kept,
-              so contact an operator if this was a mistake.
+              startup — remove or replace the caller's copy of the secret, then
+              roll or recycle them. Revocation is permanent via this API.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

@@ -309,7 +309,7 @@ export interface paths {
         put?: never;
         /**
          * Provisions a new machine client credential
-         * @description Generates a 32-byte CSPRNG clientSecret (base64url, shown exactly once), stores bcrypt(cost 10) in the CLIENT#<clientId> secretRounds[] plus the /m2m/<clientId>/secret SSM SecureString. 409 if the clientId already exists (including revoked records).
+         * @description Generates a 32-byte CSPRNG clientSecret (base64url, shown exactly once) and stores bcrypt(cost 10) in the CLIENT#<clientId> secretRounds[]. This API never distributes the secret: delivering it to the caller (e.g. writing its SSM param) is an explicit operator step. 409 if the clientId already exists (including revoked records).
          */
         post: {
             parameters: {
@@ -360,7 +360,7 @@ export interface paths {
                         "application/json": components["schemas"]["Error"];
                     };
                 };
-                /** @description Internal error (e.g. failed to write client or SSM param) */
+                /** @description Internal error (e.g. failed to write the client record) */
                 500: {
                     headers: {
                         [name: string]: unknown;
@@ -389,7 +389,7 @@ export interface paths {
         post?: never;
         /**
          * Revokes a machine client credential
-         * @description Soft-deactivates the CLIENT#<clientId> record (active=false); the SSM param is intentionally kept so a mistaken revoke is recoverable. Outstanding tokens expire within 5 minutes; callers cache the secret at startup, so roll/recycle callers after revoking.
+         * @description Soft-deactivates the CLIENT#<clientId> record (active=false). This API never touches caller-side secret storage: after revoking, remove or replace the caller's copy of the secret and roll/recycle callers (they cache it at startup). Outstanding tokens expire within 5 minutes. Revocation is permanent via this API.
          */
         delete: {
             parameters: {
@@ -466,7 +466,7 @@ export interface paths {
         put?: never;
         /**
          * Rotates a machine client secret
-         * @description Generates a new 32-byte CSPRNG clientSecret (base64url, shown exactly once), appends its bcrypt(cost 10) round to secretRounds[] (trimmed to the newest 2 so the previous secret keeps working until callers recycle), and overwrites the /m2m/<clientId>/secret SSM param.
+         * @description Generates a new 32-byte CSPRNG clientSecret (base64url, shown exactly once) and prepends its bcrypt(cost 10) round to secretRounds[] (trimmed to the newest 2 so the previous secret keeps working until the operator delivers the new secret and recycles callers). Delivering the new secret to the caller is an explicit operator step.
          */
         post: {
             parameters: {
@@ -525,7 +525,7 @@ export interface paths {
                         "application/json": components["schemas"]["Error"];
                     };
                 };
-                /** @description Internal error (e.g. failed to write client or SSM param) */
+                /** @description Internal error (e.g. failed to write the client record) */
                 500: {
                     headers: {
                         [name: string]: unknown;
