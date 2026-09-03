@@ -429,7 +429,7 @@ function SelectEvent({ setEventId }: { setEventId: (v: string) => void }) {
 
   return (
     <Select onValueChange={(v) => setEventId(v)}>
-      <SelectTrigger className="w-[180px]">
+      <SelectTrigger className="w-[180px] bg-white">
         <SelectValue placeholder="Select an Event" />
       </SelectTrigger>
       <SelectContent>

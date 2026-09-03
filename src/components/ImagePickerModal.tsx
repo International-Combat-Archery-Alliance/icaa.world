@@ -87,7 +87,11 @@ function BrowseTab({
         >
           <ChevronLeft className="h-4 w-4" />
         </Button>
-        <Input value={currentPath} readOnly className="font-mono text-sm" />
+        <Input
+          value={currentPath}
+          readOnly
+          className="bg-white font-mono text-sm"
+        />
       </div>
 
       {isLoading ? (

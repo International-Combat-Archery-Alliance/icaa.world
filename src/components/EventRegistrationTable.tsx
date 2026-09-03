@@ -221,7 +221,7 @@ const EventRegistrationTable = ({
                           handleSelectChange('registrationType', value)
                         }
                       >
-                        <SelectTrigger className="w-[120px]">
+                        <SelectTrigger className="w-[120px] bg-white">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -257,7 +257,7 @@ const EventRegistrationTable = ({
                         value={String(editedRegistration.paid)}
                         onValueChange={handlePaidChange}
                       >
-                        <SelectTrigger className="w-[100px]">
+                        <SelectTrigger className="w-[100px] bg-white">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
