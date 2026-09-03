@@ -231,7 +231,7 @@ function AdminPollForm({ mode, poll, onSuccess }: AdminPollFormProps) {
               <FormLabel>Poll Name</FormLabel>
               <FormControl>
                 <Input
-                  className="bg-background"
+                  className="bg-white"
                   placeholder="Eastern Finals MVP"
                   {...field}
                 />
@@ -249,7 +249,7 @@ function AdminPollForm({ mode, poll, onSuccess }: AdminPollFormProps) {
               <FormLabel>Description</FormLabel>
               <FormControl>
                 <Textarea
-                  className="bg-background"
+                  className="bg-white"
                   placeholder="Vote for the Most Valuable Player..."
                   {...field}
                 />
@@ -268,7 +268,7 @@ function AdminPollForm({ mode, poll, onSuccess }: AdminPollFormProps) {
                 <FormLabel>Start Time</FormLabel>
                 <FormControl>
                   <Input
-                    className="bg-background"
+                    className="bg-white"
                     type="datetime-local"
                     {...field}
                   />
@@ -286,7 +286,7 @@ function AdminPollForm({ mode, poll, onSuccess }: AdminPollFormProps) {
                 <FormLabel>End Time</FormLabel>
                 <FormControl>
                   <Input
-                    className="bg-background"
+                    className="bg-white"
                     type="datetime-local"
                     {...field}
                   />
@@ -309,7 +309,7 @@ function AdminPollForm({ mode, poll, onSuccess }: AdminPollFormProps) {
                   defaultValue={field.value}
                 >
                   <FormControl>
-                    <SelectTrigger className="bg-background">
+                    <SelectTrigger className="bg-white">
                       <SelectValue placeholder="Select visibility" />
                     </SelectTrigger>
                   </FormControl>
@@ -335,7 +335,7 @@ function AdminPollForm({ mode, poll, onSuccess }: AdminPollFormProps) {
                   defaultValue={field.value}
                 >
                   <FormControl>
-                    <SelectTrigger className="bg-background">
+                    <SelectTrigger className="bg-white">
                       <SelectValue placeholder="Select level" />
                     </SelectTrigger>
                   </FormControl>
@@ -361,7 +361,7 @@ function AdminPollForm({ mode, poll, onSuccess }: AdminPollFormProps) {
                 <FormLabel>Max Selections</FormLabel>
                 <FormControl>
                   <Input
-                    className="bg-background"
+                    className="bg-white"
                     type="number"
                     min={1}
                     {...field}
@@ -380,7 +380,7 @@ function AdminPollForm({ mode, poll, onSuccess }: AdminPollFormProps) {
                 <FormLabel>Max Per Group (0 for no limit)</FormLabel>
                 <FormControl>
                   <Input
-                    className="bg-background"
+                    className="bg-white"
                     type="number"
                     min={0}
                     {...field}
@@ -437,7 +437,7 @@ function AdminPollForm({ mode, poll, onSuccess }: AdminPollFormProps) {
                     <FormLabel>Name</FormLabel>
                     <FormControl>
                       <Input
-                        className="bg-background"
+                        className="bg-white"
                         placeholder="Team Boston"
                         {...field}
                       />
@@ -456,7 +456,7 @@ function AdminPollForm({ mode, poll, onSuccess }: AdminPollFormProps) {
                       <FormLabel>Color</FormLabel>
                       <FormControl>
                         <Input
-                          className="bg-background"
+                          className="bg-white"
                           placeholder="#70b2e0"
                           {...field}
                         />
@@ -473,7 +473,7 @@ function AdminPollForm({ mode, poll, onSuccess }: AdminPollFormProps) {
                       <FormLabel>Logo URL</FormLabel>
                       <FormControl>
                         <Input
-                          className="bg-background"
+                          className="bg-white"
                           placeholder="https://..."
                           {...field}
                         />
@@ -535,7 +535,7 @@ function AdminPollForm({ mode, poll, onSuccess }: AdminPollFormProps) {
                     <FormLabel>Name</FormLabel>
                     <FormControl>
                       <Input
-                        className="bg-background"
+                        className="bg-white"
                         placeholder="Cameron Cardwell"
                         {...field}
                       />
@@ -553,7 +553,7 @@ function AdminPollForm({ mode, poll, onSuccess }: AdminPollFormProps) {
                       <FormLabel>Subtitle</FormLabel>
                       <FormControl>
                         <Input
-                          className="bg-background"
+                          className="bg-white"
                           placeholder="#17"
                           {...field}
                         />
@@ -570,7 +570,7 @@ function AdminPollForm({ mode, poll, onSuccess }: AdminPollFormProps) {
                       <FormLabel>Image URL</FormLabel>
                       <FormControl>
                         <Input
-                          className="bg-background"
+                          className="bg-white"
                           placeholder="https://..."
                           {...field}
                         />
@@ -651,7 +651,7 @@ function OptionsSubForm({
                 <FormControl>
                   <Input
                     placeholder="Player name"
-                    className="bg-background h-8 text-sm"
+                    className="h-8 bg-white text-sm"
                     {...field}
                   />
                 </FormControl>
@@ -670,7 +670,7 @@ function OptionsSubForm({
                   <FormControl>
                     <Input
                       placeholder="#17"
-                      className="bg-background h-8 text-sm"
+                      className="h-8 bg-white text-sm"
                       {...field}
                     />
                   </FormControl>
@@ -688,7 +688,7 @@ function OptionsSubForm({
                   <FormControl>
                     <Input
                       placeholder="Image URL"
-                      className="bg-background h-8 text-sm"
+                      className="h-8 bg-white text-sm"
                       {...field}
                     />
                   </FormControl>
