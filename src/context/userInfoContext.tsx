@@ -43,9 +43,12 @@ export const UserInfoContextProvider = ({
 }: {
   children: ReactNode;
 }) => {
+  // Storage keys are versioned so the RS256 cutover (INT-6) forces a
+  // one-time re-login: pre-cutover cached sessions are ignored.
   const [cachedUserInfo, setCachedUserInfo, deleteCachedUserInfo] =
-    useLocalStorage<components['schemas']['UserInfo']>('userInfo');
-  const [authStatus, setAuthStatus] = useLocalStorage<AuthStatus>('authStatus');
+    useLocalStorage<components['schemas']['UserInfo']>('userInfoV2');
+  const [authStatus, setAuthStatus] =
+    useLocalStorage<AuthStatus>('authStatusV2');
 
   // Check if cached user info is expired and clear it if so
   useEffect(() => {
