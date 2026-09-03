@@ -14,8 +14,116 @@ export interface paths {
         get?: never;
         put?: never;
         /** Logs in and returns the auth cookie */
-        post: operations["PostLoginGoogle"];
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            /** @description The Google JWT to log in with */
+            requestBody: {
+                content: {
+                    "application/json": {
+                        googleJWT: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Auth successful. The access and refresh tokens are returned in cookies named `ICAA_ACCESS_TOKEN` and `ICAA_REFRESH_TOKEN`. */
+                200: {
+                    headers: {
+                        /** @description The ICAA auth token cookies. */
+                        "Set-Cookie"?: string;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["UserInfo"];
+                    };
+                };
+                /** @description Unauthorized. */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
         delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/login/session": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Returns info about the current session/user
+         * @description Returns information about the currently logged in user.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description User info */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["UserInfo"];
+                    };
+                };
+                /** @description Unauthorized. */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        /**
+         * Logs the user out
+         * @description For cookie based auth, deletes the cookies and revokes the refresh token, effectively logging the user out.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description User logged out */
+                200: {
+                    headers: {
+                        /** @description Tells the browser to delete the cookies. */
+                        "Set-Cookie"?: string;
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
         options?: never;
         head?: never;
         patch?: never;
@@ -34,14 +142,122 @@ export interface paths {
          * Refreshes the access token using a refresh token
          * @description Uses the refresh token cookie to generate a new access token. The old refresh token is invalidated and a new one is issued (token rotation).
          */
-        post: operations["PostLoginRefresh"];
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Token refresh successful */
+                200: {
+                    headers: {
+                        /** @description New access and refresh token cookies. */
+                        "Set-Cookie"?: string;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["UserInfo"];
+                    };
+                };
+                /** @description Unauthorized - invalid or expired refresh token */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/login/session": {
+    "/login/v1/m2m-tokens": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Exchanges machine client credentials for a short-lived JWT
+         * @description Client-credentials exchange for service-to-service authentication. The machine client authenticates with HTTP Basic auth (Authorization: Basic base64(clientId:clientSecret)). On success a 5-minute RS256 machine JWT is returned. Internet-facing and rate limited (DynamoDB fixed-window counter); 429 is returned when throttled.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header: {
+                    /** @description HTTP Basic credentials - base64(clientId:clientSecret). */
+                    Authorization: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Machine token issued */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["AccessToken"];
+                    };
+                };
+                /** @description Missing or malformed Basic credentials */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unknown clientId or invalid clientSecret (invalid_client) */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited or locked out */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Internal error (e.g. failed to load signing keys) */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/login/v1/m2m-clients": {
         parameters: {
             query?: never;
             header?: never;
@@ -49,17 +265,328 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Returns info about the current session/user
-         * @description Returns information about the currently logged in user.
+         * Lists provisioned machine clients (metadata only)
+         * @description Admin-only list of machine clients (clientId, audience, scopes, active). Secrets are never retrievable. Backed by a GSI query on a constant partition key — no table scan.
          */
-        get: operations["GetLoginSession"];
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Client list */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["M2MClientList"];
+                    };
+                };
+                /** @description Missing/invalid auth or non-admin caller */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Internal error (e.g. failed to query clients) */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Provisions a new machine client credential
+         * @description Generates a 32-byte CSPRNG clientSecret (base64url, shown exactly once), stores bcrypt(cost 10) in the CLIENT#<clientId> secretRounds[] plus the /m2m/<clientId>/secret SSM SecureString. 409 if the clientId already exists (including revoked records).
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["CreateM2MClientRequest"];
+                };
+            };
+            responses: {
+                /** @description Client provisioned (secret is shown exactly once) */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["M2MClientCredentials"];
+                    };
+                };
+                /** @description Invalid clientId/audience/scopes */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Missing/invalid auth or non-admin caller */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description clientId already exists */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Internal error (e.g. failed to write client or SSM param) */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/login/v1/m2m-clients/{clientId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
         put?: never;
         post?: never;
         /**
-         * Logs the user out
-         * @description For cookie based auth, deletes the cookies and revokes the refresh token, effectively logging the user out.
+         * Revokes a machine client credential
+         * @description Soft-deactivates the CLIENT#<clientId> record (active=false); the SSM param is intentionally kept so a mistaken revoke is recoverable. Outstanding tokens expire within 5 minutes; callers cache the secret at startup, so roll/recycle callers after revoking.
          */
-        delete: operations["DeleteLoginSession"];
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description Machine client id. */
+                    clientId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Revoked client record */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["M2MClient"];
+                    };
+                };
+                /** @description Invalid clientId */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Missing/invalid auth or non-admin caller */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unknown clientId */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Internal error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/login/v1/m2m-clients/{clientId}/rotate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Rotates a machine client secret
+         * @description Generates a new 32-byte CSPRNG clientSecret (base64url, shown exactly once), appends its bcrypt(cost 10) round to secretRounds[] (trimmed to the newest 2 so the previous secret keeps working until callers recycle), and overwrites the /m2m/<clientId>/secret SSM param.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description Machine client id. */
+                    clientId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description New secret (shown exactly once) */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["M2MClientCredentials"];
+                    };
+                };
+                /** @description Invalid clientId */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Missing/invalid auth or non-admin caller */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unknown clientId */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Client is revoked (rotate of an inactive client) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Internal error (e.g. failed to write client or SSM param) */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/login/.well-known/jwks.json": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Returns the JSON Web Key Set for ICAA token verification
+         * @description Serves the RSA public keys (RFC 7517 JWK Set) used to verify ICAA JWTs, keyed by kid (currently machine-*; user-* reserved for ADR-0007).
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description JWK set */
+                200: {
+                    headers: {
+                        /** @description Cacheable for 5 minutes, allow stale reuse for an hour. */
+                        "Cache-Control"?: string;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["JWKS"];
+                    };
+                };
+                /** @description Failed to load signing keys */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -69,20 +596,100 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        UserInfo: {
+            profilePicURL: string;
+            /** Format: date-time */
+            expiresAt: string;
+            userEmail: string;
+            /** @description User's assigned roles */
+            roles: "ADMIN"[];
+        };
+        /** @enum {string} */
+        ErrorCode: "InternalError" | "AuthError" | "InputValidationError" | "RateLimited" | "NotFound" | "Conflict";
         Error: {
+            /** @example InternalError */
             code: components["schemas"]["ErrorCode"];
             /** @example An unexpected error occurred. */
             message: string;
         };
-        /** @enum {string} */
-        ErrorCode: "InternalError" | "AuthError" | "InputValidationError";
-        UserInfo: {
-            /** Format: date-time */
-            expiresAt: string;
-            profilePicURL: string;
-            /** @description User's assigned roles */
-            roles: "ADMIN"[];
-            userEmail: string;
+        /** @description A short-lived machine JWT, plus its metadata. */
+        AccessToken: {
+            /** @description The RS256 machine JWT (Bearer). */
+            access_token: string;
+            /** @enum {string} */
+            token_type: "Bearer";
+            /**
+             * @description Token lifetime in seconds (300 = 5 minutes).
+             * @example 300
+             */
+            expires_in: number;
+        };
+        /** @description Provisioned machine client metadata (never includes a secret). */
+        M2MClient: {
+            /** @example event-registration */
+            clientId: string;
+            /**
+             * @description Per-callee audience (<callee>-api), never the global icaa-api.
+             * @example profiles-api
+             */
+            audience: string;
+            /**
+             * @example [
+             *       "m2m:player-profiles"
+             *     ]
+             */
+            scopes: string[];
+            /** @description False once revoked (DELETE). Revoked clients fail the exchange with 401. */
+            active: boolean;
+        };
+        /** @description Provisioning request for a new machine client. */
+        CreateM2MClientRequest: {
+            /** @example event-registration */
+            clientId: string;
+            /**
+             * @description Per-callee audience (<callee>-api).
+             * @example profiles-api
+             */
+            audience: string;
+            /**
+             * @example [
+             *       "m2m:player-profiles"
+             *     ]
+             */
+            scopes: string[];
+        };
+        /** @description A machine client id plus its plaintext secret. The secret is returned exactly once on create/rotate — it is never logged and never retrievable again. */
+        M2MClientCredentials: {
+            /** @example event-registration */
+            clientId: string;
+            /** @description Base64url-encoded 32-byte CSPRNG secret. Shown exactly once. */
+            clientSecret: string;
+        };
+        /** @description Admin list of provisioned machine clients (metadata only). */
+        M2MClientList: {
+            clients: components["schemas"]["M2MClient"][];
+        };
+        /** @description JSON Web Key Set (RFC 7517) of ICAA token verification keys. */
+        JWKS: {
+            keys: components["schemas"]["JWK"][];
+        };
+        /** @description RSA public key (RFC 7517), kid namespaced machine-* (user-* reserved for ADR-0007). */
+        JWK: {
+            /** @enum {string} */
+            kty: "RSA";
+            /** @example machine-01 */
+            kid: string;
+            /**
+             * @description Key use - signing.
+             * @enum {string}
+             */
+            use?: "sig";
+            /** @enum {string} */
+            alg?: "RS256";
+            /** @description Base64url-encoded RSA modulus. */
+            n: string;
+            /** @description Base64url-encoded RSA public exponent. */
+            e: string;
         };
     };
     responses: never;
@@ -92,123 +699,4 @@ export interface components {
     pathItems: never;
 }
 export type $defs = Record<string, never>;
-export interface operations {
-    PostLoginGoogle: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** @description The Google JWT to log in with */
-        requestBody: {
-            content: {
-                "application/json": {
-                    googleJWT: string;
-                };
-            };
-        };
-        responses: {
-            /** @description Auth successful. The access and refresh tokens are returned in cookies named `ICAA_ACCESS_TOKEN` and `ICAA_REFRESH_TOKEN`. */
-            200: {
-                headers: {
-                    /** @description The ICAA auth token cookies. */
-                    "Set-Cookie"?: string;
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["UserInfo"];
-                };
-            };
-            /** @description Unauthorized. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-        };
-    };
-    PostLoginRefresh: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Token refresh successful */
-            200: {
-                headers: {
-                    /** @description New access and refresh token cookies. */
-                    "Set-Cookie"?: string;
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["UserInfo"];
-                };
-            };
-            /** @description Unauthorized - invalid or expired refresh token */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-        };
-    };
-    GetLoginSession: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description User info */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["UserInfo"];
-                };
-            };
-            /** @description Unauthorized. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-        };
-    };
-    DeleteLoginSession: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description User logged out */
-            200: {
-                headers: {
-                    /** @description Tells the browser to delete the cookies. */
-                    "Set-Cookie"?: string;
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-}
+export type operations = Record<string, never>;

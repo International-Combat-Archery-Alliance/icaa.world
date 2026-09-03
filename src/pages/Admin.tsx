@@ -54,6 +54,7 @@ import {
 } from '@/hooks/useVoting';
 import type { Poll } from '@/hooks/useVoting';
 import { DateRangePicker } from '@/components/DateRangePicker';
+import { M2MClientManager } from '@/components/M2MClientManager';
 import { cn } from '@/lib/utils';
 import {
   CalendarPlus,
@@ -65,6 +66,7 @@ import {
   Vote,
   Link,
   Check,
+  KeyRound,
 } from 'lucide-react';
 
 const adminTabs = [
@@ -75,6 +77,7 @@ const adminTabs = [
   { id: 'articles', label: 'Articles', icon: FileText },
   { id: 'donations', label: 'Donations', icon: Heart },
   { id: 'polls', label: 'Polls', icon: Vote },
+  { id: 'm2m-clients', label: 'M2M Clients', icon: KeyRound },
 ] as const;
 
 type AdminTabId = (typeof adminTabs)[number]['id'];
@@ -228,6 +231,9 @@ export function AdminPage() {
             onActionChange={setPollAction}
             onEditPoll={setEditingPoll}
           />
+        </TabsContent>
+        <TabsContent value="m2m-clients" className="mt-0">
+          <M2MClientManager />
         </TabsContent>
       </Tabs>
     </section>
