@@ -67,6 +67,8 @@ import {
   Link,
   Check,
   KeyRound,
+  PanelLeftClose,
+  PanelLeftOpen,
 } from 'lucide-react';
 
 const adminTabGroups = [
@@ -115,6 +117,9 @@ export function AdminPage() {
   const [pollAction, setPollAction] = useState<'list' | 'create' | 'edit'>(
     'list',
   );
+  const [navCollapsed, setNavCollapsed] = useState<boolean>(
+    () => localStorage.getItem('icaa-admin-nav') === 'collapsed',
+  );
 
   const hash = location.hash.replace('#', '') as AdminTabId;
   const activeTab = adminTabGroups
@@ -127,41 +132,100 @@ export function AdminPage() {
     navigate(`/admin#${value}`, { replace: true });
   };
 
+  const toggleNavCollapsed = () => {
+    setNavCollapsed((prev) => {
+      localStorage.setItem('icaa-admin-nav', prev ? 'expanded' : 'collapsed');
+      return !prev;
+    });
+  };
+
   return (
     <section id="admin" className="admin-section">
       <Tabs
         value={activeTab}
         onValueChange={handleTabChange}
-        className="mx-auto w-full max-w-screen-xl p-4 md:p-6 lg:p-15"
+        className="mx-auto w-full max-w-screen-xl p-4 md:py-6 md:pr-6 md:pl-0"
       >
         <div className="flex flex-col gap-6 md:flex-row">
-          <TabsList className="bg-muted/50 flex h-auto w-full flex-row gap-1 overflow-x-auto rounded-lg p-1 md:sticky md:top-4 md:w-60 md:shrink-0 md:flex-col md:gap-0 md:self-start md:overflow-visible">
-            {adminTabGroups.map((group) => (
-              <div
-                key={group.label}
-                className="flex shrink-0 flex-row gap-1 md:mt-2 md:w-full md:flex-col md:gap-0 md:first:mt-0"
-              >
-                <span className="text-muted-foreground hidden px-3 py-1.5 text-xs font-semibold tracking-wider uppercase md:block">
-                  {group.label}
+          <div
+            className={cn(
+              'md:sticky md:top-0 md:self-start',
+              !navCollapsed && 'md:w-52 md:shrink-0',
+            )}
+          >
+            <div
+              className={cn(
+                'mb-2 hidden items-center md:flex md:pl-3',
+                navCollapsed ? 'md:justify-center' : 'md:justify-between',
+              )}
+            >
+              {!navCollapsed && (
+                <span className="text-muted-foreground px-3 text-xs font-semibold tracking-wider uppercase">
+                  Admin
                 </span>
-                {group.tabs.map((tab) => (
-                  <TabsTrigger
-                    key={tab.id}
-                    value={tab.id}
+              )}
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={toggleNavCollapsed}
+                title={navCollapsed ? 'Show admin menu' : 'Hide admin menu'}
+              >
+                {navCollapsed ? (
+                  <PanelLeftOpen className="h-5 w-5" />
+                ) : (
+                  <PanelLeftClose className="h-5 w-5" />
+                )}
+              </Button>
+            </div>
+            <TabsList
+              className={cn(
+                'bg-muted/50 flex h-auto w-full flex-row justify-start gap-1 overflow-x-auto rounded-lg p-1 md:flex-col md:gap-0 md:overflow-visible md:rounded-none md:rounded-r-lg md:border-r',
+                !navCollapsed && 'md:w-full',
+              )}
+            >
+              {adminTabGroups.map((group) => (
+                <div
+                  key={group.label}
+                  className="flex shrink-0 flex-row gap-1 md:mt-2 md:w-full md:flex-col md:gap-0 md:first:mt-0"
+                >
+                  <span
                     className={cn(
-                      'flex shrink-0 items-center gap-2 px-3 py-2 text-sm font-medium rounded-md transition-all',
-                      'data-[state=active]:bg-background data-[state=active]:text-primary data-[state=active]:shadow-sm',
-                      'data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:text-foreground data-[state=inactive]:hover:bg-muted',
-                      'md:w-full md:justify-start md:px-4 md:py-2.5 md:text-base',
+                      'text-muted-foreground hidden px-3 py-1.5 text-xs font-semibold tracking-wider uppercase',
+                      !navCollapsed && 'md:block',
                     )}
                   >
-                    <tab.icon className="h-4 w-4 shrink-0 md:h-5 md:w-5" />
-                    <span className="whitespace-nowrap">{tab.label}</span>
-                  </TabsTrigger>
-                ))}
-              </div>
-            ))}
-          </TabsList>
+                    {group.label}
+                  </span>
+                  {group.tabs.map((tab) => (
+                    <TabsTrigger
+                      key={tab.id}
+                      value={tab.id}
+                      title={tab.label}
+                      className={cn(
+                        'flex shrink-0 items-center gap-2 px-3 py-2 text-sm font-medium rounded-md transition-all',
+                        'data-[state=active]:bg-background data-[state=active]:text-primary data-[state=active]:shadow-sm',
+                        'data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:text-foreground data-[state=inactive]:hover:bg-muted',
+                        'md:w-full md:px-4 md:py-2.5 md:text-base',
+                        navCollapsed
+                          ? 'md:justify-center md:px-3'
+                          : 'md:justify-start',
+                      )}
+                    >
+                      <tab.icon className="h-4 w-4 shrink-0 md:h-5 md:w-5" />
+                      <span
+                        className={cn(
+                          'whitespace-nowrap',
+                          navCollapsed && 'md:hidden',
+                        )}
+                      >
+                        {tab.label}
+                      </span>
+                    </TabsTrigger>
+                  ))}
+                </div>
+              ))}
+            </TabsList>
+          </div>
           <div className="min-w-0 flex-1">
             <TabsContent value="create-event" className="mt-0">
               <CreateEventForm />
