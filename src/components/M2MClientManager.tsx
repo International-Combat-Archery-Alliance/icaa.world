@@ -1,9 +1,14 @@
 import { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import {
+  useForm,
+  useFieldArray,
+  type Control,
+  type FieldValues,
+} from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { toast } from 'sonner';
-import { Check, Copy, RefreshCw, Trash2 } from 'lucide-react';
+import { Check, Copy, Pencil, Plus, RefreshCw, Trash2 } from 'lucide-react';
 import {
   Card,
   CardContent,
@@ -56,6 +61,7 @@ import {
   useInvalidateM2MClients,
   useRevokeM2MClient,
   useRotateM2MClient,
+  useUpdateM2MClient,
   type M2MClient,
   type M2MClientCredentials,
 } from '@/hooks/useM2MClients';
@@ -64,34 +70,59 @@ const clientIdPattern = /^[a-z0-9-]{1,64}$/;
 const audiencePattern = /^[a-z0-9-]+-api$/;
 const scopePattern = /^m2m:[a-z0-9-]+$/;
 
+const audienceEntrySchema = z.object({
+  audience: z
+    .string()
+    .regex(audiencePattern, 'Must look like <callee>-api (e.g. profiles-api)'),
+  scopes: z.string(),
+});
+
+const audiencesSchema = z
+  .array(audienceEntrySchema)
+  .refine(
+    (rows) =>
+      new Set(rows.map((row) => row.audience.trim())).size === rows.length,
+    'Duplicate audiences are not allowed',
+  );
+
 const clientFormSchema = z.object({
   clientId: z
     .string()
     .regex(clientIdPattern, 'Lowercase letters, digits, and dashes only'),
-  audience: z
-    .string()
-    .regex(audiencePattern, 'Must look like <callee>-api (e.g. profiles-api)'),
-  scopes: z
-    .string()
-    .min(1, 'At least one scope is required')
-    .refine(
-      (value) =>
-        value
-          .split(',')
-          .map((part) => part.trim())
-          .filter((part) => part.length > 0)
-          .every((part) => scopePattern.test(part)),
-      'Comma-separated scopes like m2m:player-profiles',
-    ),
+  audiences: audiencesSchema,
 });
 
 type ClientFormValues = z.infer<typeof clientFormSchema>;
+type AudiencesFormValues = z.infer<typeof audiencesSchema>;
+type AudienceEntry = z.infer<typeof audienceEntrySchema>;
 
 function parseScopes(value: string): string[] {
   return value
     .split(',')
     .map((part) => part.trim())
     .filter((part) => part.length > 0);
+}
+
+function entriesToRecord(entries: AudienceEntry[]): Record<string, string[]> {
+  const record: Record<string, string[]> = {};
+  for (const entry of entries) {
+    record[entry.audience.trim()] = parseScopes(entry.scopes);
+  }
+  return record;
+}
+
+function recordToEntries(
+  record: Record<string, string[]> | undefined,
+): AudienceEntry[] {
+  if (!record) return [];
+  return Object.entries(record).map(([audience, scopes]) => ({
+    audience,
+    scopes: scopes.join(', '),
+  }));
+}
+
+function validateScopesText(value: string): boolean {
+  return parseScopes(value).every((part) => scopePattern.test(part));
 }
 
 function serverMessage(err: unknown, fallback: string): string {
@@ -106,32 +137,119 @@ function serverMessage(err: unknown, fallback: string): string {
   return err instanceof Error ? err.message : fallback;
 }
 
+function AudienceRows<T extends FieldValues>({
+  control,
+}: {
+  control: Control<T>;
+}) {
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: 'audiences' as never,
+  });
+
+  return (
+    <div className="grid gap-3">
+      {fields.map((field, index) => (
+        <div key={field.id} className="flex items-start gap-2">
+          <FormField
+            control={control}
+            name={`audiences.${index}.audience` as never}
+            render={({ field: inputField }) => (
+              <FormItem className="flex-1">
+                <FormControl>
+                  <Input
+                    placeholder="profiles-api"
+                    autoComplete="off"
+                    {...inputField}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={control}
+            name={`audiences.${index}.scopes` as never}
+            render={({ field: inputField }) => (
+              <FormItem className="flex-[2]">
+                <FormControl>
+                  <Input
+                    placeholder="m2m:player-profiles"
+                    autoComplete="off"
+                    {...inputField}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={() => remove(index)}
+            title="Remove audience"
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
+        </div>
+      ))}
+      <div>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={() => append({ audience: '', scopes: '' } as never)}
+        >
+          <Plus className="h-4 w-4" />
+          <span className="ml-1">Add audience</span>
+        </Button>
+      </div>
+    </div>
+  );
+}
+
 function M2MClientManager() {
   const { data, isLoading, isError, refetch } = useGetM2MClients();
   const invalidateM2MClients = useInvalidateM2MClients();
   const createMutation = useCreateM2MClient();
   const rotateMutation = useRotateM2MClient();
   const revokeMutation = useRevokeM2MClient();
+  const updateMutation = useUpdateM2MClient();
 
   const [revealed, setRevealed] = useState<M2MClientCredentials | null>(null);
   const [copied, setCopied] = useState(false);
   const [revokeTarget, setRevokeTarget] = useState<M2MClient | null>(null);
+  const [editingClient, setEditingClient] = useState<M2MClient | null>(null);
   const [actingClientId, setActingClientId] = useState<string | null>(null);
 
   const form = useForm<ClientFormValues>({
     resolver: zodResolver(clientFormSchema),
-    defaultValues: { clientId: '', audience: '', scopes: '' },
+    defaultValues: { clientId: '', audiences: [] },
+  });
+
+  const editForm = useForm<AudiencesFormValues>({
+    resolver: zodResolver(audiencesSchema),
+    values: recordToEntries(editingClient?.audiences),
   });
 
   const clients = data?.clients ?? [];
 
   function onCreate(values: ClientFormValues) {
+    for (const entry of values.audiences) {
+      if (!validateScopesText(entry.scopes)) {
+        form.setError('audiences', {
+          message:
+            'Scopes must look like m2m:player-profiles (comma-separated)',
+        });
+        return;
+      }
+    }
     createMutation.mutate(
       {
         body: {
           clientId: values.clientId,
-          audience: values.audience,
-          scopes: parseScopes(values.scopes),
+          audiences: entriesToRecord(values.audiences),
         },
       },
       {
@@ -192,6 +310,35 @@ function M2MClientManager() {
     );
   }
 
+  function onSaveAudiences(values: AudiencesFormValues) {
+    if (!editingClient) return;
+    for (const entry of values) {
+      if (!validateScopesText(entry.scopes)) {
+        toast.error(
+          'Scopes must look like m2m:player-profiles (comma-separated)',
+        );
+        return;
+      }
+    }
+    const clientId = editingClient.clientId;
+    updateMutation.mutate(
+      {
+        params: { path: { clientId } },
+        body: { audiences: entriesToRecord(values) },
+      },
+      {
+        onSuccess: () => {
+          setEditingClient(null);
+          invalidateM2MClients();
+          toast.success(`Audiences updated for "${clientId}"`);
+        },
+        onError: (err) => {
+          toast.error(serverMessage(err, 'Failed to update audiences'));
+        },
+      },
+    );
+  }
+
   function handleCopySecret() {
     if (!revealed) return;
     void navigator.clipboard.writeText(revealed.clientSecret).then(() => {
@@ -208,9 +355,9 @@ function M2MClientManager() {
         <CardHeader>
           <CardTitle>Create Client</CardTitle>
           <CardDescription>
-            Provisions a machine credential (bcrypt round + metadata). The
-            secret is shown exactly once — copy it immediately, then deliver it
-            to the caller yourself (e.g. its SSM param).
+            Provisions a machine identity (no audiences yet is fine — grant them
+            now or later via Edit). The secret is shown exactly once — copy it
+            immediately, then deliver it to the caller yourself.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -236,46 +383,19 @@ function M2MClientManager() {
                   </FormItem>
                 )}
               />
-              <FormField
-                control={form.control}
-                name="audience"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Audience</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="profiles-api"
-                        autoComplete="off"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      The callee service audience, e.g. profiles-api.
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
+              <div className="grid gap-2">
+                <FormLabel>Audiences</FormLabel>
+                <FormDescription>
+                  One row per downstream service; scopes are comma-separated
+                  (blank scopes authorize nowhere).
+                </FormDescription>
+                <AudienceRows control={form.control} />
+                {form.formState.errors.audiences?.message && (
+                  <p className="text-destructive text-sm">
+                    {String(form.formState.errors.audiences.message)}
+                  </p>
                 )}
-              />
-              <FormField
-                control={form.control}
-                name="scopes"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Scopes</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="m2m:player-profiles"
-                        autoComplete="off"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      Comma-separated for multiple scopes.
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              </div>
               <div>
                 <Button type="submit" disabled={busy}>
                   {createMutation.isPending ? 'Creating…' : 'Create client'}
@@ -290,9 +410,10 @@ function M2MClientManager() {
         <CardHeader>
           <CardTitle>Clients</CardTitle>
           <CardDescription>
-            Rotate issues a new secret (the previous one keeps working until
-            callers recycle). Revoking is immediate for new tokens — roll or
-            recycle callers afterwards since they cache the secret at startup.
+            Edit replaces the whole audiences map. Rotate issues a new secret
+            (the previous one keeps working until you deliver the new secret and
+            recycle callers). Revoking is immediate for new tokens — remove the
+            caller's copy of the secret and recycle callers afterwards.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -321,8 +442,7 @@ function M2MClientManager() {
               <TableHeader>
                 <TableRow>
                   <TableHead>Client</TableHead>
-                  <TableHead>Audience</TableHead>
-                  <TableHead>Scopes</TableHead>
+                  <TableHead>Audiences</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
@@ -333,17 +453,30 @@ function M2MClientManager() {
                     <TableCell className="font-mono text-sm">
                       {client.clientId}
                     </TableCell>
-                    <TableCell className="font-mono text-sm">
-                      {client.audience}
-                    </TableCell>
                     <TableCell>
-                      <div className="flex flex-wrap gap-1">
-                        {client.scopes.map((scope) => (
-                          <Badge key={scope} variant="secondary">
-                            {scope}
-                          </Badge>
-                        ))}
-                      </div>
+                      {Object.keys(client.audiences ?? {}).length === 0 ? (
+                        <span className="text-muted-foreground text-sm">—</span>
+                      ) : (
+                        <div className="grid gap-1">
+                          {Object.entries(client.audiences ?? {}).map(
+                            ([audience, scopes]) => (
+                              <div
+                                key={audience}
+                                className="flex flex-wrap items-center gap-1"
+                              >
+                                <span className="font-mono text-sm">
+                                  {audience}
+                                </span>
+                                {scopes.map((scope) => (
+                                  <Badge key={scope} variant="secondary">
+                                    {scope}
+                                  </Badge>
+                                ))}
+                              </div>
+                            ),
+                          )}
+                        </div>
+                      )}
                     </TableCell>
                     <TableCell>
                       <Badge variant={client.active ? 'default' : 'outline'}>
@@ -355,9 +488,19 @@ function M2MClientManager() {
                         <Button
                           variant="outline"
                           size="sm"
+                          disabled={busy}
+                          onClick={() => setEditingClient(client)}
+                          title="Edit audiences"
+                        >
+                          <Pencil className="h-4 w-4" />
+                          <span className="ml-1 hidden lg:inline">Edit</span>
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
                           disabled={busy || !client.active}
                           onClick={() => onRotate(client.clientId)}
-                          title="Issue a new secret (old one keeps working until callers recycle)"
+                          title="Issue a new secret (old one keeps working until you deliver the new secret)"
                         >
                           <RefreshCw className="h-4 w-4" />
                           <span className="ml-1 hidden lg:inline">
@@ -385,6 +528,49 @@ function M2MClientManager() {
           )}
         </CardContent>
       </Card>
+
+      <Dialog
+        open={editingClient !== null}
+        onOpenChange={(open) => {
+          if (!open) setEditingClient(null);
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Audiences for {editingClient?.clientId}</DialogTitle>
+            <DialogDescription>
+              Replaces the whole map — entries you remove lose access. Secrets
+              are untouched.
+            </DialogDescription>
+          </DialogHeader>
+          <Form {...editForm}>
+            <form
+              onSubmit={editForm.handleSubmit(onSaveAudiences)}
+              className="grid gap-4"
+            >
+              <AudienceRows control={editForm.control} />
+              {typeof editForm.formState.errors.audiences?.message ===
+                'string' && (
+                <p className="text-destructive text-sm">
+                  {editForm.formState.errors.audiences.message}
+                </p>
+              )}
+              <DialogFooter>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setEditingClient(null)}
+                >
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={updateMutation.isPending}>
+                  {updateMutation.isPending ? 'Saving…' : 'Save'}
+                </Button>
+              </DialogFooter>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
 
       <Dialog
         open={revealed !== null}
@@ -434,8 +620,8 @@ function M2MClientManager() {
             </AlertDialogTitle>
             <AlertDialogDescription>
               New tokens stop immediately, but callers cache the secret at
-              startup — remove or replace the caller's copy of the secret, then
-              roll or recycle them. Revocation is permanent via this API.
+              startup — remove the caller's copy of the secret, then roll or
+              recycle them. Revocation is permanent via this API.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

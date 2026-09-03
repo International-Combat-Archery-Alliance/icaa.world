@@ -52,6 +52,14 @@ export function useRevokeM2MClient() {
   });
 }
 
+export function useUpdateM2MClient() {
+  const client = useLoginQueryClient();
+
+  return client.useMutation('patch', '/login/v1/m2m-clients/{clientId}', {
+    credentials: 'include',
+  });
+}
+
 export function useInvalidateM2MClients() {
   const tanstackClient = useQueryClient();
 

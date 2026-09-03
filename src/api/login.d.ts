@@ -102,7 +102,7 @@ export interface paths {
         post?: never;
         /**
          * Logs the user out
-         * @description For cookie based auth, deletes the cookies and revokes the refresh token, effectively logging the user out.
+         * @description Deletes the cookies and revokes the refresh token when its cookie is presented, effectively logging the user out.
          */
         delete: {
             parameters: {
@@ -190,11 +190,14 @@ export interface paths {
         put?: never;
         /**
          * Exchanges machine client credentials for a short-lived JWT
-         * @description Client-credentials exchange for service-to-service authentication. The machine client authenticates with HTTP Basic auth (Authorization: Basic base64(clientId:clientSecret)). On success a 5-minute RS256 machine JWT is returned. Internet-facing and rate limited (DynamoDB fixed-window counter); 429 is returned when throttled.
+         * @description Client-credentials exchange for service-to-service authentication. The machine client authenticates with HTTP Basic auth (Authorization: Basic base64(clientId:clientSecret)) and requests a token for one of its provisioned audiences. On success a 5-minute RS256 machine JWT is returned, bound to that audience with the exact scopes provisioned for it. Internet-facing and rate limited (DynamoDB fixed-window counter); 429 is returned when throttled.
          */
         post: {
             parameters: {
-                query?: never;
+                query: {
+                    /** @description Target audience — must be one of the client's provisioned audiences. */
+                    audience: string;
+                };
                 header: {
                     /** @description HTTP Basic credentials - base64(clientId:clientSecret). */
                     Authorization: string;
@@ -213,7 +216,7 @@ export interface paths {
                         "application/json": components["schemas"]["AccessToken"];
                     };
                 };
-                /** @description Missing or malformed Basic credentials */
+                /** @description Missing or malformed Basic credentials or audience */
                 400: {
                     headers: {
                         [name: string]: unknown;
@@ -222,7 +225,7 @@ export interface paths {
                         "application/json": components["schemas"]["Error"];
                     };
                 };
-                /** @description Unknown clientId or invalid clientSecret (invalid_client) */
+                /** @description Unknown clientId, invalid clientSecret, or audience not provisioned for the client (invalid_client) */
                 401: {
                     headers: {
                         [name: string]: unknown;
@@ -266,7 +269,7 @@ export interface paths {
         };
         /**
          * Lists provisioned machine clients (metadata only)
-         * @description Admin-only list of machine clients (clientId, audience, scopes, active). Secrets are never retrievable. Backed by a GSI query on a constant partition key — no table scan.
+         * @description Admin-only list of machine clients (clientId, audiences, active). Secrets are never retrievable.
          */
         get: {
             parameters: {
@@ -295,7 +298,7 @@ export interface paths {
                         "application/json": components["schemas"]["Error"];
                     };
                 };
-                /** @description Internal error (e.g. failed to query clients) */
+                /** @description Internal error */
                 500: {
                     headers: {
                         [name: string]: unknown;
@@ -309,7 +312,7 @@ export interface paths {
         put?: never;
         /**
          * Provisions a new machine client credential
-         * @description Generates a 32-byte CSPRNG clientSecret (base64url, shown exactly once) and stores bcrypt(cost 10) in the CLIENT#<clientId> secretRounds[]. This API never distributes the secret: delivering it to the caller (e.g. writing its SSM param) is an explicit operator step. 409 if the clientId already exists (including revoked records).
+         * @description Generates a clientSecret, shown exactly once. This API never distributes the secret: delivering it to the caller is an explicit operator step. 409 if the clientId already exists (including revoked records).
          */
         post: {
             parameters: {
@@ -333,7 +336,7 @@ export interface paths {
                         "application/json": components["schemas"]["M2MClientCredentials"];
                     };
                 };
-                /** @description Invalid clientId/audience/scopes */
+                /** @description Invalid clientId or audiences */
                 400: {
                     headers: {
                         [name: string]: unknown;
@@ -360,7 +363,7 @@ export interface paths {
                         "application/json": components["schemas"]["Error"];
                     };
                 };
-                /** @description Internal error (e.g. failed to write the client record) */
+                /** @description Internal error */
                 500: {
                     headers: {
                         [name: string]: unknown;
@@ -389,7 +392,7 @@ export interface paths {
         post?: never;
         /**
          * Revokes a machine client credential
-         * @description Soft-deactivates the CLIENT#<clientId> record (active=false). This API never touches caller-side secret storage: after revoking, remove or replace the caller's copy of the secret and roll/recycle callers (they cache it at startup). Outstanding tokens expire within 5 minutes. Revocation is permanent via this API.
+         * @description Marks the client revoked (visible as active=false in the list). This API never touches caller-side secret storage: after revoking, remove or replace the caller's copy of the secret and roll/recycle callers (they cache it at startup). Outstanding tokens expire within 5 minutes. Revocation is permanent via this API.
          */
         delete: {
             parameters: {
@@ -412,7 +415,67 @@ export interface paths {
                         "application/json": components["schemas"]["M2MClient"];
                     };
                 };
-                /** @description Invalid clientId */
+                /** @description Missing/invalid auth or non-admin caller */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unknown clientId */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Internal error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /**
+         * Replaces a machine client's audiences
+         * @description Replaces the complete audiences-to-scopes map of a machine client; entries omitted here are removed (use {} to strip all access). Secrets are untouched — rotation still goes through .../rotate, and exchanges for revoked clients keep failing regardless of metadata. Applies to active and revoked clients alike.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description Machine client id. */
+                    clientId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["UpdateM2MClientRequest"];
+                };
+            };
+            responses: {
+                /** @description Updated client record */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["M2MClient"];
+                    };
+                };
+                /** @description Invalid clientId, empty body, or bad audience/scopes */
                 400: {
                     headers: {
                         [name: string]: unknown;
@@ -450,9 +513,6 @@ export interface paths {
                 };
             };
         };
-        options?: never;
-        head?: never;
-        patch?: never;
         trace?: never;
     };
     "/login/v1/m2m-clients/{clientId}/rotate": {
@@ -466,7 +526,7 @@ export interface paths {
         put?: never;
         /**
          * Rotates a machine client secret
-         * @description Generates a new 32-byte CSPRNG clientSecret (base64url, shown exactly once) and prepends its bcrypt(cost 10) round to secretRounds[] (trimmed to the newest 2 so the previous secret keeps working until the operator delivers the new secret and recycles callers). Delivering the new secret to the caller is an explicit operator step.
+         * @description Issues a new clientSecret, shown exactly once. The previous secret keeps working until the operator delivers the new secret and recycles callers. Delivering the new secret to the caller is an explicit operator step.
          */
         post: {
             parameters: {
@@ -487,15 +547,6 @@ export interface paths {
                     };
                     content: {
                         "application/json": components["schemas"]["M2MClientCredentials"];
-                    };
-                };
-                /** @description Invalid clientId */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
                     };
                 };
                 /** @description Missing/invalid auth or non-admin caller */
@@ -525,7 +576,7 @@ export interface paths {
                         "application/json": components["schemas"]["Error"];
                     };
                 };
-                /** @description Internal error (e.g. failed to write the client record) */
+                /** @description Internal error */
                 500: {
                     headers: {
                         [name: string]: unknown;
@@ -551,7 +602,7 @@ export interface paths {
         };
         /**
          * Returns the JSON Web Key Set for ICAA token verification
-         * @description Serves the RSA public keys (RFC 7517 JWK Set) used to verify ICAA JWTs, keyed by kid (currently machine-*; user-* reserved for ADR-0007).
+         * @description Serves the RSA public keys (RFC 7517 JWK Set) used to verify ICAA JWTs, keyed by kid (machine-* for service tokens, user-* for user tokens).
          */
         get: {
             parameters: {
@@ -629,16 +680,16 @@ export interface components {
             /** @example event-registration */
             clientId: string;
             /**
-             * @description Per-callee audience (<callee>-api), never the global icaa-api.
-             * @example profiles-api
+             * @description Provisioned audiences mapped to their exact scopes. An audience with no scopes (or no audiences at all) authenticates but authorizes nowhere.
+             * @example {
+             *       "profiles-api": [
+             *         "m2m:player-profiles"
+             *       ]
+             *     }
              */
-            audience: string;
-            /**
-             * @example [
-             *       "m2m:player-profiles"
-             *     ]
-             */
-            scopes: string[];
+            audiences: {
+                [key: string]: string[];
+            };
             /** @description False once revoked (DELETE). Revoked clients fail the exchange with 401. */
             active: boolean;
         };
@@ -647,23 +698,37 @@ export interface components {
             /** @example event-registration */
             clientId: string;
             /**
-             * @description Per-callee audience (<callee>-api).
-             * @example profiles-api
+             * @description Provisioned audiences mapped to their exact scopes. May be empty to provision an identity before its scopes exist.
+             * @example {
+             *       "profiles-api": [
+             *         "m2m:player-profiles"
+             *       ]
+             *     }
              */
-            audience: string;
-            /**
-             * @example [
-             *       "m2m:player-profiles"
-             *     ]
-             */
-            scopes: string[];
+            audiences: {
+                [key: string]: string[];
+            };
         };
         /** @description A machine client id plus its plaintext secret. The secret is returned exactly once on create/rotate — it is never logged and never retrievable again. */
         M2MClientCredentials: {
             /** @example event-registration */
             clientId: string;
-            /** @description Base64url-encoded 32-byte CSPRNG secret. Shown exactly once. */
+            /** @description The plaintext secret. Shown exactly once. */
             clientSecret: string;
+        };
+        /** @description Full replacement of a machine client's audiences map (secrets untouched). */
+        UpdateM2MClientRequest: {
+            /**
+             * @description Complete new audiences-to-scopes map; entries omitted here are removed.
+             * @example {
+             *       "profiles-api": [
+             *         "m2m:player-profiles"
+             *       ]
+             *     }
+             */
+            audiences: {
+                [key: string]: string[];
+            };
         };
         /** @description Admin list of provisioned machine clients (metadata only). */
         M2MClientList: {
@@ -673,7 +738,7 @@ export interface components {
         JWKS: {
             keys: components["schemas"]["JWK"][];
         };
-        /** @description RSA public key (RFC 7517), kid namespaced machine-* (user-* reserved for ADR-0007). */
+        /** @description RSA public key (RFC 7517), kid namespaced machine-* (service tokens) or user-* (user tokens). */
         JWK: {
             /** @enum {string} */
             kty: "RSA";
