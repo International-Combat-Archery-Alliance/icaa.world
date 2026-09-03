@@ -69,18 +69,36 @@ import {
   KeyRound,
 } from 'lucide-react';
 
-const adminTabs = [
-  { id: 'create-event', label: 'Create Event', icon: CalendarPlus },
-  { id: 'edit-event', label: 'Edit Event', icon: CalendarCog },
-  { id: 'view-registration', label: 'View Registration', icon: Users },
-  { id: 'assets', label: 'Assets', icon: FolderOpen },
-  { id: 'articles', label: 'Articles', icon: FileText },
-  { id: 'donations', label: 'Donations', icon: Heart },
-  { id: 'polls', label: 'Polls', icon: Vote },
-  { id: 'm2m-clients', label: 'M2M Clients', icon: KeyRound },
+const adminTabGroups = [
+  {
+    label: 'Events',
+    tabs: [
+      { id: 'create-event', label: 'Create Event', icon: CalendarPlus },
+      { id: 'edit-event', label: 'Edit Event', icon: CalendarCog },
+      { id: 'view-registration', label: 'View Registration', icon: Users },
+    ],
+  },
+  {
+    label: 'Content',
+    tabs: [
+      { id: 'assets', label: 'Assets', icon: FolderOpen },
+      { id: 'articles', label: 'Articles', icon: FileText },
+    ],
+  },
+  {
+    label: 'Engagement',
+    tabs: [
+      { id: 'donations', label: 'Donations', icon: Heart },
+      { id: 'polls', label: 'Polls', icon: Vote },
+    ],
+  },
+  {
+    label: 'System',
+    tabs: [{ id: 'm2m-clients', label: 'M2M Clients', icon: KeyRound }],
+  },
 ] as const;
 
-type AdminTabId = (typeof adminTabs)[number]['id'];
+type AdminTabId = (typeof adminTabGroups)[number]['tabs'][number]['id'];
 
 export function AdminPage() {
   useTitle('Admin Panel - ICAA');
@@ -99,7 +117,9 @@ export function AdminPage() {
   );
 
   const hash = location.hash.replace('#', '') as AdminTabId;
-  const activeTab = adminTabs.find((tab) => tab.id === hash)
+  const activeTab = adminTabGroups
+    .flatMap((group) => group.tabs)
+    .find((tab) => tab.id === hash)
     ? hash
     : 'create-event';
 
@@ -115,21 +135,31 @@ export function AdminPage() {
         className="mx-auto w-full max-w-screen-xl p-4 md:p-6 lg:p-15"
       >
         <div className="flex flex-col gap-6 md:flex-row">
-          <TabsList className="bg-muted/50 flex h-auto w-full flex-row gap-1 overflow-x-auto rounded-lg p-1 md:sticky md:top-4 md:w-60 md:shrink-0 md:flex-col md:self-start md:overflow-visible">
-            {adminTabs.map((tab) => (
-              <TabsTrigger
-                key={tab.id}
-                value={tab.id}
-                className={cn(
-                  'flex shrink-0 items-center gap-2 px-3 py-2 text-sm font-medium rounded-md transition-all',
-                  'data-[state=active]:bg-background data-[state=active]:text-primary data-[state=active]:shadow-sm',
-                  'data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:text-foreground data-[state=inactive]:hover:bg-muted',
-                  'md:w-full md:justify-start md:px-4 md:py-2.5 md:text-base',
-                )}
+          <TabsList className="bg-muted/50 flex h-auto w-full flex-row gap-1 overflow-x-auto rounded-lg p-1 md:sticky md:top-4 md:w-60 md:shrink-0 md:flex-col md:gap-0 md:self-start md:overflow-visible">
+            {adminTabGroups.map((group) => (
+              <div
+                key={group.label}
+                className="flex shrink-0 flex-row gap-1 md:mt-2 md:w-full md:flex-col md:gap-0 md:first:mt-0"
               >
-                <tab.icon className="h-4 w-4 shrink-0 md:h-5 md:w-5" />
-                <span className="whitespace-nowrap">{tab.label}</span>
-              </TabsTrigger>
+                <span className="text-muted-foreground hidden px-3 py-1.5 text-xs font-semibold tracking-wider uppercase md:block">
+                  {group.label}
+                </span>
+                {group.tabs.map((tab) => (
+                  <TabsTrigger
+                    key={tab.id}
+                    value={tab.id}
+                    className={cn(
+                      'flex shrink-0 items-center gap-2 px-3 py-2 text-sm font-medium rounded-md transition-all',
+                      'data-[state=active]:bg-background data-[state=active]:text-primary data-[state=active]:shadow-sm',
+                      'data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:text-foreground data-[state=inactive]:hover:bg-muted',
+                      'md:w-full md:justify-start md:px-4 md:py-2.5 md:text-base',
+                    )}
+                  >
+                    <tab.icon className="h-4 w-4 shrink-0 md:h-5 md:w-5" />
+                    <span className="whitespace-nowrap">{tab.label}</span>
+                  </TabsTrigger>
+                ))}
+              </div>
             ))}
           </TabsList>
           <div className="min-w-0 flex-1">
