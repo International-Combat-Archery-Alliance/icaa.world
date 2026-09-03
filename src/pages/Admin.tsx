@@ -69,18 +69,36 @@ import {
   KeyRound,
 } from 'lucide-react';
 
-const adminTabs = [
-  { id: 'create-event', label: 'Create Event', icon: CalendarPlus },
-  { id: 'edit-event', label: 'Edit Event', icon: CalendarCog },
-  { id: 'view-registration', label: 'View Registration', icon: Users },
-  { id: 'assets', label: 'Assets', icon: FolderOpen },
-  { id: 'articles', label: 'Articles', icon: FileText },
-  { id: 'donations', label: 'Donations', icon: Heart },
-  { id: 'polls', label: 'Polls', icon: Vote },
-  { id: 'm2m-clients', label: 'M2M Clients', icon: KeyRound },
+const adminTabGroups = [
+  {
+    label: 'Events',
+    tabs: [
+      { id: 'create-event', label: 'Create Event', icon: CalendarPlus },
+      { id: 'edit-event', label: 'Edit Event', icon: CalendarCog },
+      { id: 'view-registration', label: 'View Registration', icon: Users },
+    ],
+  },
+  {
+    label: 'Content',
+    tabs: [
+      { id: 'assets', label: 'Assets', icon: FolderOpen },
+      { id: 'articles', label: 'Articles', icon: FileText },
+    ],
+  },
+  {
+    label: 'Engagement',
+    tabs: [
+      { id: 'donations', label: 'Donations', icon: Heart },
+      { id: 'polls', label: 'Polls', icon: Vote },
+    ],
+  },
+  {
+    label: 'System',
+    tabs: [{ id: 'm2m-clients', label: 'M2M Clients', icon: KeyRound }],
+  },
 ] as const;
 
-type AdminTabId = (typeof adminTabs)[number]['id'];
+type AdminTabId = (typeof adminTabGroups)[number]['tabs'][number]['id'];
 
 export function AdminPage() {
   useTitle('Admin Panel - ICAA');
@@ -99,7 +117,9 @@ export function AdminPage() {
   );
 
   const hash = location.hash.replace('#', '') as AdminTabId;
-  const activeTab = adminTabs.find((tab) => tab.id === hash)
+  const activeTab = adminTabGroups
+    .flatMap((group) => group.tabs)
+    .find((tab) => tab.id === hash)
     ? hash
     : 'create-event';
 
@@ -112,129 +132,140 @@ export function AdminPage() {
       <Tabs
         value={activeTab}
         onValueChange={handleTabChange}
-        className="mx-auto w-full max-w-screen-lg p-4 md:p-6 lg:p-15"
+        className="mx-auto w-full max-w-screen-xl p-4 md:p-6 lg:p-15"
       >
-        <TabsList className="bg-muted/50 mb-6 flex h-auto w-full flex-wrap justify-start gap-1 rounded-lg p-1">
-          {adminTabs.map((tab) => (
-            <TabsTrigger
-              key={tab.id}
-              value={tab.id}
-              className={cn(
-                'flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md transition-all',
-                'data-[state=active]:bg-background data-[state=active]:text-primary data-[state=active]:shadow-sm',
-                'data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:text-foreground data-[state=inactive]:hover:bg-muted',
-                'md:px-4 md:py-2.5 md:text-base',
-              )}
-            >
-              <tab.icon className="h-4 w-4 md:h-5 md:w-5" />
-              <span className="hidden sm:inline">{tab.label}</span>
-              <span className="text-xs sm:hidden">
-                {tab.label.split(' ')[0]}
-              </span>
-            </TabsTrigger>
-          ))}
-        </TabsList>
-        <TabsContent value="create-event" className="mt-0">
-          <CreateEventForm />
-        </TabsContent>
-        <TabsContent value="edit-event" className="mt-0">
-          <UpdateEventForm />
-        </TabsContent>
-        <TabsContent value="view-registration" className="mt-0">
-          <Card>
-            <CardHeader>
-              <CardTitle>View Registration Info</CardTitle>
-              <CardDescription>
-                Select an event to view the registration
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid gap-6">
-                <SelectEvent setEventId={setEventId} />
-                <SignUpInfoCards eventId={eventId} />
-                <EventRegistrationTable eventId={eventId} />
+        <div className="flex flex-col gap-6 md:flex-row">
+          <TabsList className="bg-muted/50 flex h-auto w-full flex-row gap-1 overflow-x-auto rounded-lg p-1 md:sticky md:top-4 md:w-60 md:shrink-0 md:flex-col md:gap-0 md:self-start md:overflow-visible">
+            {adminTabGroups.map((group) => (
+              <div
+                key={group.label}
+                className="flex shrink-0 flex-row gap-1 md:mt-2 md:w-full md:flex-col md:gap-0 md:first:mt-0"
+              >
+                <span className="text-muted-foreground hidden px-3 py-1.5 text-xs font-semibold tracking-wider uppercase md:block">
+                  {group.label}
+                </span>
+                {group.tabs.map((tab) => (
+                  <TabsTrigger
+                    key={tab.id}
+                    value={tab.id}
+                    className={cn(
+                      'flex shrink-0 items-center gap-2 px-3 py-2 text-sm font-medium rounded-md transition-all',
+                      'data-[state=active]:bg-background data-[state=active]:text-primary data-[state=active]:shadow-sm',
+                      'data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:text-foreground data-[state=inactive]:hover:bg-muted',
+                      'md:w-full md:justify-start md:px-4 md:py-2.5 md:text-base',
+                    )}
+                  >
+                    <tab.icon className="h-4 w-4 shrink-0 md:h-5 md:w-5" />
+                    <span className="whitespace-nowrap">{tab.label}</span>
+                  </TabsTrigger>
+                ))}
               </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-        <TabsContent value="assets" className="mt-0">
-          <Card>
-            <CardHeader>
-              <CardTitle>Asset Management</CardTitle>
-              <CardDescription>
-                Upload and manage files and folders
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <AssetBrowser />
-            </CardContent>
-          </Card>
-        </TabsContent>
-        <TabsContent value="articles" className="mt-0">
-          {editingArticle === undefined && (
-            <ArticleList
-              onEdit={(article: Article) => setEditingArticle(article)}
-              onNew={() => setEditingArticle(null)}
-            />
-          )}
-          {editingArticle !== undefined && (
-            <Card key={editingArticle?.slug ?? 'new'}>
-              <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle>
-                  {editingArticle
-                    ? `Edit: ${editingArticle.title}`
-                    : 'New Article'}
-                </CardTitle>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setEditingArticle(undefined)}
-                >
-                  Back to List
-                </Button>
-              </CardHeader>
-              <CardContent>
-                <ArticleEditor
-                  article={editingArticle ?? undefined}
-                  isNew={editingArticle === null}
-                  onDelete={() => setEditingArticle(undefined)}
+            ))}
+          </TabsList>
+          <div className="min-w-0 flex-1">
+            <TabsContent value="create-event" className="mt-0">
+              <CreateEventForm />
+            </TabsContent>
+            <TabsContent value="edit-event" className="mt-0">
+              <UpdateEventForm />
+            </TabsContent>
+            <TabsContent value="view-registration" className="mt-0">
+              <Card>
+                <CardHeader>
+                  <CardTitle>View Registration Info</CardTitle>
+                  <CardDescription>
+                    Select an event to view the registration
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid gap-6">
+                    <SelectEvent setEventId={setEventId} />
+                    <SignUpInfoCards eventId={eventId} />
+                    <EventRegistrationTable eventId={eventId} />
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+            <TabsContent value="assets" className="mt-0">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Asset Management</CardTitle>
+                  <CardDescription>
+                    Upload and manage files and folders
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <AssetBrowser />
+                </CardContent>
+              </Card>
+            </TabsContent>
+            <TabsContent value="articles" className="mt-0">
+              {editingArticle === undefined && (
+                <ArticleList
+                  onEdit={(article: Article) => setEditingArticle(article)}
+                  onNew={() => setEditingArticle(null)}
                 />
-              </CardContent>
-            </Card>
-          )}
-        </TabsContent>
-        <TabsContent value="donations" className="mt-0">
-          <div className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Filter Donations</CardTitle>
-                <CardDescription>
-                  Select a date range to filter donations
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <DateRangePicker
-                  dateRange={donationDateRange}
-                  onDateRangeChange={setDonationDateRange}
-                  placeholder="Filter by date range"
-                />
-              </CardContent>
-            </Card>
-            <DonationList dateRange={donationDateRange} />
-            <DonationByState dateRange={donationDateRange} />
+              )}
+              {editingArticle !== undefined && (
+                <Card key={editingArticle?.slug ?? 'new'}>
+                  <CardHeader className="flex flex-row items-center justify-between">
+                    <CardTitle>
+                      {editingArticle
+                        ? `Edit: ${editingArticle.title}`
+                        : 'New Article'}
+                    </CardTitle>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setEditingArticle(undefined)}
+                    >
+                      Back to List
+                    </Button>
+                  </CardHeader>
+                  <CardContent>
+                    <ArticleEditor
+                      article={editingArticle ?? undefined}
+                      isNew={editingArticle === null}
+                      onDelete={() => setEditingArticle(undefined)}
+                    />
+                  </CardContent>
+                </Card>
+              )}
+            </TabsContent>
+            <TabsContent value="donations" className="mt-0">
+              <div className="space-y-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Filter Donations</CardTitle>
+                    <CardDescription>
+                      Select a date range to filter donations
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <DateRangePicker
+                      dateRange={donationDateRange}
+                      onDateRangeChange={setDonationDateRange}
+                      placeholder="Filter by date range"
+                    />
+                  </CardContent>
+                </Card>
+                <DonationList dateRange={donationDateRange} />
+                <DonationByState dateRange={donationDateRange} />
+              </div>
+            </TabsContent>
+            <TabsContent value="polls" className="mt-0">
+              <PollManager
+                action={pollAction}
+                editingPoll={editingPoll}
+                onActionChange={setPollAction}
+                onEditPoll={setEditingPoll}
+              />
+            </TabsContent>
+            <TabsContent value="m2m-clients" className="mt-0">
+              <M2MClientManager />
+            </TabsContent>
           </div>
-        </TabsContent>
-        <TabsContent value="polls" className="mt-0">
-          <PollManager
-            action={pollAction}
-            editingPoll={editingPoll}
-            onActionChange={setPollAction}
-            onEditPoll={setEditingPoll}
-          />
-        </TabsContent>
-        <TabsContent value="m2m-clients" className="mt-0">
-          <M2MClientManager />
-        </TabsContent>
+        </div>
       </Tabs>
     </section>
   );
