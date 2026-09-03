@@ -158,6 +158,7 @@ function AudienceRows<T extends FieldValues>({
               <FormItem className="flex-1">
                 <FormControl>
                   <Input
+                    className="bg-white"
                     placeholder="profiles-api"
                     autoComplete="off"
                     {...inputField}
@@ -174,6 +175,7 @@ function AudienceRows<T extends FieldValues>({
               <FormItem className="flex-[2]">
                 <FormControl>
                   <Input
+                    className="bg-white"
                     placeholder="m2m:player-profiles"
                     autoComplete="off"
                     {...inputField}
@@ -371,6 +373,7 @@ function M2MClientManager() {
                     <FormLabel>Client ID</FormLabel>
                     <FormControl>
                       <Input
+                        className="bg-white"
                         placeholder="event-registration"
                         autoComplete="off"
                         {...field}
@@ -587,7 +590,11 @@ function M2MClientManager() {
             </DialogDescription>
           </DialogHeader>
           <div className="flex items-center gap-2">
-            <Input readOnly value={revealed?.clientSecret ?? ''} />
+            <Input
+              className="bg-white"
+              readOnly
+              value={revealed?.clientSecret ?? ''}
+            />
             <Button
               variant="outline"
               size="sm"
