@@ -4,6 +4,26 @@
  */
 
 export interface paths {
+    "/login/.well-known/jwks.json": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Returns the JSON Web Key Set for ICAA token verification
+         * @description Serves the RSA public keys (RFC 7517 JWK Set) used to verify ICAA JWTs, keyed by kid (machine-* for service tokens, user-* for user tokens).
+         */
+        get: operations["GetLoginWellKnownJwksJson"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/login/google": {
         parameters: {
             query?: never;
@@ -14,116 +34,8 @@ export interface paths {
         get?: never;
         put?: never;
         /** Logs in and returns the auth cookie */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            /** @description The Google JWT to log in with */
-            requestBody: {
-                content: {
-                    "application/json": {
-                        googleJWT: string;
-                    };
-                };
-            };
-            responses: {
-                /** @description Auth successful. The access and refresh tokens are returned in cookies named `ICAA_ACCESS_TOKEN` and `ICAA_REFRESH_TOKEN`. */
-                200: {
-                    headers: {
-                        /** @description The ICAA auth token cookies. */
-                        "Set-Cookie"?: string;
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["UserInfo"];
-                    };
-                };
-                /** @description Unauthorized. */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-            };
-        };
+        post: operations["PostLoginGoogle"];
         delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/login/session": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Returns info about the current session/user
-         * @description Returns information about the currently logged in user.
-         */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description User info */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["UserInfo"];
-                    };
-                };
-                /** @description Unauthorized. */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        /**
-         * Logs the user out
-         * @description Deletes the cookies and revokes the refresh token when its cookie is presented, effectively logging the user out.
-         */
-        delete: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description User logged out */
-                200: {
-                    headers: {
-                        /** @description Tells the browser to delete the cookies. */
-                        "Set-Cookie"?: string;
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-            };
-        };
         options?: never;
         head?: never;
         patch?: never;
@@ -142,119 +54,32 @@ export interface paths {
          * Refreshes the access token using a refresh token
          * @description Uses the refresh token cookie to generate a new access token. The old refresh token is invalidated and a new one is issued (token rotation).
          */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Token refresh successful */
-                200: {
-                    headers: {
-                        /** @description New access and refresh token cookies. */
-                        "Set-Cookie"?: string;
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["UserInfo"];
-                    };
-                };
-                /** @description Unauthorized - invalid or expired refresh token */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-            };
-        };
+        post: operations["PostLoginRefresh"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/login/v1/m2m-tokens": {
+    "/login/session": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        get?: never;
-        put?: never;
         /**
-         * Exchanges machine client credentials for a short-lived JWT
-         * @description Client-credentials exchange for service-to-service authentication. The machine client authenticates with HTTP Basic auth (Authorization: Basic base64(clientId:clientSecret)) and requests a token for one of its provisioned audiences. On success a 5-minute RS256 machine JWT is returned, bound to that audience with the exact scopes provisioned for it. Internet-facing and rate limited (DynamoDB fixed-window counter); 429 is returned when throttled.
+         * Returns info about the current session/user
+         * @description Returns information about the currently logged in user.
          */
-        post: {
-            parameters: {
-                query: {
-                    /** @description Target audience — must be one of the client's provisioned audiences. */
-                    audience: string;
-                };
-                header: {
-                    /** @description HTTP Basic credentials - base64(clientId:clientSecret). */
-                    Authorization: string;
-                };
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Machine token issued */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["AccessToken"];
-                    };
-                };
-                /** @description Missing or malformed Basic credentials or audience */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                /** @description Unknown clientId, invalid clientSecret, or audience not provisioned for the client (invalid_client) */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                /** @description Rate limited or locked out */
-                429: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                /** @description Internal error (e.g. failed to load signing keys) */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-            };
-        };
-        delete?: never;
+        get: operations["GetLoginSession"];
+        put?: never;
+        post?: never;
+        /**
+         * Logs the user out
+         * @description Deletes the cookies and revokes the refresh token when its cookie is presented, effectively logging the user out.
+         */
+        delete: operations["DeleteLoginSession"];
         options?: never;
         head?: never;
         patch?: never;
@@ -271,109 +96,13 @@ export interface paths {
          * Lists provisioned machine clients (metadata only)
          * @description Admin-only list of machine clients (clientId, audiences, active). Secrets are never retrievable.
          */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Client list */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["M2MClientList"];
-                    };
-                };
-                /** @description Missing/invalid auth or non-admin caller */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                /** @description Internal error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-            };
-        };
+        get: operations["GetLoginV1M2mClients"];
         put?: never;
         /**
          * Provisions a new machine client credential
          * @description Generates a clientSecret, shown exactly once. This API never distributes the secret: delivering it to the caller is an explicit operator step. 409 if the clientId already exists (including revoked records).
          */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["CreateM2MClientRequest"];
-                };
-            };
-            responses: {
-                /** @description Client provisioned (secret is shown exactly once) */
-                201: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["M2MClientCredentials"];
-                    };
-                };
-                /** @description Invalid clientId or audiences */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                /** @description Missing/invalid auth or non-admin caller */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                /** @description clientId already exists */
-                409: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                /** @description Internal error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-            };
-        };
+        post: operations["PostLoginV1M2mClients"];
         delete?: never;
         options?: never;
         head?: never;
@@ -394,125 +123,14 @@ export interface paths {
          * Revokes a machine client credential
          * @description Marks the client revoked (visible as active=false in the list). This API never touches caller-side secret storage: after revoking, remove or replace the caller's copy of the secret and roll/recycle callers (they cache it at startup). Outstanding tokens expire within 5 minutes. Revocation is permanent via this API.
          */
-        delete: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    /** @description Machine client id. */
-                    clientId: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Revoked client record */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["M2MClient"];
-                    };
-                };
-                /** @description Missing/invalid auth or non-admin caller */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                /** @description Unknown clientId */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                /** @description Internal error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-            };
-        };
+        delete: operations["DeleteLoginV1M2mClientsClientId"];
         options?: never;
         head?: never;
         /**
          * Replaces a machine client's audiences
          * @description Replaces the complete audiences-to-scopes map of a machine client; entries omitted here are removed (use {} to strip all access). Secrets are untouched — rotation still goes through .../rotate, and exchanges for revoked clients keep failing regardless of metadata. Applies to active and revoked clients alike.
          */
-        patch: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    /** @description Machine client id. */
-                    clientId: string;
-                };
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["UpdateM2MClientRequest"];
-                };
-            };
-            responses: {
-                /** @description Updated client record */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["M2MClient"];
-                    };
-                };
-                /** @description Invalid clientId, empty body, or bad audience/scopes */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                /** @description Missing/invalid auth or non-admin caller */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                /** @description Unknown clientId */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                /** @description Internal error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-            };
-        };
+        patch: operations["PatchLoginV1M2mClientsClientId"];
         trace?: never;
     };
     "/login/v1/m2m-clients/{clientId}/rotate": {
@@ -528,115 +146,27 @@ export interface paths {
          * Rotates a machine client secret
          * @description Issues a new clientSecret, shown exactly once. The previous secret keeps working until the operator delivers the new secret and recycles callers. Delivering the new secret to the caller is an explicit operator step.
          */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    /** @description Machine client id. */
-                    clientId: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description New secret (shown exactly once) */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["M2MClientCredentials"];
-                    };
-                };
-                /** @description Missing/invalid auth or non-admin caller */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                /** @description Unknown clientId */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                /** @description Client is revoked (rotate of an inactive client) */
-                409: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                /** @description Internal error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-            };
-        };
+        post: operations["PostLoginV1M2mClientsClientIdRotate"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/login/.well-known/jwks.json": {
+    "/login/v1/m2m-tokens": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /**
-         * Returns the JSON Web Key Set for ICAA token verification
-         * @description Serves the RSA public keys (RFC 7517 JWK Set) used to verify ICAA JWTs, keyed by kid (machine-* for service tokens, user-* for user tokens).
-         */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description JWK set */
-                200: {
-                    headers: {
-                        /** @description Cacheable for 5 minutes, allow stale reuse for an hour. */
-                        "Cache-Control"?: string;
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["JWKS"];
-                    };
-                };
-                /** @description Failed to load signing keys */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-            };
-        };
+        get?: never;
         put?: never;
-        post?: never;
+        /**
+         * Exchanges machine client credentials for a short-lived JWT
+         * @description Client-credentials exchange for service-to-service authentication. The machine client authenticates with HTTP Basic auth (Authorization: Basic base64(clientId:clientSecret)) and requests a token for one of its provisioned audiences. On success a 5-minute RS256 machine JWT is returned, bound to that audience with the exact scopes provisioned for it. Internet-facing and rate limited; 429 is returned when throttled.
+         */
+        post: operations["PostLoginV1M2mTokens"];
         delete?: never;
         options?: never;
         head?: never;
@@ -647,56 +177,20 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
-        UserInfo: {
-            profilePicURL: string;
-            /** Format: date-time */
-            expiresAt: string;
-            userEmail: string;
-            /** @description User's assigned roles */
-            roles: "ADMIN"[];
-        };
-        /** @enum {string} */
-        ErrorCode: "InternalError" | "AuthError" | "InputValidationError" | "RateLimited" | "NotFound" | "Conflict";
-        Error: {
-            /** @example InternalError */
-            code: components["schemas"]["ErrorCode"];
-            /** @example An unexpected error occurred. */
-            message: string;
-        };
         /** @description A short-lived machine JWT, plus its metadata. */
         AccessToken: {
             /** @description The RS256 machine JWT (Bearer). */
             access_token: string;
-            /** @enum {string} */
-            token_type: "Bearer";
             /**
              * @description Token lifetime in seconds (300 = 5 minutes).
              * @example 300
              */
             expires_in: number;
-        };
-        /** @description Provisioned machine client metadata (never includes a secret). */
-        M2MClient: {
-            /** @example event-registration */
-            clientId: string;
-            /**
-             * @description Provisioned audiences mapped to their exact scopes. An audience with no scopes (or no audiences at all) authenticates but authorizes nowhere.
-             * @example {
-             *       "profiles-api": [
-             *         "m2m:player-profiles"
-             *       ]
-             *     }
-             */
-            audiences: {
-                [key: string]: string[];
-            };
-            /** @description False once revoked (DELETE). Revoked clients fail the exchange with 401. */
-            active: boolean;
+            /** @enum {string} */
+            token_type: "Bearer";
         };
         /** @description Provisioning request for a new machine client. */
         CreateM2MClientRequest: {
-            /** @example event-registration */
-            clientId: string;
             /**
              * @description Provisioned audiences mapped to their exact scopes. May be empty to provision an identity before its scopes exist.
              * @example {
@@ -708,6 +202,55 @@ export interface components {
             audiences: {
                 [key: string]: string[];
             };
+            /** @example event-registration */
+            clientId: string;
+        };
+        Error: {
+            code: components["schemas"]["ErrorCode"];
+            /** @example An unexpected error occurred. */
+            message: string;
+        };
+        /** @enum {string} */
+        ErrorCode: "InternalError" | "AuthError" | "InputValidationError" | "RateLimited" | "NotFound" | "Conflict";
+        /** @description RSA public key (RFC 7517), kid namespaced machine-* (service tokens) or user-* (user tokens). */
+        JWK: {
+            /** @enum {string} */
+            alg?: "RS256";
+            /** @description Base64url-encoded RSA public exponent. */
+            e: string;
+            /** @example machine-01 */
+            kid: string;
+            /** @enum {string} */
+            kty: "RSA";
+            /** @description Base64url-encoded RSA modulus. */
+            n: string;
+            /**
+             * @description Key use - signing.
+             * @enum {string}
+             */
+            use?: "sig";
+        };
+        /** @description JSON Web Key Set (RFC 7517) of ICAA token verification keys. */
+        JWKS: {
+            keys: components["schemas"]["JWK"][];
+        };
+        /** @description Provisioned machine client metadata (never includes a secret). */
+        M2MClient: {
+            /** @description False once revoked (DELETE). Revoked clients fail the exchange with 401. */
+            active: boolean;
+            /**
+             * @description Provisioned audiences mapped to their exact scopes. An audience with no scopes (or no audiences at all) authenticates but authorizes nowhere.
+             * @example {
+             *       "profiles-api": [
+             *         "m2m:player-profiles"
+             *       ]
+             *     }
+             */
+            audiences: {
+                [key: string]: string[];
+            };
+            /** @example event-registration */
+            clientId: string;
         };
         /** @description A machine client id plus its plaintext secret. The secret is returned exactly once on create/rotate — it is never logged and never retrievable again. */
         M2MClientCredentials: {
@@ -715,6 +258,10 @@ export interface components {
             clientId: string;
             /** @description The plaintext secret. Shown exactly once. */
             clientSecret: string;
+        };
+        /** @description Admin list of provisioned machine clients (metadata only). */
+        M2MClientList: {
+            clients: components["schemas"]["M2MClient"][];
         };
         /** @description Full replacement of a machine client's audiences map (secrets untouched). */
         UpdateM2MClientRequest: {
@@ -730,31 +277,13 @@ export interface components {
                 [key: string]: string[];
             };
         };
-        /** @description Admin list of provisioned machine clients (metadata only). */
-        M2MClientList: {
-            clients: components["schemas"]["M2MClient"][];
-        };
-        /** @description JSON Web Key Set (RFC 7517) of ICAA token verification keys. */
-        JWKS: {
-            keys: components["schemas"]["JWK"][];
-        };
-        /** @description RSA public key (RFC 7517), kid namespaced machine-* (service tokens) or user-* (user tokens). */
-        JWK: {
-            /** @enum {string} */
-            kty: "RSA";
-            /** @example machine-01 */
-            kid: string;
-            /**
-             * @description Key use - signing.
-             * @enum {string}
-             */
-            use?: "sig";
-            /** @enum {string} */
-            alg?: "RS256";
-            /** @description Base64url-encoded RSA modulus. */
-            n: string;
-            /** @description Base64url-encoded RSA public exponent. */
-            e: string;
+        UserInfo: {
+            /** Format: date-time */
+            expiresAt: string;
+            profilePicURL: string;
+            /** @description User's assigned roles */
+            roles: "ADMIN"[];
+            userEmail: string;
         };
     };
     responses: never;
@@ -764,4 +293,504 @@ export interface components {
     pathItems: never;
 }
 export type $defs = Record<string, never>;
-export type operations = Record<string, never>;
+export interface operations {
+    GetLoginWellKnownJwksJson: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description JWK set */
+            200: {
+                headers: {
+                    /** @description Cacheable for 5 minutes, allow stale reuse for an hour. */
+                    "Cache-Control"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JWKS"];
+                };
+            };
+            /** @description Failed to load signing keys */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    PostLoginGoogle: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description The Google JWT to log in with */
+        requestBody: {
+            content: {
+                "application/json": {
+                    googleJWT: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Auth successful. The access and refresh tokens are returned in cookies named `ICAA_ACCESS_TOKEN` and `ICAA_REFRESH_TOKEN`. */
+            200: {
+                headers: {
+                    /** @description The ICAA auth token cookies. */
+                    "Set-Cookie"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserInfo"];
+                };
+            };
+            /** @description Unauthorized. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    PostLoginRefresh: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Token refresh successful */
+            200: {
+                headers: {
+                    /** @description New access and refresh token cookies. */
+                    "Set-Cookie"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserInfo"];
+                };
+            };
+            /** @description Unauthorized - invalid or expired refresh token */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    GetLoginSession: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description User info */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserInfo"];
+                };
+            };
+            /** @description Unauthorized. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    DeleteLoginSession: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description User logged out */
+            200: {
+                headers: {
+                    /** @description Tells the browser to delete the cookies. */
+                    "Set-Cookie"?: string;
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    GetLoginV1M2mClients: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Client list */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["M2MClientList"];
+                };
+            };
+            /** @description Missing/invalid auth or non-admin caller */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Internal error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    PostLoginV1M2mClients: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateM2MClientRequest"];
+            };
+        };
+        responses: {
+            /** @description Client provisioned (secret is shown exactly once) */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["M2MClientCredentials"];
+                };
+            };
+            /** @description Invalid clientId or audiences */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Missing/invalid auth or non-admin caller */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description clientId already exists */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Internal error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    DeleteLoginV1M2mClientsClientId: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Machine client id. */
+                clientId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Revoked client record */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["M2MClient"];
+                };
+            };
+            /** @description Invalid clientId */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Missing/invalid auth or non-admin caller */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Unknown clientId */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Internal error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    PatchLoginV1M2mClientsClientId: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Machine client id. */
+                clientId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateM2MClientRequest"];
+            };
+        };
+        responses: {
+            /** @description Updated client record */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["M2MClient"];
+                };
+            };
+            /** @description Invalid clientId, empty body, or bad audience/scopes */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Missing/invalid auth or non-admin caller */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Unknown clientId */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Internal error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    PostLoginV1M2mClientsClientIdRotate: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Machine client id. */
+                clientId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description New secret (shown exactly once) */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["M2MClientCredentials"];
+                };
+            };
+            /** @description Invalid clientId */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Missing/invalid auth or non-admin caller */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Unknown clientId */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Client is revoked (rotate of an inactive client) */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Internal error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    PostLoginV1M2mTokens: {
+        parameters: {
+            query: {
+                /** @description Target audience — must be one of the client's provisioned audiences. */
+                audience: string;
+            };
+            header: {
+                /** @description HTTP Basic credentials - base64(clientId:clientSecret). */
+                Authorization: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Machine token issued */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AccessToken"];
+                };
+            };
+            /** @description Missing or malformed Basic credentials or audience */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Unknown clientId, invalid clientSecret, or audience not provisioned for the client (invalid_client) */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Rate limited or locked out */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Internal error (e.g. failed to load signing keys) */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+}
