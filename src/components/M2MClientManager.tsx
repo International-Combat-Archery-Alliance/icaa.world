@@ -67,13 +67,13 @@ import {
 } from '@/hooks/useM2MClients';
 
 const clientIdPattern = /^[a-z0-9-]{1,64}$/;
-const audiencePattern = /^[a-z0-9-]+-api$/;
+const audiencePattern = /^[a-z0-9-]{1,64}$/;
 const scopePattern = /^m2m:[a-z0-9-]+$/;
 
 const audienceEntrySchema = z.object({
   audience: z
     .string()
-    .regex(audiencePattern, 'Must look like <callee>-api (e.g. profiles-api)'),
+    .regex(audiencePattern, 'Lowercase letters, digits, and dashes only'),
   scopes: z.string(),
 });
 
