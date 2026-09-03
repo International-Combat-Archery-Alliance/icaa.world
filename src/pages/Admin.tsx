@@ -153,7 +153,12 @@ export function AdminPage() {
               !navCollapsed && 'md:w-52 md:shrink-0',
             )}
           >
-            <div className="mb-2 hidden items-center justify-between md:flex">
+            <div
+              className={cn(
+                'mb-2 hidden items-center md:flex',
+                navCollapsed ? 'md:justify-center' : 'md:justify-between',
+              )}
+            >
               {!navCollapsed && (
                 <span className="text-muted-foreground px-3 text-xs font-semibold tracking-wider uppercase">
                   Admin
@@ -174,10 +179,8 @@ export function AdminPage() {
             </div>
             <TabsList
               className={cn(
-                'bg-muted/50 flex h-auto w-full flex-row justify-start gap-1 overflow-x-auto rounded-lg p-1',
-                !navCollapsed &&
-                  'md:w-full md:flex-col md:gap-0 md:overflow-visible',
-                navCollapsed && 'md:hidden',
+                'bg-muted/50 flex h-auto w-full flex-row justify-start gap-1 overflow-x-auto rounded-lg p-1 md:flex-col md:gap-0 md:overflow-visible',
+                !navCollapsed && 'md:w-full',
               )}
             >
               {adminTabGroups.map((group) => (
@@ -185,22 +188,38 @@ export function AdminPage() {
                   key={group.label}
                   className="flex shrink-0 flex-row gap-1 md:mt-2 md:w-full md:flex-col md:gap-0 md:first:mt-0"
                 >
-                  <span className="text-muted-foreground hidden px-3 py-1.5 text-xs font-semibold tracking-wider uppercase md:block">
+                  <span
+                    className={cn(
+                      'text-muted-foreground hidden px-3 py-1.5 text-xs font-semibold tracking-wider uppercase',
+                      !navCollapsed && 'md:block',
+                    )}
+                  >
                     {group.label}
                   </span>
                   {group.tabs.map((tab) => (
                     <TabsTrigger
                       key={tab.id}
                       value={tab.id}
+                      title={tab.label}
                       className={cn(
                         'flex shrink-0 items-center gap-2 px-3 py-2 text-sm font-medium rounded-md transition-all',
                         'data-[state=active]:bg-background data-[state=active]:text-primary data-[state=active]:shadow-sm',
                         'data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:text-foreground data-[state=inactive]:hover:bg-muted',
-                        'md:w-full md:justify-start md:px-4 md:py-2.5 md:text-base',
+                        'md:w-full md:px-4 md:py-2.5 md:text-base',
+                        navCollapsed
+                          ? 'md:justify-center md:px-3'
+                          : 'md:justify-start',
                       )}
                     >
                       <tab.icon className="h-4 w-4 shrink-0 md:h-5 md:w-5" />
-                      <span className="whitespace-nowrap">{tab.label}</span>
+                      <span
+                        className={cn(
+                          'whitespace-nowrap',
+                          navCollapsed && 'md:hidden',
+                        )}
+                      >
+                        {tab.label}
+                      </span>
                     </TabsTrigger>
                   ))}
                 </div>
