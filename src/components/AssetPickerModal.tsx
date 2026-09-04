@@ -25,7 +25,7 @@ import {
   type Asset,
 } from '@/hooks/useAssets';
 
-interface ImagePickerModalProps {
+interface AssetPickerModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSelect: (url: string) => void;
@@ -371,7 +371,7 @@ function UploadTab({
   );
 }
 
-export function ImagePickerModal({
+export function AssetPickerModal({
   open,
   onOpenChange,
   onSelect,
@@ -382,7 +382,7 @@ export function ImagePickerModal({
   filesLabel = 'Images',
   emptyMessage = 'No images in this folder',
   uploadPrompt = 'Click to upload an image',
-}: ImagePickerModalProps) {
+}: AssetPickerModalProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="flex max-h-[80vh] max-w-2xl flex-col">

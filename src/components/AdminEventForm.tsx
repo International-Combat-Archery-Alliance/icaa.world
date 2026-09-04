@@ -24,7 +24,7 @@ import {
   SelectContent,
 } from './ui/select';
 import { DateTime, IANAZone } from 'luxon';
-import { ImagePickerModal, isFileAsset } from './ImagePickerModal';
+import { AssetPickerModal, isFileAsset } from './AssetPickerModal';
 
 export enum AdminEventMode {
   CREATE,
@@ -656,7 +656,7 @@ export function AdminEventForm({
         <Button type="submit" disabled={isPending}>
           {isPending ? 'Submitting...' : 'Submit'}
         </Button>
-        <ImagePickerModal
+        <AssetPickerModal
           open={logoPickerOpen}
           onOpenChange={setLogoPickerOpen}
           onSelect={(url) =>
@@ -668,7 +668,7 @@ export function AdminEventForm({
           folderPath="/events/images"
           title="Select Event Logo"
         />
-        <ImagePickerModal
+        <AssetPickerModal
           open={rulesPickerOpen}
           onOpenChange={setRulesPickerOpen}
           onSelect={(url) =>
