@@ -25,6 +25,7 @@ import {
 } from './ui/select';
 import { DateTime, IANAZone } from 'luxon';
 import { AssetPickerModal } from './AssetPickerModal';
+import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 
 export enum AdminEventMode {
   CREATE,
@@ -261,204 +262,19 @@ export function AdminEventForm({
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="flex w-full flex-col gap-8"
+        className="flex w-full flex-col gap-6"
       >
-        <FormField
-          control={form.control}
-          name="eventName"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Event Name</FormLabel>
-              <FormControl>
-                <Input {...field} className="bg-white" />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="eventDate"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Event Date</FormLabel>
-              <FormControl>
-                <Input {...field} type="date" className="bg-white" />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <div className="md:flex md:gap-4">
-          <FormField
-            control={form.control}
-            name="regCloseDate"
-            render={({ field }) => (
-              <FormItem className="flex-grow">
-                <FormLabel>Registration Close Date</FormLabel>
-                <FormControl>
-                  <Input {...field} type="date" className="bg-white" />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="regCloseTime"
-            render={({ field }) => (
-              <FormItem className="flex-grow">
-                <FormLabel>Registration Close Time</FormLabel>
-                <FormControl>
-                  <Input
-                    {...field}
-                    type="text"
-                    placeholder="HH:MM"
-                    className="bg-white"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-        <div className="md:flex md:gap-4">
-          <FormField
-            control={form.control}
-            name="eventStartTime"
-            render={({ field }) => (
-              <FormItem className="flex-grow">
-                <FormLabel>Event Start Time</FormLabel>
-                <FormControl>
-                  <Input
-                    {...field}
-                    type="text"
-                    placeholder="HH:MM"
-                    className="bg-white"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="eventEndTime"
-            render={({ field }) => (
-              <FormItem className="flex-grow">
-                <FormLabel>Event End Time</FormLabel>
-                <FormControl>
-                  <Input
-                    {...field}
-                    type="text"
-                    placeholder="HH:MM"
-                    className="bg-white"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="eventTimeZone"
-            render={({ field }) => (
-              <FormItem className="flex-grow">
-                <FormLabel>Timezone</FormLabel>
-                <FormControl>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <SelectTrigger className="w-64 bg-white">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {timeZones.map((t) => (
-                        <SelectItem key={t.name} value={t.name}>
-                          {t.name} ({t.offset})
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-        <div className="grid gap-3">
-          <FormField
-            control={form.control}
-            name="locationInfo.name"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Location Name (Venue)</FormLabel>
-                <FormControl>
-                  <Input {...field} type="text" className="bg-white" />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <div className="flex gap-3">
+        <Card>
+          <CardHeader>
+            <CardTitle>Event Details</CardTitle>
+          </CardHeader>
+          <CardContent className="grid gap-4 md:grid-cols-2">
             <FormField
               control={form.control}
-              name="locationInfo.address.street"
+              name="eventName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Street Address</FormLabel>
-                  <FormControl>
-                    <Input {...field} type="text" className="bg-white" />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="locationInfo.address.city"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>City</FormLabel>
-                  <FormControl>
-                    <Input {...field} type="text" className="bg-white" />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-          <div className="flex gap-3">
-            <FormField
-              control={form.control}
-              name="locationInfo.address.state"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>State/Prov</FormLabel>
-                  <FormControl>
-                    <Input {...field} type="text" className="bg-white" />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="locationInfo.address.country"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Country</FormLabel>
-                  <FormControl>
-                    <Input {...field} type="text" className="bg-white" />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="locationInfo.address.postalCode"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Zip Code</FormLabel>
+                  <FormLabel>Event Name</FormLabel>
                   <FormControl>
                     <Input {...field} className="bg-white" />
                   </FormControl>
@@ -466,197 +282,421 @@ export function AdminEventForm({
                 </FormItem>
               )}
             />
-          </div>
-        </div>
-        <div className="flex gap-3">
-          <FormField
-            control={form.control}
-            name="priceInfo.freeAgentPrice"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Free Agent Price</FormLabel>
-                <FormControl>
-                  <Input
-                    {...field}
-                    type="number"
-                    className="bg-white"
-                    onChange={(e) =>
-                      field.onChange(
-                        e.target.value === '' ? undefined : +e.target.value,
-                      )
-                    }
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="priceInfo.teamPrice"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Team Price</FormLabel>
-                <FormControl>
-                  <Input
-                    {...field}
-                    type="number"
-                    className="bg-white"
-                    onChange={(e) =>
-                      field.onChange(
-                        e.target.value === '' ? undefined : +e.target.value,
-                      )
-                    }
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="priceInfo.currency"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Currency</FormLabel>
-                <FormControl>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <SelectTrigger className="w-32 bg-white">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {Object.keys(Currencies).map((c) => (
-                        <SelectItem key={c} value={c}>
-                          {c}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-        <div className="flex gap-3">
-          <FormField
-            control={form.control}
-            name="teamSizes.min"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Min Team Size</FormLabel>
-                <FormControl>
-                  <Input
-                    {...field}
-                    type="number"
-                    className="bg-white"
-                    onChange={(e) =>
-                      field.onChange(
-                        e.target.value === '' ? undefined : +e.target.value,
-                      )
-                    }
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="teamSizes.max"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Max Team Size</FormLabel>
-                <FormControl>
-                  <Input
-                    {...field}
-                    type="number"
-                    className="bg-white"
-                    onChange={(e) =>
-                      field.onChange(
-                        e.target.value === '' ? undefined : +e.target.value,
-                      )
-                    }
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-        <FormField
-          control={form.control}
-          name="eventRules"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Event Rules (link)</FormLabel>
-              <div className="flex gap-2">
-                <FormControl>
-                  <Input
-                    {...field}
-                    value={field.value ?? ''}
-                    className="bg-white"
-                  />
-                </FormControl>
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setRulesPickerOpen(true)}
-                >
-                  Browse Assets
-                </Button>
-              </div>
-              {field.value ? (
-                <a
-                  href={field.value}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm text-blue-600 underline"
-                >
-                  Open rules document
-                </a>
-              ) : null}
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="eventLogo"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Event Logo</FormLabel>
-              <div className="flex gap-2">
-                <FormControl>
-                  <Input
-                    {...field}
-                    value={field.value ?? ''}
-                    className="bg-white"
-                  />
-                </FormControl>
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setLogoPickerOpen(true)}
-                >
-                  Browse Assets
-                </Button>
-              </div>
-              {field.value ? (
-                <img
-                  key={field.value}
-                  src={field.value}
-                  alt="Event logo preview"
-                  className="h-16 w-16 rounded border object-contain"
-                  onError={(e) => {
-                    e.currentTarget.style.display = 'none';
-                  }}
-                />
-              ) : null}
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+            <FormField
+              control={form.control}
+              name="eventDate"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Event Date</FormLabel>
+                  <FormControl>
+                    <Input {...field} type="date" className="bg-white" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Registration Closes</CardTitle>
+          </CardHeader>
+          <CardContent className="grid gap-4 md:grid-cols-2">
+            <FormField
+              control={form.control}
+              name="regCloseDate"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Registration Close Date</FormLabel>
+                  <FormControl>
+                    <Input {...field} type="date" className="bg-white" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="regCloseTime"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Registration Close Time</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      type="text"
+                      placeholder="HH:MM"
+                      className="bg-white"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Schedule</CardTitle>
+          </CardHeader>
+          <CardContent className="grid gap-4 md:grid-cols-3">
+            <FormField
+              control={form.control}
+              name="eventStartTime"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Event Start Time</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      type="text"
+                      placeholder="HH:MM"
+                      className="bg-white"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="eventEndTime"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Event End Time</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      type="text"
+                      placeholder="HH:MM"
+                      className="bg-white"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="eventTimeZone"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Timezone</FormLabel>
+                  <FormControl>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <SelectTrigger className="w-full bg-white">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {timeZones.map((t) => (
+                          <SelectItem key={t.name} value={t.name}>
+                            {t.name} ({t.offset})
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Location</CardTitle>
+          </CardHeader>
+          <CardContent className="grid gap-4">
+            <FormField
+              control={form.control}
+              name="locationInfo.name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Location Name (Venue)</FormLabel>
+                  <FormControl>
+                    <Input {...field} type="text" className="bg-white" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <div className="grid gap-4 sm:grid-cols-2">
+              <FormField
+                control={form.control}
+                name="locationInfo.address.street"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Street Address</FormLabel>
+                    <FormControl>
+                      <Input {...field} type="text" className="bg-white" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="locationInfo.address.city"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>City</FormLabel>
+                    <FormControl>
+                      <Input {...field} type="text" className="bg-white" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            <div className="grid gap-4 sm:grid-cols-3">
+              <FormField
+                control={form.control}
+                name="locationInfo.address.state"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>State/Prov</FormLabel>
+                    <FormControl>
+                      <Input {...field} type="text" className="bg-white" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="locationInfo.address.country"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Country</FormLabel>
+                    <FormControl>
+                      <Input {...field} type="text" className="bg-white" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="locationInfo.address.postalCode"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Zip Code</FormLabel>
+                    <FormControl>
+                      <Input {...field} className="bg-white" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Pricing</CardTitle>
+          </CardHeader>
+          <CardContent className="grid gap-4 md:grid-cols-3">
+            <FormField
+              control={form.control}
+              name="priceInfo.freeAgentPrice"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Free Agent Price</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      type="number"
+                      className="bg-white"
+                      onChange={(e) =>
+                        field.onChange(
+                          e.target.value === '' ? undefined : +e.target.value,
+                        )
+                      }
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="priceInfo.teamPrice"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Team Price</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      type="number"
+                      className="bg-white"
+                      onChange={(e) =>
+                        field.onChange(
+                          e.target.value === '' ? undefined : +e.target.value,
+                        )
+                      }
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="priceInfo.currency"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Currency</FormLabel>
+                  <FormControl>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <SelectTrigger className="w-32 bg-white">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {Object.keys(Currencies).map((c) => (
+                          <SelectItem key={c} value={c}>
+                            {c}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Team Sizes</CardTitle>
+          </CardHeader>
+          <CardContent className="grid gap-4 md:grid-cols-2">
+            <FormField
+              control={form.control}
+              name="teamSizes.min"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Min Team Size</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      type="number"
+                      className="bg-white"
+                      onChange={(e) =>
+                        field.onChange(
+                          e.target.value === '' ? undefined : +e.target.value,
+                        )
+                      }
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="teamSizes.max"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Max Team Size</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      type="number"
+                      className="bg-white"
+                      onChange={(e) =>
+                        field.onChange(
+                          e.target.value === '' ? undefined : +e.target.value,
+                        )
+                      }
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Media & Documents</CardTitle>
+          </CardHeader>
+          <CardContent className="grid gap-4">
+            <FormField
+              control={form.control}
+              name="eventRules"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Event Rules (link)</FormLabel>
+                  <div className="flex gap-2">
+                    <FormControl>
+                      <Input
+                        {...field}
+                        value={field.value ?? ''}
+                        className="bg-white"
+                      />
+                    </FormControl>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setRulesPickerOpen(true)}
+                    >
+                      Browse Assets
+                    </Button>
+                  </div>
+                  {field.value ? (
+                    <a
+                      href={field.value}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm text-blue-600 underline"
+                    >
+                      Open rules document
+                    </a>
+                  ) : null}
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="eventLogo"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Event Logo</FormLabel>
+                  <div className="flex gap-2">
+                    <FormControl>
+                      <Input
+                        {...field}
+                        value={field.value ?? ''}
+                        className="bg-white"
+                      />
+                    </FormControl>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setLogoPickerOpen(true)}
+                    >
+                      Browse Assets
+                    </Button>
+                  </div>
+                  {field.value ? (
+                    <img
+                      key={field.value}
+                      src={field.value}
+                      alt="Event logo preview"
+                      className="h-16 w-16 rounded border object-contain"
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none';
+                      }}
+                    />
+                  ) : null}
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </CardContent>
+        </Card>
         <Button type="submit" disabled={isPending}>
           {isPending ? 'Submitting...' : 'Submit'}
         </Button>
