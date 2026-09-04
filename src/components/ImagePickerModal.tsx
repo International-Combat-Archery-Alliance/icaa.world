@@ -1,5 +1,11 @@
 import { useState, useRef } from 'react';
-import { Folder, Image as ImageIcon, Upload, ChevronLeft } from 'lucide-react';
+import {
+  Folder,
+  FileText,
+  Image as ImageIcon,
+  Upload,
+  ChevronLeft,
+} from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -24,6 +30,12 @@ interface ImagePickerModalProps {
   onOpenChange: (open: boolean) => void;
   onSelect: (url: string) => void;
   folderPath?: string;
+  accept?: string;
+  title?: string;
+  fileFilter?: (asset: Asset) => boolean;
+  filesLabel?: string;
+  emptyMessage?: string;
+  uploadPrompt?: string;
 }
 
 const MAX_SIZE_BYTES = 50 * 1024 * 1024;
@@ -40,12 +52,22 @@ function isImageFile(asset: Asset): boolean {
   );
 }
 
+function isFileAsset(asset: Asset): boolean {
+  return asset.type === 'file';
+}
+
 function BrowseTab({
   onInsert,
   rootFolder,
+  fileFilter = isImageFile,
+  filesLabel = 'Images',
+  emptyMessage = 'No images in this folder',
 }: {
   onInsert: (url: string) => void;
   rootFolder?: string;
+  fileFilter?: (asset: Asset) => boolean;
+  filesLabel?: string;
+  emptyMessage?: string;
 }) {
   const [currentPath, setCurrentPath] = useState(rootFolder ?? '/');
   const [selectedPath, setSelectedPath] = useState<string | null>(null);
@@ -55,9 +77,9 @@ function BrowseTab({
   const allAssets = data?.pages.flatMap((page) => page.data) ?? [];
 
   const folders = allAssets.filter((a) => a.type === 'folder');
-  const images = allAssets.filter(isImageFile);
+  const files = allAssets.filter(fileFilter);
 
-  const isAtRoot = currentPath === (rootFolder ?? '/');
+  const isAtRoot = currentPath === '/';
 
   const navigateTo = (path: string) => {
     setCurrentPath(path);
@@ -68,7 +90,10 @@ function BrowseTab({
     if (isAtRoot) return;
     const parts = currentPath.split('/').filter(Boolean);
     if (parts.length > 0) {
-      navigateTo('/' + parts.slice(0, -1).join('/'));
+      const parent = '/' + parts.slice(0, -1).join('/');
+      navigateTo(parent === '/' ? '/' : parent);
+    } else {
+      navigateTo('/');
     }
   };
 
@@ -127,16 +152,17 @@ function BrowseTab({
             </div>
           )}
 
-          {images.length > 0 && (
+          {files.length > 0 && (
             <div>
               <p className="text-muted-foreground mb-2 text-xs font-medium">
-                Images
+                {filesLabel}
               </p>
               <div className="grid grid-cols-3 gap-3">
-                {images.map((asset) => {
+                {files.map((asset) => {
                   const url = getUrl(asset);
                   const assetPath = joinPath(currentPath, asset.name);
                   const isSelected = selectedPath === assetPath;
+                  const isImage = isImageFile(asset);
 
                   return (
                     <button
@@ -151,11 +177,20 @@ function BrowseTab({
                           : 'hover:border-muted-foreground/30 border-transparent'
                       }`}
                     >
-                      <img
-                        src={url}
-                        alt={asset.name}
-                        className="h-full w-full object-cover"
-                      />
+                      {isImage ? (
+                        <img
+                          src={url}
+                          alt={asset.name}
+                          className="h-full w-full object-cover"
+                        />
+                      ) : (
+                        <span className="flex h-full w-full flex-col items-center justify-center gap-2 bg-white p-2">
+                          <FileText className="h-10 w-10 text-gray-500" />
+                          <span className="w-full truncate text-center text-[10px] text-gray-700">
+                            {asset.name}
+                          </span>
+                        </span>
+                      )}
                       <div className="absolute right-0 bottom-0 left-0 bg-black/50 px-1 py-0.5">
                         <span className="block truncate text-[10px] text-white">
                           {asset.name}
@@ -168,10 +203,10 @@ function BrowseTab({
             </div>
           )}
 
-          {folders.length === 0 && images.length === 0 && (
+          {folders.length === 0 && files.length === 0 && (
             <div className="text-muted-foreground py-12 text-center">
               <ImageIcon className="mx-auto mb-3 h-12 w-12 opacity-30" />
-              <p className="text-sm">No images in this folder</p>
+              <p className="text-sm">{emptyMessage}</p>
             </div>
           )}
         </>
@@ -181,7 +216,7 @@ function BrowseTab({
         <Button
           disabled={!selectedPath}
           onClick={() => {
-            const selected = images.find(
+            const selected = files.find(
               (a) => joinPath(currentPath, a.name) === selectedPath,
             );
             if (selected) {
@@ -199,9 +234,13 @@ function BrowseTab({
 function UploadTab({
   onInsert,
   folderPath,
+  accept = 'image/*',
+  uploadPrompt = 'Click to upload an image',
 }: {
   onInsert: (url: string) => void;
   folderPath?: string;
+  accept?: string;
+  uploadPrompt?: string;
 }) {
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState({ current: 0, total: 0, file: '' });
@@ -290,17 +329,20 @@ function UploadTab({
       >
         <Upload className="text-muted-foreground mx-auto mb-3 h-10 w-10" />
         <p className="text-sm font-medium">
-          {uploading ? 'Uploading...' : 'Click to upload an image'}
+          {uploading ? 'Uploading...' : uploadPrompt}
         </p>
         <p className="text-muted-foreground mt-1 text-xs">
           Max file size: 50 MB
+        </p>
+        <p className="text-muted-foreground mt-1 text-xs">
+          Uploads to {uploadPath}
         </p>
       </div>
 
       <input
         ref={fileInputRef}
         type="file"
-        accept="image/*"
+        accept={accept}
         className="hidden"
         onChange={handleFile}
         disabled={uploading}
@@ -334,12 +376,18 @@ export function ImagePickerModal({
   onOpenChange,
   onSelect,
   folderPath,
+  accept = 'image/*',
+  title = 'Insert Image',
+  fileFilter = isImageFile,
+  filesLabel = 'Images',
+  emptyMessage = 'No images in this folder',
+  uploadPrompt = 'Click to upload an image',
 }: ImagePickerModalProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="flex max-h-[80vh] max-w-2xl flex-col">
         <DialogHeader>
-          <DialogTitle>Insert Image</DialogTitle>
+          <DialogTitle>{title}</DialogTitle>
         </DialogHeader>
 
         <Tabs defaultValue="browse" className="flex min-h-0 flex-1 flex-col">
@@ -358,6 +406,9 @@ export function ImagePickerModal({
           >
             <BrowseTab
               rootFolder={folderPath}
+              fileFilter={fileFilter}
+              filesLabel={filesLabel}
+              emptyMessage={emptyMessage}
               onInsert={(url) => {
                 onSelect(url);
                 onOpenChange(false);
@@ -371,6 +422,8 @@ export function ImagePickerModal({
           >
             <UploadTab
               folderPath={folderPath}
+              accept={accept}
+              uploadPrompt={uploadPrompt}
               onInsert={(url) => {
                 onSelect(url);
                 onOpenChange(false);
@@ -382,3 +435,5 @@ export function ImagePickerModal({
     </Dialog>
   );
 }
+
+export { isImageFile, isFileAsset };

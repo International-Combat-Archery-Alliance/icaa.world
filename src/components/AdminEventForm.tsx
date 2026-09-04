@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import {
   Form,
@@ -23,6 +24,7 @@ import {
   SelectContent,
 } from './ui/select';
 import { DateTime, IANAZone } from 'luxon';
+import { ImagePickerModal, isFileAsset } from './ImagePickerModal';
 
 export enum AdminEventMode {
   CREATE,
@@ -52,6 +54,9 @@ export function AdminEventForm({
   }));
 
   const isPending = createIsPending || editIsPending;
+
+  const [logoPickerOpen, setLogoPickerOpen] = useState(false);
+  const [rulesPickerOpen, setRulesPickerOpen] = useState(false);
 
   const formSchema = z.object({
     teamSizes: z.object({
@@ -585,9 +590,32 @@ export function AdminEventForm({
           render={({ field }) => (
             <FormItem>
               <FormLabel>Event Rules (link)</FormLabel>
-              <FormControl>
-                <Input {...field} className="bg-white" />
-              </FormControl>
+              <div className="flex gap-2">
+                <FormControl>
+                  <Input
+                    {...field}
+                    value={field.value ?? ''}
+                    className="bg-white"
+                  />
+                </FormControl>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setRulesPickerOpen(true)}
+                >
+                  Browse Assets
+                </Button>
+              </div>
+              {field.value ? (
+                <a
+                  href={field.value}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm text-blue-600 underline"
+                >
+                  Open rules document
+                </a>
+              ) : null}
               <FormMessage />
             </FormItem>
           )}
@@ -597,10 +625,30 @@ export function AdminEventForm({
           name="eventLogo"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Event Logo Name</FormLabel>
-              <FormControl>
-                <Input {...field} className="bg-white" />
-              </FormControl>
+              <FormLabel>Event Logo</FormLabel>
+              <div className="flex gap-2">
+                <FormControl>
+                  <Input
+                    {...field}
+                    value={field.value ?? ''}
+                    className="bg-white"
+                  />
+                </FormControl>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setLogoPickerOpen(true)}
+                >
+                  Browse Assets
+                </Button>
+              </div>
+              {field.value ? (
+                <img
+                  src={field.value}
+                  alt="Event logo preview"
+                  className="h-16 w-16 rounded border object-contain"
+                />
+              ) : null}
               <FormMessage />
             </FormItem>
           )}
@@ -608,6 +656,35 @@ export function AdminEventForm({
         <Button type="submit" disabled={isPending}>
           {isPending ? 'Submitting...' : 'Submit'}
         </Button>
+        <ImagePickerModal
+          open={logoPickerOpen}
+          onOpenChange={setLogoPickerOpen}
+          onSelect={(url) =>
+            form.setValue('eventLogo', url, {
+              shouldValidate: true,
+              shouldDirty: true,
+            })
+          }
+          folderPath="/events/images"
+          title="Select Event Logo"
+        />
+        <ImagePickerModal
+          open={rulesPickerOpen}
+          onOpenChange={setRulesPickerOpen}
+          onSelect={(url) =>
+            form.setValue('eventRules', url, {
+              shouldValidate: true,
+              shouldDirty: true,
+            })
+          }
+          folderPath="/events/documents"
+          accept=".pdf,.doc,.docx,.txt,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+          title="Select Rules Document"
+          fileFilter={isFileAsset}
+          filesLabel="Files"
+          emptyMessage="No files in this folder"
+          uploadPrompt="Click to upload a document"
+        />
       </form>
     </Form>
   );
