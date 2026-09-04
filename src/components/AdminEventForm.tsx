@@ -644,6 +644,7 @@ export function AdminEventForm({
               </div>
               {field.value ? (
                 <img
+                  key={field.value}
                   src={field.value}
                   alt="Event logo preview"
                   className="h-16 w-16 rounded border object-contain"
