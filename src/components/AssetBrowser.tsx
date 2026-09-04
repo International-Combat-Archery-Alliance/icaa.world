@@ -43,15 +43,10 @@ import {
   type AdminAsset,
 } from '@/hooks/useAssets';
 
+import { MAX_ASSET_UPLOAD_BYTES, joinAssetPath } from '@/lib/assetUtils';
+
 const isAssetAdmin = (asset: Asset): asset is AdminAsset => {
   return 'id' in asset;
-};
-
-const joinPath = (basePath: string, name: string): string => {
-  if (basePath === '/') {
-    return `/${name}`;
-  }
-  return `${basePath}/${name}`;
 };
 
 const isImageAsset = (asset: Asset): boolean => {
@@ -149,7 +144,7 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
   const getAssetUrl = (asset: Asset): string | undefined => {
     if (!('url' in asset)) return undefined;
     const url = asset.url as string;
-    const assetPath = joinPath(currentPath, asset.name);
+    const assetPath = joinAssetPath(currentPath, asset.name);
     const buster = cacheBuster[assetPath];
     if (buster) {
       const separator = url.includes('?') ? '&' : '?';
@@ -198,7 +193,7 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
     try {
       await deleteAssetMutation.mutateAsync({
         params: {
-          query: { path: joinPath(currentPath, selectedAsset.name) },
+          query: { path: joinAssetPath(currentPath, selectedAsset.name) },
         },
       });
       await refetch();
@@ -249,8 +244,8 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
     if (!files || files.length === 0) return;
 
     const MAX_FILES = 50;
-    const MAX_SIZE_MB = 50;
-    const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
+    const MAX_SIZE_BYTES = MAX_ASSET_UPLOAD_BYTES;
+    const MAX_SIZE_MB = MAX_SIZE_BYTES / 1024 / 1024;
 
     // Check file count limit
     if (files.length > MAX_FILES) {
@@ -352,7 +347,7 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
           try {
             await deleteAssetMutation.mutateAsync({
               params: {
-                query: { path: joinPath(currentPath, file.name) },
+                query: { path: joinAssetPath(currentPath, file.name) },
               },
             });
           } catch {
@@ -396,7 +391,7 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
         await retryWithBackoff(() =>
           confirmUploadMutation.mutateAsync({
             params: {
-              query: { path: joinPath(currentPath, file.name) },
+              query: { path: joinAssetPath(currentPath, file.name) },
             },
           }),
         );
@@ -465,7 +460,7 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
     const file = event.target.files?.[0];
     if (!file || !selectedAsset || selectedAsset.type !== 'file') return;
 
-    const assetPath = joinPath(currentPath, selectedAsset.name);
+    const assetPath = joinAssetPath(currentPath, selectedAsset.name);
 
     try {
       const replaceResponse = await getReplaceUrlMutation.mutateAsync({
@@ -718,7 +713,7 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
               }}
               onDoubleClick={() => {
                 if (asset.type === 'folder') {
-                  navigateToFolder(joinPath(currentPath, asset.name));
+                  navigateToFolder(joinAssetPath(currentPath, asset.name));
                 } else if (asset.type === 'file' && 'url' in asset) {
                   window.open(asset.url, '_blank');
                 }
@@ -800,7 +795,7 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
               }}
               onDoubleClick={() => {
                 if (asset.type === 'folder') {
-                  navigateToFolder(joinPath(currentPath, asset.name));
+                  navigateToFolder(joinAssetPath(currentPath, asset.name));
                 } else if (asset.type === 'file' && 'url' in asset) {
                   window.open(asset.url, '_blank');
                 }

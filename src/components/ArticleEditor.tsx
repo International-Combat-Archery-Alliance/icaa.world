@@ -42,7 +42,7 @@ import StrikethroughInlineTool from '@/components/editorjs-plugins/Strikethrough
 import InlineCodeTool from '@/components/editorjs-plugins/InlineCode';
 import ButtonLinkTool from '@/components/editorjs-plugins/ButtonLinkTool';
 import useEditor from '@/hooks/useEditor';
-import { ImagePickerModal } from '@/components/ImagePickerModal';
+import { AssetPickerModal } from '@/components/AssetPickerModal';
 import { EditorToolbar } from '@/components/EditorToolbar';
 import { EmbedUrlDialog } from '@/components/EmbedUrlDialog';
 import { type EmbedBlockData } from '@/lib/embedUtils';
@@ -674,7 +674,7 @@ export function ArticleEditor({
         onInsert={handleInsertEmbed}
       />
 
-      <ImagePickerModal
+      <AssetPickerModal
         open={imageModalOpen}
         onOpenChange={setImageModalOpen}
         onSelect={handleInsertImage}

@@ -1,5 +1,11 @@
-import { useState, useRef } from 'react';
-import { Folder, Image as ImageIcon, Upload, ChevronLeft } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import {
+  Folder,
+  FileText,
+  Image as ImageIcon,
+  Upload,
+  ChevronLeft,
+} from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -18,20 +24,48 @@ import {
   useDeleteAsset,
   type Asset,
 } from '@/hooks/useAssets';
+import { MAX_ASSET_UPLOAD_BYTES, joinAssetPath } from '@/lib/assetUtils';
 
-interface ImagePickerModalProps {
+type AssetPickerMode = 'image' | 'allFiles';
+
+interface AssetPickerModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSelect: (url: string) => void;
   folderPath?: string;
+  mode?: AssetPickerMode;
+  accept?: string;
+  title?: string;
+  filesLabel?: string;
+  emptyMessage?: string;
+  uploadPrompt?: string;
 }
 
-const MAX_SIZE_BYTES = 50 * 1024 * 1024;
-
-function joinPath(basePath: string, name: string): string {
-  if (basePath === '/') return `/${name}`;
-  return `${basePath}/${name}`;
-}
+const MODE_DEFAULTS: Record<
+  AssetPickerMode,
+  {
+    accept: string | undefined;
+    title: string;
+    filesLabel: string;
+    emptyMessage: string;
+    uploadPrompt: string;
+  }
+> = {
+  image: {
+    accept: 'image/*',
+    title: 'Insert Image',
+    filesLabel: 'Images',
+    emptyMessage: 'No images in this folder',
+    uploadPrompt: 'Click to upload an image',
+  },
+  allFiles: {
+    accept: undefined,
+    title: 'Select File',
+    filesLabel: 'Files',
+    emptyMessage: 'No files in this folder',
+    uploadPrompt: 'Click to upload a file',
+  },
+};
 
 function isImageFile(asset: Asset): boolean {
   return (
@@ -40,27 +74,42 @@ function isImageFile(asset: Asset): boolean {
   );
 }
 
+function isFileAsset(asset: Asset): boolean {
+  return asset.type === 'file';
+}
+
+function getUrl(asset: Asset): string {
+  return (asset as { url?: string }).url ?? '';
+}
+
 function BrowseTab({
+  currentPath,
+  onPathChange,
+  fileFilter,
+  filesLabel,
+  emptyMessage,
   onInsert,
-  rootFolder,
 }: {
+  currentPath: string;
+  onPathChange: (path: string) => void;
+  fileFilter: (asset: Asset) => boolean;
+  filesLabel: string;
+  emptyMessage: string;
   onInsert: (url: string) => void;
-  rootFolder?: string;
 }) {
-  const [currentPath, setCurrentPath] = useState(rootFolder ?? '/');
   const [selectedPath, setSelectedPath] = useState<string | null>(null);
 
-  const { data, isLoading } = useGetAssets(currentPath, 100);
+  const { data, isLoading, error } = useGetAssets(currentPath, 100);
 
   const allAssets = data?.pages.flatMap((page) => page.data) ?? [];
 
   const folders = allAssets.filter((a) => a.type === 'folder');
-  const images = allAssets.filter(isImageFile);
+  const files = allAssets.filter(fileFilter).filter((a) => getUrl(a) !== '');
 
-  const isAtRoot = currentPath === (rootFolder ?? '/');
+  const isAtRoot = currentPath === '/';
 
   const navigateTo = (path: string) => {
-    setCurrentPath(path);
+    onPathChange(path);
     setSelectedPath(null);
   };
 
@@ -68,12 +117,11 @@ function BrowseTab({
     if (isAtRoot) return;
     const parts = currentPath.split('/').filter(Boolean);
     if (parts.length > 0) {
-      navigateTo('/' + parts.slice(0, -1).join('/'));
+      const parent = '/' + parts.slice(0, -1).join('/');
+      navigateTo(parent === '/' ? '/' : parent);
+    } else {
+      navigateTo('/');
     }
-  };
-
-  const getUrl = (asset: Asset): string => {
-    return (asset as { url?: string }).url ?? '';
   };
 
   return (
@@ -94,7 +142,12 @@ function BrowseTab({
         />
       </div>
 
-      {isLoading ? (
+      {error && !isLoading && allAssets.length === 0 ? (
+        <div className="bg-destructive/10 border-destructive/20 text-destructive rounded-md border px-3 py-2 text-sm">
+          Could not load {currentPath}. If this folder does not exist yet,
+          create it in Admin → Assets.
+        </div>
+      ) : isLoading ? (
         <div className="grid grid-cols-3 gap-3">
           {Array.from({ length: 9 }).map((_, i) => (
             <Skeleton key={i} className="aspect-square rounded-md" />
@@ -113,7 +166,7 @@ function BrowseTab({
                     key={folder.name}
                     type="button"
                     onClick={() =>
-                      navigateTo(joinPath(currentPath, folder.name))
+                      navigateTo(joinAssetPath(currentPath, folder.name))
                     }
                     className="hover:bg-accent flex flex-col items-center gap-1 rounded-md border p-3 transition-colors"
                   >
@@ -127,16 +180,17 @@ function BrowseTab({
             </div>
           )}
 
-          {images.length > 0 && (
+          {files.length > 0 && (
             <div>
               <p className="text-muted-foreground mb-2 text-xs font-medium">
-                Images
+                {filesLabel}
               </p>
               <div className="grid grid-cols-3 gap-3">
-                {images.map((asset) => {
+                {files.map((asset) => {
                   const url = getUrl(asset);
-                  const assetPath = joinPath(currentPath, asset.name);
+                  const assetPath = joinAssetPath(currentPath, asset.name);
                   const isSelected = selectedPath === assetPath;
+                  const isImage = isImageFile(asset);
 
                   return (
                     <button
@@ -151,11 +205,20 @@ function BrowseTab({
                           : 'hover:border-muted-foreground/30 border-transparent'
                       }`}
                     >
-                      <img
-                        src={url}
-                        alt={asset.name}
-                        className="h-full w-full object-cover"
-                      />
+                      {isImage ? (
+                        <img
+                          src={url}
+                          alt={asset.name}
+                          className="h-full w-full object-cover"
+                        />
+                      ) : (
+                        <span className="flex h-full w-full flex-col items-center justify-center gap-2 bg-white p-2">
+                          <FileText className="h-10 w-10 text-gray-500" />
+                          <span className="w-full truncate text-center text-[10px] text-gray-700">
+                            {asset.name}
+                          </span>
+                        </span>
+                      )}
                       <div className="absolute right-0 bottom-0 left-0 bg-black/50 px-1 py-0.5">
                         <span className="block truncate text-[10px] text-white">
                           {asset.name}
@@ -168,10 +231,10 @@ function BrowseTab({
             </div>
           )}
 
-          {folders.length === 0 && images.length === 0 && (
+          {folders.length === 0 && files.length === 0 && (
             <div className="text-muted-foreground py-12 text-center">
               <ImageIcon className="mx-auto mb-3 h-12 w-12 opacity-30" />
-              <p className="text-sm">No images in this folder</p>
+              <p className="text-sm">{emptyMessage}</p>
             </div>
           )}
         </>
@@ -181,11 +244,13 @@ function BrowseTab({
         <Button
           disabled={!selectedPath}
           onClick={() => {
-            const selected = images.find(
-              (a) => joinPath(currentPath, a.name) === selectedPath,
+            const selected = files.find(
+              (a) => joinAssetPath(currentPath, a.name) === selectedPath,
             );
             if (selected) {
               onInsert(getUrl(selected));
+            } else {
+              setSelectedPath(null);
             }
           }}
         >
@@ -197,18 +262,20 @@ function BrowseTab({
 }
 
 function UploadTab({
+  uploadPath,
+  accept,
+  uploadPrompt,
   onInsert,
-  folderPath,
 }: {
+  uploadPath: string;
+  accept: string | undefined;
+  uploadPrompt: string;
   onInsert: (url: string) => void;
-  folderPath?: string;
 }) {
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState({ current: 0, total: 0, file: '' });
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const uploadPath = folderPath ?? '/';
 
   const getUploadUrlMutation = useGetUploadUrl();
   const confirmUploadMutation = useConfirmUpload();
@@ -218,7 +285,7 @@ function UploadTab({
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (file.size > MAX_SIZE_BYTES) {
+    if (file.size > MAX_ASSET_UPLOAD_BYTES) {
       setError(
         `File exceeds 50 MB limit (${(file.size / 1024 / 1024).toFixed(1)} MB)`,
       );
@@ -254,7 +321,7 @@ function UploadTab({
         try {
           await deleteAssetMutation.mutateAsync({
             params: {
-              query: { path: joinPath(uploadPath, file.name) },
+              query: { path: joinAssetPath(uploadPath, file.name) },
             },
           });
         } catch {
@@ -265,7 +332,7 @@ function UploadTab({
 
       const confirmResult = await confirmUploadMutation.mutateAsync({
         params: {
-          query: { path: joinPath(uploadPath, file.name) },
+          query: { path: joinAssetPath(uploadPath, file.name) },
         },
       });
 
@@ -273,9 +340,17 @@ function UploadTab({
 
       onInsert(confirmResult.file.url);
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : 'Upload failed. Please try again.',
-      );
+      if ((err as { code?: string })?.code === 'ParentFolderNotFound') {
+        setError(
+          `Folder "${uploadPath}" does not exist yet. Create it in Admin → Assets, then try again.`,
+        );
+      } else {
+        setError(
+          err instanceof Error
+            ? err.message
+            : 'Upload failed. Please try again.',
+        );
+      }
     } finally {
       setUploading(false);
       e.target.value = '';
@@ -290,17 +365,20 @@ function UploadTab({
       >
         <Upload className="text-muted-foreground mx-auto mb-3 h-10 w-10" />
         <p className="text-sm font-medium">
-          {uploading ? 'Uploading...' : 'Click to upload an image'}
+          {uploading ? 'Uploading...' : uploadPrompt}
         </p>
         <p className="text-muted-foreground mt-1 text-xs">
           Max file size: 50 MB
+        </p>
+        <p className="text-muted-foreground mt-1 text-xs">
+          Uploads to {uploadPath}
         </p>
       </div>
 
       <input
         ref={fileInputRef}
         type="file"
-        accept="image/*"
+        accept={accept}
         className="hidden"
         onChange={handleFile}
         disabled={uploading}
@@ -329,17 +407,32 @@ function UploadTab({
   );
 }
 
-export function ImagePickerModal({
+export function AssetPickerModal({
   open,
   onOpenChange,
   onSelect,
   folderPath,
-}: ImagePickerModalProps) {
+  mode = 'image',
+  accept,
+  title,
+  filesLabel,
+  emptyMessage,
+  uploadPrompt,
+}: AssetPickerModalProps) {
+  const defaults = MODE_DEFAULTS[mode];
+  const [currentPath, setCurrentPath] = useState(folderPath ?? '/');
+
+  useEffect(() => {
+    if (open) {
+      setCurrentPath(folderPath ?? '/');
+    }
+  }, [open, folderPath]);
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="flex max-h-[80vh] max-w-2xl flex-col">
         <DialogHeader>
-          <DialogTitle>Insert Image</DialogTitle>
+          <DialogTitle>{title ?? defaults.title}</DialogTitle>
         </DialogHeader>
 
         <Tabs defaultValue="browse" className="flex min-h-0 flex-1 flex-col">
@@ -357,7 +450,11 @@ export function ImagePickerModal({
             className="mt-4 min-h-0 flex-1 overflow-y-auto"
           >
             <BrowseTab
-              rootFolder={folderPath}
+              currentPath={currentPath}
+              onPathChange={setCurrentPath}
+              fileFilter={mode === 'allFiles' ? isFileAsset : isImageFile}
+              filesLabel={filesLabel ?? defaults.filesLabel}
+              emptyMessage={emptyMessage ?? defaults.emptyMessage}
               onInsert={(url) => {
                 onSelect(url);
                 onOpenChange(false);
@@ -370,7 +467,9 @@ export function ImagePickerModal({
             className="mt-4 min-h-0 flex-1 overflow-y-auto"
           >
             <UploadTab
-              folderPath={folderPath}
+              uploadPath={currentPath}
+              accept={accept ?? defaults.accept}
+              uploadPrompt={uploadPrompt ?? defaults.uploadPrompt}
               onInsert={(url) => {
                 onSelect(url);
                 onOpenChange(false);

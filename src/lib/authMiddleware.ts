@@ -46,19 +46,45 @@ async function refreshAccessToken(): Promise<boolean> {
 
 // Create auth middleware that handles 401s by refreshing the token
 export function createAuthMiddleware(): Middleware {
+  // Store a pre-fetch clone of each request so retries don't reuse a
+  // body that has already been consumed. Keyed by openapi-fetch's
+  // per-request id to stay safe under concurrency.
+  const requestBackup = new Map<string, Request>();
+
   return {
-    async onResponse({ response, request }) {
+    async onRequest({ request, id }) {
+      try {
+        requestBackup.set(id, request.clone());
+      } catch {
+        // Cloning can fail for uncloneable bodies; fall back to retrying
+        // with the original request (may fail for POSTs with bodies).
+      }
+      return undefined;
+    },
+    async onResponse({ response, request, id }) {
+      const backup = requestBackup.get(id);
+      requestBackup.delete(id);
+
       // If we get a 401 and it's not the refresh endpoint itself
       if (response.status === 401 && !request.url.includes('/login/refresh')) {
         const refreshed = await refreshAccessToken();
 
         if (refreshed) {
-          // Retry the original request
-          return fetch(request);
+          if (!backup) {
+            return response;
+          }
+          // Retry with the pre-fetch clone. fetch() on the original throws
+          // "Cannot construct a Request with a Request object that has
+          // already been used" for POSTs because the body stream was
+          // consumed by the first attempt.
+          return fetch(backup);
         }
       }
 
       return response;
+    },
+    async onError({ id }) {
+      requestBackup.delete(id);
     },
   };
 }
