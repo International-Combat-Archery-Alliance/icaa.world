@@ -669,7 +669,7 @@ export function AdminEventForm({
               shouldDirty: true,
             })
           }
-          folderPath="/events/images"
+          folderPath="/Event-Logos"
           title="Select Event Logo"
         />
         <AssetPickerModal
@@ -681,7 +681,7 @@ export function AdminEventForm({
               shouldDirty: true,
             })
           }
-          folderPath="/events/documents"
+          folderPath="/Rules-Docs"
           accept=".pdf,.doc,.docx,.txt,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
           title="Select Rules Document"
           mode="allFiles"
