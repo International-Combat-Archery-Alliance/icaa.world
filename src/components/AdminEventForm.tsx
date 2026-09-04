@@ -24,7 +24,7 @@ import {
   SelectContent,
 } from './ui/select';
 import { DateTime, IANAZone } from 'luxon';
-import { AssetPickerModal, isFileAsset } from './AssetPickerModal';
+import { AssetPickerModal } from './AssetPickerModal';
 
 export enum AdminEventMode {
   CREATE,
@@ -647,6 +647,9 @@ export function AdminEventForm({
                   src={field.value}
                   alt="Event logo preview"
                   className="h-16 w-16 rounded border object-contain"
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                  }}
                 />
               ) : null}
               <FormMessage />
@@ -680,9 +683,7 @@ export function AdminEventForm({
           folderPath="/events/documents"
           accept=".pdf,.doc,.docx,.txt,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
           title="Select Rules Document"
-          fileFilter={isFileAsset}
-          filesLabel="Files"
-          emptyMessage="No files in this folder"
+          mode="allFiles"
           uploadPrompt="Click to upload a document"
         />
       </form>

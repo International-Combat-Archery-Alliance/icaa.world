@@ -70,11 +70,14 @@ export function createAuthMiddleware(): Middleware {
         const refreshed = await refreshAccessToken();
 
         if (refreshed) {
-          // Retry with the pre-fetch clone. fetch(request) on the original
-          // throws "Cannot construct a Request with a Request object that
-          // has already been used" for POSTs because the body stream was
+          if (!backup) {
+            return response;
+          }
+          // Retry with the pre-fetch clone. fetch() on the original throws
+          // "Cannot construct a Request with a Request object that has
+          // already been used" for POSTs because the body stream was
           // consumed by the first attempt.
-          return fetch(backup ?? request);
+          return fetch(backup);
         }
       }
 
