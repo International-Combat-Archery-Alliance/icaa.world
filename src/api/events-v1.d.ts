@@ -28,6 +28,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/events/v1/admin/registrations/{eventId}/{email}/confirm": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Manually confirm a registration as paid
+         * @description Admin endpoint to mark an unpaid payment-flow registration as paid when the Stripe webhook failed or can no longer be replayed. Sends the confirmation email on first confirm; repeat calls are idempotent. Notifications are best-effort: a 200 response guarantees the registration is paid, not that the email was delivered.
+         */
+        post: operations["PostEventsV1AdminRegistrationsEventIdEmailConfirm"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/events/v1/admin/registrations/{eventId}/{email}/notify": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Resend registration notifications
+         * @description Admin endpoint to resend the confirmation email and mailing-list signup for a paid registration, e.g. when the original send failed. Only paid registrations can be notified; 200 means the email was sent.
+         */
+        post: operations["PostEventsV1AdminRegistrationsEventIdEmailNotify"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/events/v1/admin/test-email": {
         parameters: {
             query?: never;
@@ -62,6 +102,106 @@ export interface paths {
          * @description Creates a test group in MailerLite and adds the given emails to it. For ByIndividual, each email is added as an individual subscriber. For ByTeam, the first email is the captain and the rest are team players. Names are auto-generated from email prefixes. Admin only.
          */
         post: operations["PostEventsV1AdminTestMailerlite"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/events/v1/teams": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Create a new team
+         * @description Admin endpoint to create a new team (rosters stay empty until player-profiles lands)
+         */
+        post: operations["PostEventsV1Teams"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/events/v1/teams/{teamId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get a team
+         * @description Get one team by id
+         */
+        get: operations["GetEventsV1TeamsTeamId"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/events/v1/{eventId}/games": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get an event schedule
+         * @description Public schedule, QUALIFYING before PLAYOFF with team names joined. Empty until an admin generates it.
+         */
+        get: operations["GetEventsV1EventIdGames"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/events/v1/{eventId}/games/generate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Generate a schedule from CONFIRMED teams
+         * @description Admin-only generate-then-edit start. Round robin emits the whole schedule; Swiss appends one round (defaults to the next unplayed round). Refuses when games exist unless replace is true and no game holds a result.
+         */
+        post: operations["PostEventsV1EventIdGamesGenerate"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/events/v1/{eventId}/games/{gameId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Enter a game score/status
+         * @description Admin score entry. Blocked once the event is FINALIZED (unfinalize first).
+         */
+        put: operations["PutEventsV1EventIdGamesGameId"];
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -107,6 +247,46 @@ export interface paths {
          * @description Starts an event sign up flow
          */
         post: operations["PostEventsV1EventIdRegistrations"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/events/v1/{eventId}/standings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get derived standings
+         * @description Public standings derived at read time from COMPLETED/FORFEIT qualifying games. DNS teams trail unranked.
+         */
+        get: operations["GetEventsV1EventIdStandings"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/events/v1/{eventId}/teams/{teamId}/seed": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Seed a CONFIRMED participation (MVP admin bypass)
+         * @description MVP-only admin path creating a CONFIRMED participation with an empty roster snapshot plus its team-history row, bypassing the Stage C payment lifecycle. Revisit in Stage C.
+         */
+        post: operations["PostEventsV1EventIdTeamsTeamIdSeed"];
         delete?: never;
         options?: never;
         head?: never;
@@ -174,7 +354,7 @@ export interface components {
             message: string;
         };
         /** @enum {string} */
-        ErrorCode: "InternalError" | "LimitOutOfBounds" | "InvalidCursor" | "NotFound" | "EmptyBody" | "InvalidBody" | "AlreadyExists" | "RegistrationClosed" | "InputValidationError" | "AuthError" | "CaptchaInvalid";
+        ErrorCode: "InternalError" | "LimitOutOfBounds" | "InvalidCursor" | "NotFound" | "EmptyBody" | "InvalidBody" | "AlreadyExists" | "Conflict" | "RegistrationClosed" | "RegistrationUnpaid" | "InputValidationError" | "AuthError" | "CaptchaInvalid";
         Event: {
             allowedTeamSizeRange: components["schemas"]["Range"];
             /**
@@ -209,6 +389,7 @@ export interface components {
              * @example 2025-08-19T18:46:53.185Z
              */
             startTime: string;
+            status?: components["schemas"]["EventStatus"];
             /**
              * @description Time zone of the event. Defaults to UTC if not set.
              * @example America/New_York
@@ -222,10 +403,91 @@ export interface components {
             registrationType: components["schemas"]["RegistrationType"];
         };
         /**
+         * @description Lifecycle state of an event (RFC-0002 §3). Optional in the API; defaults server-side to OPENED.
+         * @example OPENED
+         * @enum {string}
+         */
+        EventStatus: "OPENED" | "IN_PROGRESS" | "FINALIZED";
+        /**
          * @example Intermediate
          * @enum {string}
          */
         ExperienceLevel: "Novice" | "Intermediate" | "Advanced";
+        Game: {
+            /**
+             * Format: uuid
+             * @example 00000000-0000-0000-0000-000000000000
+             */
+            readonly eventId: string;
+            /**
+             * @example A
+             * @enum {string|null}
+             */
+            forfeitSide?: "A" | "B" | null;
+            /**
+             * Format: uuid
+             * @example 00000000-0000-0000-0000-000000000000
+             */
+            readonly id: string;
+            phase: components["schemas"]["GamePhase"];
+            /** @example 1 */
+            round: number;
+            /** @example 10 */
+            scoreA?: number | null;
+            /** @example 5 */
+            scoreB?: number | null;
+            /** @example 1 */
+            seq: number;
+            sideA: components["schemas"]["GameSide"];
+            sideB: components["schemas"]["GameSide"];
+            status: components["schemas"]["GameStatus"];
+            /** @example 1 */
+            readonly version: number;
+        };
+        /**
+         * @example ROUND_ROBIN
+         * @enum {string}
+         */
+        GameFormat: "ROUND_ROBIN" | "SWISS";
+        /**
+         * @example QUALIFYING
+         * @enum {string}
+         */
+        GamePhase: "QUALIFYING" | "PLAYOFF";
+        GameSide: {
+            /** @example false */
+            isBye?: boolean;
+            /**
+             * Format: uuid
+             * @example 00000000-0000-0000-0000-000000000000
+             */
+            teamId?: string | null;
+            /** @example Boston Renegades */
+            teamName?: string | null;
+        };
+        /**
+         * @example SCHEDULED
+         * @enum {string}
+         */
+        GameStatus: "SCHEDULED" | "COMPLETED" | "FORFEIT" | "DOUBLE_FORFEIT" | "CANCELLED" | "BYE";
+        GenerateRequest: {
+            format: components["schemas"]["GameFormat"];
+            /**
+             * @description Double round robin with swapped sides (ROUND_ROBIN only).
+             * @example false
+             */
+            mirror?: boolean;
+            /**
+             * @description Delete unplayed games before regenerating (ROUND_ROBIN only; Swiss rounds append). Refused when any game holds a result.
+             * @example false
+             */
+            replace?: boolean;
+            /**
+             * @description Swiss round to generate; defaults to the next unplayed round.
+             * @example 2
+             */
+            round?: number;
+        };
         IndividualRegistration: {
             /**
              * Format: email
@@ -278,6 +540,34 @@ export interface components {
              */
             currency: string;
         };
+        Participation: {
+            /**
+             * Format: uuid
+             * @example 00000000-0000-0000-0000-000000000000
+             */
+            readonly eventId: string;
+            /** @example 0 */
+            rosterSizeAtEvent: number;
+            /**
+             * @description Player UUIDs frozen at entry. Empty in the MVP (no player-profiles yet).
+             * @example []
+             */
+            rosterSnapshot: string[];
+            status: components["schemas"]["ParticipationStatus"];
+            /**
+             * Format: uuid
+             * @example 00000000-0000-0000-0000-000000000000
+             */
+            readonly teamId: string;
+            /** @example 1 */
+            readonly version: number;
+        };
+        /**
+         * @description Lifecycle state of a team's event entry. Seeded CONFIRMED in the MVP bypass.
+         * @example CONFIRMED
+         * @enum {string}
+         */
+        ParticipationStatus: "REGISTERED" | "CONFIRMED" | "WITHDRAWN" | "DNS";
         PlayerInfo: {
             /**
              * Format: email
@@ -289,6 +579,23 @@ export interface components {
             firstName: string;
             /** @example Doe */
             lastName: string;
+        };
+        PutGameRequest: {
+            /**
+             * @example A
+             * @enum {string|null}
+             */
+            forfeitSide?: "A" | "B" | null;
+            /** @example 10 */
+            scoreA?: number | null;
+            /** @example 5 */
+            scoreB?: number | null;
+            status: components["schemas"]["GameStatus"];
+            /**
+             * @description Expected game version for optimistic concurrency.
+             * @example 1
+             */
+            version: number;
         };
         Range: {
             /** @example 5 */
@@ -315,6 +622,64 @@ export interface components {
             numTeams: number;
             /** @example 55 */
             numTotalPlayers: number;
+        };
+        Standing: {
+            /** @example false */
+            dns: boolean;
+            /** @example 5 */
+            gp: number;
+            /** @example 1 */
+            losses: number;
+            /** @example 20 */
+            net: number;
+            /** @example 30 */
+            pa: number;
+            /** @example 50 */
+            pf: number;
+            /**
+             * @description 1-based qualifying order; zero when DNS.
+             * @example 1
+             */
+            rank: number;
+            /**
+             * Format: uuid
+             * @example 00000000-0000-0000-0000-000000000000
+             */
+            teamId: string;
+            /** @example Boston Renegades */
+            teamName: string;
+            /** @example 4 */
+            wins: number;
+        };
+        Team: {
+            /**
+             * Format: uuid
+             * @description Player UUID of the captain. Nullable in the MVP; unverified until player-profiles lands.
+             * @example 00000000-0000-0000-0000-000000000000
+             */
+            captainPlayerId?: string | null;
+            /**
+             * Format: date-time
+             * @example 2025-08-19T18:46:53.185Z
+             */
+            readonly createdAt?: string;
+            /** @example Anytown, USA */
+            homeCity: string;
+            /**
+             * Format: uuid
+             * @example 00000000-0000-0000-0000-000000000000
+             */
+            readonly id: string;
+            /** @example The Fighting Mongooses */
+            name: string;
+            status: components["schemas"]["TeamStatus"];
+            /**
+             * Format: date-time
+             * @example 2025-08-19T18:46:53.185Z
+             */
+            readonly updatedAt?: string;
+            /** @example 1 */
+            readonly version: number;
         };
         TeamRegistration: {
             /**
@@ -352,6 +717,12 @@ export interface components {
             /** @example 1 */
             readonly version: number;
         };
+        /**
+         * @description Lifecycle state of a team. Set server-side on create; no update endpoint yet.
+         * @example ACTIVE
+         * @enum {string}
+         */
+        TeamStatus: "ACTIVE" | "ARCHIVED";
     };
     responses: never;
     parameters: never;
@@ -453,6 +824,128 @@ export interface operations {
             };
         };
     };
+    PostEventsV1AdminRegistrationsEventIdEmailConfirm: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description ID of the event */
+                eventId: string;
+                /** @description Email of the registration (captain email for teams) */
+                email: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The confirmed registration. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /**
+                         * @description True if the registration was already paid before this call.
+                         * @example false
+                         */
+                        alreadyPaid: boolean;
+                        registration: components["schemas"]["Registration"];
+                    };
+                };
+            };
+            /** @description Bad request. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Registration not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Unknown server error. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    PostEventsV1AdminRegistrationsEventIdEmailNotify: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description ID of the event */
+                eventId: string;
+                /** @description Email of the registration (captain email for teams) */
+                email: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Notifications were sent. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        registration: components["schemas"]["Registration"];
+                    };
+                };
+            };
+            /** @description Bad request. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Registration not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Registration is not paid. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Unknown server error. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
     PostEventsV1AdminTestEmail: {
         parameters: {
             query?: never;
@@ -511,12 +1004,10 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": {
-                    /**
-                     * @example [
+                    /** @example [
                      *       "jane.archer@example.com",
                      *       "john.doe@example.com"
-                     *     ]
-                     */
+                     *     ] */
                     emails: string[];
                     /**
                      * @description Name for the test group. Defaults to "MailerLite Test Group".
@@ -557,6 +1048,296 @@ export interface operations {
                 };
             };
             /** @description Failed to test mailerlite integration */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    PostEventsV1Teams: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Team to be created */
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Team"];
+            };
+        };
+        responses: {
+            /** @description The created team. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Team"];
+                };
+            };
+            /** @description Bad request. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Team name is already taken. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Unknown server error. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    GetEventsV1TeamsTeamId: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description ID of the team */
+                teamId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The team */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        team: components["schemas"]["Team"];
+                    };
+                };
+            };
+            /** @description Bad request. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Team not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Unknown server error. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    GetEventsV1EventIdGames: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description ID of the event */
+                eventId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The schedule. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        games: components["schemas"]["Game"][];
+                    };
+                };
+            };
+            /** @description Bad request. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Event not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Unknown server error. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    PostEventsV1EventIdGamesGenerate: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description ID of the event */
+                eventId: string;
+            };
+            cookie?: never;
+        };
+        /** @description Generation request */
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GenerateRequest"];
+            };
+        };
+        responses: {
+            /** @description The generated games. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        games: components["schemas"]["Game"][];
+                    };
+                };
+            };
+            /** @description Bad request. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Event not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Generation refused by event or schedule state. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Unknown server error. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    PutEventsV1EventIdGamesGameId: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description ID of the event */
+                eventId: string;
+                /** @description ID of the game */
+                gameId: string;
+            };
+            cookie?: never;
+        };
+        /** @description Score/status update with the expected version */
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PutGameRequest"];
+            };
+        };
+        responses: {
+            /** @description The updated game. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        game: components["schemas"]["Game"];
+                    };
+                };
+            };
+            /** @description Bad request. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Event or game not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Event FINALIZED or version conflict. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Unknown server error. */
             500: {
                 headers: {
                     [name: string]: unknown;
@@ -756,6 +1537,121 @@ export interface operations {
                 };
             };
             /** @description Someone is already signed up under this email */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Unknown server error. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    GetEventsV1EventIdStandings: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description ID of the event */
+                eventId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The standings. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        standings: components["schemas"]["Standing"][];
+                    };
+                };
+            };
+            /** @description Bad request. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Event not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Unknown server error. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    PostEventsV1EventIdTeamsTeamIdSeed: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description ID of the event */
+                eventId: string;
+                /** @description ID of the team */
+                teamId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The seeded participation. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        participation: components["schemas"]["Participation"];
+                    };
+                };
+            };
+            /** @description Bad request. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Event or team not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Team already participates in this event. */
             409: {
                 headers: {
                     [name: string]: unknown;

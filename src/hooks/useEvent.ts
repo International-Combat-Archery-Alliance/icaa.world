@@ -3,6 +3,50 @@ import { useEventQueryClient } from '../context/eventQueryClientContext';
 import type { paths, components } from '@/api/events-v1';
 
 export type Event = components['schemas']['Event'];
+export type Game = components['schemas']['Game'];
+export type Standing = components['schemas']['Standing'];
+
+const LIVE_REVALIDATE_MS = 15000;
+
+export function liveRevalidateInterval(eventStatus: Event['status']) {
+  return eventStatus === 'IN_PROGRESS' ? LIVE_REVALIDATE_MS : false;
+}
+
+export function useGetGames(
+  eventId: string | undefined,
+  refetchInterval: number | false = false,
+) {
+  const client = useEventQueryClient();
+
+  return client.useQuery(
+    'get',
+    '/events/v1/{eventId}/games',
+    {
+      params: {
+        path: { eventId: eventId! },
+      },
+    },
+    { enabled: !!eventId, refetchInterval },
+  );
+}
+
+export function useGetStandings(
+  eventId: string | undefined,
+  refetchInterval: number | false = false,
+) {
+  const client = useEventQueryClient();
+
+  return client.useQuery(
+    'get',
+    '/events/v1/{eventId}/standings',
+    {
+      params: {
+        path: { eventId: eventId! },
+      },
+    },
+    { enabled: !!eventId, refetchInterval },
+  );
+}
 
 export function useGetEvent(eventId: string | undefined) {
   const client = useEventQueryClient();
