@@ -9,6 +9,8 @@ import { Link, useParams } from 'react-router-dom';
 import { EventDetailsCard } from '@/components/EventRegDetailsCard';
 import { EventScheduleCard } from '@/components/EventScheduleCard';
 import { EventStandingsCard } from '@/components/EventStandingsCard';
+import { AdminScheduleConsole } from '@/components/AdminScheduleConsole';
+import { useUserInfo } from '@/context/userInfoContext';
 import { Skeleton } from './ui/skeleton';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import {
@@ -98,6 +100,8 @@ export default function EventDetailsPage() {
 }
 
 function EventDetailsTemplate({ event }: { event: Event }) {
+  const { userInfo } = useUserInfo();
+  const isAdmin = userInfo?.roles?.includes('ADMIN') ?? false;
   const byIndividualOpt = event.registrationOptions.find(
     (e) => e.registrationType === 'ByIndividual',
   );
@@ -537,6 +541,11 @@ function EventDetailsTemplate({ event }: { event: Event }) {
           </CardContent>
         </Card>
       </div>
+      {isAdmin && !isLegacyBostonEvent ? (
+        <div className="lg:col-span-3">
+          <AdminScheduleConsole eventId={event.id!} />
+        </div>
+      ) : null}
     </div>
   );
 }
