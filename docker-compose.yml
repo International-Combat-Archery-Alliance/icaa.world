@@ -19,7 +19,7 @@ services:
       COLLECTOR_OTLP_ENABLED: 'true'
 
   minio:
-    image: minio/minio:latest
+    image: pgsty/silo:RELEASE.2026-10-18T00-00-00Z
     ports:
       - '9000:9000'
       - '9001:9001'
@@ -33,7 +33,7 @@ services:
   minio-setup:
     depends_on:
       - minio
-    image: minio/mc:latest
+    image: pgsty/mc:RELEASE.2026-10-18T00-00-00Z
     networks:
       - icaa-shared
     entrypoint: /bin/sh -c
