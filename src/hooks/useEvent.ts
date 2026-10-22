@@ -169,3 +169,29 @@ export function useUpdateEvent() {
 
   return client.useMutation('patch', '/events/v1/{id}');
 }
+
+export function useGenerateSchedule() {
+  const client = useEventQueryClient();
+
+  return client.useMutation('post', '/events/v1/{eventId}/games/generate');
+}
+
+export function useUpdateGameScore() {
+  const client = useEventQueryClient();
+
+  return client.useMutation('put', '/events/v1/{eventId}/games/{gameId}');
+}
+
+export function useInvalidateEventSchedule() {
+  const tanstackClient = useQueryClient();
+
+  return (eventId: string) => {
+    const path = { eventId };
+    void tanstackClient.invalidateQueries({
+      queryKey: ['get', '/events/v1/{eventId}/games', { params: { path } }],
+    });
+    void tanstackClient.invalidateQueries({
+      queryKey: ['get', '/events/v1/{eventId}/standings', { params: { path } }],
+    });
+  };
+}
