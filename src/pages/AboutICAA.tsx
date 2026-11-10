@@ -53,13 +53,6 @@ const Leadership = () => {
             actionshot="https://assets.icaa.world/5bd32348-7f85-4e30-9a53-7b7232c8172d.webp"
           />
           <BoardMember
-            name="Timothy Ahong"
-            title="Director"
-            email="timothy.ahong@icaa.world"
-            headshot="https://assets.icaa.world/feb7506d-331a-401a-a37d-a51d02934a33.webp"
-            actionshot="https://assets.icaa.world/dd7d12b1-5735-4014-8ea9-e0207ba41036.webp"
-          />
-          <BoardMember
             name="Yousef Hariri"
             title="Director"
             email="yousef.hariri@icaa.world"
