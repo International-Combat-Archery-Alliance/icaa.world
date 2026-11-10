@@ -61,7 +61,7 @@ const Home = () => {
         <Card className="w-full max-w-[1016px]">
           <div className="aspect-video w-full overflow-hidden rounded-t-lg">
             <iframe
-              src="https://www.youtube.com/embed/Aet-ZNe9X4E"
+              src="https://www.youtube.com/embed/_5QUttXHcxI?si=LCb65stCA4Pa1-Nm"
               title="ESPN8: The Ocho - Combat Archery All Stars 2026"
               className="h-full w-full"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -73,28 +73,17 @@ const Home = () => {
           <div className="p-6 text-center">
             <CardHeader className="mb-4 p-0">
               <CardTitle className="text-primary text-2xl md:text-3xl">
-                ESPN8: The Ocho - Combat Archery All Stars 2026
+                As seen on ESPN8: The Ocho!
               </CardTitle>
-              <CardDescription className="text-lg">
-                The biggest names in Combat Archery compete on the world stage.
-              </CardDescription>
             </CardHeader>
             <CardContent className="mb-6 space-y-4 p-0">
-              <p>
-                The ICAA is proud to partner with ESPN to bring Combat Archery
-                to The Ocho! Watch the top players from across North America
-                battle it out for the title of All-Star Champion.
-              </p>
               <p className="text-primary text-2xl font-bold md:text-3xl">
-                Watch live on ESPN2 August 7th at 3:00 PM EST!
-              </p>
-              <p className="text-secondary text-2xl font-bold md:text-3xl">
-                Also Streaming on ESPN+!
+                Relive the magic on ESPN+ or the video above!
               </p>
             </CardContent>
             <CardFooter className="flex justify-center p-0">
               <Button asChild>
-                <Link to="/espn">See the Rosters & Event Info</Link>
+                <Link to="/espn">See the Rosters & Event Results!</Link>
               </Button>
             </CardFooter>
           </div>
@@ -102,6 +91,35 @@ const Home = () => {
         <div className="w-full max-w-[1016px]">
           <SponsorsBanner sponsors={sponsors} />
         </div>
+         <Card className="w-full max-w-[1016px]">
+          <div className="p-6 text-center">
+            <CardHeader className="mb-4 p-0">
+              <CardTitle className="text-primary text-2xl md:text-3xl">
+                2026 Boston Championships - Saturday November 14th, 2026
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="mb-6 space-y-4 p-0">
+              <p className="text-secondary text-2xl font-bold md:text-3xl">
+                Livestreaming on both Twitch and YouTube! Links below
+              </p>
+
+            </CardContent>
+            <CardFooter className="flex justify-center p-0 gap-10">
+              <Button asChild>
+                <Link to="https://www.twitch.tv/icaa_world">Watch on Twitch!</Link>
+              </Button>
+              <Button asChild>
+                <Link to="https://www.youtube.com/@Icaa-world/streams">Watch on YouTube!</Link>
+              </Button>
+              <Button asChild>
+                <Link to="https://docs.google.com/spreadsheets/d/1P0v-8G1bryNlo8plQ-c2lbOj8Yq1ZTTS_HVZvLTC33k/edit?gid=673306283#gid=673306283">Follow live standings here</Link>
+              </Button>
+              <Button asChild>
+                <Link to="https://icaa.world/events/fa5aa500-a528-4213-9b48-c318d549ad85/event-details">Event Page</Link>
+              </Button>
+            </CardFooter>
+          </div>
+        </Card>
         <div className="w-full max-w-[1016px]">
           <CarouselImages assetPath="/Carousel-Images" />
         </div>
