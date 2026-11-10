@@ -559,7 +559,7 @@ function EventDetailsTemplate({ event }: { event: Event }) {
         </Card>
       </div>
       {/* Schedule */}
-      <div className="lg:col-span-1 lg:col-start-3 lg:row-span-3 lg:row-start-1">
+      <div className="lg:col-span-1 lg:col-start-3 lg:row-span-4 lg:row-start-1">
         <Card className="h-full">
           <CardHeader>
             <CardTitle className="text-primary">Schedule</CardTitle>
@@ -680,7 +680,7 @@ function EventDetailsTemplate({ event }: { event: Event }) {
           <CardHeader>
             <CardTitle className="text-primary">Livestream Links</CardTitle>
           </CardHeader>
-          <CardContent className="flex justify-center p-0 gap-10">
+          <CardContent className="flex justify-center p-6 gap-10">
             <Button asChild>
                 <Link to="https://www.twitch.tv/icaa_world">Watch on Twitch!</Link>
               </Button>
@@ -692,7 +692,7 @@ function EventDetailsTemplate({ event }: { event: Event }) {
       </div>
       
       {/* Rules */}
-      <div className="lg:col-span-2 lg:row-start-3">
+      <div className="lg:col-span-2 lg:row-start-4">
         <Card>
           <CardHeader>
             <CardTitle className="text-primary">Rules</CardTitle>
