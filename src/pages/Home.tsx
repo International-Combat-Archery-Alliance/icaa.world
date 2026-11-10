@@ -5,7 +5,6 @@ import { CarouselImages } from '@/components/CarouselImages';
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
