@@ -298,6 +298,8 @@ function EventDetailsTemplate({ event }: { event: Event }) {
     event.id === '0219a408-e86a-4404-bc0d-473e68b310dc';
   const isBostonChampionships =
     event.id === '78af69ec-e323-436b-96b6-1b5dc9acf46b';
+  const isBoston2026 =
+    event.id === 'fa5aa500-a528-4213-9b48-c318d549ad85';
   return (
     <div className="mx-auto grid max-w-screen-xl grid-cols-1 gap-4 lg:grid-cols-3">
       {/* Details */}
@@ -482,6 +484,12 @@ function EventDetailsTemplate({ event }: { event: Event }) {
                   ))}
                 </TableBody>
               </Table>
+            ) : isBoston2026 ? (
+              <img
+                src="https://assets.icaa.world/c998a8f6-1423-490d-aea2-d44ad249e174.png"
+                alt="2026 Boston Championship Schedule"
+                className="w-full rounded-lg"
+              />
             ) : (
               <p>Schedule coming soon</p>
             )}
