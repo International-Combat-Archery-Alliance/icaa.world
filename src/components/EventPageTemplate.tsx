@@ -209,154 +209,154 @@ function EventDetailsTemplate({ event }: { event: Event }) {
     },
   ];
   const boston2026Schedule = [
-  {
-    game: 1,
-    greenTeam: 'Panic Shooters',
-    greenScore: null,
-    yellowTeam: 'Kitty Party',
-    yellowScore: null,
-  },
-  {
-    game: 2,
-    greenTeam: 'Upstarts',
-    greenScore: null,
-    yellowTeam: 'Vortex',
-    yellowScore: null,
-  },
-  {
-    game: 3,
-    greenTeam: 'TimeOut',
-    greenScore: null,
-    yellowTeam: 'Ottawa',
-    yellowScore: null,
-  },
-  {
-    game: 4,
-    greenTeam: 'Kitty Party',
-    greenScore: null,
-    yellowTeam: 'Renegades',
-    yellowScore: null,
-  },
-  {
-    game: 5,
-    greenTeam: 'Vortex',
-    greenScore: null,
-    yellowTeam: 'Panic Shooters',
-    yellowScore: null,
-  },
-  {
-    game: 6,
-    greenTeam: 'Ottawa',
-    greenScore: null,
-    yellowTeam: 'Upstarts',
-    yellowScore: null,
-  },
-  {
-    game: 7,
-    greenTeam: 'Renegades',
-    greenScore: null,
-    yellowTeam: 'TimeOut',
-    yellowScore: null,
-  },
-  {
-    game: 8,
-    greenTeam: 'Vortex',
-    greenScore: null,
-    yellowTeam: 'Kitty Party',
-    yellowScore: null,
-  },
-  {
-    game: 9,
-    greenTeam: 'Upstarts',
-    greenScore: null,
-    yellowTeam: 'Panic Shooters',
-    yellowScore: null,
-  },
-  {
-    game: 10,
-    greenTeam: 'Renegades',
-    greenScore: null,
-    yellowTeam: 'Ottawa',
-    yellowScore: null,
-  },
-  {
-    game: 11,
-    greenTeam: 'Kitty Party',
-    greenScore: null,
-    yellowTeam: 'TimeOut',
-    yellowScore: null,
-  },
-  {
-    game: 12,
-    greenTeam: 'Ottawa',
-    greenScore: null,
-    yellowTeam: 'Vortex',
-    yellowScore: null,
-  },
-  {
-    game: 13,
-    greenTeam: 'Panic Shooters',
-    greenScore: null,
-    yellowTeam: 'Renegades',
-    yellowScore: null,
-  },
-  {
-    game: 14,
-    greenTeam: 'TimeOut',
-    greenScore: null,
-    yellowTeam: 'Upstarts',
-    yellowScore: null,
-  },
-  {
-    game: 15,
-    greenTeam: 'Ottawa',
-    greenScore: null,
-    yellowTeam: 'Kitty Party',
-    yellowScore: null,
-  },
-  {
-    game: 16,
-    greenTeam: 'Renegades',
-    greenScore: null,
-    yellowTeam: 'Vortex',
-    yellowScore: null,
-  },
-  {
-    game: 17,
-    greenTeam: 'TimeOut',
-    greenScore: null,
-    yellowTeam: 'Panic Shooters',
-    yellowScore: null,
-  },
-  {
-    game: 18,
-    greenTeam: 'Kitty Party',
-    greenScore: null,
-    yellowTeam: 'Upstarts',
-    yellowScore: null,
-  },
-  {
-    game: 19,
-    greenTeam: 'Panic Shooters',
-    greenScore: null,
-    yellowTeam: 'Ottawa',
-    yellowScore: null,
-  },
-  {
-    game: 20,
-    greenTeam: 'Vortex',
-    greenScore: null,
-    yellowTeam: 'TimeOut',
-    yellowScore: null,
-  },
-  {
-    game: 21,
-    greenTeam: 'Upstarts',
-    greenScore: null,
-    yellowTeam: 'Renegades',
-    yellowScore: null,
-  },
-];
+    {
+      game: 1,
+      greenTeam: 'Panic Shooters',
+      greenScore: null,
+      yellowTeam: 'Kitty Party',
+      yellowScore: null,
+    },
+    {
+      game: 2,
+      greenTeam: 'Upstarts',
+      greenScore: null,
+      yellowTeam: 'Vortex',
+      yellowScore: null,
+    },
+    {
+      game: 3,
+      greenTeam: 'TimeOut',
+      greenScore: null,
+      yellowTeam: 'Ottawa',
+      yellowScore: null,
+    },
+    {
+      game: 4,
+      greenTeam: 'Kitty Party',
+      greenScore: null,
+      yellowTeam: 'Renegades',
+      yellowScore: null,
+    },
+    {
+      game: 5,
+      greenTeam: 'Vortex',
+      greenScore: null,
+      yellowTeam: 'Panic Shooters',
+      yellowScore: null,
+    },
+    {
+      game: 6,
+      greenTeam: 'Ottawa',
+      greenScore: null,
+      yellowTeam: 'Upstarts',
+      yellowScore: null,
+    },
+    {
+      game: 7,
+      greenTeam: 'Renegades',
+      greenScore: null,
+      yellowTeam: 'TimeOut',
+      yellowScore: null,
+    },
+    {
+      game: 8,
+      greenTeam: 'Vortex',
+      greenScore: null,
+      yellowTeam: 'Kitty Party',
+      yellowScore: null,
+    },
+    {
+      game: 9,
+      greenTeam: 'Upstarts',
+      greenScore: null,
+      yellowTeam: 'Panic Shooters',
+      yellowScore: null,
+    },
+    {
+      game: 10,
+      greenTeam: 'Renegades',
+      greenScore: null,
+      yellowTeam: 'Ottawa',
+      yellowScore: null,
+    },
+    {
+      game: 11,
+      greenTeam: 'Kitty Party',
+      greenScore: null,
+      yellowTeam: 'TimeOut',
+      yellowScore: null,
+    },
+    {
+      game: 12,
+      greenTeam: 'Ottawa',
+      greenScore: null,
+      yellowTeam: 'Vortex',
+      yellowScore: null,
+    },
+    {
+      game: 13,
+      greenTeam: 'Panic Shooters',
+      greenScore: null,
+      yellowTeam: 'Renegades',
+      yellowScore: null,
+    },
+    {
+      game: 14,
+      greenTeam: 'TimeOut',
+      greenScore: null,
+      yellowTeam: 'Upstarts',
+      yellowScore: null,
+    },
+    {
+      game: 15,
+      greenTeam: 'Ottawa',
+      greenScore: null,
+      yellowTeam: 'Kitty Party',
+      yellowScore: null,
+    },
+    {
+      game: 16,
+      greenTeam: 'Renegades',
+      greenScore: null,
+      yellowTeam: 'Vortex',
+      yellowScore: null,
+    },
+    {
+      game: 17,
+      greenTeam: 'TimeOut',
+      greenScore: null,
+      yellowTeam: 'Panic Shooters',
+      yellowScore: null,
+    },
+    {
+      game: 18,
+      greenTeam: 'Kitty Party',
+      greenScore: null,
+      yellowTeam: 'Upstarts',
+      yellowScore: null,
+    },
+    {
+      game: 19,
+      greenTeam: 'Panic Shooters',
+      greenScore: null,
+      yellowTeam: 'Ottawa',
+      yellowScore: null,
+    },
+    {
+      game: 20,
+      greenTeam: 'Vortex',
+      greenScore: null,
+      yellowTeam: 'TimeOut',
+      yellowScore: null,
+    },
+    {
+      game: 21,
+      greenTeam: 'Upstarts',
+      greenScore: null,
+      yellowTeam: 'Renegades',
+      yellowScore: null,
+    },
+  ];
   const bostonPlayInGameResults = [
     {
       game: 1,
@@ -447,8 +447,7 @@ function EventDetailsTemplate({ event }: { event: Event }) {
     event.id === '0219a408-e86a-4404-bc0d-473e68b310dc';
   const isBostonChampionships =
     event.id === '78af69ec-e323-436b-96b6-1b5dc9acf46b';
-  const isBoston2026 =
-    event.id === 'fa5aa500-a528-4213-9b48-c318d549ad85';
+  const isBoston2026 = event.id === 'fa5aa500-a528-4213-9b48-c318d549ad85';
   return (
     <div className="mx-auto grid max-w-screen-xl grid-cols-1 gap-4 lg:grid-cols-3">
       {/* Details */}
@@ -680,17 +679,21 @@ function EventDetailsTemplate({ event }: { event: Event }) {
           <CardHeader>
             <CardTitle className="text-primary">Livestream Links</CardTitle>
           </CardHeader>
-          <CardContent className="flex justify-center p-6 gap-10">
+          <CardContent className="flex justify-center gap-10 p-6">
             <Button asChild>
-                <Link to="https://www.twitch.tv/icaa_world">Watch on Twitch!</Link>
-              </Button>
-              <Button asChild>
-                <Link to="https://www.youtube.com/@Icaa-world/streams">Watch on YouTube!</Link>
-              </Button>
+              <Link to="https://www.twitch.tv/icaa_world">
+                Watch on Twitch!
+              </Link>
+            </Button>
+            <Button asChild>
+              <Link to="https://www.youtube.com/@Icaa-world/streams">
+                Watch on YouTube!
+              </Link>
+            </Button>
           </CardContent>
         </Card>
       </div>
-      
+
       {/* Rules */}
       <div className="lg:col-span-2 lg:row-start-4">
         <Card>
