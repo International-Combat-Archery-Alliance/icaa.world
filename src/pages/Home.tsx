@@ -68,25 +68,32 @@ const Home = () => {
               <p className="text-secondary text-2xl font-bold md:text-3xl">
                 Livestreaming on both Twitch and YouTube! Links below
               </p>
-
             </CardContent>
-            <CardFooter className="flex justify-center p-0 gap-10">
+            <CardFooter className="flex flex-col items-stretch justify-center gap-3 p-0 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
               <Button asChild>
-                <Link to="https://www.twitch.tv/icaa_world">Watch on Twitch!</Link>
+                <Link to="https://www.twitch.tv/icaa_world">
+                  Watch on Twitch!
+                </Link>
               </Button>
               <Button asChild>
-                <Link to="https://www.youtube.com/@Icaa-world/streams">Watch on YouTube!</Link>
+                <Link to="https://www.youtube.com/@Icaa-world/streams">
+                  Watch on YouTube!
+                </Link>
               </Button>
               <Button asChild>
-                <Link to="https://docs.google.com/spreadsheets/d/1P0v-8G1bryNlo8plQ-c2lbOj8Yq1ZTTS_HVZvLTC33k/edit?gid=673306283#gid=673306283">Follow live standings here</Link>
+                <Link to="https://docs.google.com/spreadsheets/d/1P0v-8G1bryNlo8plQ-c2lbOj8Yq1ZTTS_HVZvLTC33k/edit?gid=673306283#gid=673306283">
+                  Follow live standings here
+                </Link>
               </Button>
               <Button asChild>
-                <Link to="https://icaa.world/events/fa5aa500-a528-4213-9b48-c318d549ad85/event-details">Event Page</Link>
+                <Link to="https://icaa.world/events/fa5aa500-a528-4213-9b48-c318d549ad85/event-details">
+                  Event Page
+                </Link>
               </Button>
             </CardFooter>
           </div>
         </Card>
-        
+
         <Card className="w-full max-w-[1016px]">
           <div className="aspect-video w-full overflow-hidden rounded-t-lg">
             <iframe
@@ -120,7 +127,7 @@ const Home = () => {
         <div className="w-full max-w-[1016px]">
           <SponsorsBanner sponsors={sponsors} />
         </div>
-         
+
         <div className="w-full max-w-[1016px]">
           <CarouselImages assetPath="/Carousel-Images" />
         </div>
