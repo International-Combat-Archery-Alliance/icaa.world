@@ -1,5 +1,11 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Images } from 'lucide-react';
+import {
+  ChevronLeft,
+  ChevronRight,
+  GalleryHorizontal,
+  Images,
+  LayoutGrid,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -11,6 +17,10 @@ import {
   resolveMediaRender,
   type EventMediaItem,
 } from '@/lib/eventMediaGrouping';
+import { paginateGallery } from '@/lib/galleryPagination';
+import { cn } from '@/lib/utils';
+
+type GalleryViewMode = 'carousel' | 'gallery';
 
 interface EventFolderCardProps {
   item: EventMediaItem;
@@ -19,6 +29,7 @@ interface EventFolderCardProps {
 function EventFolderCard({ item }: EventFolderCardProps) {
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [activeSlideIndex, setActiveSlideIndex] = useState(0);
+  const [pageIndex, setPageIndex] = useState(0);
   const { data, isLoading, error } = useGetAssets(item.source, 100);
 
   const assets = useMemo(
@@ -31,6 +42,18 @@ function EventFolderCard({ item }: EventFolderCardProps) {
   );
 
   const imageCount = render.section === 'folders' ? render.images.length : 0;
+  const isImageMode =
+    render.section === 'folders' &&
+    (render.mode === 'carousel' || render.mode === 'gallery');
+  const resolvedViewMode: GalleryViewMode =
+    render.section === 'folders' && render.mode === 'gallery'
+      ? 'gallery'
+      : 'carousel';
+  const [viewMode, setViewMode] = useState<GalleryViewMode>(resolvedViewMode);
+
+  useEffect(() => {
+    setViewMode(resolvedViewMode);
+  }, [resolvedViewMode]);
 
   useEffect(() => {
     if (activeSlideIndex >= imageCount) setActiveSlideIndex(0);
@@ -60,10 +83,13 @@ function EventFolderCard({ item }: EventFolderCardProps) {
 
   const carouselIndex =
     activeSlideIndex < render.images.length ? activeSlideIndex : 0;
+  const galleryPage = paginateGallery(render.images, pageIndex);
+  const viewAllStartIndex =
+    viewMode === 'gallery' ? galleryPage.startIndex : carouselIndex;
 
   return (
     <Card>
-      <CardHeader className="flex flex-row items-start justify-between gap-4">
+      <CardHeader className="flex flex-row flex-wrap items-start justify-between gap-4">
         <div className="space-y-1">
           <CardTitle className="text-primary">
             {item.title || 'Event Photos'}
@@ -73,21 +99,53 @@ function EventFolderCard({ item }: EventFolderCardProps) {
           )}
         </div>
         {render.images.length > 0 && (
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={() =>
-              setLightboxIndex(render.mode === 'carousel' ? carouselIndex : 0)
-            }
-          >
-            <Images aria-hidden="true" className="mr-2 size-4" />
-            View all photos ({render.images.length})
-          </Button>
+          <div className="flex flex-wrap items-center justify-end gap-2">
+            {isImageMode && imageCount >= 3 && (
+              <div className="border-border bg-muted/50 inline-flex items-center gap-0.5 rounded-md border p-0.5">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  aria-pressed={viewMode === 'carousel'}
+                  className={cn(
+                    'h-7 px-2',
+                    viewMode === 'carousel' && 'bg-background shadow-xs',
+                  )}
+                  onClick={() => setViewMode('carousel')}
+                >
+                  <GalleryHorizontal aria-hidden="true" className="size-4" />
+                  Carousel
+                </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  aria-pressed={viewMode === 'gallery'}
+                  className={cn(
+                    'h-7 px-2',
+                    viewMode === 'gallery' && 'bg-background shadow-xs',
+                  )}
+                  onClick={() => setViewMode('gallery')}
+                >
+                  <LayoutGrid aria-hidden="true" className="size-4" />
+                  Grid
+                </Button>
+              </div>
+            )}
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => setLightboxIndex(viewAllStartIndex)}
+            >
+              <Images aria-hidden="true" className="mr-2 size-4" />
+              View all photos ({render.images.length})
+            </Button>
+          </div>
         )}
       </CardHeader>
       <CardContent className="space-y-4">
-        {render.mode === 'carousel' && (
+        {isImageMode && viewMode === 'carousel' && (
           <CarouselImages
             assetPath={item.source}
             autoplay={false}
@@ -95,25 +153,64 @@ function EventFolderCard({ item }: EventFolderCardProps) {
             onSlideChange={setActiveSlideIndex}
           />
         )}
-        {render.mode === 'gallery' && (
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-            {render.images.map((image, index) => (
-              <button
-                key={`${image.path}/${image.name}`}
-                type="button"
-                onClick={() => setLightboxIndex(index)}
-                aria-label={`View ${image.name}`}
-                className="group focus-visible:ring-ring overflow-hidden rounded-lg focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
-              >
-                <img
-                  src={image.url}
-                  alt={image.name}
-                  loading="lazy"
-                  className="aspect-square w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                />
-              </button>
-            ))}
-          </div>
+        {isImageMode && viewMode === 'gallery' && (
+          <>
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+              {galleryPage.items.map((image, index) => (
+                <button
+                  key={`${image.path}/${image.name}`}
+                  type="button"
+                  onClick={() =>
+                    setLightboxIndex(galleryPage.startIndex + index)
+                  }
+                  aria-label={`View ${image.name}`}
+                  className="group focus-visible:ring-ring overflow-hidden rounded-lg focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+                >
+                  <img
+                    src={image.url}
+                    alt={image.name}
+                    loading="lazy"
+                    className="aspect-square w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  />
+                </button>
+              ))}
+            </div>
+            {galleryPage.pageCount > 1 && (
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <p className="text-muted-foreground text-sm tabular-nums">
+                  Showing {galleryPage.startIndex + 1}–{galleryPage.endIndex} of{' '}
+                  {galleryPage.totalCount}
+                </p>
+                <div className="flex items-center gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    disabled={galleryPage.pageIndex === 0}
+                    onClick={() => setPageIndex(galleryPage.pageIndex - 1)}
+                  >
+                    <ChevronLeft aria-hidden="true" className="size-4" />
+                    Previous
+                  </Button>
+                  <span className="text-muted-foreground text-sm tabular-nums">
+                    Page {galleryPage.pageIndex + 1} of {galleryPage.pageCount}
+                  </span>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    disabled={
+                      galleryPage.pageIndex === galleryPage.pageCount - 1
+                    }
+                    onClick={() => setPageIndex(galleryPage.pageIndex + 1)}
+                  >
+                    Next
+                    <ChevronRight aria-hidden="true" className="size-4" />
+                  </Button>
+                </div>
+              </div>
+            )}
+          </>
         )}
         {render.mode === 'file_list' && <EventFileRows files={render.files} />}
         {render.mode !== 'file_list' && render.otherFiles.length > 0 && (
