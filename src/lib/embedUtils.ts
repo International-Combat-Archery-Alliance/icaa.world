@@ -50,6 +50,17 @@ const TWITCH_CHANNEL = /^[a-zA-Z0-9_]{2,25}$/;
 const TWITCH_CLIP_SLUG = /^[A-Za-z0-9_-]{2,100}$/;
 const PDF_PATH = /\.pdf$/i;
 
+const YOUTU_BE_RESERVED_SEGMENTS = new Set([
+  'channel',
+  'feed',
+  'live',
+  'playlist',
+  'results',
+  'shorts',
+  'videoseries',
+  'watch',
+]);
+
 const TWITCH_RESERVED_PATHS = new Set([
   'about',
   'clip',
@@ -135,6 +146,7 @@ function parseYouTubeUrl(raw: string): YouTubeTarget | null {
 
   if (url.hostname.toLowerCase() === 'youtu.be') {
     if (segments.length !== 1) return null;
+    if (YOUTU_BE_RESERVED_SEGMENTS.has(segments[0].toLowerCase())) return null;
     return toYouTubeTarget(segments[0], listParam);
   }
 
@@ -257,6 +269,7 @@ function detectEmbedFromUrl(url: string): EmbedBlockData | null {
         ? serviceConfig.id(groups)
         : (groups.shift() ?? '');
       const embedUrl = serviceConfig.embedUrl.replace(/<%= remote_id %>/g, id);
+      if (!parseAbsoluteHttpUrl(embedUrl)) continue;
       return {
         service: serviceName,
         source: url,
@@ -270,9 +283,8 @@ function detectEmbedFromUrl(url: string): EmbedBlockData | null {
   return null;
 }
 
-function isPdfUrl(url: string): boolean {
-  const parsed = parseAbsoluteHttpUrl(url);
-  return parsed !== null && PDF_PATH.test(parsed.pathname);
+function isPdfUrl(url: URL): boolean {
+  return PDF_PATH.test(url.pathname);
 }
 
 function buildPdfEmbedData(url: string): EmbedBlockData {
@@ -286,10 +298,7 @@ function buildPdfEmbedData(url: string): EmbedBlockData {
   };
 }
 
-function buildGenericEmbedData(url: string): EmbedBlockData | null {
-  const parsed = parseAbsoluteHttpUrl(url);
-  if (!parsed || hasCredentials(parsed)) return null;
-
+function buildGenericEmbedData(url: string): EmbedBlockData {
   return {
     service: 'generic',
     source: url,
@@ -327,18 +336,24 @@ function buildEventMediaEmbedData(
 }
 
 function buildEmbedData(url: string): EmbedBlockData | null {
-  const providerEmbed = buildEventMediaEmbedData(url);
-  if (providerEmbed) return providerEmbed;
-
   const parsed = parseAbsoluteHttpUrl(url);
-  if (parsed) {
-    const host = parsed.hostname.toLowerCase();
-    if (YOUTUBE_HOSTS.has(host) || TWITCH_HOSTS.has(host)) return null;
+  if (!parsed || hasCredentials(parsed)) return null;
+
+  const providerEmbed = buildEventMediaEmbedData(url);
+  if (providerEmbed) {
+    // @editorjs/embed registers twitch-channel/twitch-video, not twitch, and
+    // render() looks the service up by key.
+    return providerEmbed.service === 'twitch'
+      ? { ...providerEmbed, service: 'twitch-channel' }
+      : providerEmbed;
   }
+
+  const host = parsed.hostname.toLowerCase();
+  if (YOUTUBE_HOSTS.has(host) || TWITCH_HOSTS.has(host)) return null;
 
   const detected = detectEmbedFromUrl(url);
   if (detected) return detected;
-  if (isPdfUrl(url)) return buildPdfEmbedData(url);
+  if (isPdfUrl(parsed)) return buildPdfEmbedData(url);
   return buildGenericEmbedData(url);
 }
 

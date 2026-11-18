@@ -89,6 +89,9 @@ describe('buildEventMediaEmbedData: YouTube', () => {
     'https://www.youtube.com/playlist',
     'https://www.youtube.com/playlist?list=bad',
     'https://youtu.be/dQw4w9WgXcQ/extra',
+    'https://youtu.be/playlist?list=PL1234567890abcdef',
+    'https://youtu.be/videoseries',
+    'https://youtu.be/watch?v=dQw4w9WgXcQ',
     'https://www.youtube.com/@Icaa-world/streams',
     'https://www.youtube.com/channel/UC1234567890',
   ])('rejects unsupported YouTube shape %s', (url) => {
@@ -255,6 +258,33 @@ describe('buildEventMediaEmbedData: Twitch', () => {
   });
 });
 
+describe('buildEventMediaEmbedData: trailing slashes', () => {
+  it.each([
+    [
+      'https://youtu.be/dQw4w9WgXcQ/',
+      'https://www.youtube.com/embed/dQw4w9WgXcQ',
+    ],
+    [
+      'https://www.youtube.com/live/dQw4w9WgXcQ/',
+      'https://www.youtube.com/embed/dQw4w9WgXcQ',
+    ],
+    [
+      'https://www.twitch.tv/icaa_world/',
+      'https://player.twitch.tv/?channel=icaa_world&parent=localhost&autoplay=false',
+    ],
+    [
+      'https://www.twitch.tv/videos/987654321/',
+      'https://player.twitch.tv/?video=v987654321&parent=localhost&autoplay=false',
+    ],
+    [
+      'https://clips.twitch.tv/AwkwardHelplessSalamanderSwiftRage/',
+      'https://clips.twitch.tv/embed?clip=AwkwardHelplessSalamanderSwiftRage&parent=localhost&autoplay=false',
+    ],
+  ])('embeds %s', (url, expected) => {
+    expect(buildEventMediaEmbedData(url)?.embed).toBe(expected);
+  });
+});
+
 describe('buildEventMediaEmbedData: rejections', () => {
   it.each([
     'javascript:alert(1)',
@@ -275,7 +305,21 @@ describe('buildEmbedData', () => {
     expect(buildEmbedData(YOUTUBE_WATCH)?.service).toBe('youtube');
     expect(
       buildEmbedData('https://www.twitch.tv/videos/987654321')?.service,
-    ).toBe('twitch');
+    ).toBe('twitch-channel');
+  });
+
+  it('uses a service key that @editorjs/embed can render', () => {
+    const embed = buildEmbedData('https://www.twitch.tv/videos/987654321');
+    expect(embed?.service).not.toBe('twitch');
+    expect(embed?.embed).toBe(
+      'https://player.twitch.tv/?video=v987654321&parent=localhost&autoplay=false',
+    );
+  });
+
+  it('does not return a data: embed URL from detector services', () => {
+    const embed = buildEmbedData('https://gist.github.com/someone/abc123');
+    expect(embed?.service).toBe('generic');
+    expect(embed?.embed.startsWith('data:')).toBe(false);
   });
 
   it('embeds PDFs through the Google Drive viewer', () => {
@@ -319,10 +363,13 @@ describe('buildEmbedData', () => {
 
   it.each([
     'javascript:alert(1)',
+    'javascript:alert(1)//https://www.youtube.com/watch?v=dQw4w9WgXcQ',
     'data:text/html,<script>alert(1)</script>',
+    'data:text/html,https://www.reddit.com/r/archery',
     'vbscript:msgbox(1)',
     'file:///etc/passwd',
     'https://user:pass@example.com/page',
+    'https://user:pass@example.com/bracket.pdf',
     'not a url',
     '',
   ])('rejects %s', (url) => {
