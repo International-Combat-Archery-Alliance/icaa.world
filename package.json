@@ -11,6 +11,7 @@
     "lint:fix": "oxlint --fix --deny-warnings",
     "format": "oxfmt .",
     "format:check": "oxfmt --check .",
+    "test": "bun test",
     "prepare": "husky",
     "run-shared-infra": "docker compose up -d",
     "run-login-service": "cd ../login && make local",
@@ -23,6 +24,7 @@
     "run-all-backend": "bun run-shared-infra && concurrently \"bun run-login-service\" \"bun run-event-service\" \"bun run-assets-service\" \"bun run-articles-service\" \"bun run-donation-service\" \"bun run-mailing-list-service\" \"bun run-voting-service\""
   },
   "devDependencies": {
+    "@types/bun": "^1.4.4",
     "@types/luxon": "^3.7.4",
     "concurrently": "^10.0.4",
     "husky": "^9.1.7",
