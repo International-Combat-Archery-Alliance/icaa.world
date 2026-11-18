@@ -1,7 +1,8 @@
 import { useEffect } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
+import { downloadAssetFile } from '@/lib/assetUtils';
 
 interface MediaLightboxImage {
   url: string;
@@ -89,13 +90,23 @@ function MediaLightbox({
             </>
           )}
         </div>
-        <div className="flex items-center justify-center gap-3 text-xs text-white/80">
+        <div className="flex flex-wrap items-center justify-center gap-3 text-xs text-white/80">
           {activeImage.alt && (
             <span className="truncate">{activeImage.alt}</span>
           )}
           <span className="rounded-full bg-white/10 px-2 py-0.5 tabular-nums">
             {activeIndex + 1} / {images.length}
           </span>
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={() =>
+              void downloadAssetFile(activeImage.url, activeImage.alt)
+            }
+          >
+            <Download aria-hidden="true" className="size-4" />
+            Download
+          </Button>
         </div>
       </DialogContent>
     </Dialog>

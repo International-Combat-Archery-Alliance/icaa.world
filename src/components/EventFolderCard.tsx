@@ -2,8 +2,8 @@ import { useEffect, useMemo, useState } from 'react';
 import {
   ChevronLeft,
   ChevronRight,
+  Download,
   GalleryHorizontal,
-  Images,
   LayoutGrid,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -13,6 +13,7 @@ import { CarouselImages } from '@/components/CarouselImages';
 import { EventFileRows } from '@/components/EventFileRows';
 import { MediaLightbox } from '@/components/MediaLightbox';
 import { useGetAssets } from '@/hooks/useAssets';
+import { downloadAssetFile } from '@/lib/assetUtils';
 import {
   resolveMediaRender,
   type EventMediaItem,
@@ -83,9 +84,8 @@ function EventFolderCard({ item }: EventFolderCardProps) {
 
   const carouselIndex =
     activeSlideIndex < render.images.length ? activeSlideIndex : 0;
+  const carouselImage = render.images[carouselIndex];
   const galleryPage = paginateGallery(render.images, pageIndex);
-  const viewAllStartIndex =
-    viewMode === 'gallery' ? galleryPage.startIndex : carouselIndex;
 
   return (
     <Card>
@@ -100,6 +100,10 @@ function EventFolderCard({ item }: EventFolderCardProps) {
         </div>
         {render.images.length > 0 && (
           <div className="flex flex-wrap items-center justify-end gap-2">
+            <span className="text-muted-foreground text-sm tabular-nums">
+              {render.images.length}{' '}
+              {render.images.length === 1 ? 'photo' : 'photos'}
+            </span>
             {isImageMode && imageCount >= 3 && (
               <div className="border-border bg-muted/50 inline-flex items-center gap-0.5 rounded-md border p-0.5">
                 <Button
@@ -132,47 +136,76 @@ function EventFolderCard({ item }: EventFolderCardProps) {
                 </Button>
               </div>
             )}
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => setLightboxIndex(viewAllStartIndex)}
-            >
-              <Images aria-hidden="true" className="mr-2 size-4" />
-              View all photos ({render.images.length})
-            </Button>
           </div>
         )}
       </CardHeader>
       <CardContent className="space-y-4">
         {isImageMode && viewMode === 'carousel' && (
-          <CarouselImages
-            assetPath={item.source}
-            autoplay={false}
-            onImageClick={setLightboxIndex}
-            onSlideChange={setActiveSlideIndex}
-          />
+          <>
+            <CarouselImages
+              assetPath={item.source}
+              autoplay={false}
+              onImageClick={setLightboxIndex}
+              onSlideChange={setActiveSlideIndex}
+            />
+            {carouselImage && (
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <p className="text-muted-foreground text-sm tabular-nums">
+                  Photo {carouselIndex + 1} of {render.images.length}
+                </p>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() =>
+                    void downloadAssetFile(
+                      carouselImage.url,
+                      carouselImage.name,
+                    )
+                  }
+                >
+                  <Download aria-hidden="true" className="size-4" />
+                  Download photo
+                </Button>
+              </div>
+            )}
+          </>
         )}
         {isImageMode && viewMode === 'gallery' && (
           <>
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
               {galleryPage.items.map((image, index) => (
-                <button
+                <div
                   key={`${image.path}/${image.name}`}
-                  type="button"
-                  onClick={() =>
-                    setLightboxIndex(galleryPage.startIndex + index)
-                  }
-                  aria-label={`View ${image.name}`}
-                  className="group focus-visible:ring-ring overflow-hidden rounded-lg focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+                  className="group relative overflow-hidden rounded-lg"
                 >
-                  <img
-                    src={image.url}
-                    alt={image.name}
-                    loading="lazy"
-                    className="aspect-square w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                  />
-                </button>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setLightboxIndex(galleryPage.startIndex + index)
+                    }
+                    aria-label={`View ${image.name}`}
+                    className="focus-visible:ring-ring block w-full cursor-zoom-in rounded-lg focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+                  >
+                    <img
+                      src={image.url}
+                      alt={image.name}
+                      loading="lazy"
+                      className="aspect-square w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    />
+                  </button>
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    size="icon"
+                    aria-label={`Download ${image.name}`}
+                    className="absolute right-2 bottom-2 size-9 border-0 bg-black/60 text-white shadow-sm backdrop-blur-sm hover:bg-black/75"
+                    onClick={() =>
+                      void downloadAssetFile(image.url, image.name)
+                    }
+                  >
+                    <Download aria-hidden="true" className="size-4" />
+                  </Button>
+                </div>
               ))}
             </div>
             {galleryPage.pageCount > 1 && (

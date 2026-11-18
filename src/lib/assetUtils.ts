@@ -68,6 +68,51 @@ export function getFolderNameError(name: string): string | null {
   return null;
 }
 
+function isAbortError(error: unknown): boolean {
+  return error instanceof Error && error.name === 'AbortError';
+}
+
+async function tryShareAsset(file: File): Promise<boolean> {
+  if (navigator.maxTouchPoints === 0) return false;
+  if (!navigator.canShare?.({ files: [file] })) return false;
+
+  try {
+    await navigator.share({ files: [file] });
+  } catch (error) {
+    if (!isAbortError(error)) return false;
+  }
+
+  return true;
+}
+
+export async function downloadAssetFile(
+  url: string,
+  fileName: string,
+): Promise<void> {
+  try {
+    const response = await fetch(url);
+    if (!response.ok) throw new Error('Download fetch failed');
+    const blob = await response.blob();
+
+    // Mobile share sheets save the image to Photos or the camera roll;
+    // blob downloads land in Files, which users rarely find.
+    const file = new File([blob], fileName, { type: blob.type });
+    if (await tryShareAsset(file)) return;
+
+    const objectUrl = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = objectUrl;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(objectUrl);
+  } catch {
+    // Cross-origin CDN responses without CORS headers cannot be read as blobs.
+    window.open(url, '_blank', 'noopener,noreferrer');
+  }
+}
+
 export function isCanonicalAssetFolderPath(path: string): boolean {
   if (!path.startsWith('/')) {
     return false;
