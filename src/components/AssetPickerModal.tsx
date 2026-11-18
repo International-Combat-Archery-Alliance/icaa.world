@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type RefObject } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import {
   Folder,
@@ -38,7 +38,7 @@ type AssetPickerMode = 'image' | 'allFiles' | 'folder';
 interface AssetPickerModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSelect: (url: string) => void;
+  onSelect: (selection: string) => void;
   folderPath?: string;
   mode?: AssetPickerMode;
   accept?: string;
@@ -178,6 +178,7 @@ function BrowseTab({
   const navigateTo = (path: string) => {
     onPathChange(path);
     setSelectedPath(null);
+    setNewFolderError(null);
   };
 
   const navigateUp = () => {
@@ -198,6 +199,8 @@ function BrowseTab({
   };
 
   const createFolder = async () => {
+    if (createFolderMutation.isPending) return;
+
     const validationError = getFolderNameError(newFolderName);
     if (validationError) {
       setNewFolderError(validationError);
@@ -268,6 +271,7 @@ function BrowseTab({
               aria-label="New folder name"
               placeholder="Folder name"
               className="bg-white"
+              disabled={createFolderMutation.isPending}
               onChange={(e) => {
                 setNewFolderName(e.target.value);
                 setNewFolderError(null);
@@ -436,12 +440,14 @@ function UploadTab({
   uploadPath,
   accept,
   uploadPrompt,
+  sessionRef,
   onBatchComplete,
 }: {
   uploadPath: string;
   accept: string | undefined;
   uploadPrompt: string;
-  onBatchComplete: (result: UploadBatchResult) => void;
+  sessionRef: RefObject<number>;
+  onBatchComplete: (result: UploadBatchResult, sessionId: number) => void;
 }) {
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState({
@@ -504,6 +510,8 @@ function UploadTab({
     const files = Array.from(e.target.files ?? []);
     if (files.length === 0) return;
 
+    const sessionId = sessionRef.current;
+
     setUploading(true);
     setUploadedCount(0);
     setFailures([]);
@@ -546,7 +554,10 @@ function UploadTab({
     setProgress({ current: 0, total: 0, fileName: '' });
     e.target.value = '';
 
-    onBatchComplete({ urls: confirmedUrls, failures: batchFailures });
+    onBatchComplete(
+      { urls: confirmedUrls, failures: batchFailures },
+      sessionId,
+    );
   };
 
   return (
@@ -629,12 +640,19 @@ export function AssetPickerModal({
 }: AssetPickerModalProps) {
   const defaults = MODE_DEFAULTS[mode];
   const [currentPath, setCurrentPath] = useState(folderPath ?? '/');
+  const sessionRef = useRef(0);
 
   useEffect(() => {
     if (open) {
       setCurrentPath(folderPath ?? '/');
     }
   }, [open, folderPath]);
+
+  // Bumping the session on every open/close lets in-flight uploads from a
+  // previous modal session be ignored when they finish.
+  useEffect(() => {
+    sessionRef.current += 1;
+  }, [open]);
 
   const emitSelection = (selection: string) => {
     onSelect(selection);
@@ -681,14 +699,23 @@ export function AssetPickerModal({
               uploadPath={currentPath}
               accept={accept ?? defaults.accept}
               uploadPrompt={uploadPrompt ?? defaults.uploadPrompt}
-              onBatchComplete={({ urls, failures }) => {
+              sessionRef={sessionRef}
+              onBatchComplete={({ urls, failures }, sessionId) => {
+                if (sessionId !== sessionRef.current) return;
+
                 if (urls.length > 0) {
                   onBatchUploaded?.(urls);
                 }
 
-                const keepOpen =
-                  mode === 'folder' || failures.length > 0 || urls.length === 0;
-                if (keepOpen) return;
+                if (mode === 'folder' || urls.length === 0) return;
+
+                if (failures.length > 0) {
+                  // Keep the dialog open so the user sees the failure report,
+                  // but still hand the last confirmed file to single-select
+                  // callers.
+                  onSelect(urls[urls.length - 1]);
+                  return;
+                }
 
                 emitSelection(urls[urls.length - 1]);
               }}

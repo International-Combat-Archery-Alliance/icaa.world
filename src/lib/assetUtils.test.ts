@@ -14,6 +14,10 @@ describe('joinAssetPath', () => {
 });
 
 describe('getFolderNameError', () => {
+  it('matches the API limit of 255 characters', () => {
+    expect(MAX_ASSET_FOLDER_NAME_LENGTH).toBe(255);
+  });
+
   it.each(['events', 'boston-2026', 'Photos_2026', 'a b'])(
     'accepts %s',
     (name) => {

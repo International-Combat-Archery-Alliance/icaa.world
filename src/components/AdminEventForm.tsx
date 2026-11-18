@@ -36,6 +36,7 @@ import {
   MAX_EVENT_MEDIA_ITEMS,
   createEventMediaItemSchema,
   findDuplicateMediaItemIds,
+  isEventMediaUrl,
   supportsDisplayMode,
   toEventMediaFormItem,
   toEventMediaPayload,
@@ -217,9 +218,15 @@ export function AdminEventForm({
       });
     }
 
-    const changesStorageKind =
-      (type === 'asset_folder') !== (current.type === 'asset_folder');
-    if (changesStorageKind) {
+    const sourceKind = (mediaType: EventMediaTypeValue): string => {
+      if (mediaType === 'asset_folder') return 'folder';
+      // asset_file uses the read-only asset picker, so it must never inherit
+      // arbitrary free-text URLs from video or external_link.
+      if (mediaType === 'asset_file') return 'picker';
+      return 'freeText';
+    };
+
+    if (sourceKind(type) !== sourceKind(current.type)) {
       form.setValue(`media.${index}.source`, '', { shouldDirty: true });
     }
   };
@@ -797,12 +804,16 @@ export function AdminEventForm({
               const isAssetType =
                 mediaItem.type === 'asset_folder' ||
                 mediaItem.type === 'asset_file';
+              const trimmedSource = mediaItem.source.trim();
               const showsLinkFallbackHint =
                 mediaItem.type === 'video' &&
-                mediaItem.source.trim() !== '' &&
+                trimmedSource !== '' &&
                 (mediaItem.displayMode === 'auto' ||
                   mediaItem.displayMode === 'embed') &&
-                buildEventMediaEmbedData(mediaItem.source) === null;
+                isEventMediaUrl(trimmedSource, {
+                  allowLoopbackHttp: import.meta.env.DEV,
+                }) &&
+                buildEventMediaEmbedData(trimmedSource) === null;
 
               return (
                 <div

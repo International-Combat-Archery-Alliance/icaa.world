@@ -102,7 +102,7 @@ const EVENT_MEDIA_ICON_LABELS: Record<EventMediaIconValue, string> = {
   external_link: 'External Link',
 };
 
-const LOOPBACK_HOSTS = new Set(['localhost', '127.0.0.1']);
+const LOOPBACK_HOSTS = new Set(['localhost', '127.0.0.1', '[::1]']);
 
 const FOLDER_SOURCE_ERROR =
   'Use an asset folder path that starts with "/" and has no trailing slash, empty, "." or ".." segments, backslashes, query, or fragment.';
@@ -131,7 +131,13 @@ export function isEventMediaUrl(
   value: string,
   options: { allowLoopbackHttp?: boolean } = {},
 ): boolean {
-  if (/\s/.test(value) || value.includes('\\')) {
+  if (/\s/.test(value) || /\p{Cc}/u.test(value) || value.includes('\\')) {
+    return false;
+  }
+
+  // Go's url.Parse treats "https://@example.com/path" as having userinfo,
+  // while WHATWG URL normalizes it to an empty username. Reject it directly.
+  if (/^https?:\/\/[^/?#]*@/i.test(value)) {
     return false;
   }
 

@@ -1,5 +1,6 @@
 export const MAX_ASSET_UPLOAD_BYTES = 50 * 1024 * 1024;
-export const MAX_ASSET_FOLDER_NAME_LENGTH = 100;
+// Matches CreateFolderRequest.name maxLength in assets-api/spec/api.yaml.
+export const MAX_ASSET_FOLDER_NAME_LENGTH = 255;
 
 const INVALID_FOLDER_NAME_CHARS = /[/\\?#%\p{Cc}]/u;
 

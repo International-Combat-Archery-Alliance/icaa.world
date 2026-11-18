@@ -92,7 +92,26 @@ describe('isEventMediaUrl', () => {
     const options = { allowLoopbackHttp: true };
     expect(isEventMediaUrl('http://localhost:3000/page', options)).toBe(true);
     expect(isEventMediaUrl('http://127.0.0.1/file.pdf', options)).toBe(true);
+    expect(isEventMediaUrl('http://[::1]:3000/video.mp4', options)).toBe(true);
     expect(isEventMediaUrl('http://example.com/page', options)).toBe(false);
+  });
+
+  it('rejects IPv6 loopback http outside development', () => {
+    expect(isEventMediaUrl('http://[::1]:3000/video.mp4')).toBe(false);
+  });
+
+  it('rejects control characters', () => {
+    expect(isEventMediaUrl('https://example.com/\u0000file.pdf')).toBe(false);
+    expect(isEventMediaUrl('https://example.com/\u0007file.pdf')).toBe(false);
+  });
+
+  it('rejects empty-credential userinfo like the Go backend', () => {
+    expect(isEventMediaUrl('https://@example.com/path')).toBe(false);
+    expect(
+      isEventMediaUrl('http://@localhost:3000/video.mp4', {
+        allowLoopbackHttp: true,
+      }),
+    ).toBe(false);
   });
 
   it.each([
