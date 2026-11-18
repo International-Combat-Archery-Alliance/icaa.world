@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useFieldArray, useForm, useWatch } from 'react-hook-form';
 import {
   Form,
   FormControl,
@@ -12,6 +12,7 @@ import z from 'zod';
 import { useCreateEvent, useUpdateEvent, type Event } from '@/hooks/useEvent';
 import type { components } from '@/api/events-v1';
 import { Input } from './ui/input';
+import { Textarea } from './ui/textarea';
 import { Button } from './ui/button';
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { MutateOptions } from '@tanstack/react-query';
@@ -24,8 +25,22 @@ import {
   SelectContent,
 } from './ui/select';
 import { DateTime, IANAZone } from 'luxon';
+import { ArrowDown, ArrowUp, Trash2 } from 'lucide-react';
 import { AssetPickerModal } from './AssetPickerModal';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import { buildEventMediaEmbedData } from '@/lib/embedUtils';
+import {
+  EVENT_MEDIA_DISPLAY_MODE_OPTIONS,
+  EVENT_MEDIA_ICON_OPTIONS,
+  EVENT_MEDIA_TYPE_OPTIONS,
+  MAX_EVENT_MEDIA_ITEMS,
+  createEventMediaItemSchema,
+  findDuplicateMediaItemIds,
+  supportsDisplayMode,
+  toEventMediaFormItem,
+  toEventMediaPayload,
+  type EventMediaTypeValue,
+} from '@/lib/eventMediaUtils';
 
 export enum AdminEventMode {
   CREATE,
@@ -33,6 +48,10 @@ export enum AdminEventMode {
 }
 
 const noop = () => {};
+
+const eventMediaItemSchema = createEventMediaItemSchema({
+  allowLoopbackHttp: import.meta.env.DEV,
+});
 
 export function AdminEventForm({
   onSuccess = noop,
@@ -58,6 +77,10 @@ export function AdminEventForm({
 
   const [logoPickerOpen, setLogoPickerOpen] = useState(false);
   const [rulesPickerOpen, setRulesPickerOpen] = useState(false);
+  const [mediaPicker, setMediaPicker] = useState<{
+    index: number;
+    mode: 'folder' | 'allFiles';
+  } | null>(null);
 
   const formSchema = z.object({
     teamSizes: z.object({
@@ -111,6 +134,12 @@ export function AdminEventForm({
 
     eventRules: z.string().optional(),
     eventLogo: z.string().optional(),
+    media: z
+      .array(eventMediaItemSchema)
+      .max(
+        MAX_EVENT_MEDIA_ITEMS,
+        `At most ${MAX_EVENT_MEDIA_ITEMS} media items.`,
+      ),
     ...(mode === AdminEventMode.EDIT
       ? {
           id: z.uuid(),
@@ -118,8 +147,15 @@ export function AdminEventForm({
       : {}),
   });
 
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<
+    z.infer<typeof formSchema>,
+    undefined,
+    z.infer<typeof formSchema>
+  >({
     resolver: zodResolver(formSchema),
+    defaultValues: {
+      media: [],
+    },
     values: editData && {
       id: editData?.id,
       eventDate: DateTime.fromISO(editData.startTime, {
@@ -157,8 +193,48 @@ export function AdminEventForm({
       teamSizes: editData.allowedTeamSizeRange,
       eventLogo: editData.imageName,
       eventRules: editData.rulesDocLink,
+      media: (editData.media ?? []).map(toEventMediaFormItem),
     },
   });
+
+  const mediaFieldArray = useFieldArray({
+    control: form.control,
+    name: 'media',
+    keyName: 'fieldKey',
+  });
+
+  const mediaValues = useWatch({ control: form.control, name: 'media' });
+  const duplicateMediaIds = findDuplicateMediaItemIds(mediaValues);
+
+  const handleMediaTypeChange = (index: number, type: EventMediaTypeValue) => {
+    const current = form.getValues(`media.${index}`);
+
+    form.setValue(`media.${index}.type`, type, { shouldDirty: true });
+
+    if (!supportsDisplayMode(type, current.displayMode)) {
+      form.setValue(`media.${index}.displayMode`, 'auto', {
+        shouldDirty: true,
+      });
+    }
+
+    const changesStorageKind =
+      (type === 'asset_folder') !== (current.type === 'asset_folder');
+    if (changesStorageKind) {
+      form.setValue(`media.${index}.source`, '', { shouldDirty: true });
+    }
+  };
+
+  const handleAddMediaItem = () => {
+    mediaFieldArray.append({
+      id: crypto.randomUUID(),
+      type: 'asset_folder',
+      source: '',
+      title: '',
+      description: '',
+      displayMode: 'auto',
+      icon: 'auto',
+    });
+  };
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     const {
@@ -215,6 +291,7 @@ export function AdminEventForm({
       endTime: endTime,
       imageName: values.eventLogo,
       location: values.locationInfo,
+      media: toEventMediaPayload(values.media),
       name: values.eventName,
       registrationCloseTime: closeTime,
       registrationOptions: registrationOptions,
@@ -697,6 +774,301 @@ export function AdminEventForm({
             />
           </CardContent>
         </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Event Media &amp; Post-Event Assets</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-muted-foreground text-sm">
+              Folders, files, videos, and links appear on the event page in this
+              order. Removing an item here never deletes the asset.
+            </p>
+
+            {mediaFieldArray.fields.length === 0 && (
+              <p className="text-muted-foreground text-sm">
+                No media items yet.
+              </p>
+            )}
+
+            {mediaFieldArray.fields.map((mediaField, index) => {
+              const mediaItem = mediaValues[index];
+              if (!mediaItem) return null;
+
+              const isAssetType =
+                mediaItem.type === 'asset_folder' ||
+                mediaItem.type === 'asset_file';
+              const showsLinkFallbackHint =
+                mediaItem.type === 'video' &&
+                mediaItem.source.trim() !== '' &&
+                (mediaItem.displayMode === 'auto' ||
+                  mediaItem.displayMode === 'embed') &&
+                buildEventMediaEmbedData(mediaItem.source) === null;
+
+              return (
+                <div
+                  key={mediaField.fieldKey}
+                  className="space-y-3 rounded-lg border p-4"
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="text-sm font-medium">
+                      Media Item {index + 1}
+                    </p>
+                    <div className="flex gap-1">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="icon"
+                        aria-label={`Move media item ${index + 1} up`}
+                        disabled={index === 0}
+                        onClick={() => mediaFieldArray.swap(index, index - 1)}
+                      >
+                        <ArrowUp className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="icon"
+                        aria-label={`Move media item ${index + 1} down`}
+                        disabled={index === mediaFieldArray.fields.length - 1}
+                        onClick={() => mediaFieldArray.swap(index, index + 1)}
+                      >
+                        <ArrowDown className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="icon"
+                        aria-label={`Remove media item ${index + 1}`}
+                        onClick={() => mediaFieldArray.remove(index)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+
+                  <div className="grid gap-3 md:grid-cols-3">
+                    <FormField
+                      control={form.control}
+                      name={`media.${index}.type`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Type</FormLabel>
+                          <FormControl>
+                            <Select
+                              value={field.value}
+                              onValueChange={(value) =>
+                                handleMediaTypeChange(
+                                  index,
+                                  value as EventMediaTypeValue,
+                                )
+                              }
+                            >
+                              <SelectTrigger className="w-full bg-white">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {EVENT_MEDIA_TYPE_OPTIONS.map((option) => (
+                                  <SelectItem
+                                    key={option.value}
+                                    value={option.value}
+                                  >
+                                    {option.label}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name={`media.${index}.displayMode`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Display</FormLabel>
+                          <FormControl>
+                            <Select
+                              value={field.value}
+                              onValueChange={field.onChange}
+                            >
+                              <SelectTrigger className="w-full bg-white">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {EVENT_MEDIA_DISPLAY_MODE_OPTIONS[
+                                  mediaItem.type
+                                ].map((option) => (
+                                  <SelectItem
+                                    key={option.value}
+                                    value={option.value}
+                                  >
+                                    {option.label}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name={`media.${index}.icon`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Icon</FormLabel>
+                          <FormControl>
+                            <Select
+                              value={field.value}
+                              onValueChange={field.onChange}
+                            >
+                              <SelectTrigger className="w-full bg-white">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {EVENT_MEDIA_ICON_OPTIONS.map((option) => (
+                                  <SelectItem
+                                    key={option.value}
+                                    value={option.value}
+                                  >
+                                    {option.label}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <FormField
+                    control={form.control}
+                    name={`media.${index}.source`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Source</FormLabel>
+                        <div className="flex gap-2">
+                          <FormControl>
+                            {isAssetType ? (
+                              <Input
+                                readOnly
+                                value={field.value}
+                                placeholder={
+                                  mediaItem.type === 'asset_folder'
+                                    ? 'Select a folder'
+                                    : 'Select a file'
+                                }
+                                className="bg-white font-mono text-sm"
+                              />
+                            ) : (
+                              <Input
+                                {...field}
+                                placeholder="https://..."
+                                className="bg-white"
+                              />
+                            )}
+                          </FormControl>
+                          {mediaItem.type === 'asset_folder' && (
+                            <Button
+                              type="button"
+                              variant="outline"
+                              onClick={() =>
+                                setMediaPicker({ index, mode: 'folder' })
+                              }
+                            >
+                              Select Folder
+                            </Button>
+                          )}
+                          {mediaItem.type === 'asset_file' && (
+                            <Button
+                              type="button"
+                              variant="outline"
+                              onClick={() =>
+                                setMediaPicker({ index, mode: 'allFiles' })
+                              }
+                            >
+                              Browse Assets
+                            </Button>
+                          )}
+                          {isAssetType && field.value !== '' && (
+                            <Button
+                              type="button"
+                              variant="outline"
+                              onClick={() =>
+                                form.setValue(`media.${index}.source`, '', {
+                                  shouldDirty: true,
+                                })
+                              }
+                            >
+                              Clear
+                            </Button>
+                          )}
+                        </div>
+                        {showsLinkFallbackHint && (
+                          <p className="text-muted-foreground text-xs">
+                            URL will render as a link button because it is not
+                            an embeddable YouTube/Twitch URL.
+                          </p>
+                        )}
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <div className="grid gap-3 md:grid-cols-2">
+                    <FormField
+                      control={form.control}
+                      name={`media.${index}.title`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Title</FormLabel>
+                          <FormControl>
+                            <Input {...field} className="bg-white" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name={`media.${index}.description`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Description</FormLabel>
+                          <FormControl>
+                            <Textarea {...field} className="bg-white" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  {duplicateMediaIds.has(mediaItem.id) && (
+                    <p className="text-sm text-amber-600">
+                      Another media item uses the same type and source. This is
+                      allowed, but the page may show it twice.
+                    </p>
+                  )}
+                </div>
+              );
+            })}
+
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleAddMediaItem}
+              disabled={mediaFieldArray.fields.length >= MAX_EVENT_MEDIA_ITEMS}
+            >
+              Add Media Item
+            </Button>
+          </CardContent>
+        </Card>
         <Button type="submit" disabled={isPending}>
           {isPending ? 'Submitting...' : 'Submit'}
         </Button>
@@ -726,6 +1098,25 @@ export function AdminEventForm({
           title="Select Rules Document"
           mode="allFiles"
           uploadPrompt="Click to upload a document"
+        />
+        <AssetPickerModal
+          open={mediaPicker !== null}
+          onOpenChange={(open) => {
+            if (!open) setMediaPicker(null);
+          }}
+          onSelect={(selection) => {
+            if (mediaPicker === null) return;
+            form.setValue(`media.${mediaPicker.index}.source`, selection, {
+              shouldValidate: true,
+              shouldDirty: true,
+            });
+          }}
+          mode={mediaPicker?.mode ?? 'allFiles'}
+          title={
+            mediaPicker?.mode === 'folder'
+              ? 'Select Media Folder'
+              : 'Select Media File'
+          }
         />
       </form>
     </Form>
