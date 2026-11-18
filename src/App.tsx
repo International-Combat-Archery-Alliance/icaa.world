@@ -5,6 +5,7 @@ import {
   FaLinkedin,
   FaFacebook,
   FaTiktok,
+  FaTwitch,
 } from 'react-icons/fa';
 
 import Home from './pages/Home';
@@ -152,6 +153,15 @@ const App = () => {
                                 </main>
                                 <footer className="md:ml-64">
                                   <div className="flex items-center gap-6">
+                                    <a
+                                      href="https://www.twitch.tv/icaa_world"
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      aria-label="Twitch"
+                                      className="flex items-center text-white transition-all duration-300 hover:scale-110 hover:opacity-80"
+                                    >
+                                      <FaTwitch size={30} />
+                                    </a>
                                     <a
                                       href="https://www.youtube.com/@Icaa-world"
                                       target="_blank"
