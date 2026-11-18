@@ -70,6 +70,8 @@ interface CarouselImagesProps {
   autoplayDelay?: number;
   maxAssets?: number;
   className?: string;
+  autoplay?: boolean;
+  onImageClick?: (index: number) => void;
 }
 
 export function CarouselImages({
@@ -78,6 +80,8 @@ export function CarouselImages({
   autoplayDelay = 10000,
   maxAssets = 100,
   className,
+  autoplay = true,
+  onImageClick,
 }: CarouselImagesProps) {
   const [api, setApi] = useState<CarouselApi>();
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -138,12 +142,16 @@ export function CarouselImages({
   return (
     <Carousel
       setApi={setApi}
-      plugins={[
-        Autoplay({
-          delay: autoplayDelay,
-          stopOnInteraction: false,
-        }),
-      ]}
+      plugins={
+        autoplay
+          ? [
+              Autoplay({
+                delay: autoplayDelay,
+                stopOnInteraction: false,
+              }),
+            ]
+          : undefined
+      }
       opts={{
         align: 'start',
         loop: true,
@@ -153,11 +161,26 @@ export function CarouselImages({
       <CarouselContent>
         {images.map((url, index) => (
           <CarouselItem key={index}>
-            <CarouselImage
-              src={url}
-              alt={`Combat archery photo ${index + 1}`}
-              aspectRatio={aspectRatio}
-            />
+            {onImageClick ? (
+              <button
+                type="button"
+                onClick={() => onImageClick(index)}
+                aria-label={`View photo ${index + 1}`}
+                className="focus-visible:ring-ring block w-full cursor-zoom-in rounded-lg focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+              >
+                <CarouselImage
+                  src={url}
+                  alt={`Combat archery photo ${index + 1}`}
+                  aspectRatio={aspectRatio}
+                />
+              </button>
+            ) : (
+              <CarouselImage
+                src={url}
+                alt={`Combat archery photo ${index + 1}`}
+                aspectRatio={aspectRatio}
+              />
+            )}
           </CarouselItem>
         ))}
       </CarouselContent>

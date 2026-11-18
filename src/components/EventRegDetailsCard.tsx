@@ -7,9 +7,13 @@ import { Share2, CalendarPlus, Download } from 'lucide-react';
 
 interface EventDetailsCardProps {
   event: Event;
+  embedded?: boolean;
 }
 
-export function EventDetailsCard({ event }: EventDetailsCardProps) {
+export function EventDetailsCard({
+  event,
+  embedded = false,
+}: EventDetailsCardProps) {
   const startTime = DateTime.fromISO(event.startTime, { zone: event.timeZone });
   const endTime = DateTime.fromISO(event.endTime, { zone: event.timeZone });
   const dateString = `${startTime.toLocaleString(DateTime.DATE_HUGE)} at ${startTime.toLocaleString(DateTime.TIME_SIMPLE)} to ${endTime.toLocaleString({ ...DateTime.TIME_WITH_SHORT_OFFSET, second: undefined })}`;
@@ -88,72 +92,78 @@ export function EventDetailsCard({ event }: EventDetailsCardProps) {
     }
   };
 
+  const content = (
+    <div className="flex flex-col items-center gap-6 md:flex-row">
+      {event.imageName && (
+        <img
+          src={event.imageName}
+          alt={`${event.name} logo`}
+          className="h-32 w-32 flex-shrink-0 rounded-md object-contain"
+        />
+      )}
+      <div className="grid gap-1 text-center md:text-left">
+        <p>
+          <strong>Event:</strong> {event.name}
+        </p>
+        <p>
+          <strong>Date:</strong> {dateString}
+        </p>
+        <p>
+          <strong>Venue:</strong> {event.location.name}
+        </p>
+        <p>
+          <strong>Address:</strong> {event.location.address.street},{' '}
+          {event.location.address.city}, {event.location.address.state},{' '}
+          {event.location.address.postalCode}
+        </p>
+        {byIndividualOpt && (
+          <p>
+            <strong>Free Agent Price:</strong>{' '}
+            {formatMoney(byIndividualOpt.price)}
+          </p>
+        )}
+        {byTeamOpt && (
+          <p>
+            <strong>Team Price:</strong> {formatMoney(byTeamOpt.price)}
+          </p>
+        )}
+        <div className="mt-4 flex flex-col gap-2 sm:flex-row">
+          <Button
+            variant="outline"
+            className="w-full md:w-auto"
+            onClick={handleShare}
+          >
+            <Share2 className="mr-2 h-4 w-4" />
+            Share
+          </Button>
+          <Button variant="outline" className="w-full md:w-auto" asChild>
+            <a
+              href={googleCalendarUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <CalendarPlus className="mr-2 h-4 w-4" />
+              Google Calendar
+            </a>
+          </Button>
+          <Button
+            variant="outline"
+            className="w-full md:w-auto"
+            onClick={handleDownloadIcs}
+          >
+            <Download className="mr-2 h-4 w-4" />
+            iCal / Outlook
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+
+  if (embedded) return content;
+
   return (
     <Card className="mx-auto mb-8 w-full max-w-screen-lg">
-      <CardContent className="flex flex-col items-center gap-6 p-6 md:flex-row">
-        {event.imageName && (
-          <img
-            src={event.imageName}
-            alt={`${event.name} logo`}
-            className="h-32 w-32 flex-shrink-0 rounded-md object-contain"
-          />
-        )}
-        <div className="grid gap-1 text-center md:text-left">
-          <p>
-            <strong>Event:</strong> {event.name}
-          </p>
-          <p>
-            <strong>Date:</strong> {dateString}
-          </p>
-          <p>
-            <strong>Venue:</strong> {event.location.name}
-          </p>
-          <p>
-            <strong>Address:</strong> {event.location.address.street},{' '}
-            {event.location.address.city}, {event.location.address.state},{' '}
-            {event.location.address.postalCode}
-          </p>
-          {byIndividualOpt && (
-            <p>
-              <strong>Free Agent Price:</strong>{' '}
-              {formatMoney(byIndividualOpt.price)}
-            </p>
-          )}
-          {byTeamOpt && (
-            <p>
-              <strong>Team Price:</strong> {formatMoney(byTeamOpt.price)}
-            </p>
-          )}
-          <div className="mt-4 flex flex-col gap-2 sm:flex-row">
-            <Button
-              variant="outline"
-              className="w-full md:w-auto"
-              onClick={handleShare}
-            >
-              <Share2 className="mr-2 h-4 w-4" />
-              Share
-            </Button>
-            <Button variant="outline" className="w-full md:w-auto" asChild>
-              <a
-                href={googleCalendarUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <CalendarPlus className="mr-2 h-4 w-4" />
-                Google Calendar
-              </a>
-            </Button>
-            <Button
-              variant="outline"
-              className="w-full md:w-auto"
-              onClick={handleDownloadIcs}
-            >
-              <Download className="mr-2 h-4 w-4" />
-              iCal / Outlook
-            </Button>
-          </div>
-        </div>
-      </CardContent>
+      <CardContent className="p-6">{content}</CardContent>
     </Card>
   );
 }

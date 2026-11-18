@@ -1,10 +1,26 @@
 import { describe, expect, it } from 'bun:test';
 import {
   MAX_ASSET_FOLDER_NAME_LENGTH,
+  formatFileSize,
   getFolderNameError,
   isCanonicalAssetFolderPath,
   joinAssetPath,
 } from '@/lib/assetUtils';
+
+describe('formatFileSize', () => {
+  it('formats byte counts with binary units', () => {
+    expect(formatFileSize(0)).toBe('0 B');
+    expect(formatFileSize(512)).toBe('512 B');
+    expect(formatFileSize(1024)).toBe('1 KB');
+    expect(formatFileSize(1536)).toBe('1.5 KB');
+    expect(formatFileSize(5 * 1024 * 1024)).toBe('5 MB');
+  });
+
+  it('handles invalid and negative values', () => {
+    expect(formatFileSize(-1)).toBe('0 B');
+    expect(formatFileSize(Number.NaN)).toBe('0 B');
+  });
+});
 
 describe('joinAssetPath', () => {
   it('joins root and nested paths', () => {

@@ -6,6 +6,22 @@ const INVALID_FOLDER_NAME_CHARS = /[/\\?#%\p{Cc}]/u;
 
 const INVALID_FOLDER_PATH_CHARS = /[\\?#%\p{Cc}]/u;
 
+const FILE_SIZE_UNITS = ['B', 'KB', 'MB', 'GB', 'TB'] as const;
+
+export function formatFileSize(bytes: number): string {
+  if (!Number.isFinite(bytes) || bytes <= 0) {
+    return '0 B';
+  }
+
+  const exponent = Math.min(
+    Math.floor(Math.log(bytes) / Math.log(1024)),
+    FILE_SIZE_UNITS.length - 1,
+  );
+  const value = bytes / 1024 ** exponent;
+
+  return `${exponent === 0 ? value : Number(value.toFixed(1))} ${FILE_SIZE_UNITS[exponent]}`;
+}
+
 export function joinAssetPath(basePath: string, name: string): string {
   if (basePath === '/') return `/${name}`;
   return `${basePath}/${name}`;
