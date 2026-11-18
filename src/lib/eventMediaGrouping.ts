@@ -1,5 +1,6 @@
 import type { components } from '@/api/events-v1';
 import type { Asset } from '@/hooks/useAssets';
+import { isFileAsset, isImageAsset, type AssetFile } from '@/lib/assetUtils';
 import {
   buildEventMediaEmbedData,
   buildPdfEmbedData,
@@ -10,7 +11,7 @@ import {
 
 export type EventMediaItem = components['schemas']['EventMediaItem'];
 
-export type EventFileAsset = Extract<Asset, { type: 'file' }>;
+export type EventFileAsset = AssetFile;
 
 export type EventFolderMode = 'carousel' | 'gallery' | 'file_list' | 'empty';
 
@@ -37,28 +38,23 @@ export interface EventMediaGroups {
 
 const IMAGE_PATH = /\.(jpe?g|png|gif|webp|avif|svg)$/i;
 
-function isFileAsset(asset: Asset): asset is EventFileAsset {
-  return asset.type === 'file' && asset.url !== '';
-}
+const DEFAULT_ASSETS_CDN_URL = 'https://assets.icaa.world';
 
-function isImageAsset(asset: EventFileAsset): boolean {
-  return asset.contentType.toLowerCase().startsWith('image/');
-}
-
-function inlineAssetOrigin(): string | null {
-  const configured = import.meta.env.VITE_ASSETS_CDN_URL;
-  if (!configured) return null;
-
+function inlineAssetOrigin(assetsCdnUrl: string): string | null {
   try {
-    return new URL(configured).origin;
+    return new URL(assetsCdnUrl).origin;
   } catch {
     return null;
   }
 }
 
-function isRenderableAssetUrl(url: URL): boolean {
-  const origin = inlineAssetOrigin();
-  return origin === null || url.origin === origin;
+function isRenderableAssetUrl(url: URL, assetsCdnUrl: string): boolean {
+  const origin = inlineAssetOrigin(assetsCdnUrl);
+  return origin !== null && url.origin === origin;
+}
+
+export interface ResolveMediaRenderOptions {
+  assetsCdnUrl?: string;
 }
 
 function resolveFolderMode(
@@ -88,8 +84,8 @@ function resolveFolderRender(
 ): EventMediaRender {
   const fileAssets = assets.filter(isFileAsset);
   const images = fileAssets.filter(isImageAsset);
-  const otherFiles = fileAssets.filter((asset) => !isImageAsset(asset));
   const files = [...fileAssets].sort((a, b) => a.name.localeCompare(b.name));
+  const otherFiles = files.filter((asset) => !isImageAsset(asset));
 
   return {
     section: 'folders',
@@ -121,11 +117,14 @@ function resolveVideoRender(item: EventMediaItem): EventMediaRender {
   return { section: 'videos', mode: 'link', url: url.href };
 }
 
-function resolveAssetFileRender(item: EventMediaItem): EventMediaRender {
+function resolveAssetFileRender(
+  item: EventMediaItem,
+  assetsCdnUrl: string,
+): EventMediaRender {
   const url = parseSafeHttpUrl(item.source);
   if (!url) return { section: 'hidden' };
 
-  if (item.displayMode === 'link' || !isRenderableAssetUrl(url)) {
+  if (item.displayMode === 'link' || !isRenderableAssetUrl(url, assetsCdnUrl)) {
     return { section: 'resources', mode: 'link', url: url.href };
   }
 
@@ -137,7 +136,7 @@ function resolveAssetFileRender(item: EventMediaItem): EventMediaRender {
     return {
       section: 'resources',
       mode: 'pdf',
-      embedData: buildPdfEmbedData(item.source),
+      embedData: buildPdfEmbedData(url.href),
     };
   }
 
@@ -153,14 +152,20 @@ function resolveExternalLinkRender(item: EventMediaItem): EventMediaRender {
 export function resolveMediaRender(
   item: EventMediaItem,
   assets: Asset[] = [],
+  options: ResolveMediaRenderOptions = {},
 ): EventMediaRender {
+  const assetsCdnUrl =
+    options.assetsCdnUrl ??
+    import.meta.env.VITE_ASSETS_CDN_URL ??
+    DEFAULT_ASSETS_CDN_URL;
+
   switch (item.type) {
     case 'video':
       return resolveVideoRender(item);
     case 'asset_folder':
       return resolveFolderRender(item, assets);
     case 'asset_file':
-      return resolveAssetFileRender(item);
+      return resolveAssetFileRender(item, assetsCdnUrl);
     case 'external_link':
       return resolveExternalLinkRender(item);
   }

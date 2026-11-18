@@ -27,6 +27,9 @@ const YOUTUBE_WATCH = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ';
 const TWITCH_VOD = 'https://www.twitch.tv/videos/987654321';
 const UNSUPPORTED_VIDEO = 'https://vimeo.com/123456789';
 
+const ASSETS_CDN_URL = 'https://assets.icaa.world';
+const RENDER_OPTIONS = { assetsCdnUrl: ASSETS_CDN_URL };
+
 describe('resolveMediaRender: videos', () => {
   it('embeds a recognized provider URL by default', () => {
     const render = resolveMediaRender(
@@ -156,6 +159,28 @@ describe('resolveMediaRender: asset folders', () => {
     ]);
   });
 
+  it('sorts other files alphabetically in mixed folders', () => {
+    const render = resolveMediaRender(folder, [
+      fileAsset(
+        'zebra.pdf',
+        'application/pdf',
+        'https://assets.icaa.world/z.pdf',
+      ),
+      threeImages[0],
+      fileAsset(
+        'alpha.pdf',
+        'application/pdf',
+        'https://assets.icaa.world/a.pdf',
+      ),
+    ]);
+    expect(render).toMatchObject({ section: 'folders', mode: 'gallery' });
+    if (render.section !== 'folders') throw new Error('expected folder render');
+    expect(render.otherFiles.map((asset) => asset.name)).toEqual([
+      'alpha.pdf',
+      'zebra.pdf',
+    ]);
+  });
+
   it('uses a file list when the folder has no images', () => {
     const render = resolveMediaRender(folder, [pdf]);
     expect(render).toMatchObject({ section: 'folders', mode: 'file_list' });
@@ -240,6 +265,8 @@ describe('resolveMediaRender: asset files', () => {
         type: 'asset_file',
         source: 'https://assets.icaa.world/photos/award.JPG',
       }),
+      [],
+      RENDER_OPTIONS,
     );
     expect(render).toEqual({
       section: 'resources',
@@ -252,6 +279,8 @@ describe('resolveMediaRender: asset files', () => {
     const source = 'https://assets.icaa.world/docs/bracket.pdf';
     const render = resolveMediaRender(
       mediaItem({ type: 'asset_file', source }),
+      [],
+      RENDER_OPTIONS,
     );
     expect(render).toMatchObject({ section: 'resources', mode: 'pdf' });
     if (render.section !== 'resources' || render.mode !== 'pdf') {
@@ -265,14 +294,22 @@ describe('resolveMediaRender: asset files', () => {
   it('falls back to a resource link for unknown file types', () => {
     const source = 'https://assets.icaa.world/files/results';
     expect(
-      resolveMediaRender(mediaItem({ type: 'asset_file', source })),
+      resolveMediaRender(
+        mediaItem({ type: 'asset_file', source }),
+        [],
+        RENDER_OPTIONS,
+      ),
     ).toEqual({ section: 'resources', mode: 'link', url: source });
   });
 
   it('only reads the extension from the pathname', () => {
     const source = 'https://assets.icaa.world/download?file=photo.jpg';
     expect(
-      resolveMediaRender(mediaItem({ type: 'asset_file', source })),
+      resolveMediaRender(
+        mediaItem({ type: 'asset_file', source }),
+        [],
+        RENDER_OPTIONS,
+      ),
     ).toMatchObject({ mode: 'link' });
   });
 
@@ -281,6 +318,8 @@ describe('resolveMediaRender: asset files', () => {
     expect(
       resolveMediaRender(
         mediaItem({ type: 'asset_file', source, displayMode: 'link' }),
+        [],
+        RENDER_OPTIONS,
       ),
     ).toEqual({ section: 'resources', mode: 'link', url: source });
   });
@@ -290,14 +329,51 @@ describe('resolveMediaRender: asset files', () => {
     expect(
       resolveMediaRender(
         mediaItem({ type: 'asset_file', source, displayMode: 'gallery' }),
+        [],
+        RENDER_OPTIONS,
       ),
     ).toMatchObject({ mode: 'image' });
+  });
+
+  it('degrades an off-origin image to a link', () => {
+    const source = 'https://evil.example.com/photo.jpg';
+    expect(
+      resolveMediaRender(
+        mediaItem({ type: 'asset_file', source }),
+        [],
+        RENDER_OPTIONS,
+      ),
+    ).toEqual({ section: 'resources', mode: 'link', url: source });
+  });
+
+  it('degrades an off-origin PDF to a link', () => {
+    const source = 'https://evil.example.com/doc.pdf';
+    expect(
+      resolveMediaRender(
+        mediaItem({ type: 'asset_file', source }),
+        [],
+        RENDER_OPTIONS,
+      ),
+    ).toEqual({ section: 'resources', mode: 'link', url: source });
+  });
+
+  it('fails closed when the CDN URL is missing or malformed', () => {
+    const source = 'https://assets.icaa.world/photo.jpg';
+    for (const assetsCdnUrl of ['', 'not a url']) {
+      expect(
+        resolveMediaRender(mediaItem({ type: 'asset_file', source }), [], {
+          assetsCdnUrl,
+        }),
+      ).toEqual({ section: 'resources', mode: 'link', url: source });
+    }
   });
 
   it('hides invalid sources', () => {
     expect(
       resolveMediaRender(
         mediaItem({ type: 'asset_file', source: 'data:text/html,hello' }),
+        [],
+        RENDER_OPTIONS,
       ),
     ).toEqual({ section: 'hidden' });
   });

@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { FaTwitch } from 'react-icons/fa';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { EventMediaIconView } from '@/components/EventMediaIconView';
-import type { EventMediaEmbedData } from '@/lib/embedUtils';
+import { parseSafeHttpUrl, type EventMediaEmbedData } from '@/lib/embedUtils';
 import {
   resolveMediaRender,
   type EventMediaItem,
@@ -12,6 +12,7 @@ import { cn } from '@/lib/utils';
 
 const ICAA_TWITCH_URL = 'https://www.twitch.tv/icaa_world';
 const ICAA_YOUTUBE_URL = 'https://www.youtube.com/@Icaa-world/streams';
+const TWITCH_MIN_PLAYER_WIDTH = 400;
 
 interface EventVideosCardProps {
   videoItems: EventMediaItem[];
@@ -20,6 +21,7 @@ interface EventVideosCardProps {
 interface EmbeddableVideo {
   item: EventMediaItem;
   embedData: EventMediaEmbedData;
+  url: string;
 }
 
 interface LinkedVideo {
@@ -59,10 +61,8 @@ function DefaultLivestreamCard() {
 
 function EventVideosCard({ videoItems }: EventVideosCardProps) {
   const [activeId, setActiveId] = useState<string | null>(null);
-
-  if (videoItems.length === 0) {
-    return <DefaultLivestreamCard />;
-  }
+  const [playerWidth, setPlayerWidth] = useState<number | null>(null);
+  const playerRef = useRef<HTMLDivElement>(null);
 
   const embeddableVideos: EmbeddableVideo[] = [];
   const linkedVideos: LinkedVideo[] = [];
@@ -71,7 +71,14 @@ function EventVideosCard({ videoItems }: EventVideosCardProps) {
     const render = resolveMediaRender(item);
 
     if (render.section === 'videos' && render.mode === 'embed') {
-      embeddableVideos.push({ item, embedData: render.embedData });
+      const url = parseSafeHttpUrl(item.source);
+      if (url) {
+        embeddableVideos.push({
+          item,
+          embedData: render.embedData,
+          url: url.href,
+        });
+      }
     } else if (render.section === 'videos' && render.mode === 'link') {
       linkedVideos.push({ item, url: render.url });
     }
@@ -81,6 +88,32 @@ function EventVideosCard({ videoItems }: EventVideosCardProps) {
     embeddableVideos.find((video) => video.item.id === activeId) ??
     embeddableVideos[0];
   const isTwitchPlayer = activeVideo?.embedData.service === 'twitch';
+
+  useEffect(() => {
+    const element = playerRef.current;
+    if (!element) return;
+
+    const updateWidth = () => setPlayerWidth(element.clientWidth);
+    updateWidth();
+
+    if (typeof ResizeObserver === 'undefined') return;
+
+    const observer = new ResizeObserver(updateWidth);
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [activeVideo?.item.id]);
+
+  if (videoItems.length === 0) {
+    return <DefaultLivestreamCard />;
+  }
+
+  if (embeddableVideos.length === 0 && linkedVideos.length === 0) return null;
+
+  // Twitch's player requires a viewport of at least 400x300. Below that the
+  // iframe is not mounted at all; the external CTA is shown instead.
+  const showsTwitchFallback =
+    isTwitchPlayer &&
+    (playerWidth === null || playerWidth < TWITCH_MIN_PLAYER_WIDTH);
 
   return (
     <Card>
@@ -92,37 +125,38 @@ function EventVideosCard({ videoItems }: EventVideosCardProps) {
           <div
             className={cn(
               'grid gap-4',
-              embeddableVideos.length > 1 &&
+              embeddableVideos.length >= 1 &&
                 'lg:grid-cols-[minmax(0,1fr)_18rem]',
             )}
           >
-            <div className="relative aspect-video min-h-[300px] w-full overflow-hidden rounded-xl bg-black">
-              {isTwitchPlayer && (
+            <div
+              ref={playerRef}
+              className="relative aspect-video min-h-[300px] w-full overflow-hidden rounded-xl bg-black"
+            >
+              {showsTwitchFallback ? (
                 <a
-                  href={activeVideo.item.source}
+                  href={activeVideo.url}
                   target="_blank"
                   rel="noreferrer noopener"
-                  className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-sm font-medium text-white min-[400px]:hidden"
+                  className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-sm font-medium text-white"
                 >
                   <FaTwitch aria-hidden="true" className="size-8" />
                   Watch on Twitch
                 </a>
+              ) : (
+                <iframe
+                  key={activeVideo.item.id}
+                  src={activeVideo.embedData.embed}
+                  title={activeVideo.item.title || 'Event video player'}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                  // oxlint-disable-next-line react/iframe-missing-sandbox
+                  sandbox="allow-scripts allow-same-origin allow-presentation allow-popups"
+                  className="h-full w-full border-0"
+                />
               )}
-              <iframe
-                key={activeVideo.item.id}
-                src={activeVideo.embedData.embed}
-                title={activeVideo.item.title || 'Event video player'}
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                allowFullScreen
-                // oxlint-disable-next-line react/iframe-missing-sandbox
-                sandbox="allow-scripts allow-same-origin allow-presentation allow-popups"
-                className={cn(
-                  'h-full w-full border-0',
-                  isTwitchPlayer && 'hidden min-[400px]:block',
-                )}
-              />
             </div>
-            {embeddableVideos.length > 1 && (
+            {embeddableVideos.length >= 1 && (
               <ul className="flex flex-col gap-2">
                 {embeddableVideos.map(({ item }) => {
                   const isActive = item.id === activeVideo.item.id;
@@ -134,7 +168,7 @@ function EventVideosCard({ videoItems }: EventVideosCardProps) {
                         aria-pressed={isActive}
                         onClick={() => setActiveId(item.id)}
                         className={cn(
-                          'flex w-full items-start gap-2 rounded-lg border p-3 text-left transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none',
+                          'hover:bg-accent focus-visible:ring-ring flex w-full items-start gap-2 rounded-lg border p-3 text-left transition-colors focus-visible:ring-2 focus-visible:outline-none',
                           isActive && 'bg-accent border-primary',
                         )}
                       >

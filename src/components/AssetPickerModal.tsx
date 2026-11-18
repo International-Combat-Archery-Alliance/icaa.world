@@ -30,6 +30,8 @@ import {
 import {
   MAX_ASSET_UPLOAD_BYTES,
   getFolderNameError,
+  isFileAsset,
+  isImageAsset,
   joinAssetPath,
 } from '@/lib/assetUtils';
 
@@ -92,17 +94,6 @@ interface UploadFailure {
 interface UploadBatchResult {
   urls: string[];
   failures: UploadFailure[];
-}
-
-function isImageFile(asset: Asset): boolean {
-  return (
-    asset.type === 'file' &&
-    asset.contentType.toLowerCase().startsWith('image/')
-  );
-}
-
-function isFileAsset(asset: Asset): boolean {
-  return asset.type === 'file';
 }
 
 function getUrl(asset: Asset): string {
@@ -358,7 +349,7 @@ function BrowseTab({
                   const url = getUrl(asset);
                   const assetPath = joinAssetPath(currentPath, asset.name);
                   const isSelected = selectedPath === assetPath;
-                  const isImage = isImageFile(asset);
+                  const isImage = isImageAsset(asset);
 
                   return (
                     <button
@@ -684,7 +675,7 @@ export function AssetPickerModal({
               mode={mode}
               currentPath={currentPath}
               onPathChange={setCurrentPath}
-              fileFilter={mode === 'allFiles' ? isFileAsset : isImageFile}
+              fileFilter={mode === 'allFiles' ? isFileAsset : isImageAsset}
               filesLabel={filesLabel ?? defaults.filesLabel}
               emptyMessage={emptyMessage ?? defaults.emptyMessage}
               onSelect={emitSelection}

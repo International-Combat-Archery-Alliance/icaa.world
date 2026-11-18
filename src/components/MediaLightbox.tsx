@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 
 interface MediaLightboxImage {
   url: string;
-  alt?: string;
+  alt: string;
 }
 
 interface MediaLightboxProps {
@@ -14,7 +14,7 @@ interface MediaLightboxProps {
   activeIndex: number;
   onIndexChange: (index: number) => void;
   onOpenChange: (open: boolean) => void;
-  title?: string;
+  title: string;
 }
 
 function MediaLightbox({
@@ -33,8 +33,10 @@ function MediaLightbox({
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'ArrowLeft') {
+        event.preventDefault();
         onIndexChange((activeIndex - 1 + images.length) % images.length);
       } else if (event.key === 'ArrowRight') {
+        event.preventDefault();
         onIndexChange((activeIndex + 1) % images.length);
       }
     };
@@ -55,11 +57,11 @@ function MediaLightbox({
         aria-describedby={undefined}
         className="max-w-5xl gap-3 border-0 bg-black/95 p-3 text-white sm:max-w-5xl"
       >
-        <DialogTitle className="sr-only">{title ?? 'Event photo'}</DialogTitle>
+        <DialogTitle className="sr-only">{title}</DialogTitle>
         <div className="relative">
           <img
             src={activeImage.url}
-            alt={activeImage.alt ?? 'Event photo'}
+            alt={activeImage.alt}
             className="mx-auto max-h-[80vh] w-auto max-w-full rounded-lg object-contain"
           />
           {hasMultipleImages && (

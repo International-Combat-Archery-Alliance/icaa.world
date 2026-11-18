@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Images } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -18,6 +18,7 @@ interface EventFolderCardProps {
 
 function EventFolderCard({ item }: EventFolderCardProps) {
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  const [activeSlideIndex, setActiveSlideIndex] = useState(0);
   const { data, isLoading, error } = useGetAssets(item.source, 100);
 
   const assets = useMemo(
@@ -28,6 +29,12 @@ function EventFolderCard({ item }: EventFolderCardProps) {
     () => resolveMediaRender(item, assets),
     [item, assets],
   );
+
+  const imageCount = render.section === 'folders' ? render.images.length : 0;
+
+  useEffect(() => {
+    if (activeSlideIndex >= imageCount) setActiveSlideIndex(0);
+  }, [activeSlideIndex, imageCount]);
 
   if (error) return null;
 
@@ -51,6 +58,9 @@ function EventFolderCard({ item }: EventFolderCardProps) {
     alt: image.name,
   }));
 
+  const carouselIndex =
+    activeSlideIndex < render.images.length ? activeSlideIndex : 0;
+
   return (
     <Card>
       <CardHeader className="flex flex-row items-start justify-between gap-4">
@@ -67,7 +77,9 @@ function EventFolderCard({ item }: EventFolderCardProps) {
             type="button"
             variant="outline"
             size="sm"
-            onClick={() => setLightboxIndex(0)}
+            onClick={() =>
+              setLightboxIndex(render.mode === 'carousel' ? carouselIndex : 0)
+            }
           >
             <Images aria-hidden="true" className="mr-2 size-4" />
             View all photos ({render.images.length})
@@ -80,6 +92,7 @@ function EventFolderCard({ item }: EventFolderCardProps) {
             assetPath={item.source}
             autoplay={false}
             onImageClick={setLightboxIndex}
+            onSlideChange={setActiveSlideIndex}
           />
         )}
         {render.mode === 'gallery' && (

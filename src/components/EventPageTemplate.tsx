@@ -17,7 +17,7 @@ import {
 import { Button } from './ui/button';
 import { formatMoney } from '@/api/money';
 import { DateTime } from 'luxon';
-import { buildPdfEmbedData } from '@/lib/embedUtils';
+import { buildPdfEmbedData, parseSafeHttpUrl } from '@/lib/embedUtils';
 
 function EventDetailsPageSkeleton() {
   return (
@@ -428,6 +428,9 @@ function EventDetailsTemplate({ event }: { event: Event }) {
   const isBostonChampionships =
     event.id === '78af69ec-e323-436b-96b6-1b5dc9acf46b';
   const isBoston2026 = event.id === 'fa5aa500-a528-4213-9b48-c318d549ad85';
+  const rulesDocUrl = event.rulesDocLink
+    ? parseSafeHttpUrl(event.rulesDocLink)
+    : null;
   return (
     <div className="mx-auto max-w-screen-xl space-y-6">
       <Card>
@@ -641,14 +644,14 @@ function EventDetailsTemplate({ event }: { event: Event }) {
 
       <EventMediaSections event={event} />
 
-      {event.rulesDocLink ? (
+      {rulesDocUrl ? (
         <Card>
           <CardHeader>
             <CardTitle className="text-primary">Rules</CardTitle>
           </CardHeader>
           <CardContent>
             <PdfEmbed
-              src={buildPdfEmbedData(event.rulesDocLink).embed}
+              src={buildPdfEmbedData(rulesDocUrl.href).embed}
               title="Event Rules"
               className="h-[50vh]"
             />

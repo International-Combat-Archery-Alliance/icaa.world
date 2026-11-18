@@ -1,6 +1,25 @@
+import type { Asset } from '@/hooks/useAssets';
+import { parseSafeHttpUrl } from '@/lib/embedUtils';
+
 export const MAX_ASSET_UPLOAD_BYTES = 50 * 1024 * 1024;
 // Matches CreateFolderRequest.name maxLength in assets-api/spec/api.yaml.
 export const MAX_ASSET_FOLDER_NAME_LENGTH = 255;
+
+export type AssetFile = Extract<Asset, { type: 'file' }>;
+
+export function isFileAsset(asset: Asset): asset is AssetFile {
+  return (
+    asset.type === 'file' &&
+    asset.url !== '' &&
+    parseSafeHttpUrl(asset.url) !== null
+  );
+}
+
+export function isImageAsset(asset: Asset): asset is AssetFile {
+  return (
+    isFileAsset(asset) && asset.contentType.toLowerCase().startsWith('image/')
+  );
+}
 
 const INVALID_FOLDER_NAME_CHARS = /[/\\?#%\p{Cc}]/u;
 

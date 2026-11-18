@@ -1,6 +1,5 @@
 import { useMemo, useState, useEffect, useCallback } from 'react';
 import { useGetAssets } from '@/hooks/useAssets';
-import type { Asset } from '@/hooks/useAssets';
 import {
   Carousel,
   CarouselContent,
@@ -11,14 +10,8 @@ import {
 } from '@/components/ui/carousel';
 import { Skeleton } from '@/components/ui/skeleton';
 import Autoplay from 'embla-carousel-autoplay';
+import { isImageAsset } from '@/lib/assetUtils';
 import { cn } from '@/lib/utils';
-
-const isImageAsset = (asset: Asset): boolean => {
-  return (
-    asset.type === 'file' &&
-    asset.contentType.toLowerCase().startsWith('image/')
-  );
-};
 
 // Component to handle image loading with fade-in
 function CarouselImage({
@@ -72,6 +65,7 @@ interface CarouselImagesProps {
   className?: string;
   autoplay?: boolean;
   onImageClick?: (index: number) => void;
+  onSlideChange?: (index: number) => void;
 }
 
 export function CarouselImages({
@@ -82,6 +76,7 @@ export function CarouselImages({
   className,
   autoplay = true,
   onImageClick,
+  onSlideChange,
 }: CarouselImagesProps) {
   const [api, setApi] = useState<CarouselApi>();
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -92,7 +87,7 @@ export function CarouselImages({
     const allAssets = data?.pages.flatMap((page) => page.data) || [];
     return allAssets
       .filter(isImageAsset)
-      .map((asset) => ('url' in asset ? asset.url : ''))
+      .map((asset) => asset.url)
       .filter((url): url is string => url !== '');
   }, [data]);
 
@@ -112,12 +107,15 @@ export function CarouselImages({
   useEffect(() => {
     if (!api) return;
 
-    setCurrentIndex(api.selectedScrollSnap());
+    const handleSelect = () => {
+      const index = api.selectedScrollSnap();
+      setCurrentIndex(index);
+      onSlideChange?.(index);
+    };
 
-    api.on('select', () => {
-      setCurrentIndex(api.selectedScrollSnap());
-    });
-  }, [api]);
+    handleSelect();
+    api.on('select', handleSelect);
+  }, [api, onSlideChange]);
 
   if (isLoading) {
     return (
@@ -166,7 +164,7 @@ export function CarouselImages({
                 type="button"
                 onClick={() => onImageClick(index)}
                 aria-label={`View photo ${index + 1}`}
-                className="focus-visible:ring-ring block w-full cursor-zoom-in rounded-lg focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+                className="focus-visible:ring-ring block w-full cursor-zoom-in rounded-lg focus-visible:ring-2 focus-visible:outline-none focus-visible:ring-inset"
               >
                 <CarouselImage
                   src={url}
