@@ -58,7 +58,7 @@ export function useUpdateEventDataAfterMutate() {
     tanstackClient.setQueriesData<InfiniteData<GetEventsV1Response>>(
       { queryKey: [{ _id: 'getEventsV1' }] },
       (oldEvents) => {
-        if (!oldEvents) return oldEvents;
+        if (!oldEvents?.pages) return oldEvents;
         return {
           ...oldEvents,
           pages: oldEvents.pages.map((page) => ({
@@ -85,12 +85,12 @@ export function useGetRegistrations(
 ) {
   return useInfiniteQuery({
     ...getEventsV1EventIdRegistrationsInfiniteOptions({
-      path: { eventId: eventId! },
+      path: { eventId: eventId ?? '' },
       query: { limit },
     }),
     enabled: !!eventId,
     initialPageParam: {
-      path: { eventId: eventId! },
+      path: { eventId: eventId ?? '' },
       query: { limit, cursor: undefined },
     },
     getNextPageParam: (lastPage: GetEventsV1EventIdRegistrationsResponse) =>

@@ -26,7 +26,7 @@ export function useGetArticles(limit: number = 10) {
 
 export function useGetArticle(slug: string | undefined) {
   return useQuery({
-    ...getArticlesV1SlugOptions({ path: { slug: slug! } }),
+    ...getArticlesV1SlugOptions({ path: { slug: slug ?? '' } }),
     enabled: !!slug,
   });
 }

@@ -34,14 +34,14 @@ export function useGetPolls(limit: number = 10) {
 
 export function useGetPoll(pollId: string | undefined) {
   return useQuery({
-    ...getVotingV1PollsIdOptions({ path: { id: pollId! } }),
+    ...getVotingV1PollsIdOptions({ path: { id: pollId ?? '' } }),
     enabled: !!pollId,
   });
 }
 
 export function useGetPollResults(pollId: string | undefined) {
   return useQuery({
-    ...getVotingV1PollsIdResultsOptions({ path: { id: pollId! } }),
+    ...getVotingV1PollsIdResultsOptions({ path: { id: pollId ?? '' } }),
     enabled: !!pollId,
     retry(failureCount, error) {
       if (error && typeof error === 'object' && 'code' in error) {

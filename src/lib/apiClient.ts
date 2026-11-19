@@ -31,10 +31,21 @@ function refreshAccessToken(loginBaseUrl: string): Promise<boolean> {
  */
 export function createAuthFetch(loginBaseUrl: string): typeof fetch {
   return async (input, init) => {
-    const request =
-      input instanceof Request && init === undefined
-        ? input
-        : new Request(input, init);
+    let request: Request;
+    try {
+      request =
+        input instanceof Request && init === undefined
+          ? input
+          : new Request(input, init);
+    } catch {
+      // Relative or otherwise unparsable URLs cannot be cloned or replayed.
+      return globalThis.fetch(input, init);
+    }
+
+    // The refresh endpoint must never trigger another refresh.
+    if (request.url.includes('/login/refresh')) {
+      return globalThis.fetch(request);
+    }
 
     let retryRequest: Request | null = null;
     try {
@@ -45,11 +56,7 @@ export function createAuthFetch(loginBaseUrl: string): typeof fetch {
 
     const response = await globalThis.fetch(request);
 
-    if (
-      response.status !== 401 ||
-      retryRequest === null ||
-      request.url.includes('/login/refresh')
-    ) {
+    if (response.status !== 401 || retryRequest === null) {
       return response;
     }
 
@@ -61,10 +68,6 @@ export function createAuthFetch(loginBaseUrl: string): typeof fetch {
   };
 }
 
-/**
- * Converts the parsed error body that the client throws into an `Error` while
- * keeping the server's fields (`code`, etc.) accessible on the instance.
- */
 export function toApiError(error: unknown, status?: number): unknown {
   if (error instanceof Error) {
     return error;

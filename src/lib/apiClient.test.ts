@@ -74,6 +74,20 @@ describe('createAuthFetch', () => {
     ).toEqual(['{"name":"target"}', '{"name":"target"}']);
   });
 
+  test('passes unparsable URLs straight to fetch', async () => {
+    const requested: string[] = [];
+
+    globalThis.fetch = (async (input) => {
+      requested.push(String(input));
+      return jsonResponse({ ok: true });
+    }) as typeof fetch;
+
+    const response = await createAuthFetch(LOGIN_URL)('/relative/path');
+
+    expect(response.status).toBe(200);
+    expect(requested).toEqual(['/relative/path']);
+  });
+
   test('shares one refresh across concurrent 401 responses', async () => {
     const apiCallCounts = new Map<string, number>();
     let refreshCalls = 0;
