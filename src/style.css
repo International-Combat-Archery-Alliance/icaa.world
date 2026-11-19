@@ -170,6 +170,19 @@ body {
   text-decoration: none;
 }
 
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  background-color: var(--electric-orange);
+  color: var(--white);
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  margin: 1rem 0 1rem 2rem;
+}
+
 .mission-vision h3 {
   color: var(--electric-orange);
   margin-top: 1rem;
