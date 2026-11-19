@@ -787,8 +787,10 @@ export function AdminEventForm({
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-muted-foreground text-sm">
-              Folders, files, videos, and links appear on the event page in this
-              order. Removing an item here never deletes the asset.
+              The event page groups items into sections in a fixed order (Videos
+              &amp; Livestreams, then Photo &amp; Asset Folders, then Resources
+              &amp; Files). Reordering items here sets their order within each
+              section. Removing an item never deletes the underlying asset.
             </p>
 
             {mediaFieldArray.fields.length === 0 && (

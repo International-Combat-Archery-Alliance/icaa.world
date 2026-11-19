@@ -1,6 +1,5 @@
 import { useMemo, useState, useEffect, useCallback } from 'react';
 import { useGetAssets } from '@/hooks/useAssets';
-import type { Asset } from '@/hooks/useAssets';
 import {
   Carousel,
   CarouselContent,
@@ -11,14 +10,8 @@ import {
 } from '@/components/ui/carousel';
 import { Skeleton } from '@/components/ui/skeleton';
 import Autoplay from 'embla-carousel-autoplay';
+import { isImageAsset } from '@/lib/assetUtils';
 import { cn } from '@/lib/utils';
-
-const isImageAsset = (asset: Asset): boolean => {
-  return (
-    asset.type === 'file' &&
-    asset.contentType.toLowerCase().startsWith('image/')
-  );
-};
 
 // Component to handle image loading with fade-in
 function CarouselImage({
@@ -70,6 +63,9 @@ interface CarouselImagesProps {
   autoplayDelay?: number;
   maxAssets?: number;
   className?: string;
+  autoplay?: boolean;
+  onImageClick?: (index: number) => void;
+  onSlideChange?: (index: number) => void;
 }
 
 export function CarouselImages({
@@ -78,6 +74,9 @@ export function CarouselImages({
   autoplayDelay = 10000,
   maxAssets = 100,
   className,
+  autoplay = true,
+  onImageClick,
+  onSlideChange,
 }: CarouselImagesProps) {
   const [api, setApi] = useState<CarouselApi>();
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -88,7 +87,7 @@ export function CarouselImages({
     const allAssets = data?.pages.flatMap((page) => page.data) || [];
     return allAssets
       .filter(isImageAsset)
-      .map((asset) => ('url' in asset ? asset.url : ''))
+      .map((asset) => asset.url)
       .filter((url): url is string => url !== '');
   }, [data]);
 
@@ -108,12 +107,15 @@ export function CarouselImages({
   useEffect(() => {
     if (!api) return;
 
-    setCurrentIndex(api.selectedScrollSnap());
+    const handleSelect = () => {
+      const index = api.selectedScrollSnap();
+      setCurrentIndex(index);
+      onSlideChange?.(index);
+    };
 
-    api.on('select', () => {
-      setCurrentIndex(api.selectedScrollSnap());
-    });
-  }, [api]);
+    handleSelect();
+    api.on('select', handleSelect);
+  }, [api, onSlideChange]);
 
   if (isLoading) {
     return (
@@ -138,12 +140,16 @@ export function CarouselImages({
   return (
     <Carousel
       setApi={setApi}
-      plugins={[
-        Autoplay({
-          delay: autoplayDelay,
-          stopOnInteraction: false,
-        }),
-      ]}
+      plugins={
+        autoplay
+          ? [
+              Autoplay({
+                delay: autoplayDelay,
+                stopOnInteraction: false,
+              }),
+            ]
+          : undefined
+      }
       opts={{
         align: 'start',
         loop: true,
@@ -153,11 +159,26 @@ export function CarouselImages({
       <CarouselContent>
         {images.map((url, index) => (
           <CarouselItem key={index}>
-            <CarouselImage
-              src={url}
-              alt={`Combat archery photo ${index + 1}`}
-              aspectRatio={aspectRatio}
-            />
+            {onImageClick ? (
+              <button
+                type="button"
+                onClick={() => onImageClick(index)}
+                aria-label={`View photo ${index + 1}`}
+                className="focus-visible:ring-ring block w-full cursor-zoom-in rounded-lg focus-visible:ring-2 focus-visible:outline-none focus-visible:ring-inset"
+              >
+                <CarouselImage
+                  src={url}
+                  alt={`Combat archery photo ${index + 1}`}
+                  aspectRatio={aspectRatio}
+                />
+              </button>
+            ) : (
+              <CarouselImage
+                src={url}
+                alt={`Combat archery photo ${index + 1}`}
+                aspectRatio={aspectRatio}
+              />
+            )}
           </CarouselItem>
         ))}
       </CarouselContent>
