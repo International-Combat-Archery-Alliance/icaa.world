@@ -1,11 +1,11 @@
 import { z } from 'zod';
-import type { components } from '@/api/events-v1';
+import type {
+  EventMediaDisplayMode,
+  EventMediaIcon,
+  EventMediaItem,
+  EventMediaType,
+} from '@/api/events';
 import { isCanonicalAssetFolderPath } from '@/lib/assetUtils';
-
-type EventMediaItem = components['schemas']['EventMediaItem'];
-type EventMediaType = components['schemas']['EventMediaType'];
-type EventMediaDisplayMode = components['schemas']['EventMediaDisplayMode'];
-type EventMediaIcon = components['schemas']['EventMediaIcon'];
 
 export const MAX_EVENT_MEDIA_ITEMS = 50;
 export const MAX_EVENT_MEDIA_SOURCE_LENGTH = 1000;

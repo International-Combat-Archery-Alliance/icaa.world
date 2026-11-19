@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState, type RefObject } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
 import {
   Folder,
   FolderPlus,
@@ -25,6 +24,7 @@ import {
   useConfirmUpload,
   useDeleteAsset,
   useCreateFolder,
+  useInvalidateAssets,
   type Asset,
 } from '@/hooks/useAssets';
 import {
@@ -151,7 +151,7 @@ function BrowseTab({
   const [newFolderName, setNewFolderName] = useState('');
   const [newFolderError, setNewFolderError] = useState<string | null>(null);
 
-  const queryClient = useQueryClient();
+  const invalidateAssets = useInvalidateAssets();
   const createFolderMutation = useCreateFolder();
 
   const { data, isLoading, error } = useGetAssets(currentPath, 100);
@@ -209,7 +209,7 @@ function BrowseTab({
       return;
     }
 
-    await queryClient.invalidateQueries({ queryKey: ['get', '/assets/v1'] });
+    await invalidateAssets();
     navigateTo(joinAssetPath(currentPath, name));
     closeNewFolder();
   };
@@ -450,7 +450,7 @@ function UploadTab({
   const [failures, setFailures] = useState<UploadFailure[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const queryClient = useQueryClient();
+  const invalidateAssets = useInvalidateAssets();
   const getUploadUrlMutation = useGetUploadUrl();
   const confirmUploadMutation = useConfirmUpload();
   const deleteAssetMutation = useDeleteAsset();
@@ -478,9 +478,7 @@ function UploadTab({
     if (!s3Response.ok) {
       try {
         await deleteAssetMutation.mutateAsync({
-          params: {
-            query: { path: joinAssetPath(uploadPath, file.name) },
-          },
+          query: { path: joinAssetPath(uploadPath, file.name) },
         });
       } catch {
         // ignore cleanup errors
@@ -489,9 +487,7 @@ function UploadTab({
     }
 
     const confirmResult = await confirmUploadMutation.mutateAsync({
-      params: {
-        query: { path: joinAssetPath(uploadPath, file.name) },
-      },
+      query: { path: joinAssetPath(uploadPath, file.name) },
     });
 
     return confirmResult.file.url;
@@ -537,7 +533,7 @@ function UploadTab({
     }
 
     if (confirmedUrls.length > 0) {
-      await queryClient.invalidateQueries({ queryKey: ['get', '/assets/v1'] });
+      await invalidateAssets();
     }
 
     setFailures(batchFailures);

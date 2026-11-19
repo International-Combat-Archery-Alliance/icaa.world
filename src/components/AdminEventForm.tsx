@@ -10,12 +10,15 @@ import {
 } from './ui/form';
 import z from 'zod';
 import { useCreateEvent, useUpdateEvent, type Event } from '@/hooks/useEvent';
-import type { components } from '@/api/events-v1';
+import type {
+  EventRegistrationOption,
+  Money as EventMoney,
+  PostEventsV1Error,
+} from '@/api/events';
 import { Input } from './ui/input';
 import { Textarea } from './ui/textarea';
 import { Button } from './ui/button';
 import { zodResolver } from '@hookform/resolvers/zod';
-import type { MutateOptions } from '@tanstack/react-query';
 import { Currencies, Money } from 'ts-money';
 import {
   Select,
@@ -264,8 +267,7 @@ export function AdminEventForm({
       eventTimeZone,
     );
 
-    const registrationOptions: components['schemas']['EventRegistrationOption'][] =
-      [];
+    const registrationOptions: EventRegistrationOption[] = [];
 
     if (values.priceInfo.freeAgentPrice !== undefined) {
       registrationOptions.push({
@@ -305,14 +307,14 @@ export function AdminEventForm({
       rulesDocLink: values.eventRules,
       startTime: startTime,
       timeZone: eventTimeZone,
-    } as components['schemas']['Event'];
+    } as Event;
 
-    const mutateOptions: MutateOptions<z.infer<typeof formSchema>> = {
+    const mutateOptions = {
       onSuccess: () => {
         form.reset();
-        onSuccess({ ...body, id: values.id });
+        onSuccess({ ...body, id: values.id as string });
       },
-      onError: (error) => {
+      onError: (error: PostEventsV1Error) => {
         console.error('Event creation failed:', error);
         alert(`Error: ${error.message}`);
       },
@@ -321,7 +323,6 @@ export function AdminEventForm({
     if (mode === AdminEventMode.CREATE) {
       createMutate(
         {
-          credentials: 'include',
           body,
         },
         mutateOptions,
@@ -329,12 +330,9 @@ export function AdminEventForm({
     } else {
       editMutate(
         {
-          credentials: 'include',
           body,
-          params: {
-            path: {
-              id: values.id,
-            },
+          path: {
+            id: values.id as string,
           },
         },
         mutateOptions,
@@ -1147,9 +1145,7 @@ function datetimeInputToISO(
   }).toISO()!;
 }
 
-function getMoneyAmount(
-  money: components['schemas']['Money'] | undefined,
-): number | undefined {
+function getMoneyAmount(money: EventMoney | undefined): number | undefined {
   if (money === undefined) {
     return undefined;
   }

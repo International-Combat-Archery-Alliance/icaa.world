@@ -1,70 +1,65 @@
-import { useQueryClient } from '@tanstack/react-query';
-import { useEventQueryClient } from '../context/eventQueryClientContext';
-import type { paths, components } from '@/api/events-v1';
+import {
+  type InfiniteData,
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
+import {
+  getEventsV1EventIdRegistrationsInfiniteOptions,
+  getEventsV1IdOptions,
+  getEventsV1IdQueryKey,
+  getEventsV1InfiniteOptions,
+  patchEventsV1IdMutation,
+  postEventsV1EventIdRegistrationsMutation,
+  postEventsV1Mutation,
+} from '@/api/events/@tanstack/react-query.gen';
+import { client } from '@/api/events/client.gen';
+import '@/context/eventQueryClientContext';
+import type {
+  Event,
+  GetEventsV1EventIdRegistrationsResponse,
+  GetEventsV1Response,
+} from '@/api/events';
 
-export type Event = components['schemas']['Event'];
+export type { Event };
 
 export function useGetEvent(eventId: string | undefined) {
-  const client = useEventQueryClient();
-
-  return client.useQuery(
-    'get',
-    '/events/v1/{id}',
-    {
-      params: {
-        path: { id: eventId! },
-      },
-    },
-    { enabled: !!eventId },
-  );
+  return useQuery({
+    ...getEventsV1IdOptions({ path: { id: eventId ?? '' } }),
+    enabled: !!eventId,
+  });
 }
 
 export function useGetEvents(limit: number = 10) {
-  const client = useEventQueryClient();
-
-  return client.useInfiniteQuery(
-    'get',
-    '/events/v1',
-    {
-      params: {
-        query: {
-          limit,
-          cursor: undefined,
-        },
-      },
-    },
-    {
-      getNextPageParam: (
-        lastPage: paths['/events/v1']['get']['responses']['200']['content']['application/json'],
-      ) => lastPage.cursor,
-      initialPageParam: null,
-    },
-  );
+  return useInfiniteQuery({
+    ...getEventsV1InfiniteOptions({ query: { limit } }),
+    initialPageParam: { query: { cursor: undefined } },
+    getNextPageParam: (lastPage: GetEventsV1Response) => lastPage.cursor,
+  });
 }
 
 export function useUpdateEventDataAfterMutate() {
   const tanstackClient = useQueryClient();
 
   return (event: Event) => {
-    // TODO: I would love to not need to manually figure out query keys for this
-    // https://github.com/openapi-ts/openapi-typescript/issues/1806
     tanstackClient.setQueryData(
-      ['get', '/events/v1/{id}', { params: { path: { id: event.id } } }],
-      (old: { event: Event }) => {
+      getEventsV1IdQueryKey({ client, path: { id: event.id } }),
+      (old: { event: Event } | undefined) => {
+        if (!old) return { event };
         return {
           event: {
-            ...old,
+            ...old.event,
             ...event,
           },
         };
       },
     );
-    tanstackClient.setQueryData(
-      ['get', '/events/v1', { params: { query: { limit: 10 } } }],
-      (oldEvents: {
-        pageParams: string[];
-        pages: paths['/events/v1']['get']['responses']['200']['content']['application/json'][];
-      }) => {
+    // Match every cached event list regardless of the requested `limit`.
+    tanstackClient.setQueriesData<InfiniteData<GetEventsV1Response>>(
+      { queryKey: [{ _id: 'getEventsV1' }] },
+      (oldEvents) => {
+        if (!oldEvents?.pages) return oldEvents;
         return {
           ...oldEvents,
           pages: oldEvents.pages.map((page) => ({
@@ -78,50 +73,32 @@ export function useUpdateEventDataAfterMutate() {
 }
 
 export function useRegisterForEventWithPayment() {
-  const client = useEventQueryClient();
-
-  return client.useMutation('post', '/events/v1/{eventId}/registrations');
+  return useMutation(postEventsV1EventIdRegistrationsMutation());
 }
 
 export function useCreateEvent() {
-  const client = useEventQueryClient();
-
-  return client.useMutation('post', '/events/v1');
+  return useMutation(postEventsV1Mutation());
 }
 
 export function useGetRegistrations(
   eventId: string | undefined,
   limit: number = 10,
 ) {
-  const client = useEventQueryClient();
-
-  return client.useInfiniteQuery(
-    'get',
-    '/events/v1/{eventId}/registrations',
-    {
-      credentials: 'include',
-      params: {
-        query: {
-          limit,
-          cursor: undefined,
-        },
-        path: {
-          eventId: eventId!,
-        },
-      },
+  return useInfiniteQuery({
+    ...getEventsV1EventIdRegistrationsInfiniteOptions({
+      path: { eventId: eventId ?? '' },
+      query: { limit },
+    }),
+    enabled: !!eventId,
+    initialPageParam: {
+      path: { eventId: eventId ?? '' },
+      query: { limit, cursor: undefined },
     },
-    {
-      enabled: !!eventId,
-      getNextPageParam: (
-        lastPage: paths['/events/v1/{eventId}/registrations']['get']['responses']['200']['content']['application/json'],
-      ) => lastPage.cursor,
-      initialPageParam: null,
-    },
-  );
+    getNextPageParam: (lastPage: GetEventsV1EventIdRegistrationsResponse) =>
+      lastPage.cursor,
+  });
 }
 
 export function useUpdateEvent() {
-  const client = useEventQueryClient();
-
-  return client.useMutation('patch', '/events/v1/{id}');
+  return useMutation(patchEventsV1IdMutation());
 }

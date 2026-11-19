@@ -1,54 +1,16 @@
-import { createContext, useContext, useMemo, type ReactNode } from 'react';
-import createFetchClient, { type Client } from 'openapi-fetch';
-import createClient, { type OpenapiQueryClient } from 'openapi-react-query';
-import type { paths } from '@/api/assets-api-v1';
-import { createAuthMiddleware } from '@/lib/authMiddleware';
+import type { ReactNode } from 'react';
+import { client } from '@/api/assets/client.gen';
+import { configureApiClient } from '@/lib/apiClient';
 
-export type AssetsFetchClient = Client<paths>;
-
-let _assetsFetchClient: AssetsFetchClient | null = null;
-
-export function getAssetsFetchClient(): AssetsFetchClient {
-  if (!_assetsFetchClient) {
-    throw new Error(
-      'Assets fetch client not initialized. Ensure AssetsQueryClientProvider is mounted.',
-    );
-  }
-  return _assetsFetchClient;
-}
-
-const AssetsQueryClientContext =
-  createContext<OpenapiQueryClient<paths> | null>(null);
+configureApiClient(client, {
+  baseUrl: import.meta.env.VITE_ASSETS_API_URL,
+  loginBaseUrl: import.meta.env.VITE_LOGIN_API_URL,
+});
 
 export const AssetsQueryClientProvider = ({
   children,
 }: {
   children: ReactNode;
 }) => {
-  const { assetsQueryClient } = useMemo(() => {
-    const assetsAPIFetchClient = createFetchClient<paths>({
-      baseUrl: import.meta.env.VITE_ASSETS_API_URL,
-      credentials: 'include',
-    });
-    assetsAPIFetchClient.use(createAuthMiddleware());
-    _assetsFetchClient = assetsAPIFetchClient;
-    const client = createClient(assetsAPIFetchClient);
-    return { assetsQueryClient: client };
-  }, []);
-
-  return (
-    <AssetsQueryClientContext.Provider value={assetsQueryClient}>
-      {children}
-    </AssetsQueryClientContext.Provider>
-  );
-};
-
-export const useAssetsQueryClient = () => {
-  const context = useContext(AssetsQueryClientContext);
-  if (!context) {
-    throw new Error(
-      'useAssetsQueryClient must be used within an AssetsQueryClientProvider',
-    );
-  }
-  return context;
+  return <>{children}</>;
 };

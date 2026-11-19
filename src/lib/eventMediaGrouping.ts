@@ -1,5 +1,5 @@
-import type { components } from '@/api/events-v1';
 import type { Asset } from '@/hooks/useAssets';
+import type { EventMediaItem } from '@/api/events';
 import { isFileAsset, isImageAsset, type AssetFile } from '@/lib/assetUtils';
 import {
   buildEventMediaEmbedData,
@@ -9,7 +9,7 @@ import {
   type EventMediaEmbedData,
 } from '@/lib/embedUtils';
 
-export type EventMediaItem = components['schemas']['EventMediaItem'];
+export type { EventMediaItem };
 
 export type EventFileAsset = AssetFile;
 

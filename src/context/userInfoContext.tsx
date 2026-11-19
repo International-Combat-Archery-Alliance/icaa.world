@@ -1,4 +1,4 @@
-import type { components } from '@/api/login';
+import type { UserInfo } from '@/api/login';
 import { useLoginSession } from '@/hooks/useLogin';
 import { setUser, clearUser } from '@/lib/newrelic';
 import {
@@ -15,9 +15,7 @@ export enum AuthStatus {
   UNAUTHENTICATED = 'unauthenticated',
 }
 
-function isUserInfoExpired(
-  userInfo: components['schemas']['UserInfo'] | undefined,
-): boolean {
+function isUserInfoExpired(userInfo: UserInfo | undefined): boolean {
   if (userInfo === undefined) return true;
 
   const expirationDate = new Date(userInfo.expiresAt);
@@ -27,11 +25,11 @@ function isUserInfoExpired(
 }
 
 export interface UserInfoContextValues {
-  userInfo: components['schemas']['UserInfo'] | undefined;
+  userInfo: UserInfo | undefined;
   isSuccess: boolean;
   isError: boolean;
   isLoading: boolean;
-  setCachedUserInfo: (info: components['schemas']['UserInfo']) => void;
+  setCachedUserInfo: (info: UserInfo) => void;
   deleteCachedUserInfo: () => void;
   setAuthStatus: (status: AuthStatus) => void;
 }
@@ -46,7 +44,7 @@ export const UserInfoContextProvider = ({
   // Storage keys are versioned so the RS256 cutover (INT-6) forces a
   // one-time re-login: pre-cutover cached sessions are ignored.
   const [cachedUserInfo, setCachedUserInfo, deleteCachedUserInfo] =
-    useLocalStorage<components['schemas']['UserInfo']>('userInfoV2');
+    useLocalStorage<UserInfo>('userInfoV2');
   const [authStatus, setAuthStatus] =
     useLocalStorage<AuthStatus>('authStatusV2');
 
@@ -65,13 +63,14 @@ export const UserInfoContextProvider = ({
     }
   }, [cachedUserInfo]);
 
-  const shouldFetchFromAPI =
+  const shouldFetchFromAPI = Boolean(
     authStatus === undefined ||
     authStatus === null ||
     (authStatus === AuthStatus.AUTHENTICATED && !cachedUserInfo) ||
     (authStatus === AuthStatus.AUTHENTICATED &&
       cachedUserInfo &&
-      isUserInfoExpired(cachedUserInfo));
+      isUserInfoExpired(cachedUserInfo)),
+  );
 
   const {
     data: apiUserInfo,

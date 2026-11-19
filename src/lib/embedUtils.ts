@@ -1,7 +1,4 @@
-import type { components } from '@/api/events-v1';
-
-type EventMediaIcon = components['schemas']['EventMediaIcon'];
-type EventMediaItem = components['schemas']['EventMediaItem'];
+import type { EventMediaIcon, EventMediaItem } from '@/api/events';
 
 interface EventMediaEmbedData {
   service: string;

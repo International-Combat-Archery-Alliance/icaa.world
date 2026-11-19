@@ -1,41 +1,16 @@
-import { createContext, useContext, useMemo, type ReactNode } from 'react';
-import createFetchClient from 'openapi-fetch';
-import createClient, { type OpenapiQueryClient } from 'openapi-react-query';
-import type { paths } from '@/api/donations-v1';
-import { createAuthMiddleware } from '@/lib/authMiddleware';
+import type { ReactNode } from 'react';
+import { client } from '@/api/donations/client.gen';
+import { configureApiClient } from '@/lib/apiClient';
 
-// Create the context with a null default value
-const DonationQueryClientContext =
-  createContext<OpenapiQueryClient<paths> | null>(null);
+configureApiClient(client, {
+  baseUrl: import.meta.env.VITE_DONATION_API_URL,
+  loginBaseUrl: import.meta.env.VITE_LOGIN_API_URL,
+});
 
 export const DonationQueryClientProvider = ({
   children,
 }: {
   children: ReactNode;
 }) => {
-  const { donationQueryClient } = useMemo(() => {
-    const donationAPIFetchClient = createFetchClient<paths>({
-      baseUrl: import.meta.env.VITE_DONATION_API_URL,
-      credentials: 'include',
-    });
-    donationAPIFetchClient.use(createAuthMiddleware());
-    const client = createClient(donationAPIFetchClient);
-    return { donationQueryClient: client };
-  }, []);
-
-  return (
-    <DonationQueryClientContext.Provider value={donationQueryClient}>
-      {children}
-    </DonationQueryClientContext.Provider>
-  );
-};
-
-export const useDonationQueryClient = () => {
-  const context = useContext(DonationQueryClientContext);
-  if (!context) {
-    throw new Error(
-      'useDonationQueryClient must be used within a DonationQueryClientProvider',
-    );
-  }
-  return context;
+  return <>{children}</>;
 };

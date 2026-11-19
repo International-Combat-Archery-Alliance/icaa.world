@@ -1,4 +1,4 @@
-import type { components } from '@/api/login';
+import type { UserInfo } from '@/api/login';
 import { useLogin, useLogout } from '@/hooks/useLogin';
 import { trackEvent } from '@/lib/newrelic';
 import { GoogleLogin } from '@react-oauth/google';
@@ -23,7 +23,6 @@ export default function Login() {
       shape="circle"
       onSuccess={(credentialResponse) =>
         mutate({
-          credentials: 'include',
           body: {
             googleJWT: credentialResponse.credential ?? '',
           },
@@ -33,11 +32,7 @@ export default function Login() {
   );
 }
 
-function SignedIn({
-  userInfo,
-}: {
-  userInfo: components['schemas']['UserInfo'] | undefined;
-}) {
+function SignedIn({ userInfo }: { userInfo: UserInfo | undefined }) {
   const { mutate: logoutMutate, isPending } = useLogout();
 
   return (
@@ -61,7 +56,7 @@ function SignedIn({
           className="w-full"
           disabled={isPending}
           onClick={() => {
-            logoutMutate({ credentials: 'include' });
+            logoutMutate({});
             trackEvent('user_logout');
           }}
         >

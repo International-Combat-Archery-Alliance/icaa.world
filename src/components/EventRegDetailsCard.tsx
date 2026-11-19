@@ -1,7 +1,7 @@
 import type { Event } from '@/hooks/useEvent';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { formatMoney } from '@/api/money';
+import { formatMoney } from '@/lib/money';
 import { DateTime } from 'luxon';
 import { Share2, CalendarPlus, Download } from 'lucide-react';
 

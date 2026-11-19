@@ -1,7 +1,7 @@
-import { useMailingListQueryClient } from '@/context/mailingListQueryClientContext';
+import { useMutation } from '@tanstack/react-query';
+import { signupForMailingListMutation } from '@/api/mailing-list/@tanstack/react-query.gen';
+import '@/context/mailingListQueryClientContext';
 
 export function useSignupForMailingList() {
-  const client = useMailingListQueryClient();
-
-  return client.useMutation('post', '/mailing-list/signup');
+  return useMutation(signupForMailingListMutation());
 }

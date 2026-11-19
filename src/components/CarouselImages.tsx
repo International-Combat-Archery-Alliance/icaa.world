@@ -115,6 +115,10 @@ export function CarouselImages({
 
     handleSelect();
     api.on('select', handleSelect);
+
+    return () => {
+      api.off('select', handleSelect);
+    };
   }, [api, onSlideChange]);
 
   if (isLoading) {

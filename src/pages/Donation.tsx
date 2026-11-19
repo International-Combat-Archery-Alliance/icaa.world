@@ -26,7 +26,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useCreateDonation } from '@/hooks/useDonation';
 import { useSignupForMailingList } from '@/hooks/useMailingListSignup';
 import { TurnstileFormField } from '@/components/TurnstileFormField';
-import { formatCurrencyAmount } from '@/api/money';
+import { formatCurrencyAmount } from '@/lib/money';
 import { Money } from 'ts-money';
 import StripeEmbeddedCheckout from '@/components/StripeEmbeddedCheckout';
 
@@ -114,10 +114,8 @@ export default function Donation() {
             if (values.subscribeToMailingList) {
               signupForMailingList(
                 {
-                  params: {
-                    header: {
-                      'cf-turnstile-response': values.turnstileToken || '',
-                    },
+                  headers: {
+                    'cf-turnstile-response': values.turnstileToken || '',
                   },
                   body: { email: values.donorEmail },
                 },

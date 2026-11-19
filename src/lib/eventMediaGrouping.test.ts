@@ -1,12 +1,10 @@
 import { describe, expect, it } from 'bun:test';
-import type { components } from '@/api/events-v1';
+import type { EventMediaItem } from '@/api/events';
 import {
   groupEventMediaItems,
   resolveMediaRender,
   type EventFileAsset,
 } from '@/lib/eventMediaGrouping';
-
-type EventMediaItem = components['schemas']['EventMediaItem'];
 
 function mediaItem(
   overrides: Partial<EventMediaItem> & Pick<EventMediaItem, 'type' | 'source'>,

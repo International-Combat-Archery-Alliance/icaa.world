@@ -1,69 +1,75 @@
-import { useAssetsQueryClient } from '../context/assetsQueryClientContext';
-import type { paths, components } from '@/api/assets-api-v1';
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
+import {
+  deleteAssetsV1ByPathMutation,
+  getAssetsV1ByPathOptions,
+  getAssetsV1InfiniteOptions,
+  postAssetsV1ByPathConfirmMutation,
+  postAssetsV1ByPathReplaceUrlMutation,
+  postAssetsV1FoldersMutation,
+  postAssetsV1UploadUrlMutation,
+} from '@/api/assets/@tanstack/react-query.gen';
+import { client } from '@/api/assets/client.gen';
+import '@/context/assetsQueryClientContext';
+import type { GetAssetsV1Response } from '@/api/assets';
 
-export type Asset = components['schemas']['Asset'];
-export type AdminAsset = components['schemas']['AdminAsset'];
-export type AdminFile = components['schemas']['AdminFile'];
-export type AdminFolder = components['schemas']['AdminFolder'];
-export type FileStatus = components['schemas']['FileStatus'];
+export type {
+  AdminAsset,
+  AdminFile,
+  AdminFolder,
+  Asset,
+  FileStatus,
+} from '@/api/assets';
+
+// TanStack matches this partial key against every generated asset-list key.
+export const assetsListQueryKey = [{ _id: 'getAssetsV1' }];
 
 export function useGetAssets(path: string, limit: number = 50) {
-  const client = useAssetsQueryClient();
-
-  return client.useInfiniteQuery(
-    'get',
-    '/assets/v1',
-    {
-      params: {
-        query: { path, limit, cursor: undefined },
-      },
+  return useInfiniteQuery({
+    ...getAssetsV1InfiniteOptions({ query: { path, limit } }),
+    enabled: !!path,
+    initialPageParam: {
+      query: { path, limit, cursor: undefined },
     },
-    {
-      enabled: !!path,
-      getNextPageParam: (
-        lastPage: paths['/assets/v1']['get']['responses']['200']['content']['application/json'],
-      ) => (lastPage.hasNextPage ? lastPage.cursor : undefined),
-      initialPageParam: null,
-    },
-  );
+    getNextPageParam: (lastPage: GetAssetsV1Response) =>
+      lastPage.hasNextPage ? lastPage.cursor : undefined,
+  });
 }
 
 export function useGetAssetByPath(assetPath: string) {
-  const client = useAssetsQueryClient();
+  return useQuery({
+    ...getAssetsV1ByPathOptions({ client, query: { path: assetPath } }),
+    enabled: !!assetPath,
+  });
+}
 
-  return client.useQuery(
-    'get',
-    '/assets/v1/by-path',
-    {
-      params: {
-        query: { path: assetPath },
-      },
-    },
-    { enabled: !!assetPath },
-  );
+export function useInvalidateAssets() {
+  const tanstackClient = useQueryClient();
+
+  return () =>
+    tanstackClient.invalidateQueries({ queryKey: assetsListQueryKey });
 }
 
 export function useCreateFolder() {
-  const client = useAssetsQueryClient();
-  return client.useMutation('post', '/assets/v1/folders');
+  return useMutation(postAssetsV1FoldersMutation());
 }
 
 export function useDeleteAsset() {
-  const client = useAssetsQueryClient();
-  return client.useMutation('delete', '/assets/v1/by-path');
+  return useMutation(deleteAssetsV1ByPathMutation());
 }
 
 export function useGetUploadUrl() {
-  const client = useAssetsQueryClient();
-  return client.useMutation('post', '/assets/v1/upload-url');
+  return useMutation(postAssetsV1UploadUrlMutation());
 }
 
 export function useConfirmUpload() {
-  const client = useAssetsQueryClient();
-  return client.useMutation('post', '/assets/v1/by-path/confirm');
+  return useMutation(postAssetsV1ByPathConfirmMutation());
 }
 
 export function useGetReplaceUrl() {
-  const client = useAssetsQueryClient();
-  return client.useMutation('post', '/assets/v1/by-path/replace-url');
+  return useMutation(postAssetsV1ByPathReplaceUrlMutation());
 }

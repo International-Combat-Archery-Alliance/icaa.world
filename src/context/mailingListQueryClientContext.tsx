@@ -1,38 +1,17 @@
-import { createContext, useContext, useMemo, type ReactNode } from 'react';
-import createFetchClient from 'openapi-fetch';
-import createClient, { type OpenapiQueryClient } from 'openapi-react-query';
-import type { paths } from '@/api/mailing-list-v1';
+import type { ReactNode } from 'react';
+import { client } from '@/api/mailing-list/client.gen';
+import { configureApiClient } from '@/lib/apiClient';
 
-const MailingListQueryClientContext =
-  createContext<OpenapiQueryClient<paths> | null>(null);
+configureApiClient(client, {
+  baseUrl: import.meta.env.VITE_MAILING_LIST_API_URL,
+  loginBaseUrl: import.meta.env.VITE_LOGIN_API_URL,
+  authenticated: false,
+});
 
 export const MailingListQueryClientProvider = ({
   children,
 }: {
   children: ReactNode;
 }) => {
-  const { mailingListQueryClient } = useMemo(() => {
-    const mailingListFetchClient = createFetchClient<paths>({
-      baseUrl: import.meta.env.VITE_MAILING_LIST_API_URL,
-      credentials: 'include',
-    });
-    const client = createClient(mailingListFetchClient);
-    return { mailingListQueryClient: client };
-  }, []);
-
-  return (
-    <MailingListQueryClientContext.Provider value={mailingListQueryClient}>
-      {children}
-    </MailingListQueryClientContext.Provider>
-  );
-};
-
-export const useMailingListQueryClient = () => {
-  const context = useContext(MailingListQueryClientContext);
-  if (!context) {
-    throw new Error(
-      'useMailingListQueryClient must be used within a MailingListQueryClientProvider',
-    );
-  }
-  return context;
+  return <>{children}</>;
 };

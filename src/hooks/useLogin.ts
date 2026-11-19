@@ -1,14 +1,20 @@
-import { useLoginQueryClient } from '@/context/loginQueryClientContext';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import {
+  deleteLoginSessionMutation,
+  getLoginSessionOptions,
+  postLoginGoogleMutation,
+  postLoginRefreshMutation,
+} from '@/api/login/@tanstack/react-query.gen';
+import '@/context/loginQueryClientContext';
 import { AuthStatus, useUserInfo } from '@/context/userInfoContext';
 import { trackEvent } from '@/lib/newrelic';
 
 export function useLogin() {
-  const client = useLoginQueryClient();
-
   const { setCachedUserInfo, deleteCachedUserInfo, setAuthStatus } =
     useUserInfo();
 
-  return client.useMutation('post', '/login/google', {
+  return useMutation({
+    ...postLoginGoogleMutation(),
     onSuccess: (data) => {
       setCachedUserInfo(data);
       setAuthStatus(AuthStatus.AUTHENTICATED);
@@ -22,32 +28,24 @@ export function useLogin() {
 }
 
 export function useLoginSession(options?: { enabled?: boolean }) {
-  const client = useLoginQueryClient();
-
-  return client.useQuery(
-    'get',
-    '/login/session',
-    {
-      credentials: 'include',
+  return useQuery({
+    ...getLoginSessionOptions(),
+    retry(_, error) {
+      if (error.code === 'AuthError') {
+        return false;
+      }
+      return true;
     },
-    {
-      retry(_, error) {
-        if (error.code === 'AuthError') {
-          return false;
-        }
-        return true;
-      },
-      enabled: options?.enabled,
-    },
-  );
+    enabled: options?.enabled,
+  });
 }
 
 export function useRefreshToken() {
-  const client = useLoginQueryClient();
   const { setCachedUserInfo, deleteCachedUserInfo, setAuthStatus } =
     useUserInfo();
 
-  return client.useMutation('post', '/login/refresh', {
+  return useMutation({
+    ...postLoginRefreshMutation(),
     onSuccess: (data) => {
       setCachedUserInfo(data);
       setAuthStatus(AuthStatus.AUTHENTICATED);
@@ -61,11 +59,10 @@ export function useRefreshToken() {
 }
 
 export function useLogout() {
-  const client = useLoginQueryClient();
-
   const { deleteCachedUserInfo, setAuthStatus } = useUserInfo();
 
-  return client.useMutation('delete', '/login/session', {
+  return useMutation({
+    ...deleteLoginSessionMutation(),
     onSuccess: () => {
       deleteCachedUserInfo();
       setAuthStatus(AuthStatus.UNAUTHENTICATED);

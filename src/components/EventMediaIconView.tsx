@@ -6,11 +6,9 @@ import {
   FaYoutube,
 } from 'react-icons/fa';
 import { ExternalLink, File, Images, Video } from 'lucide-react';
-import type { components } from '@/api/events-v1';
+import type { EventMediaItem } from '@/api/events';
 import { resolveMediaIcon } from '@/lib/embedUtils';
 import { cn } from '@/lib/utils';
-
-type EventMediaItem = components['schemas']['EventMediaItem'];
 
 interface EventMediaIconViewProps {
   item: Pick<EventMediaItem, 'type' | 'source' | 'icon'>;

@@ -15,7 +15,7 @@ import {
   TableRow,
 } from './ui/table';
 import { Button } from './ui/button';
-import { formatMoney } from '@/api/money';
+import { formatMoney } from '@/lib/money';
 import { DateTime } from 'luxon';
 import { buildPdfEmbedData, parseSafeHttpUrl } from '@/lib/embedUtils';
 
