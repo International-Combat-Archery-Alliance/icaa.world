@@ -19,6 +19,7 @@ import { Button } from './ui/button';
 import { formatMoney } from '@/lib/money';
 import { DateTime } from 'luxon';
 import { buildPdfEmbedData, parseSafeHttpUrl } from '@/lib/embedUtils';
+import { cn } from '@/lib/utils';
 
 function EventDetailsPageSkeleton() {
   return (
@@ -518,7 +519,7 @@ function EventDetailsTemplate({ event }: { event: Event }) {
           <CardHeader>
             <CardTitle className="text-primary">Standings</CardTitle>
           </CardHeader>
-          <CardContent className="flex flex-1 flex-col justify-center">
+          <CardContent>
             {isBostonPlayInEvent ? (
               <div className="mx-auto w-full max-w-2xl 2xl:max-w-none">
                 <Table>
@@ -598,136 +599,153 @@ function EventDetailsTemplate({ event }: { event: Event }) {
           </CardContent>
         </Card>
 
-        <Card className="h-full">
-          <CardHeader>
-            <CardTitle className="text-primary">Schedule</CardTitle>
-          </CardHeader>
-          <CardContent className="max-h-[36rem] overflow-y-auto 2xl:max-h-none 2xl:overflow-y-visible">
-            {isBostonPlayInEvent ? (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="text-center">Game</TableHead>
-                    <TableHead className="text-center">Home</TableHead>
-                    <TableHead colSpan={2} className="text-center">
-                      Score
-                    </TableHead>
-                    <TableHead className="text-center">Away</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {bostonPlayInGameResults.map((result) => (
-                    <TableRow key={result.game}>
-                      <TableCell className="text-center">
-                        {result.game}
-                      </TableCell>
-                      <TableCell className="text-center">
-                        {result.homeTeam}
-                      </TableCell>
-                      <TableCell className="text-center">
-                        {result.homeScore}
-                      </TableCell>
-                      <TableCell className="text-center">
-                        {result.awayScore}
-                      </TableCell>
-                      <TableCell className="text-center">
-                        {result.awayTeam}
-                      </TableCell>
+        <div
+          className={cn(
+            '2xl:relative',
+            (isBostonPlayInEvent || isBostonChampionships || isBoston2026) &&
+              '2xl:min-h-[34rem]',
+          )}
+        >
+          <Card className="flex h-full flex-col 2xl:absolute 2xl:inset-0">
+            <CardHeader>
+              <CardTitle className="text-primary">Schedule</CardTitle>
+            </CardHeader>
+            <CardContent className="max-h-[36rem] flex-1 overflow-y-auto 2xl:max-h-none 2xl:min-h-0">
+              {isBostonPlayInEvent ? (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="text-center">Game</TableHead>
+                      <TableHead className="text-center">Home</TableHead>
+                      <TableHead colSpan={2} className="text-center">
+                        Score
+                      </TableHead>
+                      <TableHead className="text-center">Away</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            ) : isBostonChampionships ? (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="text-center">Game</TableHead>
-                    <TableHead className="text-center">Home</TableHead>
-                    <TableHead colSpan={2} className="text-center">
-                      Score
-                    </TableHead>
-                    <TableHead className="text-center">Away</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {bostonChampionshipsGameResults.map((result) => (
-                    <TableRow key={result.game}>
-                      <TableCell className="text-center">
-                        {result.game}
-                      </TableCell>
-                      <TableCell className="text-center">
-                        {result.greenTeam}
-                      </TableCell>
-                      <TableCell className="text-center">
-                        {result.greenScore}
-                      </TableCell>
-                      <TableCell className="text-center">
-                        {result.yellowScore}
-                      </TableCell>
-                      <TableCell className="text-center">
-                        {result.yellowTeam}
-                      </TableCell>
+                  </TableHeader>
+                  <TableBody>
+                    {bostonPlayInGameResults.map((result) => (
+                      <TableRow key={result.game}>
+                        <TableCell className="text-center">
+                          {result.game}
+                        </TableCell>
+                        <TableCell className="text-center">
+                          {result.homeTeam}
+                        </TableCell>
+                        <TableCell className="text-center">
+                          {result.homeScore}
+                        </TableCell>
+                        <TableCell className="text-center">
+                          {result.awayScore}
+                        </TableCell>
+                        <TableCell className="text-center">
+                          {result.awayTeam}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              ) : isBostonChampionships ? (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="text-center">Game</TableHead>
+                      <TableHead className="text-center">Home</TableHead>
+                      <TableHead colSpan={2} className="text-center">
+                        Score
+                      </TableHead>
+                      <TableHead className="text-center">Away</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            ) : isBoston2026 ? (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="text-center">Game</TableHead>
-                    <TableHead className="text-center">Home</TableHead>
-                    <TableHead colSpan={2} className="text-center">
-                      Score
-                    </TableHead>
-                    <TableHead className="text-center">Away</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {boston2026Schedule.map((result) => (
-                    <TableRow key={result.game}>
-                      <TableCell className="text-center">
-                        {result.game}
-                      </TableCell>
-                      <TableCell className="text-center">
-                        {result.greenTeam}
-                      </TableCell>
-                      <TableCell className="text-center">
-                        {result.greenScore}
-                      </TableCell>
-                      <TableCell className="text-center">
-                        {result.yellowScore}
-                      </TableCell>
-                      <TableCell className="text-center">
-                        {result.yellowTeam}
-                      </TableCell>
+                  </TableHeader>
+                  <TableBody>
+                    {bostonChampionshipsGameResults.map((result) => (
+                      <TableRow key={result.game}>
+                        <TableCell className="text-center">
+                          {result.game}
+                        </TableCell>
+                        <TableCell className="text-center">
+                          {result.greenTeam}
+                        </TableCell>
+                        <TableCell className="text-center">
+                          {result.greenScore}
+                        </TableCell>
+                        <TableCell className="text-center">
+                          {result.yellowScore}
+                        </TableCell>
+                        <TableCell className="text-center">
+                          {result.yellowTeam}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              ) : isBoston2026 ? (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="text-center">Game</TableHead>
+                      <TableHead className="text-center">Home</TableHead>
+                      <TableHead colSpan={2} className="text-center">
+                        Score
+                      </TableHead>
+                      <TableHead className="text-center">Away</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            ) : (
-              <p>Schedule coming soon</p>
-            )}
-          </CardContent>
-        </Card>
+                  </TableHeader>
+                  <TableBody>
+                    {boston2026Schedule.map((result) => (
+                      <TableRow key={result.game}>
+                        <TableCell className="text-center">
+                          {result.game}
+                        </TableCell>
+                        <TableCell className="text-center">
+                          {result.greenTeam}
+                        </TableCell>
+                        <TableCell className="text-center">
+                          {result.greenScore}
+                        </TableCell>
+                        <TableCell className="text-center">
+                          {result.yellowScore}
+                        </TableCell>
+                        <TableCell className="text-center">
+                          {result.yellowTeam}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              ) : (
+                <p>Schedule coming soon</p>
+              )}
+            </CardContent>
+          </Card>
+        </div>
       </div>
 
-      <EventMediaSections event={event} />
+      <div
+        className={cn(
+          'grid grid-cols-1 gap-6',
+          rulesDocUrl && '2xl:grid-cols-2 2xl:items-start',
+        )}
+      >
+        <div className="space-y-6">
+          <EventMediaSections event={event} />
+        </div>
 
-      {rulesDocUrl ? (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-primary">Rules</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <PdfEmbed
-              src={buildPdfEmbedData(rulesDocUrl.href).embed}
-              title="Event Rules"
-              className="h-[50vh]"
-            />
-          </CardContent>
-        </Card>
-      ) : null}
+        {rulesDocUrl ? (
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-primary">Rules</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <PdfEmbed
+                src={buildPdfEmbedData(rulesDocUrl.href).embed}
+                title="Event Rules"
+                className="h-[50vh]"
+              />
+            </CardContent>
+          </Card>
+        ) : null}
+      </div>
     </div>
   );
 }

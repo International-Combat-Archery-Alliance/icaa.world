@@ -120,13 +120,13 @@ function EventVideosCard({ videoItems }: EventVideosCardProps) {
       <CardHeader>
         <CardTitle className="text-primary">Videos &amp; Livestreams</CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="@container space-y-4">
         {activeVideo && (
           <div
             className={cn(
               'grid gap-4',
               embeddableVideos.length >= 1 &&
-                'lg:grid-cols-[minmax(0,1fr)_18rem]',
+                '@3xl:grid-cols-[minmax(0,1fr)_18rem]',
             )}
           >
             <div
