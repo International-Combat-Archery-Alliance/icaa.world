@@ -9,7 +9,7 @@ import { useForm, useFieldArray } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate, useParams } from 'react-router-dom';
-import type { components } from '@/api/events-v1';
+import type { Registration } from '@/api/events';
 import {
   Form,
   FormControl,
@@ -89,13 +89,11 @@ function TeamForm({ event }: { event: Event }) {
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     mutate(
       {
-        params: {
-          path: {
-            eventId: event.id,
-          },
-          header: {
-            'cf-turnstile-response': values.turnstileToken,
-          },
+        path: {
+          eventId: event.id,
+        },
+        headers: {
+          'cf-turnstile-response': values.turnstileToken,
         },
         body: {
           registrationType: 'ByTeam',
@@ -103,7 +101,7 @@ function TeamForm({ event }: { event: Event }) {
           teamName: values.teamName,
           homeCity: values.homeCity,
           players: values.players,
-        } as components['schemas']['TeamRegistration'],
+        } as Registration,
       },
       {
         onSuccess: (resp) => {

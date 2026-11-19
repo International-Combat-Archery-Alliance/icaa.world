@@ -44,7 +44,7 @@ bun run lint:fix     # Fix lint issues
 bun run format:check # Check formatting
 ```
 
-**Note:** No unit tests currently configured. Husky runs `bun run format` + `bun run lint:fix` pre-commit.
+**Note:** Unit tests run with `bun test`. Husky runs `bun run format` + `bun run lint:fix` pre-commit.
 
 Lint/format configs live in `.oxlintrc.json` and `.oxfmtrc.json`. Oxfmt is Prettier-compatible with built-in Tailwind class sorting.
 
@@ -118,19 +118,22 @@ src/
 
 ## API Integration
 
-Auto-generated types from OpenAPI specs:
-
-```bash
-bun run codegen
-```
+`bun run codegen` generates a typed SDK, TanStack Query option factories, and a
+fetch client for each OpenAPI spec under `src/api/<service>/` using
+`@hey-api/openapi-ts`.
 
 **APIs:**
 
 - Events: `https://api.icaa.world/events`
 - Login: `https://api.icaa.world/login`
 - Assets: `https://api.icaa.world/assets`
+- Donations: `https://api.icaa.world/donations`
+- Articles: `https://api.icaa.world/articles`
+- Mailing list: `https://api.icaa.world/mailing-list`
+- Voting: `https://api.icaa.world/voting`
 
-**Query Clients:** Each API has its own provider in `src/context/`
+**Query Clients:** Each API's provider in `src/context/` configures the
+generated client's base URL, credentials, and 401 refresh handling.
 
 ## Key Guidelines
 

@@ -114,10 +114,8 @@ export default function Donation() {
             if (values.subscribeToMailingList) {
               signupForMailingList(
                 {
-                  params: {
-                    header: {
-                      'cf-turnstile-response': values.turnstileToken || '',
-                    },
+                  headers: {
+                    'cf-turnstile-response': values.turnstileToken || '',
                   },
                   body: { email: values.donorEmail },
                 },

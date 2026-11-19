@@ -1,107 +1,76 @@
-import { useQueryClient } from '@tanstack/react-query';
-import { useVotingQueryClient } from '../context/votingQueryClientContext';
-import type { components, paths } from '@/api/voting-v1';
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
+import {
+  deleteVotingV1PollsIdMutation,
+  getVotingV1PollsIdOptions,
+  getVotingV1PollsIdQueryKey,
+  getVotingV1PollsIdResultsOptions,
+  getVotingV1PollsInfiniteOptions,
+  getVotingV1PollsInfiniteQueryKey,
+  patchVotingV1PollsIdMutation,
+  postVotingV1PollsIdVotesMutation,
+  postVotingV1PollsMutation,
+} from '@/api/voting/@tanstack/react-query.gen';
+import type { GetVotingV1PollsResponse, Poll } from '@/api/voting';
 
-export type Poll = components['schemas']['Poll'];
-export type PollResults = components['schemas']['PollResults'];
-export type VoteBallot = components['schemas']['VoteBallot'];
-export type PublicResultsLevel = components['schemas']['PublicResultsLevel'];
+export type {
+  Poll,
+  PollResults,
+  PublicResultsLevel,
+  VoteBallot,
+} from '@/api/voting';
 
 export function useGetPolls(limit: number = 10) {
-  const client = useVotingQueryClient();
-
-  return client.useInfiniteQuery(
-    'get',
-    '/voting/v1/polls',
-    {
-      params: {
-        query: {
-          limit,
-          cursor: undefined,
-        },
-      },
-    },
-    {
-      getNextPageParam: (
-        lastPage: paths['/voting/v1/polls']['get']['responses']['200']['content']['application/json'],
-      ) => lastPage.cursor,
-      initialPageParam: null as string | null,
-    },
-  );
+  return useInfiniteQuery({
+    ...getVotingV1PollsInfiniteOptions({ query: { limit } }),
+    initialPageParam: { query: { cursor: undefined } },
+    getNextPageParam: (lastPage: GetVotingV1PollsResponse) => lastPage.cursor,
+  });
 }
 
 export function useGetPoll(pollId: string | undefined) {
-  const client = useVotingQueryClient();
-
-  return client.useQuery(
-    'get',
-    '/voting/v1/polls/{id}',
-    {
-      params: {
-        path: { id: pollId! },
-      },
-    },
-    { enabled: !!pollId },
-  );
+  return useQuery({
+    ...getVotingV1PollsIdOptions({ path: { id: pollId! } }),
+    enabled: !!pollId,
+  });
 }
 
 export function useGetPollResults(pollId: string | undefined) {
-  const client = useVotingQueryClient();
-
-  return client.useQuery(
-    'get',
-    '/voting/v1/polls/{id}/results',
-    {
-      credentials: 'include',
-      params: {
-        path: { id: pollId! },
-      },
+  return useQuery({
+    ...getVotingV1PollsIdResultsOptions({ path: { id: pollId! } }),
+    enabled: !!pollId,
+    retry(failureCount, error) {
+      if (error && typeof error === 'object' && 'code' in error) {
+        return error.code === 'InternalError' && failureCount < 3;
+      }
+      return failureCount < 3;
     },
-    {
-      enabled: !!pollId,
-      retry(failureCount, error) {
-        if (error && typeof error === 'object' && 'code' in error) {
-          return error.code === 'InternalError' && failureCount < 3;
-        }
-        return failureCount < 3;
-      },
-    },
-  );
+  });
 }
 
 export function useVoteOnPoll() {
-  const client = useVotingQueryClient();
-
-  return client.useMutation('post', '/voting/v1/polls/{id}/votes');
+  return useMutation(postVotingV1PollsIdVotesMutation());
 }
 
 export function useCreatePoll() {
-  const client = useVotingQueryClient();
-
-  return client.useMutation('post', '/voting/v1/polls', {
-    credentials: 'include',
-  });
+  return useMutation(postVotingV1PollsMutation());
 }
 
 export function useUpdatePoll() {
-  const client = useVotingQueryClient();
-
-  return client.useMutation('patch', '/voting/v1/polls/{id}', {
-    credentials: 'include',
-  });
+  return useMutation(patchVotingV1PollsIdMutation());
 }
 
 export function useDeletePoll() {
-  const client = useVotingQueryClient();
-
-  return client.useMutation('delete', '/voting/v1/polls/{id}', {
-    credentials: 'include',
-  });
+  return useMutation(deleteVotingV1PollsIdMutation());
 }
 
 type PollsInfiniteData = {
-  pageParams: (string | null)[];
-  pages: paths['/voting/v1/polls']['get']['responses']['200']['content']['application/json'][];
+  pageParams: (string | { query: { cursor: string | undefined } })[];
+  pages: GetVotingV1PollsResponse[];
 };
 
 export function useUpdatePollDataAfterMutate() {
@@ -109,16 +78,12 @@ export function useUpdatePollDataAfterMutate() {
 
   return (poll: Poll) => {
     tanstackClient.setQueryData(
-      ['get', '/voting/v1/polls/{id}', { params: { path: { id: poll.id } } }],
+      getVotingV1PollsIdQueryKey({ path: { id: poll.id } }),
       { poll },
     );
 
     tanstackClient.setQueryData(
-      [
-        'get',
-        '/voting/v1/polls',
-        { params: { query: { limit: 10, cursor: undefined } } },
-      ],
+      getVotingV1PollsInfiniteQueryKey({ query: { limit: 10 } }),
       (old: PollsInfiniteData | undefined) => {
         if (!old) return old;
         return {

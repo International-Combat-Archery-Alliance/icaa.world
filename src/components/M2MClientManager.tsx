@@ -272,7 +272,7 @@ function M2MClientManager() {
   function onRotate(clientId: string) {
     setActingClientId(clientId);
     rotateMutation.mutate(
-      { params: { path: { clientId } } },
+      { path: { clientId } },
       {
         onSuccess: (credentials) => {
           setCopied(false);
@@ -295,7 +295,7 @@ function M2MClientManager() {
     const clientId = revokeTarget.clientId;
     setActingClientId(clientId);
     revokeMutation.mutate(
-      { params: { path: { clientId } } },
+      { path: { clientId } },
       {
         onSuccess: () => {
           invalidateM2MClients();
@@ -325,7 +325,7 @@ function M2MClientManager() {
     const clientId = editingClient.clientId;
     updateMutation.mutate(
       {
-        params: { path: { clientId } },
+        path: { clientId },
         body: { audiences: entriesToRecord(values) },
       },
       {

@@ -25,6 +25,7 @@ import {
   useConfirmUpload,
   useDeleteAsset,
   useCreateFolder,
+  assetsListQueryKey,
   type Asset,
 } from '@/hooks/useAssets';
 import {
@@ -209,7 +210,7 @@ function BrowseTab({
       return;
     }
 
-    await queryClient.invalidateQueries({ queryKey: ['get', '/assets/v1'] });
+    await queryClient.invalidateQueries({ queryKey: assetsListQueryKey });
     navigateTo(joinAssetPath(currentPath, name));
     closeNewFolder();
   };
@@ -478,9 +479,7 @@ function UploadTab({
     if (!s3Response.ok) {
       try {
         await deleteAssetMutation.mutateAsync({
-          params: {
-            query: { path: joinAssetPath(uploadPath, file.name) },
-          },
+          query: { path: joinAssetPath(uploadPath, file.name) },
         });
       } catch {
         // ignore cleanup errors
@@ -489,9 +488,7 @@ function UploadTab({
     }
 
     const confirmResult = await confirmUploadMutation.mutateAsync({
-      params: {
-        query: { path: joinAssetPath(uploadPath, file.name) },
-      },
+      query: { path: joinAssetPath(uploadPath, file.name) },
     });
 
     return confirmResult.file.url;
@@ -537,7 +534,7 @@ function UploadTab({
     }
 
     if (confirmedUrls.length > 0) {
-      await queryClient.invalidateQueries({ queryKey: ['get', '/assets/v1'] });
+      await queryClient.invalidateQueries({ queryKey: assetsListQueryKey });
     }
 
     setFailures(batchFailures);

@@ -1,17 +1,19 @@
-import { useDonationQueryClient } from '@/context/donationQueryClientContext';
+import { useInfiniteQuery, useMutation, useQuery } from '@tanstack/react-query';
+import {
+  getDonationsV1InfiniteOptions,
+  getDonationsV1PerStateOptions,
+  postDonationsV1Mutation,
+} from '@/api/donations/@tanstack/react-query.gen';
+import type { DonationListResponse } from '@/api/donations';
 
 export function useCreateDonation() {
-  const client = useDonationQueryClient();
-
-  return client.useMutation('post', '/donations/v1');
+  return useMutation(postDonationsV1Mutation());
 }
 
 export function useGetDonations(
   limit: number = 20,
   dateRange?: { from?: Date; to?: Date },
 ) {
-  const client = useDonationQueryClient();
-
   // Adjust dates to be inclusive of entire days
   const createdAfter = dateRange?.from
     ? new Date(
@@ -37,29 +39,21 @@ export function useGetDonations(
       ).toISOString()
     : undefined;
 
-  return client.useInfiniteQuery(
-    'get',
-    '/donations/v1',
-    {
-      params: {
-        query: {
-          limit,
-          cursor: undefined,
-          created_after: createdAfter,
-          created_before: createdBefore,
-        },
+  return useInfiniteQuery({
+    ...getDonationsV1InfiniteOptions({
+      query: {
+        limit,
+        created_after: createdAfter,
+        created_before: createdBefore,
       },
-    },
-    {
-      getNextPageParam: (lastPage) => lastPage.nextCursor,
-      initialPageParam: null as string | null,
-    },
-  );
+    }),
+    initialPageParam: { query: { cursor: undefined } },
+    getNextPageParam: (lastPage: DonationListResponse) =>
+      lastPage.nextCursor ?? undefined,
+  });
 }
 
 export function useGetDonationsByState(dateRange?: { from?: Date; to?: Date }) {
-  const client = useDonationQueryClient();
-
   // Adjust dates to be inclusive of entire days
   const createdAfter = dateRange?.from
     ? new Date(
@@ -85,12 +79,12 @@ export function useGetDonationsByState(dateRange?: { from?: Date; to?: Date }) {
       ).toISOString()
     : undefined;
 
-  return client.useQuery('get', '/donations/v1/per-state', {
-    params: {
+  return useQuery(
+    getDonationsV1PerStateOptions({
       query: {
         created_after: createdAfter,
         created_before: createdBefore,
       },
-    },
-  });
+    }),
+  );
 }

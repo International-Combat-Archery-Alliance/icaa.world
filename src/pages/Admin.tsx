@@ -688,7 +688,7 @@ function PollRow({ poll, onEdit }: { poll: Poll; onEdit: () => void }) {
               )
                 return;
               deleteMutation.mutate(
-                { params: { path: { id: poll.id } } },
+                { path: { id: poll.id } },
                 { onSuccess: () => updatePollCache(poll) },
               );
             }}

@@ -46,7 +46,7 @@ import { AssetPickerModal } from '@/components/AssetPickerModal';
 import { EditorToolbar } from '@/components/EditorToolbar';
 import { EmbedUrlDialog } from '@/components/EmbedUrlDialog';
 import { type EmbedBlockData } from '@/lib/editorEmbedUtils';
-import { getAssetsFetchClient } from '@/context/assetsQueryClientContext';
+import { postAssetsV1ByPathConfirm, postAssetsV1UploadUrl } from '@/api/assets';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -129,14 +129,13 @@ const tools = {
     config: {
       uploader: {
         async uploadByFile(file: File) {
-          const client = getAssetsFetchClient();
-
-          const uploadResult = await client.POST('/assets/v1/upload-url', {
+          const uploadResult = await postAssetsV1UploadUrl({
             body: {
               path: '/articles/images',
               fileName: file.name,
               contentType: file.type,
             },
+            throwOnError: false,
           });
 
           if (uploadResult.error) {
@@ -160,14 +159,10 @@ const tools = {
             throw new Error('S3 upload failed');
           }
 
-          const confirmResult = await client.POST(
-            '/assets/v1/by-path/confirm',
-            {
-              params: {
-                query: { path: `/articles/images/${file.name}` },
-              },
-            },
-          );
+          const confirmResult = await postAssetsV1ByPathConfirm({
+            query: { path: `/articles/images/${file.name}` },
+            throwOnError: false,
+          });
 
           if (confirmResult.error) {
             throw new Error(confirmResult.error.message || 'Confirm failed');
@@ -335,7 +330,9 @@ export function ArticleEditor({
   const handleSaveDraft = async (data: ArticleFormData) => {
     setSaving(true);
     try {
-      const content: OutputData = (await editor?.save()) ?? { blocks: [] };
+      const content: Record<string, unknown> = {
+        ...((await editor?.save()) ?? { blocks: [] }),
+      };
 
       if (isNew) {
         await createMutateAsync({
@@ -348,7 +345,7 @@ export function ArticleEditor({
         });
       } else {
         await updateMutateAsync({
-          params: { path: { slug: article!.slug } },
+          path: { slug: article!.slug },
           body: {
             title: data.title,
             excerpt: data.excerpt,
@@ -367,7 +364,9 @@ export function ArticleEditor({
   const handlePublish = async (data: ArticleFormData) => {
     setSaving(true);
     try {
-      const content: OutputData = (await editor?.save()) ?? { blocks: [] };
+      const content: Record<string, unknown> = {
+        ...((await editor?.save()) ?? { blocks: [] }),
+      };
 
       if (isNew) {
         await createMutateAsync({
@@ -379,11 +378,11 @@ export function ArticleEditor({
           },
         });
         await publishMutateAsync({
-          params: { path: { slug: data.slug } },
+          path: { slug: data.slug },
         });
       } else {
         await updateMutateAsync({
-          params: { path: { slug: article!.slug } },
+          path: { slug: article!.slug },
           body: {
             title: data.title,
             excerpt: data.excerpt,
@@ -391,7 +390,7 @@ export function ArticleEditor({
           },
         });
         await publishMutateAsync({
-          params: { path: { slug: article!.slug } },
+          path: { slug: article!.slug },
         });
       }
       toast.success('Article published');
@@ -409,7 +408,7 @@ export function ArticleEditor({
     setSaving(true);
     try {
       await unpublishMutateAsync({
-        params: { path: { slug: article.slug } },
+        path: { slug: article.slug },
       });
       toast.success('Article unpublished');
       setArticleStatus('draft');
@@ -435,7 +434,7 @@ export function ArticleEditor({
     setSaving(true);
     try {
       await deleteMutateAsync({
-        params: { path: { slug: article.slug } },
+        path: { slug: article.slug },
       });
       toast.success('Article deleted');
       onDelete?.();

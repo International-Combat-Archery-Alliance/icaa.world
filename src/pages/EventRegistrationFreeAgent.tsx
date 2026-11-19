@@ -9,7 +9,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate, useParams } from 'react-router-dom';
-import type { components } from '@/api/events-v1';
+import type { Registration } from '@/api/events';
 import {
   Form,
   FormControl,
@@ -92,13 +92,11 @@ function FreeAgentForm({ event }: { event: Event }) {
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     mutate(
       {
-        params: {
-          path: {
-            eventId: event.id,
-          },
-          header: {
-            'cf-turnstile-response': values.turnstileToken,
-          },
+        path: {
+          eventId: event.id,
+        },
+        headers: {
+          'cf-turnstile-response': values.turnstileToken,
         },
         // TODO: this has a type error since I'm not passing the readonly properties, I want to not have to cast this to fix that eventually
         body: {
@@ -107,7 +105,7 @@ function FreeAgentForm({ event }: { event: Event }) {
           experience: values.experience,
           homeCity: values.homeCity,
           playerInfo: values.playerInfo,
-        } as components['schemas']['IndividualRegistration'],
+        } as Registration,
       },
       {
         onSuccess: (resp) => {

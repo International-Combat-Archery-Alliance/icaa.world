@@ -39,9 +39,7 @@ const MailingListForm = () => {
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     mutate(
       {
-        params: {
-          header: { 'cf-turnstile-response': values.turnstileToken },
-        },
+        headers: { 'cf-turnstile-response': values.turnstileToken },
         body: {
           email: values.email,
           name: values.name || undefined,

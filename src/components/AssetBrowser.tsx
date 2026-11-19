@@ -192,9 +192,7 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
 
     try {
       await deleteAssetMutation.mutateAsync({
-        params: {
-          query: { path: joinAssetPath(currentPath, selectedAsset.name) },
-        },
+        query: { path: joinAssetPath(currentPath, selectedAsset.name) },
       });
       await refetch();
       setSelectedAsset(null);
@@ -346,9 +344,7 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
           // Clean up the file metadata since the upload failed
           try {
             await deleteAssetMutation.mutateAsync({
-              params: {
-                query: { path: joinAssetPath(currentPath, file.name) },
-              },
+              query: { path: joinAssetPath(currentPath, file.name) },
             });
           } catch {
             // Ignore cleanup errors
@@ -390,9 +386,7 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
 
         await retryWithBackoff(() =>
           confirmUploadMutation.mutateAsync({
-            params: {
-              query: { path: joinAssetPath(currentPath, file.name) },
-            },
+            query: { path: joinAssetPath(currentPath, file.name) },
           }),
         );
 
@@ -464,9 +458,7 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
 
     try {
       const replaceResponse = await getReplaceUrlMutation.mutateAsync({
-        params: {
-          query: { path: assetPath },
-        },
+        query: { path: assetPath },
       });
 
       const formData = new FormData();
@@ -504,9 +496,7 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
       }
 
       await confirmUploadMutation.mutateAsync({
-        params: {
-          query: { path: assetPath },
-        },
+        query: { path: assetPath },
       });
 
       // Set cache buster to force browser to reload the image

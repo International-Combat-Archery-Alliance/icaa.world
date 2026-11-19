@@ -198,10 +198,8 @@ function AdminPollForm({ mode, poll, onSuccess }: AdminPollFormProps) {
     } else if (poll) {
       updateMutation.mutate(
         {
-          params: {
-            path: { id: poll.id },
-            query: { version: poll.version },
-          },
+          path: { id: poll.id },
+          query: { version: poll.version },
           body: body as Poll,
         },
         {

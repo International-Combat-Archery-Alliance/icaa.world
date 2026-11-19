@@ -27,6 +27,7 @@ import {
   type OptionMeta,
 } from '@/components/PollResultsDisplay';
 import { useQueryClient } from '@tanstack/react-query';
+import { getVotingV1PollsIdResultsQueryKey } from '@/api/voting/@tanstack/react-query.gen';
 
 const VOTES_KEY = 'icaa_votes';
 
@@ -241,7 +242,10 @@ function PollVoteCard({ poll }: { poll: Poll }) {
   );
 
   const voteConfig = useMemo(
-    () => poll.voteConfig ?? { maxSelections: 1 },
+    () => ({
+      ...poll.voteConfig,
+      maxSelections: poll.voteConfig?.maxSelections ?? 1,
+    }),
     [poll.voteConfig],
   );
   const groups = useMemo(() => poll.groups ?? [], [poll.groups]);
@@ -324,12 +328,10 @@ function PollVoteCard({ poll }: { poll: Poll }) {
 
     voteMutation.mutate(
       {
-        params: {
-          path: { id: poll.id },
-          header: {
-            'cf-turnstile-response': turnstileToken,
-            'Idempotency-Key': idempotencyKey,
-          },
+        path: { id: poll.id },
+        headers: {
+          'cf-turnstile-response': turnstileToken,
+          'Idempotency-Key': idempotencyKey,
         },
         body: { optionIds: selectedOptionIds },
       },
@@ -343,7 +345,9 @@ function PollVoteCard({ poll }: { poll: Poll }) {
             optionImageUrl: meta?.imageUrl,
           });
           queryClient.invalidateQueries({
-            queryKey: ['get', '/voting/v1/polls/{id}/results'],
+            queryKey: getVotingV1PollsIdResultsQueryKey({
+              path: { id: poll.id },
+            }),
           });
           setHasVoted(true);
         },
