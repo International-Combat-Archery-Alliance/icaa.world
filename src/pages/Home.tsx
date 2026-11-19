@@ -66,28 +66,18 @@ const Home = () => {
             </CardHeader>
             <CardContent className="mb-6 space-y-4 p-0">
               <p className="text-secondary text-2xl font-bold md:text-3xl">
-                Livestreaming on both Twitch and YouTube! Links below
+                Watch the full VOD on YouTube! Links below
               </p>
             </CardContent>
             <CardFooter className="flex flex-col items-stretch justify-center gap-3 p-0 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
               <Button asChild>
-                <Link to="https://www.twitch.tv/icaa_world">
-                  Watch on Twitch!
-                </Link>
-              </Button>
-              <Button asChild>
-                <Link to="https://www.youtube.com/@Icaa-world/streams">
-                  Watch on YouTube!
-                </Link>
-              </Button>
-              <Button asChild>
-                <Link to="https://docs.google.com/spreadsheets/d/1P0v-8G1bryNlo8plQ-c2lbOj8Yq1ZTTS_HVZvLTC33k/edit?gid=673306283#gid=673306283">
-                  Follow live standings here
+                <Link to="https://www.youtube.com/live/TrBKLzV8a4c?si=AL3kFFpvbxqq5QrW">
+                  Watch on YouTube
                 </Link>
               </Button>
               <Button asChild>
                 <Link to="https://icaa.world/events/fa5aa500-a528-4213-9b48-c318d549ad85/event-details">
-                  Event Page
+                  Event Results Page
                 </Link>
               </Button>
             </CardFooter>
