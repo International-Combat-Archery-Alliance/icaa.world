@@ -323,7 +323,6 @@ export function AdminEventForm({
     if (mode === AdminEventMode.CREATE) {
       createMutate(
         {
-          credentials: 'include',
           body,
         },
         mutateOptions,
@@ -331,7 +330,6 @@ export function AdminEventForm({
     } else {
       editMutate(
         {
-          credentials: 'include',
           body,
           path: {
             id: values.id as string,

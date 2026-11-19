@@ -23,7 +23,6 @@ export default function Login() {
       shape="circle"
       onSuccess={(credentialResponse) =>
         mutate({
-          credentials: 'include',
           body: {
             googleJWT: credentialResponse.credential ?? '',
           },
@@ -57,7 +56,7 @@ function SignedIn({ userInfo }: { userInfo: UserInfo | undefined }) {
           className="w-full"
           disabled={isPending}
           onClick={() => {
-            logoutMutate({ credentials: 'include' });
+            logoutMutate({});
             trackEvent('user_logout');
           }}
         >

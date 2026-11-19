@@ -1,4 +1,9 @@
-import { useInfiniteQuery, useMutation, useQuery } from '@tanstack/react-query';
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
 import {
   deleteAssetsV1ByPathMutation,
   getAssetsV1ByPathOptions,
@@ -8,6 +13,7 @@ import {
   postAssetsV1FoldersMutation,
   postAssetsV1UploadUrlMutation,
 } from '@/api/assets/@tanstack/react-query.gen';
+import { client } from '@/api/assets/client.gen';
 import type { GetAssetsV1Response } from '@/api/assets';
 
 export type {
@@ -35,9 +41,16 @@ export function useGetAssets(path: string, limit: number = 50) {
 
 export function useGetAssetByPath(assetPath: string) {
   return useQuery({
-    ...getAssetsV1ByPathOptions({ query: { path: assetPath } }),
+    ...getAssetsV1ByPathOptions({ client, query: { path: assetPath } }),
     enabled: !!assetPath,
   });
+}
+
+export function useInvalidateAssets() {
+  const tanstackClient = useQueryClient();
+
+  return () =>
+    tanstackClient.invalidateQueries({ queryKey: assetsListQueryKey });
 }
 
 export function useCreateFolder() {

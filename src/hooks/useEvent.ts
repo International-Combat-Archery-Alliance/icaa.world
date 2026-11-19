@@ -25,7 +25,7 @@ export type { Event };
 
 export function useGetEvent(eventId: string | undefined) {
   return useQuery({
-    ...getEventsV1IdOptions({ path: { id: eventId! } }),
+    ...getEventsV1IdOptions({ path: { id: eventId ?? '' } }),
     enabled: !!eventId,
   });
 }
@@ -43,22 +43,22 @@ export function useUpdateEventDataAfterMutate() {
 
   return (event: Event) => {
     tanstackClient.setQueryData(
-      getEventsV1IdQueryKey({ path: { id: event.id } }),
-      (old: { event: Event }) => {
+      getEventsV1IdQueryKey({ client, path: { id: event.id } }),
+      (old: { event: Event } | undefined) => {
+        if (!old) return { event };
         return {
           event: {
-            ...old,
+            ...old.event,
             ...event,
           },
         };
       },
     );
-    tanstackClient.setQueryData(
-      getEventsV1InfiniteQueryKey({ query: { limit: 10 } }),
-      (oldEvents: {
-        pageParams: (string | { query: { cursor: string | undefined } })[];
-        pages: GetEventsV1Response[];
-      }) => {
+    // Match every cached event list regardless of the requested `limit`.
+    tanstackClient.setQueriesData<InfiniteData<GetEventsV1Response>>(
+      { queryKey: [{ _id: 'getEventsV1' }] },
+      (oldEvents) => {
+        if (!oldEvents) return oldEvents;
         return {
           ...oldEvents,
           pages: oldEvents.pages.map((page) => ({

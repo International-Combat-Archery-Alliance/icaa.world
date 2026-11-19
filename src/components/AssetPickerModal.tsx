@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState, type RefObject } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
 import {
   Folder,
   FolderPlus,
@@ -25,7 +24,7 @@ import {
   useConfirmUpload,
   useDeleteAsset,
   useCreateFolder,
-  assetsListQueryKey,
+  useInvalidateAssets,
   type Asset,
 } from '@/hooks/useAssets';
 import {
@@ -152,7 +151,7 @@ function BrowseTab({
   const [newFolderName, setNewFolderName] = useState('');
   const [newFolderError, setNewFolderError] = useState<string | null>(null);
 
-  const queryClient = useQueryClient();
+  const invalidateAssets = useInvalidateAssets();
   const createFolderMutation = useCreateFolder();
 
   const { data, isLoading, error } = useGetAssets(currentPath, 100);
@@ -210,7 +209,7 @@ function BrowseTab({
       return;
     }
 
-    await queryClient.invalidateQueries({ queryKey: assetsListQueryKey });
+    await invalidateAssets();
     navigateTo(joinAssetPath(currentPath, name));
     closeNewFolder();
   };
@@ -451,7 +450,7 @@ function UploadTab({
   const [failures, setFailures] = useState<UploadFailure[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const queryClient = useQueryClient();
+  const invalidateAssets = useInvalidateAssets();
   const getUploadUrlMutation = useGetUploadUrl();
   const confirmUploadMutation = useConfirmUpload();
   const deleteAssetMutation = useDeleteAsset();
@@ -534,7 +533,7 @@ function UploadTab({
     }
 
     if (confirmedUrls.length > 0) {
-      await queryClient.invalidateQueries({ queryKey: assetsListQueryKey });
+      await invalidateAssets();
     }
 
     setFailures(batchFailures);
