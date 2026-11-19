@@ -93,7 +93,7 @@ export function EventDetailsCard({
   };
 
   const content = (
-    <div className="flex flex-col items-center gap-6 md:flex-row">
+    <div className="flex min-w-0 flex-col items-center gap-6 md:flex-row">
       {event.imageName && (
         <img
           src={event.imageName}
@@ -101,7 +101,7 @@ export function EventDetailsCard({
           className="h-32 w-32 flex-shrink-0 rounded-md object-contain"
         />
       )}
-      <div className="grid gap-1 text-center md:text-left">
+      <div className="grid min-w-0 gap-1 text-center md:text-left">
         <p>
           <strong>Event:</strong> {event.name}
         </p>
@@ -127,7 +127,7 @@ export function EventDetailsCard({
             <strong>Team Price:</strong> {formatMoney(byTeamOpt.price)}
           </p>
         )}
-        <div className="mt-4 flex flex-col gap-2 sm:flex-row">
+        <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
           <Button
             variant="outline"
             className="w-full md:w-auto"
