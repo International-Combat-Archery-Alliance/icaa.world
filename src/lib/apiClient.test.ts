@@ -215,6 +215,30 @@ describe('toApiError', () => {
     expect((error as Error).message).toBe('Request failed with status 500');
   });
 
+  test('keeps the fallback message when the server message is empty', () => {
+    const error = toApiError({ code: 'BadRequest', message: '' }, 400);
+
+    expect(error).toBeInstanceOf(Error);
+    expect((error as Error).message).toBe('Request failed with status 400');
+    expect((error as { code?: string }).code).toBe('BadRequest');
+  });
+
+  test('keeps the fallback message when the server message is null', () => {
+    const error = toApiError({ code: 'InternalError', message: null }, 500);
+
+    expect(error).toBeInstanceOf(Error);
+    expect((error as Error).message).toBe('Request failed with status 500');
+    expect((error as { code?: string }).code).toBe('InternalError');
+  });
+
+  test('keeps the fallback message when the server message is not a string', () => {
+    const error = toApiError({ code: 'BadRequest', message: 42 }, 422);
+
+    expect(error).toBeInstanceOf(Error);
+    expect((error as Error).message).toBe('Request failed with status 422');
+    expect((error as { code?: string }).code).toBe('BadRequest');
+  });
+
   test('passes through errors that are already Error instances', () => {
     const original = new Error('network down');
 

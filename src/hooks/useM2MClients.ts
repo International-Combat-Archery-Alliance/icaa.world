@@ -7,6 +7,7 @@ import {
   postLoginV1M2mClientsClientIdRotateMutation,
   postLoginV1M2mClientsMutation,
 } from '@/api/login/@tanstack/react-query.gen';
+import '@/context/loginQueryClientContext';
 
 export type {
   M2mClient as M2MClient,

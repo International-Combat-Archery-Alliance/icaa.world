@@ -15,6 +15,7 @@ import {
   postEventsV1Mutation,
 } from '@/api/events/@tanstack/react-query.gen';
 import { client } from '@/api/events/client.gen';
+import '@/context/eventQueryClientContext';
 import type {
   Event,
   GetEventsV1EventIdRegistrationsResponse,

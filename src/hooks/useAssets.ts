@@ -14,6 +14,7 @@ import {
   postAssetsV1UploadUrlMutation,
 } from '@/api/assets/@tanstack/react-query.gen';
 import { client } from '@/api/assets/client.gen';
+import '@/context/assetsQueryClientContext';
 import type { GetAssetsV1Response } from '@/api/assets';
 
 export type {

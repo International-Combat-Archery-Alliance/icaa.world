@@ -5,6 +5,7 @@ import {
   postLoginGoogleMutation,
   postLoginRefreshMutation,
 } from '@/api/login/@tanstack/react-query.gen';
+import '@/context/loginQueryClientContext';
 import { AuthStatus, useUserInfo } from '@/context/userInfoContext';
 import { trackEvent } from '@/lib/newrelic';
 

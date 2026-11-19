@@ -15,6 +15,7 @@ import {
   postVotingV1PollsIdVotesMutation,
   postVotingV1PollsMutation,
 } from '@/api/voting/@tanstack/react-query.gen';
+import '@/context/votingQueryClientContext';
 import type { GetVotingV1PollsResponse, Poll } from '@/api/voting';
 
 export type {

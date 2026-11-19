@@ -24,11 +24,6 @@ function refreshAccessToken(loginBaseUrl: string): Promise<boolean> {
   return refreshPromise;
 }
 
-/**
- * A fetch implementation that refreshes the access token once on a 401 and
- * replays the original request. The request is cloned before it is sent
- * because the initial send consumes its body stream.
- */
 export function createAuthFetch(loginBaseUrl: string): typeof fetch {
   return async (input, init) => {
     let request: Request;
@@ -80,15 +75,17 @@ export function toApiError(error: unknown, status?: number): unknown {
     typeof error.message === 'string' &&
     error.message.length > 0;
 
-  const apiError = new Error(
-    hasServerMessage
-      ? (error as { message: string }).message
-      : `Request failed with status ${status ?? 'unknown'}`,
-  );
+  const fallbackMessage = hasServerMessage
+    ? (error as { message: string }).message
+    : `Request failed with status ${status ?? 'unknown'}`;
+
+  const apiError = new Error(fallbackMessage);
 
   if (typeof error === 'object' && error !== null) {
     Object.assign(apiError, error);
   }
+
+  apiError.message = fallbackMessage;
 
   return apiError;
 }

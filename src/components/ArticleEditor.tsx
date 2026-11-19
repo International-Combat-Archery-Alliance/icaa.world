@@ -129,28 +129,24 @@ const tools = {
     config: {
       uploader: {
         async uploadByFile(file: File) {
-          const uploadResult = await postAssetsV1UploadUrl({
+          const { data: uploadResponse } = await postAssetsV1UploadUrl({
             body: {
               path: '/articles/images',
               fileName: file.name,
               contentType: file.type,
             },
-            throwOnError: false,
+            throwOnError: true,
           });
 
-          if (uploadResult.error) {
-            throw new Error(uploadResult.error.message || 'Upload failed');
-          }
-
-          const { uploadUrl, formFields } = uploadResult.data;
-
           const uploadForm = new FormData();
-          for (const [key, value] of Object.entries(formFields)) {
+          for (const [key, value] of Object.entries(
+            uploadResponse.formFields,
+          )) {
             uploadForm.append(key, value as string);
           }
           uploadForm.append('file', file);
 
-          const s3Resp = await fetch(uploadUrl, {
+          const s3Resp = await fetch(uploadResponse.uploadUrl, {
             method: 'POST',
             body: uploadForm,
           });
@@ -159,19 +155,15 @@ const tools = {
             throw new Error('S3 upload failed');
           }
 
-          const confirmResult = await postAssetsV1ByPathConfirm({
+          const { data: confirmResult } = await postAssetsV1ByPathConfirm({
             query: { path: `/articles/images/${file.name}` },
-            throwOnError: false,
+            throwOnError: true,
           });
-
-          if (confirmResult.error) {
-            throw new Error(confirmResult.error.message || 'Confirm failed');
-          }
 
           return {
             success: 1,
             file: {
-              url: confirmResult.data.file.url,
+              url: confirmResult.file.url,
             },
           };
         },
