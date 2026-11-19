@@ -1,7 +1,7 @@
 import { useTitle } from 'react-use';
 import { useGetEvent, type Event } from '@/hooks/useEvent';
 import { Link, useParams } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
+import { BackButton } from '@/components/BackButton';
 import { EventDetailsCard } from '@/components/EventRegDetailsCard';
 import { EventMediaSections } from '@/components/EventMediaSections';
 import { PdfEmbed } from '@/components/PdfEmbed';
@@ -60,12 +60,7 @@ export default function EventDetailsPage() {
   return (
     <div className="px-4 py-4">
       <div className="mx-auto mb-4 max-w-screen-xl">
-        <Button asChild>
-          <Link to="/events">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Events
-          </Link>
-        </Button>
+        <BackButton to="/events">Back to Events</BackButton>
       </div>
       {isLoading ? (
         <EventDetailsPageSkeleton />

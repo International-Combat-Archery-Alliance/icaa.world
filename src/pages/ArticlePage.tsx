@@ -1,9 +1,8 @@
-import { useParams, Link } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useTitle } from 'react-use';
-import { ArrowLeft } from 'lucide-react';
 import { useGetArticle } from '@/hooks/useArticles';
+import { BackButton } from '@/components/BackButton';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Button } from '@/components/ui/button';
 import { EditorJsRenderer } from '@/components/EditorJsRenderer';
 
 function formatDate(dateStr: string | undefined): string {
@@ -48,12 +47,7 @@ export default function ArticlePage() {
           <p className="text-muted-foreground mb-6">
             The article you are looking for does not exist or has been removed.
           </p>
-          <Button size="sm" asChild>
-            <Link to="/">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Back to Home
-            </Link>
-          </Button>
+          <BackButton to="/">Back to Home</BackButton>
         </div>
       </section>
     );
@@ -62,12 +56,7 @@ export default function ArticlePage() {
   return (
     <section className="content-section news-page">
       <div className="mt-4 ml-4 md:ml-8">
-        <Button size="sm" asChild>
-          <Link to="/">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Home
-          </Link>
-        </Button>
+        <BackButton to="/">Back to Home</BackButton>
       </div>
       <div className="content-wrapper mx-auto max-w-screen-lg p-4 md:p-8">
         <header className="mb-8 text-center">

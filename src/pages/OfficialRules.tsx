@@ -1,7 +1,5 @@
 import { useTitle } from 'react-use';
-import { Link } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { BackButton } from '@/components/BackButton';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const OfficialRules = () => {
@@ -11,12 +9,7 @@ const OfficialRules = () => {
     <section id="official-rules" className="content-section rules-page">
       <div className="content-wrapper mx-auto max-w-screen-lg py-4 sm:px-4 md:px-6">
         <div className="mb-4">
-          <Button asChild>
-            <Link to="/about-sport">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Back to About the Sport
-            </Link>
-          </Button>
+          <BackButton to="/about-sport">Back to About the Sport</BackButton>
         </div>
         <iframe
           src="https://drive.google.com/viewerng/viewer?embedded=true&url=https://assets.icaa.world/8e3e50ec-4c99-4d30-8273-234f0eef8914.pdf"
