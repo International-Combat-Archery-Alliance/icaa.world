@@ -336,6 +336,34 @@ function EventDetailsTemplate({ event }: { event: Event }) {
       yellowTeam: 'Renegades',
       yellowScore: 7,
     },
+    {
+      game: '22 (Semifinals)',
+      greenTeam: 'Renegades (1)',
+      greenScore: 7,
+      yellowTeam: 'Vortex (4)',
+      yellowScore: 0,
+    },
+    {
+      game: '23 (Semifinals)',
+      greenTeam: 'Ottawa (2)',
+      greenScore: 4,
+      yellowTeam: 'Upstarts (3)',
+      yellowScore: 7,
+    },
+    {
+      game: '24 (3rd Place)',
+      greenTeam: 'Ottawa (2)',
+      greenScore: 6,
+      yellowTeam: 'Vortex (4)',
+      yellowScore: 3,
+    },
+    {
+      game: '25 (Finals)',
+      greenTeam: 'Renegades (1)',
+      greenScore: 7,
+      yellowTeam: 'Upstarts (3)',
+      yellowScore: 2,
+    },
   ];
   const bostonPlayInGameResults = [
     {
