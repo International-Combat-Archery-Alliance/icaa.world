@@ -1,6 +1,8 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type RefObject } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import {
   Folder,
+  FolderPlus,
   FileText,
   Image as ImageIcon,
   Upload,
@@ -22,16 +24,21 @@ import {
   useGetUploadUrl,
   useConfirmUpload,
   useDeleteAsset,
+  useCreateFolder,
   type Asset,
 } from '@/hooks/useAssets';
-import { MAX_ASSET_UPLOAD_BYTES, joinAssetPath } from '@/lib/assetUtils';
+import {
+  MAX_ASSET_UPLOAD_BYTES,
+  getFolderNameError,
+  joinAssetPath,
+} from '@/lib/assetUtils';
 
-type AssetPickerMode = 'image' | 'allFiles';
+type AssetPickerMode = 'image' | 'allFiles' | 'folder';
 
 interface AssetPickerModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSelect: (url: string) => void;
+  onSelect: (selection: string) => void;
   folderPath?: string;
   mode?: AssetPickerMode;
   accept?: string;
@@ -39,6 +46,7 @@ interface AssetPickerModalProps {
   filesLabel?: string;
   emptyMessage?: string;
   uploadPrompt?: string;
+  onBatchUploaded?: (urls: string[]) => void;
 }
 
 const MODE_DEFAULTS: Record<
@@ -65,7 +73,26 @@ const MODE_DEFAULTS: Record<
     emptyMessage: 'No files in this folder',
     uploadPrompt: 'Click to upload a file',
   },
+  folder: {
+    accept: undefined,
+    title: 'Select Folder',
+    filesLabel: 'Files',
+    emptyMessage: 'No subfolders in this folder',
+    uploadPrompt: 'Click to upload files to this folder',
+  },
 };
+
+const MAX_ASSET_UPLOAD_MB = MAX_ASSET_UPLOAD_BYTES / 1024 / 1024;
+
+interface UploadFailure {
+  fileName: string;
+  message: string;
+}
+
+interface UploadBatchResult {
+  urls: string[];
+  failures: UploadFailure[];
+}
 
 function isImageFile(asset: Asset): boolean {
   return (
@@ -82,35 +109,76 @@ function getUrl(asset: Asset): string {
   return (asset as { url?: string }).url ?? '';
 }
 
+function describeFolderCreationError(
+  error: unknown,
+  folderName: string,
+): string {
+  const code = (error as { code?: string })?.code;
+
+  if (code === 'AlreadyExists') {
+    return `A folder named "${folderName}" already exists here.`;
+  }
+
+  if (code === 'ParentFolderNotFound') {
+    return 'This folder no longer exists. Navigate back and try again.';
+  }
+
+  return error instanceof Error
+    ? error.message
+    : 'Could not create the folder. Please try again.';
+}
+
+function describeUploadError(error: unknown, uploadPath: string): string {
+  if ((error as { code?: string })?.code === 'ParentFolderNotFound') {
+    return `Folder "${uploadPath}" does not exist yet. Create it in the Browse tab, then try again.`;
+  }
+
+  return error instanceof Error
+    ? error.message
+    : 'Upload failed. Please try again.';
+}
+
 function BrowseTab({
+  mode,
   currentPath,
   onPathChange,
   fileFilter,
   filesLabel,
   emptyMessage,
-  onInsert,
+  onSelect,
 }: {
+  mode: AssetPickerMode;
   currentPath: string;
   onPathChange: (path: string) => void;
   fileFilter: (asset: Asset) => boolean;
   filesLabel: string;
   emptyMessage: string;
-  onInsert: (url: string) => void;
+  onSelect: (selection: string) => void;
 }) {
   const [selectedPath, setSelectedPath] = useState<string | null>(null);
+  const [newFolderOpen, setNewFolderOpen] = useState(false);
+  const [newFolderName, setNewFolderName] = useState('');
+  const [newFolderError, setNewFolderError] = useState<string | null>(null);
+
+  const queryClient = useQueryClient();
+  const createFolderMutation = useCreateFolder();
 
   const { data, isLoading, error } = useGetAssets(currentPath, 100);
 
   const allAssets = data?.pages.flatMap((page) => page.data) ?? [];
 
+  const isFolderMode = mode === 'folder';
   const folders = allAssets.filter((a) => a.type === 'folder');
-  const files = allAssets.filter(fileFilter).filter((a) => getUrl(a) !== '');
+  const files = isFolderMode
+    ? []
+    : allAssets.filter(fileFilter).filter((a) => getUrl(a) !== '');
 
   const isAtRoot = currentPath === '/';
 
   const navigateTo = (path: string) => {
     onPathChange(path);
     setSelectedPath(null);
+    setNewFolderError(null);
   };
 
   const navigateUp = () => {
@@ -124,12 +192,45 @@ function BrowseTab({
     }
   };
 
+  const closeNewFolder = () => {
+    setNewFolderOpen(false);
+    setNewFolderName('');
+    setNewFolderError(null);
+  };
+
+  const createFolder = async () => {
+    if (createFolderMutation.isPending) return;
+
+    const validationError = getFolderNameError(newFolderName);
+    if (validationError) {
+      setNewFolderError(validationError);
+      return;
+    }
+
+    const name = newFolderName.trim();
+
+    try {
+      await createFolderMutation.mutateAsync({
+        body: { path: currentPath, name },
+      });
+    } catch (err) {
+      setNewFolderError(describeFolderCreationError(err, name));
+      return;
+    }
+
+    await queryClient.invalidateQueries({ queryKey: ['get', '/assets/v1'] });
+    navigateTo(joinAssetPath(currentPath, name));
+    closeNewFolder();
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2">
         <Button
+          type="button"
           variant="outline"
           size="icon"
+          aria-label="Go to parent folder"
           onClick={navigateUp}
           disabled={isAtRoot}
         >
@@ -138,14 +239,81 @@ function BrowseTab({
         <Input
           value={currentPath}
           readOnly
+          aria-label="Current folder path"
           className="bg-white font-mono text-sm"
         />
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => {
+            setNewFolderOpen(true);
+            setNewFolderError(null);
+          }}
+          disabled={newFolderOpen}
+        >
+          <FolderPlus className="h-4 w-4" />
+          New Folder
+        </Button>
       </div>
+
+      {isFolderMode && isAtRoot && (
+        <p className="text-muted-foreground text-sm">
+          Root folder (/) selected — navigate into a subfolder or select the
+          site root.
+        </p>
+      )}
+
+      {newFolderOpen && (
+        <div className="space-y-2 rounded-md border p-3">
+          <div className="flex flex-wrap items-center gap-2">
+            <Input
+              value={newFolderName}
+              aria-label="New folder name"
+              placeholder="Folder name"
+              className="bg-white"
+              disabled={createFolderMutation.isPending}
+              onChange={(e) => {
+                setNewFolderName(e.target.value);
+                setNewFolderError(null);
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  void createFolder();
+                }
+              }}
+            />
+            <Button
+              type="button"
+              onClick={() => void createFolder()}
+              disabled={createFolderMutation.isPending}
+            >
+              {createFolderMutation.isPending ? 'Creating...' : 'Create'}
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={closeNewFolder}
+              disabled={createFolderMutation.isPending}
+            >
+              Cancel
+            </Button>
+          </div>
+          <p className="text-muted-foreground text-xs">
+            Creates a folder inside {currentPath}
+          </p>
+          {newFolderError && (
+            <p className="text-destructive text-sm" role="alert">
+              {newFolderError}
+            </p>
+          )}
+        </div>
+      )}
 
       {error && !isLoading && allAssets.length === 0 ? (
         <div className="bg-destructive/10 border-destructive/20 text-destructive rounded-md border px-3 py-2 text-sm">
           Could not load {currentPath}. If this folder does not exist yet,
-          create it in Admin → Assets.
+          create it with the New Folder button above.
         </div>
       ) : isLoading ? (
         <div className="grid grid-cols-3 gap-3">
@@ -241,21 +409,28 @@ function BrowseTab({
       )}
 
       <div className="flex justify-end gap-2 border-t pt-2">
-        <Button
-          disabled={!selectedPath}
-          onClick={() => {
-            const selected = files.find(
-              (a) => joinAssetPath(currentPath, a.name) === selectedPath,
-            );
-            if (selected) {
-              onInsert(getUrl(selected));
-            } else {
-              setSelectedPath(null);
-            }
-          }}
-        >
-          Insert Selected
-        </Button>
+        {isFolderMode ? (
+          <Button type="button" onClick={() => onSelect(currentPath)}>
+            Select Current Folder
+          </Button>
+        ) : (
+          <Button
+            type="button"
+            disabled={!selectedPath}
+            onClick={() => {
+              const selected = files.find(
+                (a) => joinAssetPath(currentPath, a.name) === selectedPath,
+              );
+              if (selected) {
+                onSelect(getUrl(selected));
+              } else {
+                setSelectedPath(null);
+              }
+            }}
+          >
+            Insert Selected
+          </Button>
+        )}
       </div>
     </div>
   );
@@ -265,96 +440,124 @@ function UploadTab({
   uploadPath,
   accept,
   uploadPrompt,
-  onInsert,
+  sessionRef,
+  onBatchComplete,
 }: {
   uploadPath: string;
   accept: string | undefined;
   uploadPrompt: string;
-  onInsert: (url: string) => void;
+  sessionRef: RefObject<number>;
+  onBatchComplete: (result: UploadBatchResult, sessionId: number) => void;
 }) {
   const [uploading, setUploading] = useState(false);
-  const [progress, setProgress] = useState({ current: 0, total: 0, file: '' });
-  const [error, setError] = useState<string | null>(null);
+  const [progress, setProgress] = useState({
+    current: 0,
+    total: 0,
+    fileName: '',
+  });
+  const [uploadedCount, setUploadedCount] = useState(0);
+  const [failures, setFailures] = useState<UploadFailure[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const queryClient = useQueryClient();
   const getUploadUrlMutation = useGetUploadUrl();
   const confirmUploadMutation = useConfirmUpload();
   const deleteAssetMutation = useDeleteAsset();
 
-  const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const uploadFile = async (file: File): Promise<string> => {
+    const uploadResponse = await getUploadUrlMutation.mutateAsync({
+      body: {
+        path: uploadPath,
+        fileName: file.name,
+        contentType: file.type,
+      },
+    });
 
-    if (file.size > MAX_ASSET_UPLOAD_BYTES) {
-      setError(
-        `File exceeds 50 MB limit (${(file.size / 1024 / 1024).toFixed(1)} MB)`,
-      );
-      e.target.value = '';
-      return;
+    const formData = new FormData();
+    Object.entries(uploadResponse.formFields).forEach(([key, value]) => {
+      formData.append(key, value);
+    });
+    formData.append('file', file);
+
+    const s3Response = await fetch(uploadResponse.uploadUrl, {
+      method: 'POST',
+      body: formData,
+    });
+
+    if (!s3Response.ok) {
+      try {
+        await deleteAssetMutation.mutateAsync({
+          params: {
+            query: { path: joinAssetPath(uploadPath, file.name) },
+          },
+        });
+      } catch {
+        // ignore cleanup errors
+      }
+      throw new Error('Upload to storage failed');
     }
+
+    const confirmResult = await confirmUploadMutation.mutateAsync({
+      params: {
+        query: { path: joinAssetPath(uploadPath, file.name) },
+      },
+    });
+
+    return confirmResult.file.url;
+  };
+
+  const handleFiles = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files ?? []);
+    if (files.length === 0) return;
+
+    const sessionId = sessionRef.current;
 
     setUploading(true);
-    setError(null);
-    setProgress({ current: 0, total: 1, file: file.name });
+    setUploadedCount(0);
+    setFailures([]);
 
-    try {
-      const uploadResponse = await getUploadUrlMutation.mutateAsync({
-        body: {
-          path: uploadPath,
+    const confirmedUrls: string[] = [];
+    const batchFailures: UploadFailure[] = [];
+
+    for (const [index, file] of files.entries()) {
+      if (file.size > MAX_ASSET_UPLOAD_BYTES) {
+        batchFailures.push({
           fileName: file.name,
-          contentType: file.type,
-        },
-      });
-
-      const formData = new FormData();
-      Object.entries(uploadResponse.formFields).forEach(([key, value]) => {
-        formData.append(key, value);
-      });
-      formData.append('file', file);
-
-      const s3Response = await fetch(uploadResponse.uploadUrl, {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (!s3Response.ok) {
-        try {
-          await deleteAssetMutation.mutateAsync({
-            params: {
-              query: { path: joinAssetPath(uploadPath, file.name) },
-            },
-          });
-        } catch {
-          // ignore cleanup errors
-        }
-        throw new Error('Upload to storage failed');
+          message: `Exceeds the ${MAX_ASSET_UPLOAD_MB} MB limit (${(file.size / 1024 / 1024).toFixed(1)} MB)`,
+        });
+        continue;
       }
 
-      const confirmResult = await confirmUploadMutation.mutateAsync({
-        params: {
-          query: { path: joinAssetPath(uploadPath, file.name) },
-        },
+      setProgress({
+        current: index + 1,
+        total: files.length,
+        fileName: file.name,
       });
 
-      setProgress({ current: 1, total: 1, file: file.name });
-
-      onInsert(confirmResult.file.url);
-    } catch (err) {
-      if ((err as { code?: string })?.code === 'ParentFolderNotFound') {
-        setError(
-          `Folder "${uploadPath}" does not exist yet. Create it in Admin → Assets, then try again.`,
-        );
-      } else {
-        setError(
-          err instanceof Error
-            ? err.message
-            : 'Upload failed. Please try again.',
-        );
+      try {
+        confirmedUrls.push(await uploadFile(file));
+        setUploadedCount(confirmedUrls.length);
+      } catch (err) {
+        batchFailures.push({
+          fileName: file.name,
+          message: describeUploadError(err, uploadPath),
+        });
       }
-    } finally {
-      setUploading(false);
-      e.target.value = '';
     }
+
+    if (confirmedUrls.length > 0) {
+      await queryClient.invalidateQueries({ queryKey: ['get', '/assets/v1'] });
+    }
+
+    setFailures(batchFailures);
+    setUploading(false);
+    setProgress({ current: 0, total: 0, fileName: '' });
+    e.target.value = '';
+
+    onBatchComplete(
+      { urls: confirmedUrls, failures: batchFailures },
+      sessionId,
+    );
   };
 
   return (
@@ -368,7 +571,7 @@ function UploadTab({
           {uploading ? 'Uploading...' : uploadPrompt}
         </p>
         <p className="text-muted-foreground mt-1 text-xs">
-          Max file size: 50 MB
+          Max file size: {MAX_ASSET_UPLOAD_MB} MB per file
         </p>
         <p className="text-muted-foreground mt-1 text-xs">
           Uploads to {uploadPath}
@@ -378,29 +581,44 @@ function UploadTab({
       <input
         ref={fileInputRef}
         type="file"
+        multiple
         accept={accept}
         className="hidden"
-        onChange={handleFile}
+        onChange={handleFiles}
         disabled={uploading}
       />
 
-      {uploading && (
+      {uploading && progress.total > 0 && (
         <div className="bg-primary/10 border-primary/20 space-y-2 rounded-md border px-3 py-2">
           <div className="flex items-center justify-between text-sm">
             <span className="text-primary font-medium">
-              Uploading {progress.file}...
-            </span>
-            <span className="text-muted-foreground">
-              {progress.current} of {progress.total}
+              Uploading {progress.fileName} ({progress.current} of{' '}
+              {progress.total})...
             </span>
           </div>
           <Progress value={(progress.current / progress.total) * 100} />
         </div>
       )}
 
-      {error && (
-        <div className="bg-destructive/10 border-destructive/20 text-destructive rounded-md border px-3 py-2 text-sm">
-          {error}
+      {!uploading && uploadedCount > 0 && (
+        <p className="text-sm">
+          Uploaded {uploadedCount} file{uploadedCount === 1 ? '' : 's'} to{' '}
+          {uploadPath}.
+        </p>
+      )}
+
+      {failures.length > 0 && (
+        <div className="bg-destructive/10 border-destructive/20 text-destructive space-y-1 rounded-md border px-3 py-2 text-sm">
+          <p className="font-medium">
+            {failures.length} file{failures.length === 1 ? '' : 's'} failed:
+          </p>
+          <ul className="list-disc space-y-1 pl-5">
+            {failures.map((failure) => (
+              <li key={failure.fileName}>
+                {failure.fileName}: {failure.message}
+              </li>
+            ))}
+          </ul>
         </div>
       )}
     </div>
@@ -418,15 +636,28 @@ export function AssetPickerModal({
   filesLabel,
   emptyMessage,
   uploadPrompt,
+  onBatchUploaded,
 }: AssetPickerModalProps) {
   const defaults = MODE_DEFAULTS[mode];
   const [currentPath, setCurrentPath] = useState(folderPath ?? '/');
+  const sessionRef = useRef(0);
 
   useEffect(() => {
     if (open) {
       setCurrentPath(folderPath ?? '/');
     }
   }, [open, folderPath]);
+
+  // Bumping the session on every open/close lets in-flight uploads from a
+  // previous modal session be ignored when they finish.
+  useEffect(() => {
+    sessionRef.current += 1;
+  }, [open]);
+
+  const emitSelection = (selection: string) => {
+    onSelect(selection);
+    onOpenChange(false);
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -450,15 +681,13 @@ export function AssetPickerModal({
             className="mt-4 min-h-0 flex-1 overflow-y-auto"
           >
             <BrowseTab
+              mode={mode}
               currentPath={currentPath}
               onPathChange={setCurrentPath}
               fileFilter={mode === 'allFiles' ? isFileAsset : isImageFile}
               filesLabel={filesLabel ?? defaults.filesLabel}
               emptyMessage={emptyMessage ?? defaults.emptyMessage}
-              onInsert={(url) => {
-                onSelect(url);
-                onOpenChange(false);
-              }}
+              onSelect={emitSelection}
             />
           </TabsContent>
 
@@ -470,9 +699,25 @@ export function AssetPickerModal({
               uploadPath={currentPath}
               accept={accept ?? defaults.accept}
               uploadPrompt={uploadPrompt ?? defaults.uploadPrompt}
-              onInsert={(url) => {
-                onSelect(url);
-                onOpenChange(false);
+              sessionRef={sessionRef}
+              onBatchComplete={({ urls, failures }, sessionId) => {
+                if (sessionId !== sessionRef.current) return;
+
+                if (urls.length > 0) {
+                  onBatchUploaded?.(urls);
+                }
+
+                if (mode === 'folder' || urls.length === 0) return;
+
+                if (failures.length > 0) {
+                  // Keep the dialog open so the user sees the failure report,
+                  // but still hand the last confirmed file to single-select
+                  // callers.
+                  onSelect(urls[urls.length - 1]);
+                  return;
+                }
+
+                emitSelection(urls[urls.length - 1]);
               }}
             />
           </TabsContent>
