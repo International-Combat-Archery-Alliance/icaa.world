@@ -28,6 +28,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/events/v1/admin/registrations/{eventId}/{email}/confirm": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Manually confirm a registration as paid
+         * @description Admin endpoint to mark an unpaid payment-flow registration as paid when the Stripe webhook failed or can no longer be replayed. Sends the confirmation email on first confirm; repeat calls are idempotent. Notifications are best-effort: a 200 response guarantees the registration is paid, not that the email was delivered.
+         */
+        post: operations["PostEventsV1AdminRegistrationsEventIdEmailConfirm"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/events/v1/admin/registrations/{eventId}/{email}/notify": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Resend registration notifications
+         * @description Admin endpoint to resend the confirmation email and mailing-list signup for a paid registration, e.g. when the original send failed. Only paid registrations can be notified; 200 means the email was sent.
+         */
+        post: operations["PostEventsV1AdminRegistrationsEventIdEmailNotify"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/events/v1/admin/test-email": {
         parameters: {
             query?: never;
@@ -174,7 +214,7 @@ export interface components {
             message: string;
         };
         /** @enum {string} */
-        ErrorCode: "InternalError" | "LimitOutOfBounds" | "InvalidCursor" | "NotFound" | "EmptyBody" | "InvalidBody" | "AlreadyExists" | "RegistrationClosed" | "InputValidationError" | "AuthError" | "CaptchaInvalid";
+        ErrorCode: "InternalError" | "LimitOutOfBounds" | "InvalidCursor" | "NotFound" | "EmptyBody" | "InvalidBody" | "AlreadyExists" | "RegistrationClosed" | "RegistrationUnpaid" | "InputValidationError" | "AuthError" | "CaptchaInvalid";
         Event: {
             allowedTeamSizeRange: components["schemas"]["Range"];
             /**
@@ -193,6 +233,7 @@ export interface components {
              */
             imageName?: string;
             location: components["schemas"]["Location"];
+            media?: components["schemas"]["EventMediaItem"][];
             /** @example ICAA Cup 2025 */
             name: string;
             /**
@@ -217,6 +258,31 @@ export interface components {
             /** @example 1 */
             readonly version: number;
         };
+        /** @enum {string} */
+        EventMediaDisplayMode: "auto" | "carousel" | "gallery" | "file_list" | "embed" | "link";
+        /** @enum {string} */
+        EventMediaIcon: "youtube" | "twitch" | "google_drive" | "instagram" | "pdf" | "photo_gallery" | "file" | "video" | "external_link";
+        EventMediaItem: {
+            /** @example Finals, podium, and behind-the-scenes shots. */
+            description?: string;
+            displayMode?: components["schemas"]["EventMediaDisplayMode"];
+            icon?: components["schemas"]["EventMediaIcon"];
+            /**
+             * Format: uuid
+             * @description Stable client-generated identity, preserved across edits and reordering.
+             */
+            id: string;
+            /**
+             * @description A canonical assets-api folder path (starts with "/") for asset_folder, otherwise an absolute https URL. HTTP is permitted only for loopback development URLs in local mode.
+             * @example /images/events/boston-2026
+             */
+            source: string;
+            /** @example 2026 Boston Championship Photos */
+            title?: string;
+            type: components["schemas"]["EventMediaType"];
+        };
+        /** @enum {string} */
+        EventMediaType: "asset_folder" | "asset_file" | "video" | "external_link";
         EventRegistrationOption: {
             price: components["schemas"]["Money"];
             registrationType: components["schemas"]["RegistrationType"];
@@ -435,6 +501,128 @@ export interface operations {
             };
             /** @description Bad request. */
             400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Unknown server error. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    PostEventsV1AdminRegistrationsEventIdEmailConfirm: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description ID of the event */
+                eventId: string;
+                /** @description Email of the registration (captain email for teams) */
+                email: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The confirmed registration. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /**
+                         * @description True if the registration was already paid before this call.
+                         * @example false
+                         */
+                        alreadyPaid: boolean;
+                        registration: components["schemas"]["Registration"];
+                    };
+                };
+            };
+            /** @description Bad request. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Registration not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Unknown server error. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    PostEventsV1AdminRegistrationsEventIdEmailNotify: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description ID of the event */
+                eventId: string;
+                /** @description Email of the registration (captain email for teams) */
+                email: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Notifications were sent. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        registration: components["schemas"]["Registration"];
+                    };
+                };
+            };
+            /** @description Bad request. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Registration not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Registration is not paid. */
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };

@@ -11,7 +11,7 @@ import {
   DialogTitle,
 } from './ui/dialog';
 import { Label } from './ui/label';
-import { buildEmbedData, type EmbedBlockData } from '@/lib/embedUtils';
+import { buildEmbedData, type EmbedBlockData } from '@/lib/editorEmbedUtils';
 
 interface EmbedUrlDialogProps {
   open: boolean;

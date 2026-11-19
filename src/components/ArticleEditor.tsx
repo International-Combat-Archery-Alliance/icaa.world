@@ -45,7 +45,7 @@ import useEditor from '@/hooks/useEditor';
 import { AssetPickerModal } from '@/components/AssetPickerModal';
 import { EditorToolbar } from '@/components/EditorToolbar';
 import { EmbedUrlDialog } from '@/components/EmbedUrlDialog';
-import { type EmbedBlockData } from '@/lib/embedUtils';
+import { type EmbedBlockData } from '@/lib/editorEmbedUtils';
 import { getAssetsFetchClient } from '@/context/assetsQueryClientContext';
 import {
   AlertDialog,
