@@ -11,7 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useGetDonations } from '@/hooks/useDonation';
-import { formatMoney } from '@/api/money';
+import { formatMoney } from '@/lib/money';
 import type { DateRange } from 'react-day-picker';
 
 interface DonationListProps {

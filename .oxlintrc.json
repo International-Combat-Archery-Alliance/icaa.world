@@ -34,7 +34,7 @@
     "public/**",
     "build/**",
     "coverage/**",
-    "src/api/*/**",
+    "src/api/**",
     "**/*.d.ts"
   ]
 }

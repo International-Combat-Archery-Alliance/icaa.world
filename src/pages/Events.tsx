@@ -12,7 +12,7 @@ import { DateTime } from 'luxon';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Link } from 'react-router-dom';
-import { formatMoney } from '@/api/money';
+import { formatMoney } from '@/lib/money';
 
 export default function Events() {
   const { data, isPending, isFetching, error, refetch } = useGetEvents();

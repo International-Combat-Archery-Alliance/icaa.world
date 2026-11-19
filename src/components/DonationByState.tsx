@@ -10,7 +10,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useGetDonationsByState } from '@/hooks/useDonation';
-import { formatMoney } from '@/api/money';
+import { formatMoney } from '@/lib/money';
 import type { DateRange } from 'react-day-picker';
 
 interface DonationByStateProps {

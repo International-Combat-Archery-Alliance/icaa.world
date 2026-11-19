@@ -1,4 +1,4 @@
-import type { Money } from './events';
+import type { Money } from '@/api/events';
 import { Money as MoneyValue } from 'ts-money';
 
 export function formatCurrencyAmount(amount: number, currency: string): string {

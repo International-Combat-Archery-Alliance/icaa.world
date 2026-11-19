@@ -12,6 +12,6 @@
     "dist",
     ".wrangler",
     ".github",
-    "src/api/*/**"
+    "src/api/**"
   ]
 }
