@@ -24,25 +24,27 @@ import { cn } from '@/lib/utils';
 function EventDetailsPageSkeleton() {
   return (
     <div className="w-full space-y-6">
-      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_20rem] xl:items-start">
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_20rem]">
         <Card>
           <CardHeader>
             <Skeleton className="h-8 w-32" />
           </CardHeader>
-          <CardContent className="flex flex-col items-center gap-6 md:flex-row">
+          <CardContent className="flex flex-col items-center gap-6 md:flex-row md:items-start">
             <Skeleton className="h-32 w-32 flex-shrink-0 rounded-md" />
             <div className="w-full space-y-3">
               <Skeleton className="h-5 w-2/3" />
               <Skeleton className="h-4 w-1/2" />
               <Skeleton className="h-4 w-1/2" />
+              <Skeleton className="h-9 w-48" />
             </div>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="h-full w-full sm:mx-auto sm:max-w-md xl:mx-0 xl:max-w-none">
           <CardHeader>
             <Skeleton className="h-8 w-32" />
           </CardHeader>
-          <CardContent className="space-y-3">
+          <CardContent className="flex flex-1 flex-col justify-center gap-3">
+            <Skeleton className="h-9 w-full" />
             <Skeleton className="h-9 w-full" />
             <Skeleton className="h-4 w-2/3" />
           </CardContent>
@@ -103,6 +105,10 @@ function EventDetailsTemplate({ event }: { event: Event }) {
     zone: event.timeZone,
   });
   const isRegistrationClosed = DateTime.now() > closeRegDate;
+  const eventEndDate = DateTime.fromISO(event.endTime, {
+    zone: event.timeZone,
+  });
+  const isEventInPast = DateTime.now() > eventEndDate;
   const bostonChampionshipsGameResults = [
     {
       game: 1,
@@ -483,7 +489,12 @@ function EventDetailsTemplate({ event }: { event: Event }) {
     : null;
   return (
     <div className="w-full space-y-6">
-      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_20rem] xl:items-start">
+      <div
+        className={cn(
+          'grid grid-cols-1 gap-6',
+          !isEventInPast && 'xl:grid-cols-[minmax(0,1fr)_20rem]',
+        )}
+      >
         <Card>
           <CardHeader>
             <CardTitle className="text-primary">Details</CardTitle>
@@ -493,42 +504,54 @@ function EventDetailsTemplate({ event }: { event: Event }) {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-primary">Registration</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {isRegistrationClosed ? (
-              <p className="text-destructive font-semibold">
-                Registration has closed
-              </p>
-            ) : (
-              <div className="space-y-4">
-                <div className="flex flex-col gap-3">
-                  {byIndividualOpt !== undefined ? (
-                    <Button asChild className="w-full whitespace-normal">
-                      <Link to={`/events/${event.id}/register-free-agent`}>
-                        Free Agent Sign Up ({formatMoney(byIndividualOpt.price)}
-                        )
-                      </Link>
-                    </Button>
-                  ) : null}
-                  {byTeamOpt !== undefined ? (
-                    <Button asChild className="w-full whitespace-normal">
-                      <Link to={`/events/${event.id}/register-team`}>
-                        Team Sign Up ({formatMoney(byTeamOpt.price)})
-                      </Link>
-                    </Button>
-                  ) : null}
-                </div>
-                <p className="text-muted-foreground text-sm">
-                  Registration Closes:{' '}
-                  {closeRegDate.toLocaleString(DateTime.DATE_HUGE)}
+        {!isEventInPast ? (
+          <Card className="h-full w-full sm:mx-auto sm:max-w-md xl:mx-0 xl:max-w-none">
+            <CardHeader>
+              <CardTitle className="text-primary">Registration</CardTitle>
+            </CardHeader>
+            <CardContent className="flex flex-1 flex-col justify-center">
+              {isRegistrationClosed ? (
+                <p className="text-destructive font-semibold">
+                  Registration has closed
                 </p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+              ) : byIndividualOpt === undefined && byTeamOpt === undefined ? (
+                <p className="text-muted-foreground text-sm">
+                  Registration is not open yet.
+                </p>
+              ) : (
+                <div className="space-y-4">
+                  <div className="flex flex-col gap-3">
+                    {byIndividualOpt !== undefined ? (
+                      <Button
+                        asChild
+                        className="h-auto min-h-9 w-full text-center whitespace-normal"
+                      >
+                        <Link to={`/events/${event.id}/register-free-agent`}>
+                          Free Agent Sign Up (
+                          {formatMoney(byIndividualOpt.price)})
+                        </Link>
+                      </Button>
+                    ) : null}
+                    {byTeamOpt !== undefined ? (
+                      <Button
+                        asChild
+                        className="h-auto min-h-9 w-full text-center whitespace-normal"
+                      >
+                        <Link to={`/events/${event.id}/register-team`}>
+                          Team Sign Up ({formatMoney(byTeamOpt.price)})
+                        </Link>
+                      </Button>
+                    ) : null}
+                  </div>
+                  <p className="text-muted-foreground text-sm">
+                    Registration Closes:{' '}
+                    {closeRegDate.toLocaleString(DateTime.DATE_HUGE)}
+                  </p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        ) : null}
       </div>
 
       <div className="grid grid-cols-1 gap-6 2xl:grid-cols-2">
