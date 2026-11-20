@@ -50,6 +50,12 @@ function GallerySelectionBar({
 
   return (
     <div className="bg-background/95 sticky top-16 z-10 space-y-2 rounded-lg border p-3 shadow-sm backdrop-blur-sm md:top-2">
+      {isSaving && downloadProgress && (
+        <output className="sr-only">
+          Downloading {downloadProgress.completed} of {downloadProgress.total}{' '}
+          photos
+        </output>
+      )}
       <div className="flex flex-wrap items-center justify-between gap-2">
         <p className="text-sm font-medium tabular-nums">
           {selectedCount} of {totalCount} selected
@@ -113,7 +119,7 @@ function GallerySelectionBar({
       </div>
       {failedCount > 0 && (
         <div className="flex flex-wrap items-center gap-2">
-          <output className="text-destructive text-xs">
+          <output className="text-destructive text-xs" aria-live="polite">
             {failedCount} {failedCount === 1 ? 'photo' : 'photos'} could not be{' '}
             {saveMode === 'share' ? 'loaded for saving' : 'downloaded'}.
           </output>

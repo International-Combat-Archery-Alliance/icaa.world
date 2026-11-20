@@ -3,6 +3,7 @@ import { hasCoarsePointer } from '@/lib/device';
 import { parseSafeHttpUrl } from '@/lib/embedUtils';
 
 export const MAX_ASSET_UPLOAD_BYTES = 50 * 1024 * 1024;
+export const OBJECT_URL_REVOKE_DELAY_MS = 5000;
 // Matches CreateFolderRequest.name maxLength in assets-api/spec/api.yaml.
 export const MAX_ASSET_FOLDER_NAME_LENGTH = 255;
 
@@ -107,7 +108,10 @@ export async function downloadAssetFile(
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    setTimeout(() => URL.revokeObjectURL(objectUrl), 5000);
+    setTimeout(
+      () => URL.revokeObjectURL(objectUrl),
+      OBJECT_URL_REVOKE_DELAY_MS,
+    );
   } catch {
     // Cross-origin CDN responses without CORS headers cannot be read as blobs.
     window.open(url, '_blank', 'noopener,noreferrer');

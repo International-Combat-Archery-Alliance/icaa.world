@@ -28,13 +28,13 @@ import {
   type EventFileAsset,
   type EventMediaItem,
 } from '@/lib/eventMediaGrouping';
+import { GALLERY_CAROUSEL_LIMIT } from '@/lib/galleryLimits';
 import { paginateGallery } from '@/lib/galleryPagination';
 import { cn } from '@/lib/utils';
 
 type GalleryViewMode = 'carousel' | 'gallery';
 
 const EMPTY_PHOTOS: EventFileAsset[] = [];
-const GALLERY_CAROUSEL_LIMIT = 100;
 
 interface EventFolderCardProps {
   item: EventMediaItem;
@@ -45,20 +45,17 @@ function EventFolderCard({ item }: EventFolderCardProps) {
   const [activeSlideIndex, setActiveSlideIndex] = useState(0);
   const [pageIndex, setPageIndex] = useState(0);
   const [pendingDownloadAll, setPendingDownloadAll] = useState(false);
+  const [loadAllTick, setLoadAllTick] = useState(0);
   const loadingAllRef = useRef(false);
   const loadAllAttemptRef = useRef(0);
   const loadAllTimerRef = useRef<number | null>(null);
   const loadAllAbortedRef = useRef(false);
   const mountedRef = useRef(true);
   const copyPhotoLink = useCopyPhotoLink();
-  const {
-    data,
-    isLoading,
-    error,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-  } = useGetAssets(item.source, 100);
+  const { data, isLoading, error, fetchNextPage, hasNextPage } = useGetAssets(
+    item.source,
+    100,
+  );
 
   const assets = useMemo(
     () => data?.pages.flatMap((page) => page.data) ?? [],
@@ -144,8 +141,18 @@ function EventFolderCard({ item }: EventFolderCardProps) {
   const downloadAll = photoSelection.downloadAll;
 
   useEffect(() => {
-    if (!pendingDownloadAll) return;
-    if (isFetchingNextPage || loadingAllRef.current) return;
+    setPendingDownloadAll(false);
+    loadAllAbortedRef.current = true;
+    loadAllAttemptRef.current += 1;
+    loadingAllRef.current = false;
+    if (loadAllTimerRef.current !== null) {
+      window.clearTimeout(loadAllTimerRef.current);
+      loadAllTimerRef.current = null;
+    }
+  }, [item.source]);
+
+  useEffect(() => {
+    if (!pendingDownloadAll || loadingAllRef.current) return;
 
     if (!hasNextPage) {
       setPendingDownloadAll(false);
@@ -191,12 +198,13 @@ function EventFolderCard({ item }: EventFolderCardProps) {
           loadAllTimerRef.current = null;
         }
         loadingAllRef.current = false;
+        if (mountedRef.current) setLoadAllTick((tick) => tick + 1);
       });
   }, [
     downloadAll,
     fetchNextPage,
     hasNextPage,
-    isFetchingNextPage,
+    loadAllTick,
     pendingDownloadAll,
   ]);
 
@@ -373,6 +381,7 @@ function EventFolderCard({ item }: EventFolderCardProps) {
               assetPath={item.source}
               autoplay={false}
               imageWidth={960}
+              maxAssets={GALLERY_CAROUSEL_LIMIT}
               onImageClick={setLightboxIndex}
               onSlideChange={setActiveSlideIndex}
             />

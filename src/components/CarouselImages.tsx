@@ -12,6 +12,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import Autoplay from 'embla-carousel-autoplay';
 import { assetImageUrl } from '@/lib/assetImage';
 import { isImageAsset } from '@/lib/assetUtils';
+import { GALLERY_CAROUSEL_LIMIT } from '@/lib/galleryLimits';
 import { cn } from '@/lib/utils';
 
 // Component to handle image loading with fade-in
@@ -87,7 +88,7 @@ export function CarouselImages({
   assetPath,
   aspectRatio = 'aspect-video',
   autoplayDelay = 10000,
-  maxAssets = 100,
+  maxAssets = GALLERY_CAROUSEL_LIMIT,
   className,
   autoplay = true,
   imageWidth = 960,

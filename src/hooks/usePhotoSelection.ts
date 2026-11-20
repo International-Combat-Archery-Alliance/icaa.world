@@ -198,6 +198,8 @@ export function usePhotoSelection(
     (photo: EventFileAsset) => {
       if (isSaving) return;
 
+      setDownloadFailedUrls(new Set());
+
       if (selected.has(photo.url)) {
         setSelected((previous) => {
           const next = new Set(previous);
@@ -233,6 +235,7 @@ export function usePhotoSelection(
       );
     }
 
+    setDownloadFailedUrls(new Set());
     setSelected(new Set(capped.map((photo) => photo.url)));
     if (saveMode === 'share') capped.forEach(preparePhoto);
   }, [photos, preparePhoto, saveMode]);
@@ -288,7 +291,9 @@ export function usePhotoSelection(
           {
             signal: controller.signal,
             onProgress: (completed, total) => {
-              if (mountedRef.current) setDownloadProgress({ completed, total });
+              if (!mountedRef.current) return;
+              if (completed !== total && completed % 10 !== 0) return;
+              setDownloadProgress({ completed, total });
             },
           },
         );

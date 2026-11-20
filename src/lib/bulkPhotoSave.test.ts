@@ -15,24 +15,28 @@ function resetNavigator(): void {
   clearNavigatorProperty('maxTouchPoints');
 }
 
-const originalWindow = (globalThis as { window?: unknown }).window;
+const originalWindowDescriptor = Object.getOwnPropertyDescriptor(
+  globalThis,
+  'window',
+);
 
-function setWindow(value: unknown): void {
+function setPointer(matches: boolean): void {
+  const existing =
+    (globalThis as unknown as { window?: Record<string, unknown> }).window ??
+    {};
   Object.defineProperty(globalThis, 'window', {
     configurable: true,
-    value,
+    writable: true,
+    value: { ...existing, matchMedia: () => ({ matches }) },
   });
 }
 
 function restoreWindow(): void {
-  if (originalWindow === undefined) {
-    Reflect.deleteProperty(globalThis, 'window');
+  if (originalWindowDescriptor) {
+    Object.defineProperty(globalThis, 'window', originalWindowDescriptor);
     return;
   }
-  Object.defineProperty(globalThis, 'window', {
-    configurable: true,
-    value: originalWindow,
-  });
+  Reflect.deleteProperty(globalThis, 'window');
 }
 
 function resetEnvironment(): void {
@@ -60,7 +64,7 @@ describe('resolveBulkSaveMode', () => {
     setNavigatorProperty('share', () => Promise.resolve());
     setNavigatorProperty('canShare', () => true);
     setNavigatorProperty('maxTouchPoints', 5);
-    setWindow({ matchMedia: () => ({ matches: true }) });
+    setPointer(true);
 
     expect(resolveBulkSaveMode()).toBe('share');
   });
@@ -69,7 +73,7 @@ describe('resolveBulkSaveMode', () => {
     setNavigatorProperty('share', () => Promise.resolve());
     setNavigatorProperty('canShare', () => true);
     setNavigatorProperty('maxTouchPoints', 5);
-    setWindow({ matchMedia: () => ({ matches: false }) });
+    setPointer(false);
 
     expect(resolveBulkSaveMode()).toBe('download');
   });

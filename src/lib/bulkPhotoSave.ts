@@ -1,10 +1,9 @@
-import { isAbortError } from '@/lib/assetUtils';
+import { isAbortError, OBJECT_URL_REVOKE_DELAY_MS } from '@/lib/assetUtils';
 import { hasCoarsePointer } from '@/lib/device';
 
 export const MAX_BULK_PHOTO_COUNT = 50;
 
 const DOWNLOAD_INTERVAL_MS = 250;
-const OBJECT_URL_REVOKE_DELAY_MS = 5000;
 
 export type BulkSaveMode = 'share' | 'download';
 
