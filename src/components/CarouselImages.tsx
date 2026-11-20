@@ -45,6 +45,7 @@ function CarouselImage({
       <img
         src={currentSrc}
         alt={alt}
+        loading="lazy"
         decoding="async"
         className={`h-full w-full object-cover transition-opacity duration-500 ${
           isLoaded ? 'opacity-100' : 'opacity-0'
@@ -78,7 +79,6 @@ interface CarouselImagesProps {
   className?: string;
   autoplay?: boolean;
   imageWidth?: number;
-  imageHeight?: number;
   onImageClick?: (index: number) => void;
   onSlideChange?: (index: number) => void;
 }
@@ -90,8 +90,7 @@ export function CarouselImages({
   maxAssets = 100,
   className,
   autoplay = true,
-  imageWidth = 1200,
-  imageHeight = 675,
+  imageWidth = 960,
   onImageClick,
   onSlideChange,
 }: CarouselImagesProps) {
@@ -108,12 +107,11 @@ export function CarouselImages({
         original: asset.url,
         src: assetImageUrl(asset.url, {
           width: imageWidth,
-          height: imageHeight,
-          fit: 'cover',
+          fit: 'scale-down',
         }),
       }))
       .filter((image) => image.original !== '');
-  }, [data, imageHeight, imageWidth]);
+  }, [data, imageWidth]);
 
   const { preloadImages } = useImagePreloader();
 

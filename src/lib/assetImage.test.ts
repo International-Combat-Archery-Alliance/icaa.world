@@ -46,9 +46,15 @@ describe('assetImageUrl', () => {
     ).toBe('http://localhost:9000/icaa-assets/photo.jpg');
   });
 
-  it('leaves SVGs untouched', () => {
+  it('leaves SVGs and GIFs untouched', () => {
     expect(assetImageUrl(`${CDN}/logo.svg`, { width: 400 }, CDN)).toBe(
       `${CDN}/logo.svg`,
+    );
+    expect(assetImageUrl(`${CDN}/logo.SVG`, { width: 400 }, CDN)).toBe(
+      `${CDN}/logo.SVG`,
+    );
+    expect(assetImageUrl(`${CDN}/anim.gif`, { width: 400 }, CDN)).toBe(
+      `${CDN}/anim.gif`,
     );
   });
 
@@ -60,5 +66,11 @@ describe('assetImageUrl', () => {
 
   it('leaves invalid dimensions untouched', () => {
     expect(assetImageUrl(ASSET, { width: 0 }, CDN)).toBe(ASSET);
+    expect(assetImageUrl(ASSET, { width: 400, height: -1 }, CDN)).toBe(ASSET);
+    expect(assetImageUrl(ASSET, { width: 400, quality: 101 }, CDN)).toBe(ASSET);
+  });
+
+  it('requires a height for cover crops', () => {
+    expect(assetImageUrl(ASSET, { width: 400, fit: 'cover' }, CDN)).toBe(ASSET);
   });
 });

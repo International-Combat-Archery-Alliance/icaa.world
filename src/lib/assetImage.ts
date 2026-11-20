@@ -22,6 +22,19 @@ export function assetImageUrl(
   if (!Number.isFinite(transform.width) || transform.width <= 0) {
     return url;
   }
+  if (
+    transform.height !== undefined &&
+    (!Number.isFinite(transform.height) || transform.height <= 0)
+  ) {
+    return url;
+  }
+  if (transform.fit === 'cover' && transform.height === undefined) {
+    return url;
+  }
+  const quality = transform.quality ?? DEFAULT_QUALITY;
+  if (!Number.isFinite(quality) || quality < 1 || quality > 100) {
+    return url;
+  }
 
   let image: URL;
   let cdn: URL;
@@ -41,7 +54,7 @@ export function assetImageUrl(
     ...(transform.height ? [`height=${Math.round(transform.height)}`] : []),
     `fit=${transform.fit ?? 'scale-down'}`,
     'format=auto',
-    `quality=${transform.quality ?? DEFAULT_QUALITY}`,
+    `quality=${quality}`,
     'onerror=redirect',
   ];
   const source = `${image.pathname.replace(/^\//, '')}${image.search}`;

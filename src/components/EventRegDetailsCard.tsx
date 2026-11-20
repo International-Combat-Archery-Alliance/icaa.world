@@ -99,7 +99,7 @@ export function EventDetailsCard({
         <AssetImage
           src={event.imageName}
           alt={`${event.name} logo`}
-          imageWidth={256}
+          imageWidth={320}
           imageFit="scale-down"
           className="h-32 w-32 flex-shrink-0 rounded-md object-contain"
         />

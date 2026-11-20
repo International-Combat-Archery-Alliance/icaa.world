@@ -82,6 +82,7 @@ function EventFolderCard({ item }: EventFolderCardProps) {
   const { shouldSuppressClick } = useSwipeGesture({
     targetRef: gridRef,
     allowSwipeFromAnywhere: true,
+    edgeGuardDistance: 56,
     minSwipeDistance: 60,
     onSwipeLeft: galleryPage.pageCount > 1 ? showNextGalleryPage : undefined,
     onSwipeRight:
@@ -253,7 +254,6 @@ function EventFolderCard({ item }: EventFolderCardProps) {
               assetPath={item.source}
               autoplay={false}
               imageWidth={960}
-              imageHeight={540}
               onImageClick={setLightboxIndex}
               onSlideChange={setActiveSlideIndex}
             />
@@ -328,7 +328,7 @@ function EventFolderCard({ item }: EventFolderCardProps) {
               <div
                 key={galleryPage.pageIndex}
                 className={cn(
-                  'animate-in fade-in duration-200',
+                  'animate-in fade-in duration-200 motion-reduce:animate-none',
                   pageDirection === 'next'
                     ? 'slide-in-from-right-2'
                     : 'slide-in-from-left-2',
@@ -429,7 +429,10 @@ function EventFolderCard({ item }: EventFolderCardProps) {
             </section>
             {galleryPage.pageCount > 1 && (
               <div className="flex flex-wrap items-center justify-between gap-3">
-                <p className="text-muted-foreground text-sm tabular-nums">
+                <p
+                  className="text-muted-foreground text-sm tabular-nums"
+                  aria-live="polite"
+                >
                   Showing {galleryPage.startIndex + 1}–{galleryPage.endIndex} of{' '}
                   {galleryPage.totalCount}
                 </p>

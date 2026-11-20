@@ -35,9 +35,8 @@ const BoardMember: React.FC<BoardMemberProps> = ({
       <AssetImage
         src={isHovered ? actionshot : headshot}
         alt={`${name}'s headshot`}
-        imageWidth={300}
-        imageHeight={300}
-        imageFit="cover"
+        imageWidth={320}
+        imageFit="scale-down"
         className="bio-photo"
       />
       <h3>{name}</h3>

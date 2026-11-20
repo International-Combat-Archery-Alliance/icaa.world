@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it } from 'bun:test';
+import { afterEach, beforeEach, describe, expect, it } from 'bun:test';
 import { resolveBulkSaveMode } from '@/lib/bulkPhotoSave';
 
 function setNavigatorProperty(key: string, value: unknown): void {
@@ -9,11 +9,14 @@ function clearNavigatorProperty(key: string): void {
   Reflect.deleteProperty(navigator, key);
 }
 
-afterEach(() => {
+function resetNavigator(): void {
   clearNavigatorProperty('share');
   clearNavigatorProperty('canShare');
   clearNavigatorProperty('maxTouchPoints');
-});
+}
+
+beforeEach(resetNavigator);
+afterEach(resetNavigator);
 
 describe('resolveBulkSaveMode', () => {
   it('falls back to downloads without Web Share support', () => {

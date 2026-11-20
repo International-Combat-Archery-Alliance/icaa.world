@@ -38,9 +38,8 @@ function PositionLegend() {
           <AssetImage
             src={pos.iconUrl}
             alt={pos.name}
-            imageWidth={64}
-            imageHeight={64}
-            imageFit="contain"
+            imageWidth={128}
+            imageFit="scale-down"
             className="h-8 w-8"
           />
           <span className="font-medium">{pos.name}</span>
@@ -426,7 +425,7 @@ export default function ESPNPage() {
         <AssetImage
           src="https://assets.icaa.world/16e6fb58-ef7d-4c84-8799-d325fae6a343.png"
           alt="ESPN8 The Ocho"
-          imageWidth={640}
+          imageWidth={320}
           imageFit="scale-down"
           className="h-auto w-full max-w-xs"
         />
@@ -547,7 +546,7 @@ export default function ESPNPage() {
                   <AssetImage
                     src={match.teams[0].logoUrl}
                     alt={`${match.teams[0].name} Logo`}
-                    imageWidth={512}
+                    imageWidth={640}
                     imageFit="scale-down"
                     className={`${match.teams[0].logoClassName} mx-auto w-auto object-contain`}
                   />
@@ -578,7 +577,7 @@ export default function ESPNPage() {
                   <AssetImage
                     src={match.teams[1].logoUrl}
                     alt={`${match.teams[1].name} Logo`}
-                    imageWidth={512}
+                    imageWidth={640}
                     imageFit="scale-down"
                     className={`${match.teams[1].logoClassName} mx-auto w-auto object-contain`}
                   />

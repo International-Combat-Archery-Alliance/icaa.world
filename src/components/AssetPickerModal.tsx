@@ -370,8 +370,7 @@ function BrowseTab({
                           src={url}
                           alt={asset.name}
                           imageWidth={320}
-                          imageHeight={320}
-                          imageFit="cover"
+                          imageFit="scale-down"
                           className="h-full w-full object-cover"
                         />
                       ) : (

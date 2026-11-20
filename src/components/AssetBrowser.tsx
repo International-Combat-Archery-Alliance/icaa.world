@@ -713,11 +713,10 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
               {isImageAsset(asset) && 'url' in asset ? (
                 <div className="mb-2">
                   <AssetImage
-                    src={getAssetUrl(asset)}
+                    src={getAssetUrl(asset)!}
                     alt={asset.name}
-                    imageWidth={400}
-                    imageHeight={160}
-                    imageFit="cover"
+                    imageWidth={320}
+                    imageFit="scale-down"
                     className="h-32 w-full rounded object-cover"
                   />
                 </div>
@@ -798,11 +797,10 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
               <div className="flex-shrink-0">
                 {isImageAsset(asset) && 'url' in asset ? (
                   <AssetImage
-                    src={getAssetUrl(asset)}
+                    src={getAssetUrl(asset)!}
                     alt={asset.name}
-                    imageWidth={80}
-                    imageHeight={80}
-                    imageFit="cover"
+                    imageWidth={320}
+                    imageFit="scale-down"
                     className="h-10 w-10 rounded object-cover"
                   />
                 ) : (
@@ -871,11 +869,10 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
             {isImageAsset(selectedAsset) && 'url' in selectedAsset && (
               <div className="flex-shrink-0">
                 <AssetImage
-                  src={getAssetUrl(selectedAsset)}
+                  src={getAssetUrl(selectedAsset)!}
                   alt={selectedAsset.name}
-                  imageWidth={384}
-                  imageHeight={384}
-                  imageFit="contain"
+                  imageWidth={320}
+                  imageFit="scale-down"
                   className="h-48 w-48 rounded border bg-white object-contain"
                 />
               </div>

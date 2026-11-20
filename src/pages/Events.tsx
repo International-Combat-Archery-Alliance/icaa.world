@@ -107,7 +107,7 @@ function EventCard({ event, className }: { event: Event; className?: string }) {
           <AssetImage
             src={event.imageName}
             alt="Boston International Championship Logo"
-            imageWidth={240}
+            imageWidth={320}
             imageFit="scale-down"
             className="mb-4 inline-block h-auto max-w-[100px] justify-self-center"
           />

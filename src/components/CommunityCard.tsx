@@ -52,7 +52,7 @@ function CommunityCard({
         <AssetImage
           src={logoUrl}
           alt={logoAlt}
-          imageWidth={200}
+          imageWidth={320}
           imageFit="scale-down"
           className={cn(
             'max-h-full max-w-[100px] h-auto w-auto',

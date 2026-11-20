@@ -1,6 +1,6 @@
 import { CheckCheck, Download, LoaderCircle, Share2, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import type { BulkSaveMode } from '@/lib/bulkPhotoSave';
+import { MAX_BULK_PHOTO_COUNT, type BulkSaveMode } from '@/lib/bulkPhotoSave';
 
 interface GallerySelectionBarProps {
   selectedCount: number;
@@ -41,9 +41,9 @@ function GallerySelectionBar({
       : `${saveMode === 'share' ? 'Save' : 'Download'}${countLabel}`;
 
   return (
-    <div className="bg-background/95 sticky top-2 z-10 space-y-2 rounded-lg border p-3 shadow-sm backdrop-blur-sm">
+    <div className="bg-background/95 sticky top-16 z-10 space-y-2 rounded-lg border p-3 shadow-sm backdrop-blur-sm md:top-2">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <p className="text-sm font-medium tabular-nums" aria-live="polite">
+        <p className="text-sm font-medium tabular-nums">
           {selectedCount} of {totalCount} selected
         </p>
         <div className="flex flex-wrap items-center gap-2">
@@ -51,7 +51,10 @@ function GallerySelectionBar({
             type="button"
             variant="outline"
             size="sm"
-            disabled={selectedCount === totalCount}
+            disabled={
+              selectedCount === totalCount ||
+              selectedCount >= MAX_BULK_PHOTO_COUNT
+            }
             onClick={onSelectAll}
           >
             <CheckCheck aria-hidden="true" className="size-4" />
@@ -95,10 +98,10 @@ function GallerySelectionBar({
       </div>
       {failedCount > 0 && (
         <div className="flex flex-wrap items-center gap-2">
-          <p className="text-destructive text-xs">
+          <output className="text-destructive text-xs">
             {failedCount} {failedCount === 1 ? 'photo' : 'photos'} could not be
             loaded for saving.
-          </p>
+          </output>
           <Button type="button" variant="outline" size="sm" onClick={onRetry}>
             Retry
           </Button>

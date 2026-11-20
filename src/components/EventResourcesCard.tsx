@@ -89,6 +89,7 @@ function EventResourcesCard({ items }: EventResourcesCardProps) {
                   alt={item.title || 'Event resource'}
                   imageWidth={960}
                   imageFit="scale-down"
+                  imageQuality={90}
                   className="w-full rounded-lg"
                   onError={() => markImageFailed(item.id)}
                 />

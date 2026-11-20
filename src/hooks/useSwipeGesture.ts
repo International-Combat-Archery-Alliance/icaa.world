@@ -8,6 +8,7 @@ interface SwipeGestureOptions {
   minSwipeDistance?: number;
   maxStartDistance?: number; // Max distance from edge to start swipe
   allowSwipeFromAnywhere?: boolean;
+  edgeGuardDistance?: number;
   targetRef?: RefObject<HTMLElement | null>;
 }
 
@@ -24,6 +25,7 @@ export const useSwipeGesture = (
     minSwipeDistance = 100,
     maxStartDistance = 50,
     allowSwipeFromAnywhere = false,
+    edgeGuardDistance = 0,
     targetRef,
   } = options;
 
@@ -40,6 +42,17 @@ export const useSwipeGesture = (
       }
 
       const touch = e.touches[0];
+      if (edgeGuardDistance > 0) {
+        const edgeDistance = Math.min(
+          touch.clientX,
+          window.innerWidth - touch.clientX,
+        );
+        if (edgeDistance < edgeGuardDistance) {
+          isValidSwipe.current = false;
+          return;
+        }
+      }
+
       startX.current = touch.clientX;
       startY.current = touch.clientY;
 
@@ -86,6 +99,7 @@ export const useSwipeGesture = (
     };
   }, [
     allowSwipeFromAnywhere,
+    edgeGuardDistance,
     maxStartDistance,
     minSwipeDistance,
     onSwipeLeft,
@@ -93,10 +107,11 @@ export const useSwipeGesture = (
     targetRef,
   ]);
 
-  const shouldSuppressClick = useCallback(
-    () => Date.now() - swipeEndedAt.current < CLICK_SUPPRESSION_MS,
-    [],
-  );
+  const shouldSuppressClick = useCallback(() => {
+    if (Date.now() - swipeEndedAt.current >= CLICK_SUPPRESSION_MS) return false;
+    swipeEndedAt.current = 0;
+    return true;
+  }, []);
 
   return { shouldSuppressClick };
 };

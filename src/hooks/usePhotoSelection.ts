@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import type { EventFileAsset } from '@/lib/eventMediaGrouping';
 import {
@@ -8,6 +8,8 @@ import {
   savePhotoFiles,
   type BulkSaveMode,
 } from '@/lib/bulkPhotoSave';
+
+const MAX_CONCURRENT_PREPARATIONS = 4;
 
 type PreparedPhoto =
   | { status: 'pending' }
@@ -44,52 +46,121 @@ export function usePhotoSelection(
   );
   const [isSaving, setIsSaving] = useState(false);
   const requestsRef = useRef(new Map<string, AbortController>());
+  const queueRef = useRef<EventFileAsset[]>([]);
+  const queuedUrlsRef = useRef(new Set<string>());
+  const activePreparationsRef = useRef(0);
+  const mountedRef = useRef(true);
+  const startPreparationRef = useRef<(photo: EventFileAsset) => void>(() => {});
   const saveMode = useMemo(resolveBulkSaveMode, []);
 
-  const forgetPhoto = useCallback((url: string) => {
-    requestsRef.current.get(url)?.abort();
-    requestsRef.current.delete(url);
+  const setPreparedState = useCallback((url: string, state: PreparedPhoto) => {
     setPrepared((previous) => {
       const next = new Map(previous);
-      next.delete(url);
+      next.set(url, state);
       return next;
     });
   }, []);
 
-  const preparePhoto = useCallback((photo: EventFileAsset) => {
-    if (requestsRef.current.has(photo.url)) return;
-
-    const controller = new AbortController();
-    requestsRef.current.set(photo.url, controller);
-    setPrepared((previous) => {
-      const next = new Map(previous);
-      next.set(photo.url, { status: 'pending' });
-      return next;
-    });
-
-    preparePhotoFile(photo.url, photo.name, controller.signal).then(
-      (file) => {
-        if (controller.signal.aborted) return;
-        setPrepared((previous) => {
-          const next = new Map(previous);
-          next.set(photo.url, { status: 'ready', file });
-          return next;
-        });
-      },
-      (error: unknown) => {
-        if (controller.signal.aborted) return;
-        console.error('Failed to prepare photo for saving', photo.url, error);
-        requestsRef.current.delete(photo.url);
-        setPrepared((previous) => {
-          const next = new Map(previous);
-          next.set(photo.url, { status: 'failed' });
-          return next;
-        });
-      },
-    );
+  const pumpQueue = useCallback(() => {
+    while (
+      activePreparationsRef.current < MAX_CONCURRENT_PREPARATIONS &&
+      queueRef.current.length > 0
+    ) {
+      const photo = queueRef.current.shift();
+      if (!photo) return;
+      queuedUrlsRef.current.delete(photo.url);
+      startPreparationRef.current(photo);
+    }
   }, []);
+
+  const startPreparation = useCallback(
+    (photo: EventFileAsset) => {
+      const controller = new AbortController();
+      requestsRef.current.set(photo.url, controller);
+      activePreparationsRef.current += 1;
+      setPreparedState(photo.url, { status: 'pending' });
+
+      preparePhotoFile(photo.url, photo.name, controller.signal)
+        .then(
+          (file) => {
+            if (controller.signal.aborted) return;
+            requestsRef.current.delete(photo.url);
+            setPreparedState(photo.url, { status: 'ready', file });
+          },
+          (error: unknown) => {
+            if (controller.signal.aborted) return;
+            console.error(
+              'Failed to prepare photo for saving',
+              photo.url,
+              error,
+            );
+            requestsRef.current.delete(photo.url);
+            setPreparedState(photo.url, { status: 'failed' });
+          },
+        )
+        .finally(() => {
+          activePreparationsRef.current -= 1;
+          if (mountedRef.current) pumpQueue();
+        });
+    },
+    [pumpQueue, setPreparedState],
+  );
+
+  useEffect(() => {
+    startPreparationRef.current = startPreparation;
+  }, [startPreparation]);
+
+  useEffect(() => {
+    mountedRef.current = true;
+    const queue = queueRef.current;
+    const queuedUrls = queuedUrlsRef.current;
+    const requests = requestsRef.current;
+
+    return () => {
+      mountedRef.current = false;
+      queue.length = 0;
+      queuedUrls.clear();
+      for (const controller of requests.values()) controller.abort();
+      requests.clear();
+    };
+  }, []);
+
+  const forgetPhoto = useCallback(
+    (url: string) => {
+      queueRef.current = queueRef.current.filter((photo) => photo.url !== url);
+      queuedUrlsRef.current.delete(url);
+      requestsRef.current.get(url)?.abort();
+      requestsRef.current.delete(url);
+      setPrepared((previous) => {
+        const next = new Map(previous);
+        next.delete(url);
+        return next;
+      });
+      pumpQueue();
+    },
+    [pumpQueue],
+  );
+
+  const preparePhoto = useCallback(
+    (photo: EventFileAsset) => {
+      if (
+        requestsRef.current.has(photo.url) ||
+        queuedUrlsRef.current.has(photo.url)
+      ) {
+        return;
+      }
+
+      queuedUrlsRef.current.add(photo.url);
+      queueRef.current.push(photo);
+      setPreparedState(photo.url, { status: 'pending' });
+      pumpQueue();
+    },
+    [pumpQueue, setPreparedState],
+  );
 
   const clearSelection = useCallback(() => {
+    queueRef.current = [];
+    queuedUrlsRef.current.clear();
     for (const controller of requestsRef.current.values()) controller.abort();
     requestsRef.current.clear();
     setSelected(new Set());
@@ -131,8 +202,8 @@ export function usePhotoSelection(
   const selectAll = useCallback(() => {
     const capped = photos.slice(0, MAX_BULK_PHOTO_COUNT);
     if (photos.length > MAX_BULK_PHOTO_COUNT) {
-      toast.error(
-        `You can select up to ${MAX_BULK_PHOTO_COUNT} photos at once.`,
+      toast.info(
+        `Selecting the first ${MAX_BULK_PHOTO_COUNT} photos from this folder.`,
       );
     }
 
@@ -167,36 +238,52 @@ export function usePhotoSelection(
   );
 
   const saveSelected = useCallback(async () => {
-    const readyFiles = selectedPhotos.flatMap((photo) => {
+    const readyEntries = selectedPhotos.flatMap((photo) => {
       const state = prepared.get(photo.url);
-      return state?.status === 'ready' ? [state.file] : [];
+      return state?.status === 'ready' ? [{ photo, file: state.file }] : [];
     });
 
-    if (readyFiles.length === 0) {
+    if (readyEntries.length === 0) {
       toast.error(
         'Could not load the selected photos. Check your connection and try again.',
       );
       return;
     }
 
-    const skippedCount = selectedPhotos.length - readyFiles.length;
-    if (skippedCount > 0) {
-      toast.info(
-        `${skippedCount} ${skippedCount === 1 ? 'photo' : 'photos'} could not be prepared and will be skipped.`,
-      );
-    }
+    const remainingPhotos = selectedPhotos.filter(
+      (photo) => prepared.get(photo.url)?.status !== 'ready',
+    );
 
     setIsSaving(true);
     try {
-      const outcome = await savePhotoFiles(readyFiles, saveMode, title);
+      const outcome = await savePhotoFiles(
+        readyEntries.map((entry) => entry.file),
+        saveMode,
+        title,
+      );
       if (outcome === 'cancelled') return;
 
-      const count = readyFiles.length;
+      const count = readyEntries.length;
       toast.success(
         outcome === 'shared'
           ? `${count} ${count === 1 ? 'photo' : 'photos'} ready to save.`
           : `Downloading ${count} ${count === 1 ? 'photo' : 'photos'}.`,
       );
+
+      if (remainingPhotos.length > 0) {
+        const readyUrls = new Set(readyEntries.map((entry) => entry.photo.url));
+        setSelected(new Set(remainingPhotos.map((photo) => photo.url)));
+        setPrepared((previous) => {
+          const next = new Map(previous);
+          readyUrls.forEach((url) => next.delete(url));
+          return next;
+        });
+        toast.info(
+          `${remainingPhotos.length} ${remainingPhotos.length === 1 ? 'photo' : 'photos'} still need retrying.`,
+        );
+        return;
+      }
+
       stopSelecting();
     } finally {
       setIsSaving(false);

@@ -586,16 +586,15 @@ function EventDetailsTemplate({ event }: { event: Event }) {
               <AssetImage
                 src="/images/other/2025_BC_Results.PNG"
                 alt="2025 Boston Championship Final Standings"
-                imageWidth={1400}
-                imageFit="scale-down"
                 className="mx-auto w-full max-w-2xl rounded-lg 2xl:max-w-none"
               />
             ) : isBoston2026 ? (
               <AssetImage
                 src="https://assets.icaa.world/f8b99126-68b8-4799-ac88-804d72a06732.png"
                 alt="2026 Boston Championship Final Standings"
-                imageWidth={1400}
+                imageWidth={1600}
                 imageFit="scale-down"
+                imageQuality={90}
                 className="mx-auto w-full max-w-2xl rounded-lg 2xl:max-w-none"
               />
             ) : (

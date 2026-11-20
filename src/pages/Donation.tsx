@@ -160,9 +160,8 @@ export default function Donation() {
               <AssetImage
                 src="https://assets.icaa.world/bd242bdf-283e-4b80-bbe5-f8d2c28b133e.webp"
                 alt="ICAA combat archery"
-                imageWidth={1200}
-                imageHeight={800}
-                imageFit="cover"
+                imageWidth={960}
+                imageFit="scale-down"
                 loading="eager"
                 className="h-48 w-full rounded-lg object-cover md:h-80"
               />

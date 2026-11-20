@@ -83,9 +83,6 @@ function MediaLightbox({
           <AssetImage
             src={activeImage.url}
             alt={activeImage.alt}
-            imageWidth={1600}
-            imageFit="scale-down"
-            imageQuality={80}
             loading="eager"
             className="mx-auto max-h-[80vh] w-auto max-w-full rounded-lg object-contain"
           />

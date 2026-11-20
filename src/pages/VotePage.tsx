@@ -95,9 +95,8 @@ function VotedCard({
               src={
                 votedOption?.imageUrl
                   ? assetImageUrl(votedOption.imageUrl, {
-                      width: 96,
-                      height: 96,
-                      fit: 'cover',
+                      width: 128,
+                      fit: 'scale-down',
                     })
                   : undefined
               }
@@ -474,11 +473,14 @@ function PollVoteCard({ poll }: { poll: Poll }) {
                     <div className="flex min-w-0 items-center gap-3">
                       <Avatar className="h-14 w-14 shrink-0">
                         <AvatarImage
-                          src={assetImageUrl(option.imageUrl, {
-                            width: 112,
-                            height: 112,
-                            fit: 'cover',
-                          })}
+                          src={
+                            option.imageUrl
+                              ? assetImageUrl(option.imageUrl, {
+                                  width: 128,
+                                  fit: 'scale-down',
+                                })
+                              : undefined
+                          }
                         />
                         <AvatarFallback className="bg-muted">
                           <User className="text-muted-foreground h-7 w-7" />
@@ -525,11 +527,14 @@ function PollVoteCard({ poll }: { poll: Poll }) {
                   <div className="flex min-w-0 items-center gap-3">
                     <Avatar className="h-14 w-14 shrink-0">
                       <AvatarImage
-                        src={assetImageUrl(option.imageUrl, {
-                          width: 112,
-                          height: 112,
-                          fit: 'cover',
-                        })}
+                        src={
+                          option.imageUrl
+                            ? assetImageUrl(option.imageUrl, {
+                                width: 128,
+                                fit: 'scale-down',
+                              })
+                            : undefined
+                        }
                       />
                       <AvatarFallback className="bg-muted">
                         <User className="text-muted-foreground h-7 w-7" />

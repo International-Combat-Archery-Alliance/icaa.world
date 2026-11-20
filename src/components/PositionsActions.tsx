@@ -22,9 +22,8 @@ const Positions: React.FC<PositionProps> = ({
       <AssetImage
         src={isHovered ? actionshot : icon}
         alt={`${position}'s Icon`}
-        imageWidth={300}
-        imageHeight={300}
-        imageFit="cover"
+        imageWidth={320}
+        imageFit="scale-down"
         className="h-[150px] w-[150px] flex-shrink-0 rounded-lg object-cover"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}

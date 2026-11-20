@@ -86,8 +86,7 @@ export function PlayerRoster({ players, teamColor }: PlayerRosterProps) {
                       player.imageUrl
                         ? assetImageUrl(player.imageUrl, {
                             width: 128,
-                            height: 128,
-                            fit: 'cover',
+                            fit: 'scale-down',
                           })
                         : undefined
                     }
@@ -108,9 +107,8 @@ export function PlayerRoster({ players, teamColor }: PlayerRosterProps) {
                     <AssetImage
                       src={getPositionIcon(player.position)!}
                       alt={player.position}
-                      imageWidth={80}
-                      imageHeight={80}
-                      imageFit="contain"
+                      imageWidth={128}
+                      imageFit="scale-down"
                       className="h-8 w-8 object-contain md:h-10 md:w-10"
                     />
                   ) : (

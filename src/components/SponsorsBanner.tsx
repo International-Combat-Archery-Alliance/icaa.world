@@ -26,7 +26,7 @@ export function SponsorsBanner({ sponsors }: SponsorsBannerProps) {
               <AssetImage
                 src={sponsor.logoUrl}
                 alt={`Sponsor ${index + 1}`}
-                imageWidth={400}
+                imageWidth={320}
                 imageFit="scale-down"
                 className="h-20 object-contain md:h-28"
               />

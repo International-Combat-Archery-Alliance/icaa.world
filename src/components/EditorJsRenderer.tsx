@@ -149,8 +149,9 @@ function BlockRenderer({ block }: { block: EditorJsBlock }) {
           <AssetImage
             src={url}
             alt={caption || ''}
-            imageWidth={1200}
+            imageWidth={960}
             imageFit="scale-down"
+            imageQuality={90}
             className={`${sizeClass} h-auto max-w-full rounded-md ${imgAlignClass}`}
           />
           {caption && (
@@ -287,9 +288,8 @@ function BlockRenderer({ block }: { block: EditorJsBlock }) {
               <AssetImage
                 src={meta.image.url}
                 alt=""
-                imageWidth={192}
-                imageHeight={192}
-                imageFit="cover"
+                imageWidth={128}
+                imageFit="scale-down"
                 className="h-24 w-24 flex-shrink-0 rounded-md object-cover"
               />
             )}
