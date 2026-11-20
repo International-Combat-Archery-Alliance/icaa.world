@@ -35,6 +35,7 @@ import { cn } from '@/lib/utils';
 type GalleryViewMode = 'carousel' | 'gallery';
 
 const EMPTY_PHOTOS: EventFileAsset[] = [];
+const MAX_LOAD_ALL_PAGES = 50;
 
 interface EventFolderCardProps {
   item: EventMediaItem;
@@ -44,17 +45,20 @@ function EventFolderCard({ item }: EventFolderCardProps) {
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [activeSlideIndex, setActiveSlideIndex] = useState(0);
   const [pageIndex, setPageIndex] = useState(0);
-  const [pendingDownloadAll, setPendingDownloadAll] = useState(false);
+  const [pendingDownloadAllSource, setPendingDownloadAllSource] = useState<
+    string | null
+  >(null);
   const [loadAllTick, setLoadAllTick] = useState(0);
   const loadingAllRef = useRef(false);
   const loadAllAttemptRef = useRef(0);
+  const loadAllPagesAttemptedRef = useRef(0);
   const loadAllTimerRef = useRef<number | null>(null);
   const loadAllAbortedRef = useRef(false);
   const mountedRef = useRef(true);
   const copyPhotoLink = useCopyPhotoLink();
   const { data, isLoading, error, fetchNextPage, hasNextPage } = useGetAssets(
     item.source,
-    100,
+    GALLERY_CAROUSEL_LIMIT,
   );
 
   const assets = useMemo(
@@ -139,11 +143,13 @@ function EventFolderCard({ item }: EventFolderCardProps) {
   }, []);
 
   const downloadAll = photoSelection.downloadAll;
+  const pendingDownloadAll = pendingDownloadAllSource === item.source;
 
   useEffect(() => {
-    setPendingDownloadAll(false);
+    setPendingDownloadAllSource(null);
     loadAllAbortedRef.current = true;
     loadAllAttemptRef.current += 1;
+    loadAllPagesAttemptedRef.current = 0;
     loadingAllRef.current = false;
     if (loadAllTimerRef.current !== null) {
       window.clearTimeout(loadAllTimerRef.current);
@@ -155,10 +161,22 @@ function EventFolderCard({ item }: EventFolderCardProps) {
     if (!pendingDownloadAll || loadingAllRef.current) return;
 
     if (!hasNextPage) {
-      setPendingDownloadAll(false);
+      setPendingDownloadAllSource(null);
       if (mountedRef.current) void downloadAll();
       return;
     }
+
+    if (loadAllPagesAttemptedRef.current >= MAX_LOAD_ALL_PAGES) {
+      setPendingDownloadAllSource(null);
+      if (mountedRef.current) {
+        toast.error(
+          'This folder is too large to load in one go. Downloading the photos that loaded.',
+        );
+        void downloadAll();
+      }
+      return;
+    }
+    loadAllPagesAttemptedRef.current += 1;
 
     const attempt = ++loadAllAttemptRef.current;
     loadAllAbortedRef.current = false;
@@ -168,7 +186,7 @@ function EventFolderCard({ item }: EventFolderCardProps) {
       loadAllAttemptRef.current += 1;
       loadingAllRef.current = false;
       loadAllTimerRef.current = null;
-      setPendingDownloadAll(false);
+      setPendingDownloadAllSource(null);
       if (!mountedRef.current) return;
       toast.error(
         'Photo loading is taking too long. Downloading the photos that loaded.',
@@ -185,7 +203,7 @@ function EventFolderCard({ item }: EventFolderCardProps) {
         ) {
           return;
         }
-        setPendingDownloadAll(false);
+        setPendingDownloadAllSource(null);
         toast.error(
           'Could not load every photo. Downloading the photos that loaded.',
         );
@@ -336,7 +354,8 @@ function EventFolderCard({ item }: EventFolderCardProps) {
                   disabled={photoSelection.isSaving || pendingDownloadAll}
                   onClick={() => {
                     if (hasNextPage) {
-                      setPendingDownloadAll(true);
+                      loadAllPagesAttemptedRef.current = 0;
+                      setPendingDownloadAllSource(item.source);
                     } else {
                       void photoSelection.downloadAll();
                     }
