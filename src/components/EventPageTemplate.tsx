@@ -24,20 +24,30 @@ import { cn } from '@/lib/utils';
 function EventDetailsPageSkeleton() {
   return (
     <div className="w-full space-y-6">
-      <Card>
-        <CardHeader>
-          <Skeleton className="h-8 w-32" />
-        </CardHeader>
-        <CardContent className="flex flex-col items-center gap-6 md:flex-row">
-          <Skeleton className="h-32 w-32 flex-shrink-0 rounded-md" />
-          <div className="w-full space-y-3">
-            <Skeleton className="h-5 w-2/3" />
-            <Skeleton className="h-4 w-1/2" />
-            <Skeleton className="h-4 w-1/2" />
-            <Skeleton className="h-9 w-48" />
-          </div>
-        </CardContent>
-      </Card>
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_20rem] xl:items-start">
+        <Card>
+          <CardHeader>
+            <Skeleton className="h-8 w-32" />
+          </CardHeader>
+          <CardContent className="flex flex-col items-center gap-6 md:flex-row">
+            <Skeleton className="h-32 w-32 flex-shrink-0 rounded-md" />
+            <div className="w-full space-y-3">
+              <Skeleton className="h-5 w-2/3" />
+              <Skeleton className="h-4 w-1/2" />
+              <Skeleton className="h-4 w-1/2" />
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <Skeleton className="h-8 w-32" />
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <Skeleton className="h-9 w-full" />
+            <Skeleton className="h-4 w-2/3" />
+          </CardContent>
+        </Card>
+      </div>
       <div className="grid grid-cols-1 gap-6 2xl:grid-cols-2">
         {[0, 1].map((section) => (
           <Card key={section}>
@@ -69,7 +79,7 @@ export default function EventDetailsPage() {
   const { data, isLoading } = useGetEvent(eventId!);
 
   return (
-    <div className="px-4 py-4 md:px-6 xl:px-8">
+    <div className="mx-auto w-full max-w-screen-2xl px-4 py-4 md:px-6 xl:px-8">
       <div className="mb-4">
         <BackButton to="/events">Back to Events</BackButton>
       </div>
@@ -473,23 +483,30 @@ function EventDetailsTemplate({ event }: { event: Event }) {
     : null;
   return (
     <div className="w-full space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-primary">Details</CardTitle>
-        </CardHeader>
-        <CardContent className="flex flex-col gap-6 xl:flex-row xl:flex-wrap xl:items-center xl:justify-between">
-          <EventDetailsCard event={event} embedded />
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_20rem] xl:items-start">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-primary">Details</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <EventDetailsCard event={event} embedded />
+          </CardContent>
+        </Card>
 
-          <div className="flex flex-col items-center justify-center xl:items-end">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-primary">Registration</CardTitle>
+          </CardHeader>
+          <CardContent>
             {isRegistrationClosed ? (
               <p className="text-destructive font-semibold">
                 Registration has closed
               </p>
             ) : (
-              <>
-                <div className="flex flex-col flex-wrap justify-center gap-3 sm:flex-row">
+              <div className="space-y-4">
+                <div className="flex flex-col gap-3">
                   {byIndividualOpt !== undefined ? (
-                    <Button asChild>
+                    <Button asChild className="w-full whitespace-normal">
                       <Link to={`/events/${event.id}/register-free-agent`}>
                         Free Agent Sign Up ({formatMoney(byIndividualOpt.price)}
                         )
@@ -497,22 +514,22 @@ function EventDetailsTemplate({ event }: { event: Event }) {
                     </Button>
                   ) : null}
                   {byTeamOpt !== undefined ? (
-                    <Button asChild>
+                    <Button asChild className="w-full whitespace-normal">
                       <Link to={`/events/${event.id}/register-team`}>
                         Team Sign Up ({formatMoney(byTeamOpt.price)})
                       </Link>
                     </Button>
                   ) : null}
                 </div>
-                <p className="text-muted-foreground pt-2 text-center text-sm xl:text-right">
+                <p className="text-muted-foreground text-sm">
                   Registration Closes:{' '}
                   {closeRegDate.toLocaleString(DateTime.DATE_HUGE)}
                 </p>
-              </>
+              </div>
             )}
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </div>
 
       <div className="grid grid-cols-1 gap-6 2xl:grid-cols-2">
         <Card className="h-full">
