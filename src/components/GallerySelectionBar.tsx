@@ -4,24 +4,28 @@ import type { BulkSaveMode } from '@/lib/bulkPhotoSave';
 
 interface GallerySelectionBarProps {
   selectedCount: number;
+  failedCount: number;
   totalCount: number;
   isPreparing: boolean;
   isSaving: boolean;
   saveMode: BulkSaveMode;
   onSelectAll: () => void;
   onClear: () => void;
+  onRetry: () => void;
   onSave: () => void;
   onDone: () => void;
 }
 
 function GallerySelectionBar({
   selectedCount,
+  failedCount,
   totalCount,
   isPreparing,
   isSaving,
   saveMode,
   onSelectAll,
   onClear,
+  onRetry,
   onSave,
   onDone,
 }: GallerySelectionBarProps) {
@@ -66,7 +70,12 @@ function GallerySelectionBar({
           <Button
             type="button"
             size="sm"
-            disabled={selectedCount === 0 || isPreparing || isSaving}
+            disabled={
+              selectedCount === 0 ||
+              isPreparing ||
+              isSaving ||
+              failedCount === selectedCount
+            }
             onClick={onSave}
           >
             {isPreparing || isSaving ? (
@@ -84,13 +93,24 @@ function GallerySelectionBar({
           </Button>
         </div>
       </div>
-      {selectedCount > 0 && saveMode === 'share' && (
+      {failedCount > 0 && (
+        <div className="flex flex-wrap items-center gap-2">
+          <p className="text-destructive text-xs">
+            {failedCount} {failedCount === 1 ? 'photo' : 'photos'} could not be
+            loaded for saving.
+          </p>
+          <Button type="button" variant="outline" size="sm" onClick={onRetry}>
+            Retry
+          </Button>
+        </div>
+      )}
+      {failedCount === 0 && selectedCount > 0 && saveMode === 'share' && (
         <p className="text-muted-foreground text-xs">
           Opens your device&apos;s share menu so you can save them to your
           photos.
         </p>
       )}
-      {selectedCount > 1 && saveMode === 'download' && (
+      {failedCount === 0 && selectedCount > 1 && saveMode === 'download' && (
         <p className="text-muted-foreground text-xs">
           Your browser may ask to allow multiple downloads.
         </p>

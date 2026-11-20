@@ -17,6 +17,7 @@ type PreparedPhoto =
 interface UsePhotoSelectionResult {
   isSelecting: boolean;
   selectedCount: number;
+  failedCount: number;
   isPreparing: boolean;
   isSaving: boolean;
   saveMode: BulkSaveMode;
@@ -26,6 +27,7 @@ interface UsePhotoSelectionResult {
   togglePhoto: (photo: EventFileAsset) => void;
   selectAll: () => void;
   clearSelection: () => void;
+  retryFailed: () => void;
   saveSelected: () => Promise<void>;
 }
 
@@ -74,8 +76,9 @@ export function usePhotoSelection(
           return next;
         });
       },
-      () => {
+      (error: unknown) => {
         if (controller.signal.aborted) return;
+        console.error('Failed to prepare photo for saving', photo.url, error);
         requestsRef.current.delete(photo.url);
         setPrepared((previous) => {
           const next = new Map(previous);
@@ -146,6 +149,17 @@ export function usePhotoSelection(
     const state = prepared.get(photo.url);
     return state === undefined || state.status === 'pending';
   });
+  const failedCount = selectedPhotos.filter(
+    (photo) => prepared.get(photo.url)?.status === 'failed',
+  ).length;
+
+  const retryFailed = useCallback(() => {
+    selectedPhotos.forEach((photo) => {
+      if (prepared.get(photo.url)?.status !== 'failed') return;
+      requestsRef.current.delete(photo.url);
+      preparePhoto(photo);
+    });
+  }, [prepared, preparePhoto, selectedPhotos]);
 
   const isSelected = useCallback(
     (url: string) => selected.has(url),
@@ -159,14 +173,16 @@ export function usePhotoSelection(
     });
 
     if (readyFiles.length === 0) {
-      toast.error('No photos are ready to save.');
+      toast.error(
+        'Could not load the selected photos. Check your connection and try again.',
+      );
       return;
     }
 
-    const failedCount = selectedPhotos.length - readyFiles.length;
-    if (failedCount > 0) {
+    const skippedCount = selectedPhotos.length - readyFiles.length;
+    if (skippedCount > 0) {
       toast.info(
-        `${failedCount} ${failedCount === 1 ? 'photo' : 'photos'} could not be prepared and will be skipped.`,
+        `${skippedCount} ${skippedCount === 1 ? 'photo' : 'photos'} could not be prepared and will be skipped.`,
       );
     }
 
@@ -190,6 +206,7 @@ export function usePhotoSelection(
   return {
     isSelecting,
     selectedCount: selectedPhotos.length,
+    failedCount,
     isPreparing,
     isSaving,
     saveMode,
@@ -199,6 +216,7 @@ export function usePhotoSelection(
     togglePhoto,
     selectAll,
     clearSelection,
+    retryFailed,
     saveSelected,
   };
 }

@@ -56,14 +56,28 @@ function EventFolderCard({ item }: EventFolderCardProps) {
   const photos = render.section === 'folders' ? render.images : EMPTY_PHOTOS;
   const photoSelection = usePhotoSelection(photos, galleryTitle);
   const galleryPage = paginateGallery(photos, pageIndex);
-  const gridRef = useRef<HTMLDivElement>(null);
+  const gridRef = useRef<HTMLElement>(null);
+  const [pageDirection, setPageDirection] = useState<'next' | 'previous'>(
+    'next',
+  );
 
-  const showNextGalleryPage = useCallback(() => {
-    setPageIndex((current) => Math.min(current + 1, galleryPage.pageCount - 1));
-  }, [galleryPage.pageCount]);
-  const showPreviousGalleryPage = useCallback(() => {
-    setPageIndex((current) => Math.max(current - 1, 0));
-  }, []);
+  const changeGalleryPage = useCallback(
+    (delta: -1 | 1) => {
+      setPageDirection(delta > 0 ? 'next' : 'previous');
+      setPageIndex((current) =>
+        Math.min(Math.max(current + delta, 0), galleryPage.pageCount - 1),
+      );
+    },
+    [galleryPage.pageCount],
+  );
+  const showNextGalleryPage = useCallback(
+    () => changeGalleryPage(1),
+    [changeGalleryPage],
+  );
+  const showPreviousGalleryPage = useCallback(
+    () => changeGalleryPage(-1),
+    [changeGalleryPage],
+  );
   const { shouldSuppressClick } = useSwipeGesture({
     targetRef: gridRef,
     allowSwipeFromAnywhere: true,
@@ -90,6 +104,50 @@ function EventFolderCard({ item }: EventFolderCardProps) {
   useEffect(() => {
     if (activeSlideIndex >= imageCount) setActiveSlideIndex(0);
   }, [activeSlideIndex, imageCount]);
+
+  useEffect(() => {
+    if (!isImageMode || viewMode !== 'gallery' || galleryPage.pageCount <= 1) {
+      return;
+    }
+
+    const element = gridRef.current;
+    if (!element) return;
+
+    let accumulated = 0;
+    let lastNavigation = 0;
+
+    const handleWheel = (event: WheelEvent) => {
+      const scale =
+        event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? 100 : 1;
+      const rawX = event.deltaX * scale;
+      const rawY = event.deltaY * scale;
+      const swapsAxes = event.shiftKey && Math.abs(rawX) < Math.abs(rawY);
+      const horizontal = swapsAxes ? rawY : rawX;
+      const vertical = swapsAxes ? rawX : rawY;
+
+      if (
+        Math.abs(horizontal) <= Math.abs(vertical) ||
+        Math.abs(horizontal) < 5
+      ) {
+        return;
+      }
+
+      event.preventDefault();
+
+      const now = Date.now();
+      if (now - lastNavigation < 450) return;
+
+      accumulated += horizontal;
+      if (Math.abs(accumulated) < 60) return;
+
+      changeGalleryPage(accumulated > 0 ? 1 : -1);
+      accumulated = 0;
+      lastNavigation = now;
+    };
+
+    element.addEventListener('wheel', handleWheel, { passive: false });
+    return () => element.removeEventListener('wheel', handleWheel);
+  }, [changeGalleryPage, galleryPage.pageCount, isImageMode, viewMode]);
 
   if (error) return null;
 
@@ -233,114 +291,137 @@ function EventFolderCard({ item }: EventFolderCardProps) {
             {photoSelection.isSelecting && (
               <GallerySelectionBar
                 selectedCount={photoSelection.selectedCount}
+                failedCount={photoSelection.failedCount}
                 totalCount={imageCount}
                 isPreparing={photoSelection.isPreparing}
                 isSaving={photoSelection.isSaving}
                 saveMode={photoSelection.saveMode}
                 onSelectAll={photoSelection.selectAll}
                 onClear={photoSelection.clearSelection}
+                onRetry={photoSelection.retryFailed}
                 onSave={() => void photoSelection.saveSelected()}
                 onDone={photoSelection.stopSelecting}
               />
             )}
-            <div
+            <section
               ref={gridRef}
+              aria-label="Photo gallery pages"
+              tabIndex={-1}
               onClickCapture={(event) => {
                 if (shouldSuppressClick()) {
                   event.preventDefault();
                   event.stopPropagation();
                 }
               }}
-              className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4"
+              onKeyDown={(event) => {
+                if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') {
+                  return;
+                }
+                event.preventDefault();
+                changeGalleryPage(event.key === 'ArrowRight' ? 1 : -1);
+                gridRef.current?.focus();
+              }}
             >
-              {galleryPage.items.map((image, index) => {
-                const selected = photoSelection.isSelected(image.url);
+              <div
+                key={galleryPage.pageIndex}
+                className={cn(
+                  'animate-in fade-in duration-200',
+                  pageDirection === 'next'
+                    ? 'slide-in-from-right-2'
+                    : 'slide-in-from-left-2',
+                )}
+              >
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+                  {galleryPage.items.map((image, index) => {
+                    const selected = photoSelection.isSelected(image.url);
 
-                return (
-                  <div
-                    key={`${image.path}/${image.name}`}
-                    className={cn(
-                      'group relative overflow-hidden rounded-lg',
-                      selected && 'ring-primary ring-2 ring-offset-2',
-                    )}
-                  >
-                    <button
-                      type="button"
-                      onClick={() => {
-                        if (photoSelection.isSelecting) {
-                          photoSelection.togglePhoto(image);
-                          return;
-                        }
-                        setLightboxIndex(galleryPage.startIndex + index);
-                      }}
-                      aria-label={
-                        photoSelection.isSelecting
-                          ? `${selected ? 'Deselect' : 'Select'} ${image.name}`
-                          : `View ${image.name}`
-                      }
-                      aria-pressed={
-                        photoSelection.isSelecting ? selected : undefined
-                      }
-                      className={cn(
-                        'focus-visible:ring-ring block w-full rounded-lg focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none',
-                        photoSelection.isSelecting
-                          ? 'cursor-pointer'
-                          : 'cursor-zoom-in',
-                      )}
-                    >
-                      <img
-                        src={image.url}
-                        alt={image.name}
-                        loading="lazy"
+                    return (
+                      <div
+                        key={`${image.path}/${image.name}`}
                         className={cn(
-                          'aspect-square w-full object-cover transition-transform duration-300',
-                          !photoSelection.isSelecting &&
-                            'group-hover:scale-105',
+                          'group relative overflow-hidden rounded-lg',
+                          selected && 'ring-primary ring-2 ring-offset-2',
                         )}
-                      />
-                      {photoSelection.isSelecting && (
-                        <span
+                      >
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (photoSelection.isSelecting) {
+                              photoSelection.togglePhoto(image);
+                              return;
+                            }
+                            setLightboxIndex(galleryPage.startIndex + index);
+                          }}
+                          aria-label={
+                            photoSelection.isSelecting
+                              ? `${selected ? 'Deselect' : 'Select'} ${image.name}`
+                              : `View ${image.name}`
+                          }
+                          aria-pressed={
+                            photoSelection.isSelecting ? selected : undefined
+                          }
                           className={cn(
-                            'absolute top-2 left-2 flex size-6 items-center justify-center rounded-full border-2 shadow-sm transition-colors',
-                            selected
-                              ? 'border-primary bg-primary text-primary-foreground'
-                              : 'border-white bg-black/40 text-transparent',
+                            'focus-visible:ring-ring block w-full rounded-lg focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none',
+                            photoSelection.isSelecting
+                              ? 'cursor-pointer'
+                              : 'cursor-zoom-in',
                           )}
                         >
-                          <Check aria-hidden="true" className="size-4" />
-                        </span>
-                      )}
-                    </button>
-                    {!photoSelection.isSelecting && (
-                      <div className="absolute right-2 bottom-2 flex gap-1">
-                        <Button
-                          type="button"
-                          variant="secondary"
-                          size="icon"
-                          aria-label={`Copy link to ${image.name}`}
-                          className="size-9 border-0 bg-black/60 text-white shadow-sm backdrop-blur-sm hover:bg-black/75"
-                          onClick={() => void copyPhotoLink(image.url)}
-                        >
-                          <Link2 aria-hidden="true" className="size-4" />
-                        </Button>
-                        <Button
-                          type="button"
-                          variant="secondary"
-                          size="icon"
-                          aria-label={`Download ${image.name}`}
-                          className="size-9 border-0 bg-black/60 text-white shadow-sm backdrop-blur-sm hover:bg-black/75"
-                          onClick={() =>
-                            void downloadAssetFile(image.url, image.name)
-                          }
-                        >
-                          <Download aria-hidden="true" className="size-4" />
-                        </Button>
+                          <img
+                            src={image.url}
+                            alt={image.name}
+                            loading="lazy"
+                            className={cn(
+                              'aspect-square w-full object-cover transition-transform duration-300',
+                              !photoSelection.isSelecting &&
+                                'group-hover:scale-105',
+                            )}
+                          />
+                          {photoSelection.isSelecting && (
+                            <span
+                              className={cn(
+                                'absolute top-2 left-2 flex size-6 items-center justify-center rounded-full border-2 shadow-sm transition-colors',
+                                selected
+                                  ? 'border-primary bg-primary text-primary-foreground'
+                                  : 'border-white bg-black/40 text-transparent',
+                              )}
+                            >
+                              <Check aria-hidden="true" className="size-4" />
+                            </span>
+                          )}
+                        </button>
+                        {!photoSelection.isSelecting && (
+                          <div className="absolute right-2 bottom-2 flex gap-1">
+                            <Button
+                              type="button"
+                              variant="secondary"
+                              size="icon"
+                              aria-label={`Copy link to ${image.name}`}
+                              className="size-9 border-0 bg-black/60 text-white shadow-sm backdrop-blur-sm hover:bg-black/75"
+                              onClick={() => void copyPhotoLink(image.url)}
+                            >
+                              <Link2 aria-hidden="true" className="size-4" />
+                            </Button>
+                            <Button
+                              type="button"
+                              variant="secondary"
+                              size="icon"
+                              aria-label={`Download ${image.name}`}
+                              className="size-9 border-0 bg-black/60 text-white shadow-sm backdrop-blur-sm hover:bg-black/75"
+                              onClick={() =>
+                                void downloadAssetFile(image.url, image.name)
+                              }
+                            >
+                              <Download aria-hidden="true" className="size-4" />
+                            </Button>
+                          </div>
+                        )}
                       </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </section>
             {galleryPage.pageCount > 1 && (
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <p className="text-muted-foreground text-sm tabular-nums">
@@ -353,7 +434,7 @@ function EventFolderCard({ item }: EventFolderCardProps) {
                     variant="outline"
                     size="sm"
                     disabled={galleryPage.pageIndex === 0}
-                    onClick={() => setPageIndex(galleryPage.pageIndex - 1)}
+                    onClick={() => changeGalleryPage(-1)}
                   >
                     <ChevronLeft aria-hidden="true" className="size-4" />
                     Previous
@@ -368,7 +449,7 @@ function EventFolderCard({ item }: EventFolderCardProps) {
                     disabled={
                       galleryPage.pageIndex === galleryPage.pageCount - 1
                     }
-                    onClick={() => setPageIndex(galleryPage.pageIndex + 1)}
+                    onClick={() => changeGalleryPage(1)}
                   >
                     Next
                     <ChevronRight aria-hidden="true" className="size-4" />
