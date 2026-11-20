@@ -24,6 +24,7 @@ interface UsePhotoSelectionResult {
   failedCount: number;
   isPreparing: boolean;
   isSaving: boolean;
+  downloadProgress: { completed: number; total: number } | null;
   saveMode: BulkSaveMode;
   isSelected: (url: string) => boolean;
   startSelecting: () => void;
@@ -48,6 +49,12 @@ export function usePhotoSelection(
     () => new Map(),
   );
   const [isSaving, setIsSaving] = useState(false);
+  const [downloadProgress, setDownloadProgress] = useState<{
+    completed: number;
+    total: number;
+  } | null>(null);
+  const savingRef = useRef(false);
+  const downloadControllerRef = useRef<AbortController | null>(null);
   const requestsRef = useRef(new Map<string, AbortController>());
   const queueRef = useRef<EventFileAsset[]>([]);
   const queuedUrlsRef = useRef(new Set<string>());
@@ -123,6 +130,7 @@ export function usePhotoSelection(
 
     return () => {
       mountedRef.current = false;
+      downloadControllerRef.current?.abort();
       queue.length = 0;
       queuedUrls.clear();
       for (const controller of requests.values()) controller.abort();
@@ -148,7 +156,10 @@ export function usePhotoSelection(
 
   const preparePhoto = useCallback(
     (photo: EventFileAsset) => {
+      const state = prepared.get(photo.url);
       if (
+        state?.status === 'ready' ||
+        state?.status === 'pending' ||
         requestsRef.current.has(photo.url) ||
         queuedUrlsRef.current.has(photo.url)
       ) {
@@ -160,7 +171,7 @@ export function usePhotoSelection(
       setPreparedState(photo.url, { status: 'pending' });
       pumpQueue();
     },
-    [pumpQueue, setPreparedState],
+    [prepared, pumpQueue, setPreparedState],
   );
 
   const clearSelection = useCallback(() => {
@@ -181,6 +192,8 @@ export function usePhotoSelection(
 
   const togglePhoto = useCallback(
     (photo: EventFileAsset) => {
+      if (isSaving) return;
+
       if (selected.has(photo.url)) {
         setSelected((previous) => {
           const next = new Set(previous);
@@ -203,7 +216,7 @@ export function usePhotoSelection(
       setSelected((previous) => new Set(previous).add(photo.url));
       if (saveMode === 'share') preparePhoto(photo);
     },
-    [forgetPhoto, maxSelectable, preparePhoto, saveMode, selected],
+    [forgetPhoto, isSaving, maxSelectable, preparePhoto, saveMode, selected],
   );
 
   const selectAll = useCallback(() => {
@@ -251,66 +264,78 @@ export function usePhotoSelection(
     [selected],
   );
 
+  const runDownload = useCallback(
+    async (photosToDownload: EventFileAsset[]) => {
+      if (savingRef.current || photosToDownload.length === 0) return false;
+
+      savingRef.current = true;
+      const controller = new AbortController();
+      downloadControllerRef.current = controller;
+      setIsSaving(true);
+      setDownloadProgress({ completed: 0, total: photosToDownload.length });
+      if (photosToDownload.length > 1) {
+        toast.info('Your browser may ask to allow multiple downloads.');
+      }
+
+      try {
+        const result = await downloadPhotoUrls(
+          photosToDownload.map((photo) => ({
+            url: photo.url,
+            name: photo.name,
+          })),
+          {
+            signal: controller.signal,
+            onProgress: (completed, total) => {
+              if (mountedRef.current) setDownloadProgress({ completed, total });
+            },
+          },
+        );
+
+        if (!mountedRef.current) return false;
+
+        if (result.downloaded > 0) {
+          toast.success(
+            `Started downloading ${result.downloaded} ${result.downloaded === 1 ? 'photo' : 'photos'}.`,
+          );
+        }
+
+        if (result.failedPhotos.length > 0) {
+          setIsSelecting(true);
+          setSelected(new Set(result.failedPhotos.map((photo) => photo.url)));
+          toast.error(
+            `${result.failedPhotos.length} ${result.failedPhotos.length === 1 ? 'photo' : 'photos'} could not be downloaded. Try again.`,
+          );
+          return false;
+        }
+
+        return true;
+      } finally {
+        savingRef.current = false;
+        downloadControllerRef.current = null;
+        if (mountedRef.current) {
+          setIsSaving(false);
+          setDownloadProgress(null);
+        }
+      }
+    },
+    [],
+  );
+
   const downloadAll = useCallback(async () => {
     if (saveMode !== 'download' || photos.length === 0) return;
-
-    setIsSaving(true);
-    try {
-      const result = await downloadPhotoUrls(
-        photos.map((photo) => ({ url: photo.url, name: photo.name })),
-      );
-
-      if (result.downloaded > 0) {
-        toast.success(
-          `Downloading ${result.downloaded} ${result.downloaded === 1 ? 'photo' : 'photos'}.`,
-        );
-      }
-
-      if (result.failedPhotos.length > 0) {
-        setIsSelecting(true);
-        setSelected(new Set(result.failedPhotos.map((photo) => photo.url)));
-        toast.error(
-          `${result.failedPhotos.length} ${result.failedPhotos.length === 1 ? 'photo' : 'photos'} could not be downloaded. Try again.`,
-        );
-      }
-    } finally {
-      setIsSaving(false);
-    }
-  }, [photos, saveMode]);
+    await runDownload(photos);
+  }, [photos, runDownload, saveMode]);
 
   const saveSelected = useCallback(async () => {
     if (selectedPhotos.length === 0) return;
 
     if (saveMode === 'download') {
-      setIsSaving(true);
-      try {
-        const result = await downloadPhotoUrls(
-          selectedPhotos.map((photo) => ({
-            url: photo.url,
-            name: photo.name,
-          })),
-        );
-
-        if (result.downloaded > 0) {
-          toast.success(
-            `Downloading ${result.downloaded} ${result.downloaded === 1 ? 'photo' : 'photos'}.`,
-          );
-        }
-
-        if (result.failedPhotos.length > 0) {
-          setSelected(new Set(result.failedPhotos.map((photo) => photo.url)));
-          toast.error(
-            `${result.failedPhotos.length} ${result.failedPhotos.length === 1 ? 'photo' : 'photos'} could not be downloaded. Try again.`,
-          );
-          return;
-        }
-
-        stopSelecting();
-      } finally {
-        setIsSaving(false);
-      }
+      const completed = await runDownload(selectedPhotos);
+      if (completed) stopSelecting();
       return;
     }
+
+    if (savingRef.current) return;
 
     const readyEntries = selectedPhotos.flatMap((photo) => {
       const state = prepared.get(photo.url);
@@ -328,6 +353,7 @@ export function usePhotoSelection(
       (photo) => prepared.get(photo.url)?.status !== 'ready',
     );
 
+    savingRef.current = true;
     setIsSaving(true);
     try {
       const outcome = await savePhotoFiles(
@@ -335,7 +361,7 @@ export function usePhotoSelection(
         saveMode,
         title,
       );
-      if (outcome === 'cancelled') return;
+      if (!mountedRef.current || outcome === 'cancelled') return;
 
       const count = readyEntries.length;
       toast.success(
@@ -360,9 +386,10 @@ export function usePhotoSelection(
 
       stopSelecting();
     } finally {
-      setIsSaving(false);
+      savingRef.current = false;
+      if (mountedRef.current) setIsSaving(false);
     }
-  }, [prepared, saveMode, selectedPhotos, stopSelecting, title]);
+  }, [prepared, runDownload, saveMode, selectedPhotos, stopSelecting, title]);
 
   return {
     isSelecting,
@@ -371,6 +398,7 @@ export function usePhotoSelection(
     failedCount,
     isPreparing,
     isSaving,
+    downloadProgress,
     saveMode,
     isSelected,
     startSelecting,

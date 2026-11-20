@@ -3,7 +3,7 @@ import { isAbortError } from '@/lib/assetUtils';
 export const MAX_BULK_PHOTO_COUNT = 50;
 
 const DOWNLOAD_INTERVAL_MS = 250;
-const OBJECT_URL_REVOKE_DELAY_MS = 1000;
+const OBJECT_URL_REVOKE_DELAY_MS = 60_000;
 
 export type BulkSaveMode = 'share' | 'download';
 
@@ -19,10 +19,21 @@ export interface DownloadPhotoUrlsResult {
   failedPhotos: BulkPhoto[];
 }
 
+export interface DownloadPhotoUrlsOptions {
+  signal?: AbortSignal;
+  onProgress?: (completed: number, total: number) => void;
+}
+
 export function resolveBulkSaveMode(): BulkSaveMode {
+  const coarsePointer =
+    typeof window === 'undefined' ||
+    typeof window.matchMedia !== 'function' ||
+    window.matchMedia('(pointer: coarse)').matches;
+
   if (
     typeof navigator === 'undefined' ||
     navigator.maxTouchPoints === 0 ||
+    !coarsePointer ||
     typeof navigator.share !== 'function' ||
     typeof navigator.canShare !== 'function'
   ) {
@@ -66,18 +77,28 @@ export async function savePhotoFiles(
 
 export async function downloadPhotoUrls(
   photos: readonly BulkPhoto[],
+  options: DownloadPhotoUrlsOptions = {},
 ): Promise<DownloadPhotoUrlsResult> {
   const failedPhotos: BulkPhoto[] = [];
   let downloaded = 0;
 
   for (const [index, photo] of photos.entries()) {
+    if (options.signal?.aborted) break;
+
     try {
-      const file = await preparePhotoFile(photo.url, photo.name);
+      const file = await preparePhotoFile(
+        photo.url,
+        photo.name,
+        options.signal,
+      );
       triggerFileDownload(file);
       downloaded += 1;
     } catch {
+      if (options.signal?.aborted) break;
       failedPhotos.push(photo);
     }
+
+    options.onProgress?.(index + 1, photos.length);
 
     if (index < photos.length - 1) {
       await new Promise((resolve) => setTimeout(resolve, DOWNLOAD_INTERVAL_MS));

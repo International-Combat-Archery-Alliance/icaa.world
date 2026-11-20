@@ -19,12 +19,12 @@ export function assetImageUrl(
   transform: AssetImageTransform,
   cdnBaseUrl: string = resolveCdnBaseUrl(),
 ): string {
-  if (!Number.isFinite(transform.width) || transform.width <= 0) {
+  if (!Number.isFinite(transform.width) || transform.width < 1) {
     return url;
   }
   if (
     transform.height !== undefined &&
-    (!Number.isFinite(transform.height) || transform.height <= 0)
+    (!Number.isFinite(transform.height) || transform.height < 1)
   ) {
     return url;
   }

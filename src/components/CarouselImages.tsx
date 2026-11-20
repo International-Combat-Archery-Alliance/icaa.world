@@ -103,6 +103,7 @@ export function CarouselImages({
     const allAssets = data?.pages.flatMap((page) => page.data) || [];
     return allAssets
       .filter(isImageAsset)
+      .slice(0, maxAssets)
       .map((asset) => ({
         original: asset.url,
         src: assetImageUrl(asset.url, {
@@ -111,7 +112,7 @@ export function CarouselImages({
         }),
       }))
       .filter((image) => image.original !== '');
-  }, [data, imageWidth]);
+  }, [data, imageWidth, maxAssets]);
 
   const { preloadImages } = useImagePreloader();
 

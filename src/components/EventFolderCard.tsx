@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { toast } from 'sonner';
 import {
   Check,
   ChevronLeft,
@@ -42,6 +43,8 @@ function EventFolderCard({ item }: EventFolderCardProps) {
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [activeSlideIndex, setActiveSlideIndex] = useState(0);
   const [pageIndex, setPageIndex] = useState(0);
+  const [pendingDownloadAll, setPendingDownloadAll] = useState(false);
+  const loadingAllRef = useRef(false);
   const copyPhotoLink = useCopyPhotoLink();
   const {
     data,
@@ -115,10 +118,53 @@ function EventFolderCard({ item }: EventFolderCardProps) {
   }, [activeSlideIndex, imageCount]);
 
   useEffect(() => {
-    if (hasNextPage && !isFetchingNextPage) {
-      void fetchNextPage();
+    if (photoSelection.isSelecting && viewMode !== 'gallery') {
+      setViewMode('gallery');
     }
-  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
+  }, [photoSelection.isSelecting, viewMode]);
+
+  useEffect(() => {
+    if (!pendingDownloadAll) return;
+
+    if (error) {
+      setPendingDownloadAll(false);
+      toast.error(
+        'Could not load every photo. Downloading the photos that loaded.',
+      );
+      void photoSelection.downloadAll();
+      return;
+    }
+
+    if (isFetchingNextPage) return;
+
+    if (hasNextPage) {
+      if (!loadingAllRef.current) {
+        loadingAllRef.current = true;
+        fetchNextPage()
+          .catch(() => {
+            setPendingDownloadAll(false);
+            toast.error(
+              'Could not load every photo. Downloading the photos that loaded.',
+            );
+            void photoSelection.downloadAll();
+          })
+          .finally(() => {
+            loadingAllRef.current = false;
+          });
+      }
+      return;
+    }
+
+    setPendingDownloadAll(false);
+    void photoSelection.downloadAll();
+  }, [
+    error,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    pendingDownloadAll,
+    photoSelection,
+  ]);
 
   useEffect(() => {
     if (!isImageMode || viewMode !== 'gallery' || galleryPage.pageCount <= 1) {
@@ -164,7 +210,7 @@ function EventFolderCard({ item }: EventFolderCardProps) {
     return () => element.removeEventListener('wheel', handleWheel);
   }, [changeGalleryPage, galleryPage.pageCount, isImageMode, viewMode]);
 
-  if (error) return null;
+  if (error && !data) return null;
 
   if (isLoading) {
     return (
@@ -245,15 +291,21 @@ function EventFolderCard({ item }: EventFolderCardProps) {
                   variant="outline"
                   size="sm"
                   className="h-7 px-2"
-                  disabled={
-                    photoSelection.isSaving || hasNextPage || isFetchingNextPage
-                  }
-                  onClick={() => void photoSelection.downloadAll()}
+                  disabled={photoSelection.isSaving || pendingDownloadAll}
+                  onClick={() => {
+                    if (hasNextPage) {
+                      setPendingDownloadAll(true);
+                    } else {
+                      void photoSelection.downloadAll();
+                    }
+                  }}
                 >
                   <Download aria-hidden="true" className="size-4" />
-                  {hasNextPage || isFetchingNextPage
+                  {pendingDownloadAll
                     ? 'Loading photos…'
-                    : 'Download all'}
+                    : photoSelection.downloadProgress
+                      ? `Downloading ${photoSelection.downloadProgress.completed}/${photoSelection.downloadProgress.total}…`
+                      : 'Download all'}
                 </Button>
               )}
             {isImageMode && (
@@ -263,6 +315,7 @@ function EventFolderCard({ item }: EventFolderCardProps) {
                 size="sm"
                 className="h-7 px-2"
                 aria-pressed={photoSelection.isSelecting}
+                disabled={photoSelection.isSaving || pendingDownloadAll}
                 onClick={() => {
                   if (photoSelection.isSelecting) {
                     photoSelection.stopSelecting();
