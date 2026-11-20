@@ -87,14 +87,28 @@ async function tryShareAsset(file: File): Promise<boolean> {
   return true;
 }
 
+async function fetchAssetBlob(url: string): Promise<Blob> {
+  try {
+    const response = await fetch(url, { cache: 'no-cache' });
+    if (!response.ok) throw new Error('Download fetch failed');
+    return await response.blob();
+  } catch {
+    // A stale cached response can lack CORS headers; retry on a fresh cache key.
+    const separator = url.includes('?') ? '&' : '?';
+    const response = await fetch(`${url}${separator}download=1`, {
+      cache: 'no-cache',
+    });
+    if (!response.ok) throw new Error('Download fetch failed');
+    return await response.blob();
+  }
+}
+
 export async function downloadAssetFile(
   url: string,
   fileName: string,
 ): Promise<void> {
   try {
-    const response = await fetch(url);
-    if (!response.ok) throw new Error('Download fetch failed');
-    const blob = await response.blob();
+    const blob = await fetchAssetBlob(url);
 
     // Mobile share sheets save the image to Photos or the camera roll;
     // blob downloads land in Files, which users rarely find.
@@ -113,7 +127,7 @@ export async function downloadAssetFile(
       OBJECT_URL_REVOKE_DELAY_MS,
     );
   } catch {
-    // Cross-origin CDN responses without CORS headers cannot be read as blobs.
+    // Last resort when the bytes cannot be fetched for a blob download.
     window.open(url, '_blank', 'noopener,noreferrer');
   }
 }
