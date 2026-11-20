@@ -36,7 +36,7 @@ export function useGetAssets(path: string, limit: number = 50) {
       query: { path, limit, cursor: undefined },
     },
     getNextPageParam: (lastPage: GetAssetsV1Response) =>
-      lastPage.hasNextPage ? lastPage.cursor : undefined,
+      lastPage.hasNextPage && lastPage.cursor ? lastPage.cursor : undefined,
   });
 }
 

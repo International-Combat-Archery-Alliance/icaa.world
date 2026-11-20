@@ -1,3 +1,5 @@
+import { AssetImage } from '@/components/AssetImage';
+
 interface SponsorsBannerProps {
   sponsors: {
     logoUrl: string;
@@ -21,9 +23,11 @@ export function SponsorsBanner({ sponsors }: SponsorsBannerProps) {
               rel="noopener noreferrer"
               className="transition-transform hover:scale-105"
             >
-              <img
+              <AssetImage
                 src={sponsor.logoUrl}
                 alt={`Sponsor ${index + 1}`}
+                imageWidth={320}
+                imageFit="scale-down"
                 className="h-20 object-contain md:h-28"
               />
             </a>

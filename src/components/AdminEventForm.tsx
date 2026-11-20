@@ -29,6 +29,7 @@ import {
 } from './ui/select';
 import { DateTime, IANAZone } from 'luxon';
 import { ArrowDown, ArrowUp, Trash2 } from 'lucide-react';
+import { AssetImage } from '@/components/AssetImage';
 import { AssetPickerModal } from './AssetPickerModal';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { buildEventMediaEmbedData } from '@/lib/embedUtils';
@@ -763,10 +764,12 @@ export function AdminEventForm({
                     </Button>
                   </div>
                   {field.value ? (
-                    <img
+                    <AssetImage
                       key={field.value}
                       src={field.value}
                       alt="Event logo preview"
+                      imageWidth={128}
+                      imageFit="scale-down"
                       className="h-16 w-16 rounded border object-contain"
                       onError={(e) => {
                         e.currentTarget.style.display = 'none';

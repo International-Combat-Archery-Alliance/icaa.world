@@ -1,0 +1,1 @@
+export const GALLERY_CAROUSEL_LIMIT = 100;

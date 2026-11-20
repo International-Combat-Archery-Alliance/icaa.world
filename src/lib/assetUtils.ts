@@ -1,7 +1,9 @@
 import type { Asset } from '@/hooks/useAssets';
+import { hasCoarsePointer } from '@/lib/device';
 import { parseSafeHttpUrl } from '@/lib/embedUtils';
 
 export const MAX_ASSET_UPLOAD_BYTES = 50 * 1024 * 1024;
+export const OBJECT_URL_REVOKE_DELAY_MS = 5000;
 // Matches CreateFolderRequest.name maxLength in assets-api/spec/api.yaml.
 export const MAX_ASSET_FOLDER_NAME_LENGTH = 255;
 
@@ -68,12 +70,12 @@ export function getFolderNameError(name: string): string | null {
   return null;
 }
 
-function isAbortError(error: unknown): boolean {
+export function isAbortError(error: unknown): boolean {
   return error instanceof Error && error.name === 'AbortError';
 }
 
 async function tryShareAsset(file: File): Promise<boolean> {
-  if (navigator.maxTouchPoints === 0) return false;
+  if (navigator.maxTouchPoints === 0 || !hasCoarsePointer()) return false;
   if (!navigator.canShare?.({ files: [file] })) return false;
 
   try {
@@ -106,7 +108,10 @@ export async function downloadAssetFile(
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    URL.revokeObjectURL(objectUrl);
+    setTimeout(
+      () => URL.revokeObjectURL(objectUrl),
+      OBJECT_URL_REVOKE_DELAY_MS,
+    );
   } catch {
     // Cross-origin CDN responses without CORS headers cannot be read as blobs.
     window.open(url, '_blank', 'noopener,noreferrer');

@@ -4,6 +4,7 @@ import { useTitle } from 'react-use';
 import { Turnstile } from 'react-turnstile';
 import type { BoundTurnstileObject } from 'react-turnstile';
 import { CheckCircle, Clock, User } from 'lucide-react';
+import { AssetImage } from '@/components/AssetImage';
 import {
   Card,
   CardContent,
@@ -15,6 +16,7 @@ import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
+import { assetImageUrl } from '@/lib/assetImage';
 import { cn, generateUUID } from '@/lib/utils';
 import {
   useGetPoll,
@@ -89,7 +91,16 @@ function VotedCard({
         <h3 className="text-2xl font-bold">Vote Submitted!</h3>
         <div className="flex items-center gap-3">
           <Avatar className="h-12 w-12">
-            <AvatarImage src={votedOption?.imageUrl} />
+            <AvatarImage
+              src={
+                votedOption?.imageUrl
+                  ? assetImageUrl(votedOption.imageUrl, {
+                      width: 128,
+                      fit: 'scale-down',
+                    })
+                  : undefined
+              }
+            />
             <AvatarFallback className="bg-muted">
               <User className="text-muted-foreground h-6 w-6" />
             </AvatarFallback>
@@ -425,9 +436,11 @@ function PollVoteCard({ poll }: { poll: Poll }) {
                   backgroundColor: group.color ?? undefined,
                 }}
               >
-                <img
+                <AssetImage
                   src={group.imageUrl}
                   alt={`${group.name} Logo`}
+                  imageWidth={320}
+                  imageFit="scale-down"
                   className="h-32 w-auto md:h-40"
                 />
               </div>
@@ -459,7 +472,16 @@ function PollVoteCard({ poll }: { poll: Poll }) {
                   >
                     <div className="flex min-w-0 items-center gap-3">
                       <Avatar className="h-14 w-14 shrink-0">
-                        <AvatarImage src={option.imageUrl} />
+                        <AvatarImage
+                          src={
+                            option.imageUrl
+                              ? assetImageUrl(option.imageUrl, {
+                                  width: 128,
+                                  fit: 'scale-down',
+                                })
+                              : undefined
+                          }
+                        />
                         <AvatarFallback className="bg-muted">
                           <User className="text-muted-foreground h-7 w-7" />
                         </AvatarFallback>
@@ -504,7 +526,16 @@ function PollVoteCard({ poll }: { poll: Poll }) {
                 >
                   <div className="flex min-w-0 items-center gap-3">
                     <Avatar className="h-14 w-14 shrink-0">
-                      <AvatarImage src={option.imageUrl} />
+                      <AvatarImage
+                        src={
+                          option.imageUrl
+                            ? assetImageUrl(option.imageUrl, {
+                                width: 128,
+                                fit: 'scale-down',
+                              })
+                            : undefined
+                        }
+                      />
                       <AvatarFallback className="bg-muted">
                         <User className="text-muted-foreground h-7 w-7" />
                       </AvatarFallback>

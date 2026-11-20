@@ -1,3 +1,4 @@
+import { AssetImage } from '@/components/AssetImage';
 import { cn } from '@/lib/utils';
 import { useScrollSafeHover } from '@/hooks/useScrollSafeHover';
 import { communities, type Community } from './ArcheryMap';
@@ -48,9 +49,11 @@ function CommunityCard({
   const content = (
     <>
       <div className="mb-4 flex h-24 items-center justify-center">
-        <img
+        <AssetImage
           src={logoUrl}
           alt={logoAlt}
+          imageWidth={320}
+          imageFit="scale-down"
           className={cn(
             'max-h-full max-w-[100px] h-auto w-auto',
             logoClassName,

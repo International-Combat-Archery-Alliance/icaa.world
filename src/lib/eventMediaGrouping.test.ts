@@ -135,11 +135,19 @@ describe('resolveMediaRender: asset folders', () => {
     'https://assets.icaa.world/bracket.pdf',
   );
 
-  it('uses a carousel for three or more images', () => {
+  it('defaults to a gallery for three or more images', () => {
     const render = resolveMediaRender(folder, threeImages);
-    expect(render).toMatchObject({ section: 'folders', mode: 'carousel' });
+    expect(render).toMatchObject({ section: 'folders', mode: 'gallery' });
     if (render.section !== 'folders') throw new Error('expected folder render');
     expect(render.images).toHaveLength(3);
+  });
+
+  it('uses a carousel when explicitly requested', () => {
+    const render = resolveMediaRender(
+      { ...folder, displayMode: 'carousel' },
+      threeImages,
+    );
+    expect(render).toMatchObject({ section: 'folders', mode: 'carousel' });
   });
 
   it('uses a gallery for one or two images', () => {
@@ -237,7 +245,7 @@ describe('resolveMediaRender: asset folders', () => {
   it('degrades URL-only modes to the automatic renderer', () => {
     expect(
       resolveMediaRender({ ...folder, displayMode: 'embed' }, threeImages),
-    ).toMatchObject({ mode: 'carousel' });
+    ).toMatchObject({ mode: 'gallery' });
     expect(
       resolveMediaRender({ ...folder, displayMode: 'link' }, [pdf]),
     ).toMatchObject({ mode: 'file_list' });

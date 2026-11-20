@@ -18,6 +18,7 @@ import {
   RefreshCw,
   ArrowUpDown,
 } from 'lucide-react';
+import { AssetImage } from '@/components/AssetImage';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
@@ -711,9 +712,11 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
             >
               {isImageAsset(asset) && 'url' in asset ? (
                 <div className="mb-2">
-                  <img
-                    src={getAssetUrl(asset)}
+                  <AssetImage
+                    src={getAssetUrl(asset)!}
                     alt={asset.name}
+                    imageWidth={320}
+                    imageFit="scale-down"
                     className="h-32 w-full rounded object-cover"
                   />
                 </div>
@@ -793,9 +796,11 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
             >
               <div className="flex-shrink-0">
                 {isImageAsset(asset) && 'url' in asset ? (
-                  <img
-                    src={getAssetUrl(asset)}
+                  <AssetImage
+                    src={getAssetUrl(asset)!}
                     alt={asset.name}
+                    imageWidth={320}
+                    imageFit="scale-down"
                     className="h-10 w-10 rounded object-cover"
                   />
                 ) : (
@@ -863,9 +868,11 @@ export function AssetBrowser({ initialPath = '/' }: AssetBrowserProps) {
           <div className="flex gap-4">
             {isImageAsset(selectedAsset) && 'url' in selectedAsset && (
               <div className="flex-shrink-0">
-                <img
-                  src={getAssetUrl(selectedAsset)}
+                <AssetImage
+                  src={getAssetUrl(selectedAsset)!}
                   alt={selectedAsset.name}
+                  imageWidth={320}
+                  imageFit="scale-down"
                   className="h-48 w-48 rounded border bg-white object-contain"
                 />
               </div>

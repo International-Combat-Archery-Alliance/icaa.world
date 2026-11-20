@@ -1,5 +1,6 @@
 import type { Event } from '@/hooks/useEvent';
 import { Card, CardContent } from '@/components/ui/card';
+import { AssetImage } from '@/components/AssetImage';
 import { Button } from '@/components/ui/button';
 import { formatMoney } from '@/lib/money';
 import { DateTime } from 'luxon';
@@ -96,9 +97,11 @@ export function EventDetailsCard({
   const content = (
     <div className="flex min-w-0 flex-col items-center gap-6 md:flex-row md:items-start">
       {event.imageName && (
-        <img
+        <AssetImage
           src={event.imageName}
           alt={`${event.name} logo`}
+          imageWidth={320}
+          imageFit="scale-down"
           className="h-32 w-32 flex-shrink-0 rounded-md object-contain"
         />
       )}

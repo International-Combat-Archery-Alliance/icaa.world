@@ -1,4 +1,5 @@
 import { useTitle } from 'react-use';
+import { AssetImage } from '@/components/AssetImage';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { SponsorsBanner } from '@/components/SponsorsBanner';
 import { PlayerRoster } from '@/components/PlayerRoster';
@@ -34,7 +35,13 @@ function PositionLegend() {
     <div className="mt-12 flex flex-wrap items-center justify-center gap-x-6 gap-y-4">
       {positionLegend.map((pos) => (
         <div key={pos.name} className="flex items-center gap-2">
-          <img src={pos.iconUrl} alt={pos.name} className="h-8 w-8" />
+          <AssetImage
+            src={pos.iconUrl}
+            alt={pos.name}
+            imageWidth={128}
+            imageFit="scale-down"
+            className="h-8 w-8"
+          />
           <span className="font-medium">{pos.name}</span>
         </div>
       ))}
@@ -415,9 +422,11 @@ export default function ESPNPage() {
         ></iframe>
       </div>
       <div className="flex justify-center">
-        <img
+        <AssetImage
           src="https://assets.icaa.world/16e6fb58-ef7d-4c84-8799-d325fae6a343.png"
           alt="ESPN8 The Ocho"
+          imageWidth={320}
+          imageFit="scale-down"
           className="h-auto w-full max-w-xs"
         />
       </div>
@@ -534,9 +543,11 @@ export default function ESPNPage() {
                   className="flex h-64 items-center justify-center rounded-lg p-4"
                   style={{ backgroundColor: match.teams[0].color }}
                 >
-                  <img
+                  <AssetImage
                     src={match.teams[0].logoUrl}
                     alt={`${match.teams[0].name} Logo`}
+                    imageWidth={640}
+                    imageFit="scale-down"
                     className={`${match.teams[0].logoClassName} mx-auto w-auto object-contain`}
                   />
                 </div>
@@ -563,9 +574,11 @@ export default function ESPNPage() {
                   className="flex h-64 items-center justify-center rounded-lg p-4"
                   style={{ backgroundColor: match.teams[1].color }}
                 >
-                  <img
+                  <AssetImage
                     src={match.teams[1].logoUrl}
                     alt={`${match.teams[1].name} Logo`}
+                    imageWidth={640}
+                    imageFit="scale-down"
                     className={`${match.teams[1].logoClassName} mx-auto w-auto object-contain`}
                   />
                 </div>

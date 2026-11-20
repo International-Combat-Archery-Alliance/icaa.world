@@ -1,6 +1,7 @@
 import { useTitle } from 'react-use';
 import { useGetEvent, type Event } from '@/hooks/useEvent';
 import { Link, useParams } from 'react-router-dom';
+import { AssetImage } from '@/components/AssetImage';
 import { BackButton } from '@/components/BackButton';
 import { EventDetailsCard } from '@/components/EventRegDetailsCard';
 import { EventMediaSections } from '@/components/EventMediaSections';
@@ -623,15 +624,18 @@ function EventDetailsTemplate({ event }: { event: Event }) {
                 </Table>
               </div>
             ) : isBostonChampionships ? (
-              <img
+              <AssetImage
                 src="/images/other/2025_BC_Results.PNG"
                 alt="2025 Boston Championship Final Standings"
                 className="mx-auto w-full max-w-2xl rounded-lg 2xl:max-w-none"
               />
             ) : isBoston2026 ? (
-              <img
+              <AssetImage
                 src="https://assets.icaa.world/f8b99126-68b8-4799-ac88-804d72a06732.png"
                 alt="2026 Boston Championship Final Standings"
+                imageWidth={1600}
+                imageFit="scale-down"
+                imageQuality={90}
                 className="mx-auto w-full max-w-2xl rounded-lg 2xl:max-w-none"
               />
             ) : (

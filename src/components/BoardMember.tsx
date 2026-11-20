@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Copy, Check } from 'lucide-react';
+import { AssetImage } from '@/components/AssetImage';
 
 interface BoardMemberProps {
   name: string;
@@ -31,9 +32,11 @@ const BoardMember: React.FC<BoardMemberProps> = ({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <img
+      <AssetImage
         src={isHovered ? actionshot : headshot}
         alt={`${name}'s headshot`}
+        imageWidth={320}
+        imageFit="scale-down"
         className="bio-photo"
       />
       <h3>{name}</h3>
