@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { formatMoney } from '@/lib/money';
 import { DateTime } from 'luxon';
 import { Share2, CalendarPlus, Download } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface EventDetailsCardProps {
   event: Event;
@@ -94,7 +95,7 @@ export function EventDetailsCard({
   };
 
   const content = (
-    <div className="flex min-w-0 flex-col items-center gap-6 md:flex-row">
+    <div className="flex min-w-0 flex-col items-center gap-6 md:flex-row md:items-start">
       {event.imageName && (
         <AssetImage
           src={event.imageName}
@@ -104,32 +105,43 @@ export function EventDetailsCard({
           className="h-32 w-32 flex-shrink-0 rounded-md object-contain"
         />
       )}
-      <div className="grid min-w-0 gap-1 text-center md:text-left">
-        <p>
-          <strong>Event:</strong> {event.name}
-        </p>
-        <p>
-          <strong>Date:</strong> {dateString}
-        </p>
-        <p>
-          <strong>Venue:</strong> {event.location.name}
-        </p>
-        <p>
-          <strong>Address:</strong> {event.location.address.street},{' '}
-          {event.location.address.city}, {event.location.address.state},{' '}
-          {event.location.address.postalCode}
-        </p>
-        {byIndividualOpt && (
-          <p>
-            <strong>Free Agent Price:</strong>{' '}
-            {formatMoney(byIndividualOpt.price)}
-          </p>
-        )}
-        {byTeamOpt && (
-          <p>
-            <strong>Team Price:</strong> {formatMoney(byTeamOpt.price)}
-          </p>
-        )}
+      <div className="min-w-0 flex-1">
+        <div
+          className={cn(
+            'grid min-w-0 gap-1 text-center md:text-left',
+            embedded && '2xl:grid-cols-2 2xl:gap-x-8',
+          )}
+        >
+          <div className="space-y-1">
+            <p>
+              <strong>Event:</strong> {event.name}
+            </p>
+            <p>
+              <strong>Date:</strong> {dateString}
+            </p>
+            <p>
+              <strong>Venue:</strong> {event.location.name}
+            </p>
+          </div>
+          <div className="space-y-1">
+            <p>
+              <strong>Address:</strong> {event.location.address.street},{' '}
+              {event.location.address.city}, {event.location.address.state},{' '}
+              {event.location.address.postalCode}
+            </p>
+            {byIndividualOpt && (
+              <p>
+                <strong>Free Agent Price:</strong>{' '}
+                {formatMoney(byIndividualOpt.price)}
+              </p>
+            )}
+            {byTeamOpt && (
+              <p>
+                <strong>Team Price:</strong> {formatMoney(byTeamOpt.price)}
+              </p>
+            )}
+          </div>
+        </div>
         <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
           <Button
             variant="outline"
