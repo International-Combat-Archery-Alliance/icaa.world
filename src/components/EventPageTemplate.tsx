@@ -486,6 +486,7 @@ function EventDetailsTemplate({ event }: { event: Event }) {
   const isBostonChampionships =
     event.id === '78af69ec-e323-436b-96b6-1b5dc9acf46b';
   const isBoston2026 = event.id === 'fa5aa500-a528-4213-9b48-c318d549ad85';
+  const isCircuit27 = event.id === '9e21aa2c-0a06-4d12-910c-08eab8ddd556';
   const rulesDocUrl = event.rulesDocLink
     ? parseSafeHttpUrl(event.rulesDocLink)
     : null;
@@ -638,6 +639,15 @@ function EventDetailsTemplate({ event }: { event: Event }) {
                 imageQuality={90}
                 className="mx-auto w-full max-w-2xl rounded-lg 2xl:max-w-none"
               />
+            ) : isCircuit27 ? (
+              <AssetImage
+                src="https://assets.icaa.world/1ddeec53-4bda-455f-9433-dd1c530198cd.png"
+                alt="2026-2027 Tournament Circuit Current Standings"
+                imageWidth={1600}
+                imageFit="scale-down"
+                imageQuality={90}
+                className="mx-auto w-full max-w-2xl rounded-lg 2xl:max-w-none"
+              />
             ) : (
               <p>Standings coming soon</p>
             )}
@@ -758,6 +768,15 @@ function EventDetailsTemplate({ event }: { event: Event }) {
                     ))}
                   </TableBody>
                 </Table>
+              ) : isCircuit27 ? (
+                <AssetImage
+                  src="https://assets.icaa.world/c7f246a7-8ef3-432b-a110-b3142a4a3ac1.png"
+                  alt="2026-2027 Tournament Schedule"
+                  imageWidth={1600}
+                  imageFit="scale-down"
+                  imageQuality={90}
+                  className="mx-auto w-full max-w-2xl rounded-lg 2xl:max-w-none"
+                />
               ) : (
                 <p>Schedule coming soon</p>
               )}
