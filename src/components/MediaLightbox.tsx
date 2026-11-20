@@ -1,7 +1,12 @@
 import { useEffect } from 'react';
-import { ChevronLeft, ChevronRight, Download, Link2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Download, Link2, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { useCopyPhotoLink } from '@/hooks/useCopyPhotoLink';
 import { downloadAssetFile } from '@/lib/assetUtils';
 
@@ -58,9 +63,21 @@ function MediaLightbox({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         aria-describedby={undefined}
+        showCloseButton={false}
         className="max-w-5xl gap-3 border-0 bg-black/95 p-3 text-white sm:max-w-5xl"
       >
         <DialogTitle className="sr-only">{title}</DialogTitle>
+        <DialogClose asChild>
+          <Button
+            type="button"
+            variant="secondary"
+            size="icon"
+            className="absolute top-2 right-2 z-10 size-11 touch-manipulation rounded-full border-0 bg-white/15 text-white shadow-sm backdrop-blur-sm hover:bg-white/25 focus-visible:ring-white/70 focus-visible:ring-offset-0"
+          >
+            <X aria-hidden="true" className="size-6" />
+            <span className="sr-only">Close photo viewer</span>
+          </Button>
+        </DialogClose>
         <div className="relative">
           <img
             src={activeImage.url}
