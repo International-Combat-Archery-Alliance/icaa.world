@@ -9,6 +9,16 @@ export type BulkSaveMode = 'share' | 'download';
 
 export type BulkSaveResult = 'shared' | 'downloaded' | 'cancelled';
 
+export interface BulkPhoto {
+  url: string;
+  name: string;
+}
+
+export interface DownloadPhotoUrlsResult {
+  downloaded: number;
+  failedPhotos: BulkPhoto[];
+}
+
 export function resolveBulkSaveMode(): BulkSaveMode {
   if (
     typeof navigator === 'undefined' ||
@@ -52,6 +62,29 @@ export async function savePhotoFiles(
 
   await downloadPhotoFiles(files);
   return 'downloaded';
+}
+
+export async function downloadPhotoUrls(
+  photos: readonly BulkPhoto[],
+): Promise<DownloadPhotoUrlsResult> {
+  const failedPhotos: BulkPhoto[] = [];
+  let downloaded = 0;
+
+  for (const [index, photo] of photos.entries()) {
+    try {
+      const file = await preparePhotoFile(photo.url, photo.name);
+      triggerFileDownload(file);
+      downloaded += 1;
+    } catch {
+      failedPhotos.push(photo);
+    }
+
+    if (index < photos.length - 1) {
+      await new Promise((resolve) => setTimeout(resolve, DOWNLOAD_INTERVAL_MS));
+    }
+  }
+
+  return { downloaded, failedPhotos };
 }
 
 async function downloadPhotoFiles(files: File[]): Promise<void> {

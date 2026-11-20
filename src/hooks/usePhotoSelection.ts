@@ -3,6 +3,7 @@ import { toast } from 'sonner';
 import type { EventFileAsset } from '@/lib/eventMediaGrouping';
 import {
   MAX_BULK_PHOTO_COUNT,
+  downloadPhotoUrls,
   preparePhotoFile,
   resolveBulkSaveMode,
   savePhotoFiles,
@@ -19,6 +20,7 @@ type PreparedPhoto =
 interface UsePhotoSelectionResult {
   isSelecting: boolean;
   selectedCount: number;
+  maxSelectable: number;
   failedCount: number;
   isPreparing: boolean;
   isSaving: boolean;
@@ -31,6 +33,7 @@ interface UsePhotoSelectionResult {
   clearSelection: () => void;
   retryFailed: () => void;
   saveSelected: () => Promise<void>;
+  downloadAll: () => Promise<void>;
 }
 
 export function usePhotoSelection(
@@ -52,6 +55,8 @@ export function usePhotoSelection(
   const mountedRef = useRef(true);
   const startPreparationRef = useRef<(photo: EventFileAsset) => void>(() => {});
   const saveMode = useMemo(resolveBulkSaveMode, []);
+  const maxSelectable =
+    saveMode === 'share' ? MAX_BULK_PHOTO_COUNT : photos.length;
 
   const setPreparedState = useCallback((url: string, state: PreparedPhoto) => {
     setPrepared((previous) => {
@@ -186,43 +191,52 @@ export function usePhotoSelection(
         return;
       }
 
-      if (selected.size >= MAX_BULK_PHOTO_COUNT) {
+      if (selected.size >= maxSelectable) {
         toast.error(
-          `You can select up to ${MAX_BULK_PHOTO_COUNT} photos at once.`,
+          saveMode === 'share'
+            ? `You can select up to ${MAX_BULK_PHOTO_COUNT} photos for the share sheet at once.`
+            : 'All photos in this folder are already selected.',
         );
         return;
       }
 
       setSelected((previous) => new Set(previous).add(photo.url));
-      preparePhoto(photo);
+      if (saveMode === 'share') preparePhoto(photo);
     },
-    [forgetPhoto, preparePhoto, selected],
+    [forgetPhoto, maxSelectable, preparePhoto, saveMode, selected],
   );
 
   const selectAll = useCallback(() => {
-    const capped = photos.slice(0, MAX_BULK_PHOTO_COUNT);
-    if (photos.length > MAX_BULK_PHOTO_COUNT) {
+    const capped =
+      saveMode === 'share' ? photos.slice(0, MAX_BULK_PHOTO_COUNT) : photos;
+
+    if (saveMode === 'share' && photos.length > MAX_BULK_PHOTO_COUNT) {
       toast.info(
-        `Selecting the first ${MAX_BULK_PHOTO_COUNT} photos from this folder.`,
+        `Selecting the first ${MAX_BULK_PHOTO_COUNT} photos for the share sheet.`,
       );
     }
 
     setSelected(new Set(capped.map((photo) => photo.url)));
-    capped.forEach(preparePhoto);
-  }, [photos, preparePhoto]);
+    if (saveMode === 'share') capped.forEach(preparePhoto);
+  }, [photos, preparePhoto, saveMode]);
 
   const selectedPhotos = useMemo(
     () => photos.filter((photo) => selected.has(photo.url)),
     [photos, selected],
   );
 
-  const isPreparing = selectedPhotos.some((photo) => {
-    const state = prepared.get(photo.url);
-    return state === undefined || state.status === 'pending';
-  });
-  const failedCount = selectedPhotos.filter(
-    (photo) => prepared.get(photo.url)?.status === 'failed',
-  ).length;
+  const isPreparing =
+    saveMode === 'share' &&
+    selectedPhotos.some((photo) => {
+      const state = prepared.get(photo.url);
+      return state === undefined || state.status === 'pending';
+    });
+  const failedCount =
+    saveMode === 'share'
+      ? selectedPhotos.filter(
+          (photo) => prepared.get(photo.url)?.status === 'failed',
+        ).length
+      : 0;
 
   const retryFailed = useCallback(() => {
     selectedPhotos.forEach((photo) => {
@@ -237,7 +251,67 @@ export function usePhotoSelection(
     [selected],
   );
 
+  const downloadAll = useCallback(async () => {
+    if (saveMode !== 'download' || photos.length === 0) return;
+
+    setIsSaving(true);
+    try {
+      const result = await downloadPhotoUrls(
+        photos.map((photo) => ({ url: photo.url, name: photo.name })),
+      );
+
+      if (result.downloaded > 0) {
+        toast.success(
+          `Downloading ${result.downloaded} ${result.downloaded === 1 ? 'photo' : 'photos'}.`,
+        );
+      }
+
+      if (result.failedPhotos.length > 0) {
+        setIsSelecting(true);
+        setSelected(new Set(result.failedPhotos.map((photo) => photo.url)));
+        toast.error(
+          `${result.failedPhotos.length} ${result.failedPhotos.length === 1 ? 'photo' : 'photos'} could not be downloaded. Try again.`,
+        );
+      }
+    } finally {
+      setIsSaving(false);
+    }
+  }, [photos, saveMode]);
+
   const saveSelected = useCallback(async () => {
+    if (selectedPhotos.length === 0) return;
+
+    if (saveMode === 'download') {
+      setIsSaving(true);
+      try {
+        const result = await downloadPhotoUrls(
+          selectedPhotos.map((photo) => ({
+            url: photo.url,
+            name: photo.name,
+          })),
+        );
+
+        if (result.downloaded > 0) {
+          toast.success(
+            `Downloading ${result.downloaded} ${result.downloaded === 1 ? 'photo' : 'photos'}.`,
+          );
+        }
+
+        if (result.failedPhotos.length > 0) {
+          setSelected(new Set(result.failedPhotos.map((photo) => photo.url)));
+          toast.error(
+            `${result.failedPhotos.length} ${result.failedPhotos.length === 1 ? 'photo' : 'photos'} could not be downloaded. Try again.`,
+          );
+          return;
+        }
+
+        stopSelecting();
+      } finally {
+        setIsSaving(false);
+      }
+      return;
+    }
+
     const readyEntries = selectedPhotos.flatMap((photo) => {
       const state = prepared.get(photo.url);
       return state?.status === 'ready' ? [{ photo, file: state.file }] : [];
@@ -293,6 +367,7 @@ export function usePhotoSelection(
   return {
     isSelecting,
     selectedCount: selectedPhotos.length,
+    maxSelectable,
     failedCount,
     isPreparing,
     isSaving,
@@ -305,5 +380,6 @@ export function usePhotoSelection(
     clearSelection,
     retryFailed,
     saveSelected,
+    downloadAll,
   };
 }

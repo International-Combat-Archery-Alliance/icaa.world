@@ -43,7 +43,14 @@ function EventFolderCard({ item }: EventFolderCardProps) {
   const [activeSlideIndex, setActiveSlideIndex] = useState(0);
   const [pageIndex, setPageIndex] = useState(0);
   const copyPhotoLink = useCopyPhotoLink();
-  const { data, isLoading, error } = useGetAssets(item.source, 100);
+  const {
+    data,
+    isLoading,
+    error,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useGetAssets(item.source, 100);
 
   const assets = useMemo(
     () => data?.pages.flatMap((page) => page.data) ?? [],
@@ -106,6 +113,12 @@ function EventFolderCard({ item }: EventFolderCardProps) {
   useEffect(() => {
     if (activeSlideIndex >= imageCount) setActiveSlideIndex(0);
   }, [activeSlideIndex, imageCount]);
+
+  useEffect(() => {
+    if (hasNextPage && !isFetchingNextPage) {
+      void fetchNextPage();
+    }
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
   useEffect(() => {
     if (!isImageMode || viewMode !== 'gallery' || galleryPage.pageCount <= 1) {
@@ -224,6 +237,25 @@ function EventFolderCard({ item }: EventFolderCardProps) {
                 </Button>
               </div>
             )}
+            {isImageMode &&
+              photoSelection.saveMode === 'download' &&
+              !photoSelection.isSelecting && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="h-7 px-2"
+                  disabled={
+                    photoSelection.isSaving || hasNextPage || isFetchingNextPage
+                  }
+                  onClick={() => void photoSelection.downloadAll()}
+                >
+                  <Download aria-hidden="true" className="size-4" />
+                  {hasNextPage || isFetchingNextPage
+                    ? 'Loading photos…'
+                    : 'Download all'}
+                </Button>
+              )}
             {isImageMode && (
               <Button
                 type="button"
@@ -294,6 +326,7 @@ function EventFolderCard({ item }: EventFolderCardProps) {
             {photoSelection.isSelecting && (
               <GallerySelectionBar
                 selectedCount={photoSelection.selectedCount}
+                maxSelectable={photoSelection.maxSelectable}
                 failedCount={photoSelection.failedCount}
                 totalCount={imageCount}
                 isPreparing={photoSelection.isPreparing}

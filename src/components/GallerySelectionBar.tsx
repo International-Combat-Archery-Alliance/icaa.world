@@ -1,9 +1,10 @@
 import { CheckCheck, Download, LoaderCircle, Share2, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { MAX_BULK_PHOTO_COUNT, type BulkSaveMode } from '@/lib/bulkPhotoSave';
+import type { BulkSaveMode } from '@/lib/bulkPhotoSave';
 
 interface GallerySelectionBarProps {
   selectedCount: number;
+  maxSelectable: number;
   failedCount: number;
   totalCount: number;
   isPreparing: boolean;
@@ -18,6 +19,7 @@ interface GallerySelectionBarProps {
 
 function GallerySelectionBar({
   selectedCount,
+  maxSelectable,
   failedCount,
   totalCount,
   isPreparing,
@@ -35,7 +37,9 @@ function GallerySelectionBar({
     selectedCount === 0 ? '' : ` ${selectedCount} ${photoNoun}`;
 
   const actionLabel = isSaving
-    ? 'Saving…'
+    ? saveMode === 'download'
+      ? 'Downloading…'
+      : 'Saving…'
     : isPreparing
       ? 'Preparing…'
       : `${saveMode === 'share' ? 'Save' : 'Download'}${countLabel}`;
@@ -52,8 +56,7 @@ function GallerySelectionBar({
             variant="outline"
             size="sm"
             disabled={
-              selectedCount === totalCount ||
-              selectedCount >= MAX_BULK_PHOTO_COUNT
+              selectedCount === totalCount || selectedCount >= maxSelectable
             }
             onClick={onSelectAll}
           >
