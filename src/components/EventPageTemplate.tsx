@@ -109,6 +109,7 @@ function EventDetailsTemplate({ event }: { event: Event }) {
     zone: event.timeZone,
   });
   const isEventInPast = DateTime.now() > eventEndDate;
+  const showRegistration = !isEventInPast || !isRegistrationClosed;
   const bostonChampionshipsGameResults = [
     {
       game: 1,
@@ -492,7 +493,7 @@ function EventDetailsTemplate({ event }: { event: Event }) {
       <div
         className={cn(
           'grid grid-cols-1 gap-6',
-          !isEventInPast && 'xl:grid-cols-[minmax(0,1fr)_20rem]',
+          showRegistration && 'xl:grid-cols-[minmax(0,1fr)_20rem]',
         )}
       >
         <Card>
@@ -504,7 +505,7 @@ function EventDetailsTemplate({ event }: { event: Event }) {
           </CardContent>
         </Card>
 
-        {!isEventInPast ? (
+        {showRegistration ? (
           <Card className="h-full w-full sm:mx-auto sm:max-w-md xl:mx-0 xl:max-w-none">
             <CardHeader>
               <CardTitle className="text-primary">Registration</CardTitle>
