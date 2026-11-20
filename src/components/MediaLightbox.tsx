@@ -82,6 +82,7 @@ function MediaLightbox({
           <img
             src={activeImage.url}
             alt={activeImage.alt}
+            decoding="async"
             className="mx-auto max-h-[80vh] w-auto max-w-full rounded-lg object-contain"
           />
           {hasMultipleImages && (

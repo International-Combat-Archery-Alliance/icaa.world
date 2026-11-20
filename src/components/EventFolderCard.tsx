@@ -371,6 +371,7 @@ function EventFolderCard({ item }: EventFolderCardProps) {
                             src={image.url}
                             alt={image.name}
                             loading="lazy"
+                            decoding="async"
                             className={cn(
                               'aspect-square w-full object-cover transition-transform duration-300',
                               !photoSelection.isSelecting &&

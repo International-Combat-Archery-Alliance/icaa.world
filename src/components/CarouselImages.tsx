@@ -36,6 +36,7 @@ function CarouselImage({
       <img
         src={src}
         alt={alt}
+        decoding="async"
         className={`h-full w-full object-cover transition-opacity duration-500 ${
           isLoaded ? 'opacity-100' : 'opacity-0'
         }`}
