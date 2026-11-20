@@ -1,7 +1,8 @@
 import { useEffect } from 'react';
-import { ChevronLeft, ChevronRight, Download } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Download, Link2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
+import { useCopyPhotoLink } from '@/hooks/useCopyPhotoLink';
 import { downloadAssetFile } from '@/lib/assetUtils';
 
 interface MediaLightboxImage {
@@ -28,6 +29,7 @@ function MediaLightbox({
 }: MediaLightboxProps) {
   const activeImage = images[activeIndex];
   const hasMultipleImages = images.length > 1;
+  const copyPhotoLink = useCopyPhotoLink();
 
   useEffect(() => {
     if (!open || !hasMultipleImages) return;
@@ -97,6 +99,14 @@ function MediaLightbox({
           <span className="rounded-full bg-white/10 px-2 py-0.5 tabular-nums">
             {activeIndex + 1} / {images.length}
           </span>
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={() => void copyPhotoLink(activeImage.url)}
+          >
+            <Link2 aria-hidden="true" className="size-4" />
+            Copy link
+          </Button>
           <Button
             type="button"
             variant="secondary"

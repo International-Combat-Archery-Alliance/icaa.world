@@ -5,6 +5,7 @@ import {
   Download,
   GalleryHorizontal,
   LayoutGrid,
+  Link2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -12,6 +13,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { CarouselImages } from '@/components/CarouselImages';
 import { EventFileRows } from '@/components/EventFileRows';
 import { MediaLightbox } from '@/components/MediaLightbox';
+import { useCopyPhotoLink } from '@/hooks/useCopyPhotoLink';
 import { useGetAssets } from '@/hooks/useAssets';
 import { downloadAssetFile } from '@/lib/assetUtils';
 import {
@@ -31,6 +33,7 @@ function EventFolderCard({ item }: EventFolderCardProps) {
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [activeSlideIndex, setActiveSlideIndex] = useState(0);
   const [pageIndex, setPageIndex] = useState(0);
+  const copyPhotoLink = useCopyPhotoLink();
   const { data, isLoading, error } = useGetAssets(item.source, 100);
 
   const assets = useMemo(
@@ -153,19 +156,29 @@ function EventFolderCard({ item }: EventFolderCardProps) {
                 <p className="text-muted-foreground text-sm tabular-nums">
                   Photo {carouselIndex + 1} of {render.images.length}
                 </p>
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() =>
-                    void downloadAssetFile(
-                      carouselImage.url,
-                      carouselImage.name,
-                    )
-                  }
-                >
-                  <Download aria-hidden="true" className="size-4" />
-                  Download photo
-                </Button>
+                <div className="flex flex-wrap items-center gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => void copyPhotoLink(carouselImage.url)}
+                  >
+                    <Link2 aria-hidden="true" className="size-4" />
+                    Copy link
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() =>
+                      void downloadAssetFile(
+                        carouselImage.url,
+                        carouselImage.name,
+                      )
+                    }
+                  >
+                    <Download aria-hidden="true" className="size-4" />
+                    Download photo
+                  </Button>
+                </div>
               </div>
             )}
           </>
@@ -193,18 +206,30 @@ function EventFolderCard({ item }: EventFolderCardProps) {
                       className="aspect-square w-full object-cover transition-transform duration-300 group-hover:scale-105"
                     />
                   </button>
-                  <Button
-                    type="button"
-                    variant="secondary"
-                    size="icon"
-                    aria-label={`Download ${image.name}`}
-                    className="absolute right-2 bottom-2 size-9 border-0 bg-black/60 text-white shadow-sm backdrop-blur-sm hover:bg-black/75"
-                    onClick={() =>
-                      void downloadAssetFile(image.url, image.name)
-                    }
-                  >
-                    <Download aria-hidden="true" className="size-4" />
-                  </Button>
+                  <div className="absolute right-2 bottom-2 flex gap-1">
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      size="icon"
+                      aria-label={`Copy link to ${image.name}`}
+                      className="size-9 border-0 bg-black/60 text-white shadow-sm backdrop-blur-sm hover:bg-black/75"
+                      onClick={() => void copyPhotoLink(image.url)}
+                    >
+                      <Link2 aria-hidden="true" className="size-4" />
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      size="icon"
+                      aria-label={`Download ${image.name}`}
+                      className="size-9 border-0 bg-black/60 text-white shadow-sm backdrop-blur-sm hover:bg-black/75"
+                      onClick={() =>
+                        void downloadAssetFile(image.url, image.name)
+                      }
+                    >
+                      <Download aria-hidden="true" className="size-4" />
+                    </Button>
+                  </div>
                 </div>
               ))}
             </div>
