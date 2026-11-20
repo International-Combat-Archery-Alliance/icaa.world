@@ -134,7 +134,9 @@ function EventCard({ event, className }: { event: Event; className?: string }) {
           </div>
           <Button variant="secondary" asChild>
             <Link to={`/events/${event.id}/event-details`}>
-              {isEventInPast ? 'View Results' : 'Event Details'}
+              {isEventInPast && isRegistrationClosed
+                ? 'View Results'
+                : 'Event Details'}
             </Link>
           </Button>
         </div>
