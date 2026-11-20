@@ -1,13 +1,19 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import type { EventFileAsset } from '@/lib/eventMediaGrouping';
+import { isAbortError } from '@/lib/assetUtils';
 import {
   MAX_BULK_PHOTO_COUNT,
+  MAX_ZIP_PHOTO_COUNT,
   downloadPhotoUrls,
   preparePhotoFile,
+  requestDirectoryHandle,
   resolveBulkSaveMode,
   savePhotoFiles,
+  supportsDirectoryPicker,
+  toArchiveName,
   type BulkSaveMode,
+  type PhotoDirectoryHandle,
 } from '@/lib/bulkPhotoSave';
 
 const MAX_CONCURRENT_PREPARATIONS = 4;
@@ -34,7 +40,10 @@ interface UsePhotoSelectionResult {
   clearSelection: () => void;
   retryFailed: () => void;
   saveSelected: () => Promise<void>;
-  downloadAll: () => Promise<void>;
+  downloadAll: (directory?: PhotoDirectoryHandle | null) => Promise<void>;
+  requestDownloadDirectory: () => Promise<
+    PhotoDirectoryHandle | null | undefined
+  >;
   cancelDownload: () => void;
 }
 
@@ -265,8 +274,25 @@ export function usePhotoSelection(
     [selected],
   );
 
+  const requestDownloadDirectory = useCallback(async () => {
+    if (!supportsDirectoryPicker()) return null;
+
+    try {
+      return await requestDirectoryHandle();
+    } catch (error) {
+      if (isAbortError(error)) {
+        toast.info('Download canceled.');
+        return undefined;
+      }
+      return null;
+    }
+  }, []);
+
   const runDownload = useCallback(
-    async (photosToDownload: EventFileAsset[]) => {
+    async (
+      photosToDownload: EventFileAsset[],
+      directory?: PhotoDirectoryHandle | null,
+    ) => {
       if (savingRef.current || photosToDownload.length === 0) return false;
 
       savingRef.current = true;
@@ -275,11 +301,18 @@ export function usePhotoSelection(
       setIsSaving(true);
       setDownloadProgress({ completed: 0, total: photosToDownload.length });
       setDownloadFailedUrls(new Set());
+
+      const useZip =
+        !directory && photosToDownload.length <= MAX_ZIP_PHOTO_COUNT;
+      const strategy = directory ? 'directory' : useZip ? 'zip' : 'file';
+
       if (photosToDownload.length > 1) {
         toast.info(
-          photosToDownload.length > 100
-            ? `Downloading ${photosToDownload.length} photos may take several minutes; your browser may ask to allow multiple downloads.`
-            : 'Your browser may ask to allow multiple downloads.',
+          directory
+            ? `Saving ${photosToDownload.length} photos to the selected folder.`
+            : useZip
+              ? `Saving ${photosToDownload.length} photos as a ZIP.`
+              : `This browser can't save ${photosToDownload.length} photos as a ZIP; downloading them individually.`,
         );
       }
 
@@ -291,6 +324,9 @@ export function usePhotoSelection(
           })),
           {
             signal: controller.signal,
+            archiveName: toArchiveName(title),
+            strategy,
+            directory,
             onProgress: (completed, total) => {
               if (!mountedRef.current) return;
               if (completed !== total && completed % 10 !== 0) return;
@@ -300,7 +336,7 @@ export function usePhotoSelection(
         );
 
         if (!mountedRef.current) return false;
-        if (controller.signal.aborted) {
+        if (result.canceled || controller.signal.aborted) {
           toast.info('Download canceled.');
           return false;
         }
@@ -339,7 +375,7 @@ export function usePhotoSelection(
         }
       }
     },
-    [],
+    [title],
   );
 
   const retryFailed = useCallback(() => {
@@ -349,9 +385,13 @@ export function usePhotoSelection(
       );
       if (failed.length === 0) return;
 
-      void runDownload(failed).then((completed) => {
+      void (async () => {
+        const directory = await requestDownloadDirectory();
+        if (directory === undefined) return;
+
+        const completed = await runDownload(failed, directory);
         if (completed) stopSelecting();
-      });
+      })();
       return;
     }
 
@@ -364,16 +404,20 @@ export function usePhotoSelection(
     downloadFailedUrls,
     prepared,
     preparePhoto,
+    requestDownloadDirectory,
     runDownload,
     saveMode,
     selectedPhotos,
     stopSelecting,
   ]);
 
-  const downloadAll = useCallback(async () => {
-    if (saveMode !== 'download' || photos.length === 0) return;
-    await runDownload(photos);
-  }, [photos, runDownload, saveMode]);
+  const downloadAll = useCallback(
+    async (directory?: PhotoDirectoryHandle | null) => {
+      if (saveMode !== 'download' || photos.length === 0) return;
+      await runDownload(photos, directory);
+    },
+    [photos, runDownload, saveMode],
+  );
 
   const cancelDownload = useCallback(() => {
     downloadControllerRef.current?.abort();
@@ -383,7 +427,10 @@ export function usePhotoSelection(
     if (selectedPhotos.length === 0) return;
 
     if (saveMode === 'download') {
-      const completed = await runDownload(selectedPhotos);
+      const directory = await requestDownloadDirectory();
+      if (directory === undefined) return;
+
+      const completed = await runDownload(selectedPhotos, directory);
       if (completed) stopSelecting();
       return;
     }
@@ -446,7 +493,15 @@ export function usePhotoSelection(
       savingRef.current = false;
       if (mountedRef.current) setIsSaving(false);
     }
-  }, [prepared, runDownload, saveMode, selectedPhotos, stopSelecting, title]);
+  }, [
+    prepared,
+    requestDownloadDirectory,
+    runDownload,
+    saveMode,
+    selectedPhotos,
+    stopSelecting,
+    title,
+  ]);
 
   return {
     isSelecting,
@@ -466,6 +521,7 @@ export function usePhotoSelection(
     retryFailed,
     saveSelected,
     downloadAll,
+    requestDownloadDirectory,
     cancelDownload,
   };
 }
