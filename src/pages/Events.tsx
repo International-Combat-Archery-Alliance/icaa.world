@@ -14,6 +14,7 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Link } from 'react-router-dom';
 import { formatMoney } from '@/lib/money';
+import { cn } from '@/lib/utils';
 
 export default function Events() {
   const { data, isPending, isFetching, error, refetch } = useGetEvents();
@@ -41,7 +42,11 @@ export default function Events() {
 }
 
 function CardGrid({ children }: { children: React.ReactNode[] }) {
-  return <div className="flex flex-wrap justify-evenly gap-2">{children}</div>;
+  return (
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+      {children}
+    </div>
+  );
 }
 
 function EventContent({
@@ -73,17 +78,56 @@ function EventContent({
     );
   }
 
+  const startMillis = (event: Event) =>
+    DateTime.fromISO(event.startTime, { zone: event.timeZone }).toMillis();
+  const current = events
+    .filter((event) => !hasEndedAndClosedRegistration(event))
+    .sort((a, b) => startMillis(a) - startMillis(b));
+  const past = events
+    .filter(hasEndedAndClosedRegistration)
+    .sort((a, b) => startMillis(b) - startMillis(a));
+
   return (
-    <CardGrid>
-      {events?.map((event) => (
-        <EventCard
-          className="flex-grow lg:max-w-[375px]"
-          key={event.id}
-          event={event}
-        />
-      ))}
-    </CardGrid>
+    <div className="space-y-8">
+      {current.length > 0 ? (
+        <section className="space-y-4">
+          <h2 className="text-primary text-2xl font-semibold">
+            Current Events
+          </h2>
+          <CardGrid>
+            {current.map((event) => (
+              <EventCard key={event.id} event={event} />
+            ))}
+          </CardGrid>
+        </section>
+      ) : (
+        <p className="text-muted-foreground text-sm">
+          No current events scheduled.
+        </p>
+      )}
+
+      {past.length > 0 ? (
+        <section className="space-y-4">
+          <h2 className="text-primary text-2xl font-semibold">Past Events</h2>
+          <CardGrid>
+            {past.map((event) => (
+              <EventCard key={event.id} event={event} />
+            ))}
+          </CardGrid>
+        </section>
+      ) : null}
+    </div>
   );
+}
+
+function hasEndedAndClosedRegistration(event: Event): boolean {
+  const now = DateTime.now();
+  const endDate = DateTime.fromISO(event.endTime, { zone: event.timeZone });
+  const closeRegDate = DateTime.fromISO(event.registrationCloseTime, {
+    zone: event.timeZone,
+  });
+
+  return now > endDate && now > closeRegDate;
 }
 
 function EventCard({ event, className }: { event: Event; className?: string }) {
@@ -91,9 +135,9 @@ function EventCard({ event, className }: { event: Event; className?: string }) {
   const closeRegDate = DateTime.fromISO(event.registrationCloseTime, {
     zone: event.timeZone,
   });
-  const endDate = DateTime.fromISO(event.endTime, { zone: event.timeZone });
   const isRegistrationClosed = DateTime.now() > closeRegDate;
-  const isEventInPast = DateTime.now() > endDate;
+  const isEventInPast =
+    DateTime.now() > DateTime.fromISO(event.endTime, { zone: event.timeZone });
   const showRegistrationClosed = isRegistrationClosed && !isEventInPast;
 
   const byIndividualOpt = event.registrationOptions.find(
@@ -104,27 +148,31 @@ function EventCard({ event, className }: { event: Event; className?: string }) {
   );
 
   return (
-    <Card className={className}>
-      <CardHeader>
-        {event.imageName ? (
-          <AssetImage
-            src={event.imageName}
-            alt="Boston International Championship Logo"
-            imageWidth={320}
-            imageFit="scale-down"
-            className="mb-4 inline-block h-auto max-w-[100px] justify-self-center"
-          />
-        ) : null}
-        <CardTitle>{event.name}</CardTitle>
-        <CardDescription>
-          {event.location.name}
+    <Card className={cn('h-full', className)}>
+      <CardHeader className="items-center text-center">
+        <div className="mb-4 flex h-28 w-full items-center justify-center">
+          {event.imageName ? (
+            <AssetImage
+              src={event.imageName}
+              alt={`${event.name} logo`}
+              imageWidth={320}
+              imageFit="scale-down"
+              className="max-h-full w-auto max-w-[140px] object-contain"
+            />
+          ) : null}
+        </div>
+        <CardTitle className="min-h-[3.5rem] leading-tight text-balance">
+          {event.name}
+        </CardTitle>
+        <CardDescription className="min-h-[2.75rem]">
+          <div>{event.location.name}</div>
           <div>
             {event.location.address.city}, {event.location.address.state}
           </div>
         </CardDescription>
       </CardHeader>
-      <CardContent>
-        <div className="flex flex-col">
+      <CardContent className="flex flex-1 flex-col">
+        <div className="min-h-[3.25rem]">
           <div>{date.toLocaleString(DateTime.DATE_HUGE)}</div>
           <div>
             {date.toLocaleString({
@@ -132,17 +180,17 @@ function EventCard({ event, className }: { event: Event; className?: string }) {
               second: undefined,
             })}
           </div>
-          <Button variant="secondary" asChild>
-            <Link to={`/events/${event.id}/event-details`}>
-              {isEventInPast && isRegistrationClosed
-                ? 'View Results'
-                : 'Event Details'}
-            </Link>
-          </Button>
         </div>
+        <Button variant="secondary" asChild className="mt-2">
+          <Link to={`/events/${event.id}/event-details`}>
+            {isEventInPast && isRegistrationClosed
+              ? 'View Results'
+              : 'Event Details'}
+          </Link>
+        </Button>
       </CardContent>
       {!isEventInPast || !isRegistrationClosed ? (
-        <CardFooter className="flex flex-col items-stretch gap-2">
+        <CardFooter className="mt-auto flex flex-col items-stretch gap-2">
           {showRegistrationClosed ? (
             <p className="text-destructive pt-2 text-center font-semibold">
               Registration has closed
@@ -177,27 +225,28 @@ function EventCard({ event, className }: { event: Event; className?: string }) {
 
 function EventCardSkeleton() {
   return (
-    <Card className="w-full flex-grow lg:max-w-[375px]">
-      <CardHeader>
-        <Skeleton className="mb-2 h-24 w-24 justify-self-center rounded-xl" />
-        <CardTitle>
-          <Skeleton className="h-4 w-3/4" />
+    <Card className="h-full">
+      <CardHeader className="items-center">
+        <div className="mb-4 flex h-28 w-full items-center justify-center">
+          <Skeleton className="h-24 w-24 rounded-xl" />
+        </div>
+        <CardTitle className="w-full">
+          <Skeleton className="mx-auto h-6 w-3/4" />
         </CardTitle>
-        <CardDescription>
-          <div className="flex flex-col gap-1">
-            <Skeleton className="h-2 w-1/2" />
-            <Skeleton className="h-2 w-1/2" />
+        <CardDescription className="w-full">
+          <div className="mx-auto flex max-w-[220px] flex-col gap-1">
+            <Skeleton className="h-3 w-full" />
+            <Skeleton className="h-3 w-3/4" />
           </div>
         </CardDescription>
       </CardHeader>
-      <CardContent>
-        <div className="flex flex-col gap-2">
-          <Skeleton className="h-2 w-3/4" />
-          <Skeleton className="h-10" />
-        </div>
+      <CardContent className="flex flex-1 flex-col gap-2">
+        <Skeleton className="h-12 w-full" />
+        <Skeleton className="h-10 w-full" />
       </CardContent>
-      <CardFooter>
+      <CardFooter className="mt-auto">
         <div className="flex w-full flex-col gap-2">
+          <Skeleton className="h-10" />
           <Skeleton className="h-10" />
         </div>
       </CardFooter>
