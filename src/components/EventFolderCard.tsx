@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Check,
   ChevronLeft,
@@ -19,6 +19,7 @@ import { MediaLightbox } from '@/components/MediaLightbox';
 import { useCopyPhotoLink } from '@/hooks/useCopyPhotoLink';
 import { useGetAssets } from '@/hooks/useAssets';
 import { usePhotoSelection } from '@/hooks/usePhotoSelection';
+import { useSwipeGesture } from '@/hooks/useSwipeGesture';
 import { downloadAssetFile } from '@/lib/assetUtils';
 import {
   resolveMediaRender,
@@ -54,6 +55,23 @@ function EventFolderCard({ item }: EventFolderCardProps) {
   const galleryTitle = item.title || 'Event Photos';
   const photos = render.section === 'folders' ? render.images : EMPTY_PHOTOS;
   const photoSelection = usePhotoSelection(photos, galleryTitle);
+  const galleryPage = paginateGallery(photos, pageIndex);
+  const gridRef = useRef<HTMLDivElement>(null);
+
+  const showNextGalleryPage = useCallback(() => {
+    setPageIndex((current) => Math.min(current + 1, galleryPage.pageCount - 1));
+  }, [galleryPage.pageCount]);
+  const showPreviousGalleryPage = useCallback(() => {
+    setPageIndex((current) => Math.max(current - 1, 0));
+  }, []);
+  const { shouldSuppressClick } = useSwipeGesture({
+    targetRef: gridRef,
+    allowSwipeFromAnywhere: true,
+    minSwipeDistance: 60,
+    onSwipeLeft: galleryPage.pageCount > 1 ? showNextGalleryPage : undefined,
+    onSwipeRight:
+      galleryPage.pageCount > 1 ? showPreviousGalleryPage : undefined,
+  });
 
   const imageCount = render.section === 'folders' ? render.images.length : 0;
   const isImageMode =
@@ -98,7 +116,6 @@ function EventFolderCard({ item }: EventFolderCardProps) {
   const carouselIndex =
     activeSlideIndex < render.images.length ? activeSlideIndex : 0;
   const carouselImage = render.images[carouselIndex];
-  const galleryPage = paginateGallery(render.images, pageIndex);
 
   return (
     <Card>
@@ -226,7 +243,16 @@ function EventFolderCard({ item }: EventFolderCardProps) {
                 onDone={photoSelection.stopSelecting}
               />
             )}
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+            <div
+              ref={gridRef}
+              onClickCapture={(event) => {
+                if (shouldSuppressClick()) {
+                  event.preventDefault();
+                  event.stopPropagation();
+                }
+              }}
+              className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4"
+            >
               {galleryPage.items.map((image, index) => {
                 const selected = photoSelection.isSelected(image.url);
 
