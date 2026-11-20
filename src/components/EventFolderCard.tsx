@@ -24,6 +24,7 @@ import { useGetAssets } from '@/hooks/useAssets';
 import { usePhotoSelection } from '@/hooks/usePhotoSelection';
 import { useSwipeGesture } from '@/hooks/useSwipeGesture';
 import { downloadAssetFile } from '@/lib/assetUtils';
+import type { PhotoDirectoryHandle } from '@/lib/bulkPhotoSave';
 import {
   resolveMediaRender,
   type EventFileAsset,
@@ -53,6 +54,7 @@ function EventFolderCard({ item }: EventFolderCardProps) {
   const loadingAllRef = useRef(false);
   const loadAllAttemptRef = useRef(0);
   const loadAllPagesAttemptedRef = useRef(0);
+  const downloadDirectoryRef = useRef<PhotoDirectoryHandle | null>(null);
   const loadAllTimerRef = useRef<number | null>(null);
   const loadAllAbortedRef = useRef(false);
   const mountedRef = useRef(true);
@@ -151,6 +153,7 @@ function EventFolderCard({ item }: EventFolderCardProps) {
     loadAllAbortedRef.current = true;
     loadAllAttemptRef.current += 1;
     loadAllPagesAttemptedRef.current = 0;
+    downloadDirectoryRef.current = null;
     loadingAllRef.current = false;
     if (loadAllTimerRef.current !== null) {
       window.clearTimeout(loadAllTimerRef.current);
@@ -163,7 +166,9 @@ function EventFolderCard({ item }: EventFolderCardProps) {
 
     if (!hasNextPage) {
       setPendingDownloadAllSource(null);
-      if (mountedRef.current) void downloadAll();
+      if (mountedRef.current) {
+        void downloadAll(downloadDirectoryRef.current);
+      }
       return;
     }
 
@@ -173,7 +178,7 @@ function EventFolderCard({ item }: EventFolderCardProps) {
         toast.error(
           'This folder is too large to load in one go. Downloading the photos that loaded.',
         );
-        void downloadAll();
+        void downloadAll(downloadDirectoryRef.current);
       }
       return;
     }
@@ -192,7 +197,7 @@ function EventFolderCard({ item }: EventFolderCardProps) {
       toast.error(
         'Photo loading is taking too long. Downloading the photos that loaded.',
       );
-      void downloadAll();
+      void downloadAll(downloadDirectoryRef.current);
     }, 20_000);
 
     fetchNextPage()
@@ -208,7 +213,7 @@ function EventFolderCard({ item }: EventFolderCardProps) {
         toast.error(
           'Could not load every photo. Downloading the photos that loaded.',
         );
-        void downloadAll();
+        void downloadAll(downloadDirectoryRef.current);
       })
       .finally(() => {
         if (loadAllAttemptRef.current !== attempt) return;
@@ -368,12 +373,20 @@ function EventFolderCard({ item }: EventFolderCardProps) {
                   className="h-7 px-2"
                   disabled={pendingDownloadAll}
                   onClick={() => {
-                    if (hasNextPage) {
-                      loadAllPagesAttemptedRef.current = 0;
-                      setPendingDownloadAllSource(item.source);
-                    } else {
-                      void photoSelection.downloadAll();
-                    }
+                    void (async () => {
+                      const directory =
+                        await photoSelection.requestDownloadDirectory();
+                      if (directory === undefined) return;
+
+                      downloadDirectoryRef.current = directory;
+
+                      if (hasNextPage) {
+                        loadAllPagesAttemptedRef.current = 0;
+                        setPendingDownloadAllSource(item.source);
+                      } else {
+                        void photoSelection.downloadAll(directory);
+                      }
+                    })();
                   }}
                 >
                   <Download aria-hidden="true" className="size-4" />

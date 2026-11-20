@@ -109,6 +109,34 @@ const PHOTOS = [
   { url: 'https://assets.icaa.world/b.jpg', name: 'b.jpg' },
 ];
 
+function createDirectoryMock(existingFiles: Set<string>, written: string[]) {
+  return {
+    getFileHandle: async (name: string, options?: { create?: boolean }) => {
+      if (!options?.create) {
+        if (!existingFiles.has(name)) throw new Error('not found');
+        return {
+          createWritable: async () => ({
+            write: async () => {},
+            close: async () => {},
+            abort: async () => {},
+          }),
+        };
+      }
+
+      existingFiles.add(name);
+      return {
+        createWritable: async () => ({
+          write: async () => {
+            written.push(name);
+          },
+          close: async () => {},
+          abort: async () => {},
+        }),
+      };
+    },
+  };
+}
+
 describe('downloadPhotoUrls', () => {
   it('downloads each photo and reports progress', async () => {
     globalThis.fetch = (async () =>
@@ -184,17 +212,8 @@ describe('downloadPhotoUrls', () => {
 
   it('writes photos into a selected directory', async () => {
     const written: string[] = [];
-    setDirectoryPicker(async () => ({
-      getFileHandle: async (name: string) => ({
-        createWritable: async () => ({
-          write: async () => {
-            written.push(name);
-          },
-          close: async () => {},
-          abort: async () => {},
-        }),
-      }),
-    }));
+    const existing = new Set<string>();
+    setDirectoryPicker(async () => createDirectoryMock(existing, written));
 
     globalThis.fetch = (async () =>
       new Response(new Blob(['x'], { type: 'image/jpeg' }), {
@@ -209,6 +228,47 @@ describe('downloadPhotoUrls', () => {
     expect(result.failedPhotos).toEqual([]);
     expect(written).toEqual(['a.jpg', 'b.jpg']);
     expect(downloads).toEqual([]);
+  });
+
+  it('renames files that already exist in the directory', async () => {
+    const written: string[] = [];
+    const existing = new Set(['a.jpg']);
+    setDirectoryPicker(async () => createDirectoryMock(existing, written));
+
+    globalThis.fetch = (async () =>
+      new Response(new Blob(['x'], { type: 'image/jpeg' }), {
+        status: 200,
+      })) as unknown as typeof fetch;
+
+    const result = await downloadPhotoUrls([PHOTOS[0]], {
+      strategy: 'directory',
+    });
+
+    expect(result.downloaded).toBe(1);
+    expect(written).toEqual(['a (1).jpg']);
+  });
+
+  it('uses a supplied directory handle without opening the picker', async () => {
+    const written: string[] = [];
+    let pickerCalls = 0;
+    setDirectoryPicker(async () => {
+      pickerCalls += 1;
+      throw new Error('should not be called');
+    });
+
+    globalThis.fetch = (async () =>
+      new Response(new Blob(['x'], { type: 'image/jpeg' }), {
+        status: 200,
+      })) as unknown as typeof fetch;
+
+    const result = await downloadPhotoUrls(PHOTOS, {
+      strategy: 'directory',
+      directory: createDirectoryMock(new Set(), written),
+    });
+
+    expect(result.downloaded).toBe(2);
+    expect(pickerCalls).toBe(0);
+    expect(written).toEqual(['a.jpg', 'b.jpg']);
   });
 
   it('reports a canceled directory picker', async () => {

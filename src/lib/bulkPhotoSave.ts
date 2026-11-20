@@ -3,6 +3,7 @@ import { isAbortError, OBJECT_URL_REVOKE_DELAY_MS } from '@/lib/assetUtils';
 import { hasCoarsePointer } from '@/lib/device';
 
 export const MAX_BULK_PHOTO_COUNT = 50;
+export const MAX_ZIP_PHOTO_COUNT = 50;
 
 const DOWNLOAD_INTERVAL_MS = 250;
 
@@ -28,6 +29,7 @@ export interface DownloadPhotoUrlsOptions {
   onProgress?: (completed: number, total: number) => void;
   strategy?: BulkDownloadStrategy;
   archiveName?: string;
+  directory?: PhotoDirectoryHandle | null;
 }
 
 export function resolveBulkSaveMode(): BulkSaveMode {
@@ -49,6 +51,17 @@ export function resolveBulkSaveMode(): BulkSaveMode {
 
 export function supportsDirectoryPicker(): boolean {
   return getDirectoryPicker() !== null;
+}
+
+export async function requestDirectoryHandle(): Promise<PhotoDirectoryHandle | null> {
+  const picker = getDirectoryPicker();
+  if (!picker) return null;
+
+  return picker({
+    id: 'icaa-photo-downloads',
+    mode: 'readwrite',
+    startIn: 'downloads',
+  });
 }
 
 export function toArchiveName(title?: string): string {
@@ -94,25 +107,41 @@ export async function downloadPhotoUrls(
   options: DownloadPhotoUrlsOptions = {},
 ): Promise<DownloadPhotoUrlsResult> {
   const strategy =
-    options.strategy ?? (supportsDirectoryPicker() ? 'directory' : 'zip');
+    options.strategy ??
+    (options.directory !== undefined
+      ? options.directory
+        ? 'directory'
+        : 'zip'
+      : supportsDirectoryPicker()
+        ? 'directory'
+        : 'zip');
 
-  if (strategy === 'file') {
+  if (
+    strategy === 'file' ||
+    (strategy === 'zip' && photos.length > MAX_ZIP_PHOTO_COUNT)
+  ) {
     return downloadPhotoUrlsIndividually(photos, options);
   }
 
   if (strategy === 'directory') {
-    const picker = getDirectoryPicker();
-    if (picker) {
-      try {
-        const directory = await picker({
-          id: 'icaa-photo-downloads',
-          mode: 'readwrite',
-          startIn: 'downloads',
-        });
-        return await downloadPhotosToDirectory(photos, directory, options);
-      } catch (error) {
-        if (isAbortError(error)) {
-          return { downloaded: 0, failedPhotos: [], canceled: true };
+    if (options.directory) {
+      return downloadPhotosToDirectory(photos, options.directory, options);
+    }
+
+    if (options.directory === undefined) {
+      const picker = getDirectoryPicker();
+      if (picker) {
+        try {
+          const directory = await picker({
+            id: 'icaa-photo-downloads',
+            mode: 'readwrite',
+            startIn: 'downloads',
+          });
+          return await downloadPhotosToDirectory(photos, directory, options);
+        } catch (error) {
+          if (isAbortError(error)) {
+            return { downloaded: 0, failedPhotos: [], canceled: true };
+          }
         }
       }
     }
@@ -171,7 +200,8 @@ async function downloadPhotosToDirectory(
         photo.name,
         options.signal,
       );
-      const handle = await directory.getFileHandle(photo.name, {
+      const fileName = await uniqueFileName(directory, photo.name);
+      const handle = await directory.getFileHandle(fileName, {
         create: true,
       });
       const writable = await handle.createWritable();
@@ -269,6 +299,27 @@ function triggerBlobDownload(blob: Blob, fileName: string): void {
   setTimeout(() => URL.revokeObjectURL(objectUrl), OBJECT_URL_REVOKE_DELAY_MS);
 }
 
+async function uniqueFileName(
+  directory: PhotoDirectoryHandle,
+  name: string,
+): Promise<string> {
+  const dot = name.lastIndexOf('.');
+  const base = dot > 0 ? name.slice(0, dot) : name;
+  const extension = dot > 0 ? name.slice(dot) : '';
+  let candidate = name;
+
+  for (let index = 1; index <= 1000; index += 1) {
+    try {
+      await directory.getFileHandle(candidate);
+      candidate = `${base} (${index})${extension}`;
+    } catch {
+      return candidate;
+    }
+  }
+
+  return `${base} (${Date.now()})${extension}`;
+}
+
 interface WritablePhotoFile {
   write(data: Blob): Promise<void>;
   close(): Promise<void>;
@@ -279,7 +330,7 @@ interface PhotoFileHandle {
   createWritable(): Promise<WritablePhotoFile>;
 }
 
-interface PhotoDirectoryHandle {
+export interface PhotoDirectoryHandle {
   getFileHandle(
     name: string,
     options?: { create?: boolean },
