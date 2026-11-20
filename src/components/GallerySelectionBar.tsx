@@ -15,6 +15,7 @@ interface GallerySelectionBarProps {
   onClear: () => void;
   onRetry: () => void;
   onSave: () => void;
+  onCancelDownload: () => void;
   onDone: () => void;
 }
 
@@ -31,6 +32,7 @@ function GallerySelectionBar({
   onClear,
   onRetry,
   onSave,
+  onCancelDownload,
   onDone,
 }: GallerySelectionBarProps) {
   const ActionIcon = saveMode === 'share' ? Share2 : Download;
@@ -106,6 +108,17 @@ function GallerySelectionBar({
             )}
             {actionLabel}
           </Button>
+          {isSaving && saveMode === 'download' && (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={onCancelDownload}
+            >
+              <X aria-hidden="true" className="size-4" />
+              Cancel
+            </Button>
+          )}
           <Button
             type="button"
             variant="ghost"

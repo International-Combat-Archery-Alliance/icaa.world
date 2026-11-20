@@ -9,6 +9,7 @@ import {
   LayoutGrid,
   Link2,
   ListChecks,
+  X,
 } from 'lucide-react';
 import { AssetImage } from '@/components/AssetImage';
 import { Button } from '@/components/ui/button';
@@ -345,13 +346,27 @@ function EventFolderCard({ item }: EventFolderCardProps) {
             )}
             {isImageMode &&
               photoSelection.saveMode === 'download' &&
-              !photoSelection.isSelecting && (
+              !photoSelection.isSelecting &&
+              (photoSelection.isSaving ? (
                 <Button
                   type="button"
                   variant="outline"
                   size="sm"
                   className="h-7 px-2"
-                  disabled={photoSelection.isSaving || pendingDownloadAll}
+                  onClick={() => photoSelection.cancelDownload()}
+                >
+                  <X aria-hidden="true" className="size-4" />
+                  {photoSelection.downloadProgress
+                    ? `Cancel (${photoSelection.downloadProgress.completed}/${photoSelection.downloadProgress.total})`
+                    : 'Cancel download'}
+                </Button>
+              ) : (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="h-7 px-2"
+                  disabled={pendingDownloadAll}
                   onClick={() => {
                     if (hasNextPage) {
                       loadAllPagesAttemptedRef.current = 0;
@@ -362,13 +377,9 @@ function EventFolderCard({ item }: EventFolderCardProps) {
                   }}
                 >
                   <Download aria-hidden="true" className="size-4" />
-                  {pendingDownloadAll
-                    ? 'Loading photos…'
-                    : photoSelection.downloadProgress
-                      ? `Downloading ${photoSelection.downloadProgress.completed}/${photoSelection.downloadProgress.total}…`
-                      : 'Download all'}
+                  {pendingDownloadAll ? 'Loading photos…' : 'Download all'}
                 </Button>
-              )}
+              ))}
             {isImageMode && (
               <Button
                 type="button"
@@ -453,6 +464,7 @@ function EventFolderCard({ item }: EventFolderCardProps) {
                 onClear={photoSelection.clearSelection}
                 onRetry={photoSelection.retryFailed}
                 onSave={() => void photoSelection.saveSelected()}
+                onCancelDownload={photoSelection.cancelDownload}
                 onDone={photoSelection.stopSelecting}
               />
             )}

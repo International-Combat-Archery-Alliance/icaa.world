@@ -35,6 +35,7 @@ interface UsePhotoSelectionResult {
   retryFailed: () => void;
   saveSelected: () => Promise<void>;
   downloadAll: () => Promise<void>;
+  cancelDownload: () => void;
 }
 
 export function usePhotoSelection(
@@ -299,6 +300,10 @@ export function usePhotoSelection(
         );
 
         if (!mountedRef.current) return false;
+        if (controller.signal.aborted) {
+          toast.info('Download canceled.');
+          return false;
+        }
 
         if (result.downloaded > 0) {
           toast.success(
@@ -369,6 +374,10 @@ export function usePhotoSelection(
     if (saveMode !== 'download' || photos.length === 0) return;
     await runDownload(photos);
   }, [photos, runDownload, saveMode]);
+
+  const cancelDownload = useCallback(() => {
+    downloadControllerRef.current?.abort();
+  }, []);
 
   const saveSelected = useCallback(async () => {
     if (selectedPhotos.length === 0) return;
@@ -457,5 +466,6 @@ export function usePhotoSelection(
     retryFailed,
     saveSelected,
     downloadAll,
+    cancelDownload,
   };
 }
