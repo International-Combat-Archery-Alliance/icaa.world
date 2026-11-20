@@ -43,12 +43,10 @@ function EventDetailsPageSkeleton() {
           <CardHeader>
             <Skeleton className="h-8 w-32" />
           </CardHeader>
-          <CardContent className="flex flex-1 flex-col justify-center">
-            <div className="w-full max-w-md space-y-3 xl:max-w-none">
-              <Skeleton className="h-9 w-full" />
-              <Skeleton className="h-9 w-full" />
-              <Skeleton className="h-4 w-2/3" />
-            </div>
+          <CardContent className="flex flex-1 flex-col justify-center gap-3">
+            <Skeleton className="h-9 w-full" />
+            <Skeleton className="h-9 w-full" />
+            <Skeleton className="h-4 w-2/3" />
           </CardContent>
         </Card>
       </div>
@@ -513,47 +511,45 @@ function EventDetailsTemplate({ event }: { event: Event }) {
               <CardTitle className="text-primary">Registration</CardTitle>
             </CardHeader>
             <CardContent className="flex flex-1 flex-col justify-center">
-              <div className="w-full max-w-md xl:max-w-none">
-                {isRegistrationClosed ? (
-                  <p className="text-destructive font-semibold">
-                    Registration has closed
-                  </p>
-                ) : byIndividualOpt === undefined && byTeamOpt === undefined ? (
-                  <p className="text-muted-foreground text-sm">
-                    Registration is not open yet.
-                  </p>
-                ) : (
-                  <div className="space-y-4">
-                    <div className="flex flex-col gap-3">
-                      {byIndividualOpt !== undefined ? (
-                        <Button
-                          asChild
-                          className="h-auto min-h-9 w-full text-center whitespace-normal"
-                        >
-                          <Link to={`/events/${event.id}/register-free-agent`}>
-                            Free Agent Sign Up (
-                            {formatMoney(byIndividualOpt.price)})
-                          </Link>
-                        </Button>
-                      ) : null}
-                      {byTeamOpt !== undefined ? (
-                        <Button
-                          asChild
-                          className="h-auto min-h-9 w-full text-center whitespace-normal"
-                        >
-                          <Link to={`/events/${event.id}/register-team`}>
-                            Team Sign Up ({formatMoney(byTeamOpt.price)})
-                          </Link>
-                        </Button>
-                      ) : null}
-                    </div>
-                    <p className="text-muted-foreground text-sm">
-                      Registration Closes:{' '}
-                      {closeRegDate.toLocaleString(DateTime.DATE_HUGE)}
-                    </p>
+              {isRegistrationClosed ? (
+                <p className="text-destructive font-semibold">
+                  Registration has closed
+                </p>
+              ) : byIndividualOpt === undefined && byTeamOpt === undefined ? (
+                <p className="text-muted-foreground text-sm">
+                  Registration is not open yet.
+                </p>
+              ) : (
+                <div className="space-y-4">
+                  <div className="flex flex-col gap-3">
+                    {byIndividualOpt !== undefined ? (
+                      <Button
+                        asChild
+                        className="h-auto min-h-9 w-full text-center whitespace-normal"
+                      >
+                        <Link to={`/events/${event.id}/register-free-agent`}>
+                          Free Agent Sign Up (
+                          {formatMoney(byIndividualOpt.price)})
+                        </Link>
+                      </Button>
+                    ) : null}
+                    {byTeamOpt !== undefined ? (
+                      <Button
+                        asChild
+                        className="h-auto min-h-9 w-full text-center whitespace-normal"
+                      >
+                        <Link to={`/events/${event.id}/register-team`}>
+                          Team Sign Up ({formatMoney(byTeamOpt.price)})
+                        </Link>
+                      </Button>
+                    ) : null}
                   </div>
-                )}
-              </div>
+                  <p className="text-muted-foreground text-sm">
+                    Registration Closes:{' '}
+                    {closeRegDate.toLocaleString(DateTime.DATE_HUGE)}
+                  </p>
+                </div>
+              )}
             </CardContent>
           </Card>
         ) : null}
