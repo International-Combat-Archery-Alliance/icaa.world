@@ -15,8 +15,23 @@ const originalRevokeObjectUrl = Object.getOwnPropertyDescriptor(
   'revokeObjectURL',
 );
 const originalSetTimeout = globalThis.setTimeout;
+const originalWindowDescriptor = Object.getOwnPropertyDescriptor(
+  globalThis,
+  'window',
+);
 
 let downloads: string[] = [];
+
+function setDirectoryPicker(picker: unknown): void {
+  const existing =
+    (globalThis as unknown as { window?: Record<string, unknown> }).window ??
+    {};
+  Object.defineProperty(globalThis, 'window', {
+    configurable: true,
+    writable: true,
+    value: { ...existing, showDirectoryPicker: picker },
+  });
+}
 
 function installBrowserMocks(): void {
   downloads = [];
@@ -78,6 +93,12 @@ function restoreBrowserMocks(): void {
   }
 
   globalThis.setTimeout = originalSetTimeout;
+
+  if (originalWindowDescriptor) {
+    Object.defineProperty(globalThis, 'window', originalWindowDescriptor);
+  } else {
+    Reflect.deleteProperty(globalThis, 'window');
+  }
 }
 
 beforeEach(installBrowserMocks);
@@ -97,6 +118,7 @@ describe('downloadPhotoUrls', () => {
 
     const progress: Array<[number, number]> = [];
     const result = await downloadPhotoUrls(PHOTOS, {
+      strategy: 'file',
       onProgress: (completed, total) => progress.push([completed, total]),
     });
 
@@ -119,7 +141,7 @@ describe('downloadPhotoUrls', () => {
       });
     }) as unknown as typeof fetch;
 
-    const result = await downloadPhotoUrls(PHOTOS);
+    const result = await downloadPhotoUrls(PHOTOS, { strategy: 'file' });
 
     expect(result.downloaded).toBe(1);
     expect(result.failedPhotos).toEqual([PHOTOS[0]]);
@@ -135,11 +157,73 @@ describe('downloadPhotoUrls', () => {
     }) as unknown as typeof fetch;
 
     const result = await downloadPhotoUrls(PHOTOS, {
+      strategy: 'file',
       signal: controller.signal,
     });
 
     expect(result.downloaded).toBe(0);
     expect(result.failedPhotos).toEqual([]);
+    expect(downloads).toEqual([]);
+  });
+
+  it('downloads a zip when requested', async () => {
+    globalThis.fetch = (async () =>
+      new Response(new Blob(['x'], { type: 'image/jpeg' }), {
+        status: 200,
+      })) as unknown as typeof fetch;
+
+    const result = await downloadPhotoUrls(PHOTOS, {
+      strategy: 'zip',
+      archiveName: 'gallery.zip',
+    });
+
+    expect(result.downloaded).toBe(2);
+    expect(result.failedPhotos).toEqual([]);
+    expect(downloads).toEqual(['gallery.zip']);
+  });
+
+  it('writes photos into a selected directory', async () => {
+    const written: string[] = [];
+    setDirectoryPicker(async () => ({
+      getFileHandle: async (name: string) => ({
+        createWritable: async () => ({
+          write: async () => {
+            written.push(name);
+          },
+          close: async () => {},
+          abort: async () => {},
+        }),
+      }),
+    }));
+
+    globalThis.fetch = (async () =>
+      new Response(new Blob(['x'], { type: 'image/jpeg' }), {
+        status: 200,
+      })) as unknown as typeof fetch;
+
+    const result = await downloadPhotoUrls(PHOTOS, {
+      strategy: 'directory',
+    });
+
+    expect(result.downloaded).toBe(2);
+    expect(result.failedPhotos).toEqual([]);
+    expect(written).toEqual(['a.jpg', 'b.jpg']);
+    expect(downloads).toEqual([]);
+  });
+
+  it('reports a canceled directory picker', async () => {
+    setDirectoryPicker(async () => {
+      const error = new Error('canceled');
+      error.name = 'AbortError';
+      throw error;
+    });
+
+    const result = await downloadPhotoUrls(PHOTOS, {
+      strategy: 'directory',
+    });
+
+    expect(result.canceled).toBe(true);
+    expect(result.downloaded).toBe(0);
     expect(downloads).toEqual([]);
   });
 });

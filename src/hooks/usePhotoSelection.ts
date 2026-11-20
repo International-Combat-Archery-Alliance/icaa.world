@@ -7,6 +7,8 @@ import {
   preparePhotoFile,
   resolveBulkSaveMode,
   savePhotoFiles,
+  supportsDirectoryPicker,
+  toArchiveName,
   type BulkSaveMode,
 } from '@/lib/bulkPhotoSave';
 
@@ -277,9 +279,9 @@ export function usePhotoSelection(
       setDownloadFailedUrls(new Set());
       if (photosToDownload.length > 1) {
         toast.info(
-          photosToDownload.length > 100
-            ? `Downloading ${photosToDownload.length} photos may take several minutes; your browser may ask to allow multiple downloads.`
-            : 'Your browser may ask to allow multiple downloads.',
+          supportsDirectoryPicker()
+            ? `Choose a folder to save ${photosToDownload.length} photos.`
+            : `Saving ${photosToDownload.length} photos as a ZIP.`,
         );
       }
 
@@ -291,6 +293,7 @@ export function usePhotoSelection(
           })),
           {
             signal: controller.signal,
+            archiveName: toArchiveName(title),
             onProgress: (completed, total) => {
               if (!mountedRef.current) return;
               if (completed !== total && completed % 10 !== 0) return;
@@ -300,7 +303,7 @@ export function usePhotoSelection(
         );
 
         if (!mountedRef.current) return false;
-        if (controller.signal.aborted) {
+        if (result.canceled || controller.signal.aborted) {
           toast.info('Download canceled.');
           return false;
         }
@@ -339,7 +342,7 @@ export function usePhotoSelection(
         }
       }
     },
-    [],
+    [title],
   );
 
   const retryFailed = useCallback(() => {

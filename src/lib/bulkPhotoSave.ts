@@ -1,3 +1,4 @@
+import { downloadZip } from 'client-zip';
 import { isAbortError, OBJECT_URL_REVOKE_DELAY_MS } from '@/lib/assetUtils';
 import { hasCoarsePointer } from '@/lib/device';
 
@@ -9,6 +10,8 @@ export type BulkSaveMode = 'share' | 'download';
 
 export type BulkSaveResult = 'shared' | 'downloaded' | 'cancelled';
 
+export type BulkDownloadStrategy = 'directory' | 'zip' | 'file';
+
 export interface BulkPhoto {
   url: string;
   name: string;
@@ -17,11 +20,14 @@ export interface BulkPhoto {
 export interface DownloadPhotoUrlsResult {
   downloaded: number;
   failedPhotos: BulkPhoto[];
+  canceled?: boolean;
 }
 
 export interface DownloadPhotoUrlsOptions {
   signal?: AbortSignal;
   onProgress?: (completed: number, total: number) => void;
+  strategy?: BulkDownloadStrategy;
+  archiveName?: string;
 }
 
 export function resolveBulkSaveMode(): BulkSaveMode {
@@ -39,6 +45,19 @@ export function resolveBulkSaveMode(): BulkSaveMode {
     type: 'image/jpeg',
   });
   return navigator.canShare({ files: [probe] }) ? 'share' : 'download';
+}
+
+export function supportsDirectoryPicker(): boolean {
+  return getDirectoryPicker() !== null;
+}
+
+export function toArchiveName(title?: string): string {
+  const base = title
+    ?.trim()
+    .replace(/[^\w.-]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+
+  return `${base || 'event-photos'}.zip`;
 }
 
 export async function preparePhotoFile(
@@ -74,6 +93,38 @@ export async function downloadPhotoUrls(
   photos: readonly BulkPhoto[],
   options: DownloadPhotoUrlsOptions = {},
 ): Promise<DownloadPhotoUrlsResult> {
+  const strategy =
+    options.strategy ?? (supportsDirectoryPicker() ? 'directory' : 'zip');
+
+  if (strategy === 'file') {
+    return downloadPhotoUrlsIndividually(photos, options);
+  }
+
+  if (strategy === 'directory') {
+    const picker = getDirectoryPicker();
+    if (picker) {
+      try {
+        const directory = await picker({
+          id: 'icaa-photo-downloads',
+          mode: 'readwrite',
+          startIn: 'downloads',
+        });
+        return await downloadPhotosToDirectory(photos, directory, options);
+      } catch (error) {
+        if (isAbortError(error)) {
+          return { downloaded: 0, failedPhotos: [], canceled: true };
+        }
+      }
+    }
+  }
+
+  return downloadPhotosAsZip(photos, options);
+}
+
+async function downloadPhotoUrlsIndividually(
+  photos: readonly BulkPhoto[],
+  options: DownloadPhotoUrlsOptions,
+): Promise<DownloadPhotoUrlsResult> {
   const failedPhotos: BulkPhoto[] = [];
   let downloaded = 0;
 
@@ -103,6 +154,97 @@ export async function downloadPhotoUrls(
   return { downloaded, failedPhotos };
 }
 
+async function downloadPhotosToDirectory(
+  photos: readonly BulkPhoto[],
+  directory: PhotoDirectoryHandle,
+  options: DownloadPhotoUrlsOptions,
+): Promise<DownloadPhotoUrlsResult> {
+  const failedPhotos: BulkPhoto[] = [];
+  let downloaded = 0;
+
+  for (const [index, photo] of photos.entries()) {
+    if (options.signal?.aborted) break;
+
+    try {
+      const file = await preparePhotoFile(
+        photo.url,
+        photo.name,
+        options.signal,
+      );
+      const handle = await directory.getFileHandle(photo.name, {
+        create: true,
+      });
+      const writable = await handle.createWritable();
+
+      try {
+        await writable.write(file);
+        await writable.close();
+      } catch (error) {
+        await writable.abort?.();
+        throw error;
+      }
+
+      downloaded += 1;
+    } catch {
+      if (options.signal?.aborted) break;
+      failedPhotos.push(photo);
+    }
+
+    options.onProgress?.(index + 1, photos.length);
+  }
+
+  return { downloaded, failedPhotos };
+}
+
+async function downloadPhotosAsZip(
+  photos: readonly BulkPhoto[],
+  options: DownloadPhotoUrlsOptions,
+): Promise<DownloadPhotoUrlsResult> {
+  const failedPhotos: BulkPhoto[] = [];
+  let downloaded = 0;
+  let completed = 0;
+
+  async function* entries(): AsyncGenerator<{ name: string; input: File }> {
+    for (const photo of photos) {
+      if (options.signal?.aborted) return;
+
+      try {
+        const file = await preparePhotoFile(
+          photo.url,
+          photo.name,
+          options.signal,
+        );
+        downloaded += 1;
+        completed += 1;
+        options.onProgress?.(completed, photos.length);
+        yield { name: photo.name, input: file };
+      } catch {
+        if (options.signal?.aborted) return;
+        failedPhotos.push(photo);
+        completed += 1;
+        options.onProgress?.(completed, photos.length);
+      }
+    }
+  }
+
+  try {
+    const blob = await downloadZip(entries()).blob();
+
+    if (options.signal?.aborted) {
+      return { downloaded: 0, failedPhotos, canceled: true };
+    }
+
+    if (downloaded === 0) {
+      return { downloaded: 0, failedPhotos };
+    }
+
+    triggerBlobDownload(blob, options.archiveName ?? 'event-photos.zip');
+    return { downloaded, failedPhotos };
+  } catch {
+    return { downloaded: 0, failedPhotos: [...photos] };
+  }
+}
+
 async function downloadPhotoFiles(files: File[]): Promise<void> {
   for (const [index, file] of files.entries()) {
     triggerFileDownload(file);
@@ -113,12 +255,47 @@ async function downloadPhotoFiles(files: File[]): Promise<void> {
 }
 
 function triggerFileDownload(file: File): void {
-  const objectUrl = URL.createObjectURL(file);
+  triggerBlobDownload(file, file.name);
+}
+
+function triggerBlobDownload(blob: Blob, fileName: string): void {
+  const objectUrl = URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.href = objectUrl;
-  link.download = file.name;
+  link.download = fileName;
   document.body.appendChild(link);
   link.click();
   link.remove();
   setTimeout(() => URL.revokeObjectURL(objectUrl), OBJECT_URL_REVOKE_DELAY_MS);
+}
+
+interface WritablePhotoFile {
+  write(data: Blob): Promise<void>;
+  close(): Promise<void>;
+  abort?(): Promise<void>;
+}
+
+interface PhotoFileHandle {
+  createWritable(): Promise<WritablePhotoFile>;
+}
+
+interface PhotoDirectoryHandle {
+  getFileHandle(
+    name: string,
+    options?: { create?: boolean },
+  ): Promise<PhotoFileHandle>;
+}
+
+type DirectoryPicker = (options?: {
+  id?: string;
+  mode?: 'read' | 'readwrite';
+  startIn?: string;
+}) => Promise<PhotoDirectoryHandle>;
+
+function getDirectoryPicker(): DirectoryPicker | null {
+  if (typeof window === 'undefined') return null;
+  const picker = (
+    window as unknown as { showDirectoryPicker?: DirectoryPicker }
+  ).showDirectoryPicker;
+  return typeof picker === 'function' ? picker : null;
 }
