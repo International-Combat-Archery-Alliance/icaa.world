@@ -72,7 +72,7 @@ function resolveFolderMode(
     return fileCount > 0 ? 'file_list' : 'empty';
   }
 
-  if (imageCount >= 3) return 'carousel';
+  if (displayMode === 'carousel' && imageCount >= 3) return 'carousel';
   if (imageCount > 0) return 'gallery';
   if (otherFileCount > 0) return 'file_list';
   return 'empty';
