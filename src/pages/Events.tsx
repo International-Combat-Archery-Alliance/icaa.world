@@ -78,44 +78,31 @@ function EventContent({
     );
   }
 
-  const now = DateTime.now();
-  const upcoming = events
-    .filter(
-      (event) =>
-        DateTime.fromISO(event.endTime, { zone: event.timeZone }) >= now,
-    )
-    .sort(
-      (a, b) =>
-        DateTime.fromISO(a.startTime, { zone: a.timeZone }).toMillis() -
-        DateTime.fromISO(b.startTime, { zone: b.timeZone }).toMillis(),
-    );
+  const startMillis = (event: Event) =>
+    DateTime.fromISO(event.startTime, { zone: event.timeZone }).toMillis();
+  const current = events
+    .filter((event) => !hasEndedAndClosedRegistration(event))
+    .sort((a, b) => startMillis(a) - startMillis(b));
   const past = events
-    .filter(
-      (event) =>
-        DateTime.fromISO(event.endTime, { zone: event.timeZone }) < now,
-    )
-    .sort(
-      (a, b) =>
-        DateTime.fromISO(b.startTime, { zone: b.timeZone }).toMillis() -
-        DateTime.fromISO(a.startTime, { zone: a.timeZone }).toMillis(),
-    );
+    .filter(hasEndedAndClosedRegistration)
+    .sort((a, b) => startMillis(b) - startMillis(a));
 
   return (
     <div className="space-y-8">
-      {upcoming.length > 0 ? (
+      {current.length > 0 ? (
         <section className="space-y-4">
           <h2 className="text-primary text-2xl font-semibold">
-            Upcoming Events
+            Current Events
           </h2>
           <CardGrid>
-            {upcoming.map((event) => (
+            {current.map((event) => (
               <EventCard key={event.id} event={event} />
             ))}
           </CardGrid>
         </section>
       ) : (
         <p className="text-muted-foreground text-sm">
-          No upcoming events scheduled.
+          No current events scheduled.
         </p>
       )}
 
@@ -131,6 +118,16 @@ function EventContent({
       ) : null}
     </div>
   );
+}
+
+function hasEndedAndClosedRegistration(event: Event): boolean {
+  const now = DateTime.now();
+  const endDate = DateTime.fromISO(event.endTime, { zone: event.timeZone });
+  const closeRegDate = DateTime.fromISO(event.registrationCloseTime, {
+    zone: event.timeZone,
+  });
+
+  return now > endDate && now > closeRegDate;
 }
 
 function EventCard({ event, className }: { event: Event; className?: string }) {
