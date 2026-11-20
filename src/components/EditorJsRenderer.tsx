@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { AssetImage } from '@/components/AssetImage';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -145,9 +146,11 @@ function BlockRenderer({ block }: { block: EditorJsBlock }) {
 
       return (
         <figure className="my-4">
-          <img
+          <AssetImage
             src={url}
             alt={caption || ''}
+            imageWidth={1200}
+            imageFit="scale-down"
             className={`${sizeClass} h-auto max-w-full rounded-md ${imgAlignClass}`}
           />
           {caption && (
@@ -281,9 +284,12 @@ function BlockRenderer({ block }: { block: EditorJsBlock }) {
         >
           <div className="flex gap-4">
             {meta?.image?.url && (
-              <img
+              <AssetImage
                 src={meta.image.url}
                 alt=""
+                imageWidth={192}
+                imageHeight={192}
+                imageFit="cover"
                 className="h-24 w-24 flex-shrink-0 rounded-md object-cover"
               />
             )}

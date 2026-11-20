@@ -119,7 +119,11 @@ const Home = () => {
         </div>
 
         <div className="w-full max-w-[1016px]">
-          <CarouselImages assetPath="/Carousel-Images" />
+          <CarouselImages
+            assetPath="/Carousel-Images"
+            imageWidth={1600}
+            imageHeight={900}
+          />
         </div>
 
         <div className="flex w-full max-w-[1016px] flex-col gap-4 lg:flex-row">

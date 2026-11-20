@@ -3,6 +3,7 @@ import { useTitle } from 'react-use';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { AssetImage } from '@/components/AssetImage';
 import { trackEvent } from '@/lib/newrelic';
 import {
   Form,
@@ -156,9 +157,13 @@ export default function Donation() {
         <CardContent className="grid gap-6">
           {!clientSecret ? (
             <>
-              <img
+              <AssetImage
                 src="https://assets.icaa.world/bd242bdf-283e-4b80-bbe5-f8d2c28b133e.webp"
                 alt="ICAA combat archery"
+                imageWidth={1200}
+                imageHeight={800}
+                imageFit="cover"
+                loading="eager"
                 className="h-48 w-full rounded-lg object-cover md:h-80"
               />
               <p className="text-center text-gray-600">

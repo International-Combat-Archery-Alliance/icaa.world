@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Download, Link2, X } from 'lucide-react';
+import { AssetImage } from '@/components/AssetImage';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -79,10 +80,13 @@ function MediaLightbox({
           </Button>
         </DialogClose>
         <div className="relative">
-          <img
+          <AssetImage
             src={activeImage.url}
             alt={activeImage.alt}
-            decoding="async"
+            imageWidth={1600}
+            imageFit="scale-down"
+            imageQuality={80}
+            loading="eager"
             className="mx-auto max-h-[80vh] w-auto max-w-full rounded-lg object-contain"
           />
           {hasMultipleImages && (

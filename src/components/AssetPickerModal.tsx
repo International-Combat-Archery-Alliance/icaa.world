@@ -14,6 +14,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { AssetImage } from '@/components/AssetImage';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
@@ -365,9 +366,12 @@ function BrowseTab({
                       }`}
                     >
                       {isImage ? (
-                        <img
+                        <AssetImage
                           src={url}
                           alt={asset.name}
+                          imageWidth={320}
+                          imageHeight={320}
+                          imageFit="cover"
                           className="h-full w-full object-cover"
                         />
                       ) : (

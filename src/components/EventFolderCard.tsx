@@ -9,6 +9,7 @@ import {
   Link2,
   ListChecks,
 } from 'lucide-react';
+import { AssetImage } from '@/components/AssetImage';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -251,6 +252,8 @@ function EventFolderCard({ item }: EventFolderCardProps) {
             <CarouselImages
               assetPath={item.source}
               autoplay={false}
+              imageWidth={960}
+              imageHeight={540}
               onImageClick={setLightboxIndex}
               onSlideChange={setActiveSlideIndex}
             />
@@ -367,11 +370,12 @@ function EventFolderCard({ item }: EventFolderCardProps) {
                               : 'cursor-zoom-in',
                           )}
                         >
-                          <img
+                          <AssetImage
                             src={image.url}
                             alt={image.name}
-                            loading="lazy"
-                            decoding="async"
+                            imageWidth={480}
+                            imageHeight={480}
+                            imageFit="cover"
                             className={cn(
                               'aspect-square w-full object-cover transition-transform duration-300',
                               !photoSelection.isSelecting &&

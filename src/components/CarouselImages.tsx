@@ -10,20 +10,29 @@ import {
 } from '@/components/ui/carousel';
 import { Skeleton } from '@/components/ui/skeleton';
 import Autoplay from 'embla-carousel-autoplay';
+import { assetImageUrl } from '@/lib/assetImage';
 import { isImageAsset } from '@/lib/assetUtils';
 import { cn } from '@/lib/utils';
 
 // Component to handle image loading with fade-in
 function CarouselImage({
   src,
+  fallbackSrc,
   alt,
   aspectRatio,
 }: {
   src: string;
+  fallbackSrc: string;
   alt: string;
   aspectRatio: string;
 }) {
   const [isLoaded, setIsLoaded] = useState(false);
+  const [currentSrc, setCurrentSrc] = useState(src);
+
+  useEffect(() => {
+    setCurrentSrc(src);
+    setIsLoaded(false);
+  }, [src]);
 
   return (
     <div
@@ -34,13 +43,16 @@ function CarouselImage({
     >
       {!isLoaded && <Skeleton className="absolute inset-0 rounded-lg" />}
       <img
-        src={src}
+        src={currentSrc}
         alt={alt}
         decoding="async"
         className={`h-full w-full object-cover transition-opacity duration-500 ${
           isLoaded ? 'opacity-100' : 'opacity-0'
         }`}
         onLoad={() => setIsLoaded(true)}
+        onError={() => {
+          if (currentSrc !== fallbackSrc) setCurrentSrc(fallbackSrc);
+        }}
       />
     </div>
   );
@@ -65,6 +77,8 @@ interface CarouselImagesProps {
   maxAssets?: number;
   className?: string;
   autoplay?: boolean;
+  imageWidth?: number;
+  imageHeight?: number;
   onImageClick?: (index: number) => void;
   onSlideChange?: (index: number) => void;
 }
@@ -76,6 +90,8 @@ export function CarouselImages({
   maxAssets = 100,
   className,
   autoplay = true,
+  imageWidth = 1200,
+  imageHeight = 675,
   onImageClick,
   onSlideChange,
 }: CarouselImagesProps) {
@@ -88,9 +104,16 @@ export function CarouselImages({
     const allAssets = data?.pages.flatMap((page) => page.data) || [];
     return allAssets
       .filter(isImageAsset)
-      .map((asset) => asset.url)
-      .filter((url): url is string => url !== '');
-  }, [data]);
+      .map((asset) => ({
+        original: asset.url,
+        src: assetImageUrl(asset.url, {
+          width: imageWidth,
+          height: imageHeight,
+          fit: 'cover',
+        }),
+      }))
+      .filter((image) => image.original !== '');
+  }, [data, imageHeight, imageWidth]);
 
   const { preloadImages } = useImagePreloader();
 
@@ -101,7 +124,7 @@ export function CarouselImages({
     const nextIndex1 = (currentIndex + 1) % images.length;
     const nextIndex2 = (currentIndex + 2) % images.length;
 
-    preloadImages([images[nextIndex1], images[nextIndex2]]);
+    preloadImages([images[nextIndex1].src, images[nextIndex2].src]);
   }, [currentIndex, images, preloadImages]);
 
   // Track carousel index changes
@@ -162,7 +185,7 @@ export function CarouselImages({
       className={cn('w-full', className)}
     >
       <CarouselContent>
-        {images.map((url, index) => (
+        {images.map((image, index) => (
           <CarouselItem key={index}>
             {onImageClick ? (
               <button
@@ -172,14 +195,16 @@ export function CarouselImages({
                 className="focus-visible:ring-ring block w-full cursor-zoom-in rounded-lg focus-visible:ring-2 focus-visible:outline-none focus-visible:ring-inset"
               >
                 <CarouselImage
-                  src={url}
+                  src={image.src}
+                  fallbackSrc={image.original}
                   alt={`Combat archery photo ${index + 1}`}
                   aspectRatio={aspectRatio}
                 />
               </button>
             ) : (
               <CarouselImage
-                src={url}
+                src={image.src}
+                fallbackSrc={image.original}
                 alt={`Combat archery photo ${index + 1}`}
                 aspectRatio={aspectRatio}
               />

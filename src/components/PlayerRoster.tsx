@@ -1,3 +1,4 @@
+import { AssetImage } from '@/components/AssetImage';
 import {
   Table,
   TableBody,
@@ -8,6 +9,7 @@ import {
 } from '@/components/ui/table';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ShieldQuestion, User } from 'lucide-react';
+import { assetImageUrl } from '@/lib/assetImage';
 
 interface Player {
   imageUrl: string;
@@ -79,7 +81,18 @@ export function PlayerRoster({ players, teamColor }: PlayerRosterProps) {
             <TableRow key={index} className="h-20 md:h-24">
               <TableCell>
                 <Avatar className="h-12 w-12 md:h-16 md:w-16">
-                  <AvatarImage src={player.imageUrl} alt={player.firstName} />
+                  <AvatarImage
+                    src={
+                      player.imageUrl
+                        ? assetImageUrl(player.imageUrl, {
+                            width: 128,
+                            height: 128,
+                            fit: 'cover',
+                          })
+                        : undefined
+                    }
+                    alt={player.firstName}
+                  />
                   <AvatarFallback className="bg-muted">
                     <User className="text-muted-foreground h-8 w-8" />
                   </AvatarFallback>
@@ -92,9 +105,12 @@ export function PlayerRoster({ players, teamColor }: PlayerRosterProps) {
               <TableCell className="text-center">
                 <div className="flex justify-center">
                   {getPositionIcon(player.position) ? (
-                    <img
+                    <AssetImage
                       src={getPositionIcon(player.position)!}
                       alt={player.position}
+                      imageWidth={80}
+                      imageHeight={80}
+                      imageFit="contain"
                       className="h-8 w-8 object-contain md:h-10 md:w-10"
                     />
                   ) : (

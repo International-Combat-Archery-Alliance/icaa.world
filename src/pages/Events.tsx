@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { AssetImage } from '@/components/AssetImage';
 import { useGetEvents, type Event } from '../hooks/useEvent';
 import {
   Card,
@@ -103,9 +104,11 @@ function EventCard({ event, className }: { event: Event; className?: string }) {
     <Card className={className}>
       <CardHeader>
         {event.imageName ? (
-          <img
+          <AssetImage
             src={event.imageName}
             alt="Boston International Championship Logo"
+            imageWidth={240}
+            imageFit="scale-down"
             className="mb-4 inline-block h-auto max-w-[100px] justify-self-center"
           />
         ) : null}

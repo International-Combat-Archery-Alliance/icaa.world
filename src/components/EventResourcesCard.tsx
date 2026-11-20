@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { AssetImage } from '@/components/AssetImage';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { EventMediaIconView } from '@/components/EventMediaIconView';
 import { PdfEmbed } from '@/components/PdfEmbed';
@@ -83,9 +84,11 @@ function EventResourcesCard({ items }: EventResourcesCardProps) {
 
             return (
               <figure key={item.id} className="space-y-2">
-                <img
+                <AssetImage
                   src={render.url}
                   alt={item.title || 'Event resource'}
+                  imageWidth={960}
+                  imageFit="scale-down"
                   className="w-full rounded-lg"
                   onError={() => markImageFailed(item.id)}
                 />
