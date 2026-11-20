@@ -53,6 +53,9 @@ export function usePhotoSelection(
     completed: number;
     total: number;
   } | null>(null);
+  const [downloadFailedUrls, setDownloadFailedUrls] = useState<
+    ReadonlySet<string>
+  >(() => new Set());
   const savingRef = useRef(false);
   const downloadControllerRef = useRef<AbortController | null>(null);
   const requestsRef = useRef(new Map<string, AbortController>());
@@ -181,6 +184,7 @@ export function usePhotoSelection(
     requestsRef.current.clear();
     setSelected(new Set());
     setPrepared(new Map());
+    setDownloadFailedUrls(new Set());
   }, []);
 
   const startSelecting = useCallback(() => setIsSelecting(true), []);
@@ -249,15 +253,8 @@ export function usePhotoSelection(
       ? selectedPhotos.filter(
           (photo) => prepared.get(photo.url)?.status === 'failed',
         ).length
-      : 0;
-
-  const retryFailed = useCallback(() => {
-    selectedPhotos.forEach((photo) => {
-      if (prepared.get(photo.url)?.status !== 'failed') return;
-      requestsRef.current.delete(photo.url);
-      preparePhoto(photo);
-    });
-  }, [prepared, preparePhoto, selectedPhotos]);
+      : selectedPhotos.filter((photo) => downloadFailedUrls.has(photo.url))
+          .length;
 
   const isSelected = useCallback(
     (url: string) => selected.has(url),
@@ -273,8 +270,13 @@ export function usePhotoSelection(
       downloadControllerRef.current = controller;
       setIsSaving(true);
       setDownloadProgress({ completed: 0, total: photosToDownload.length });
+      setDownloadFailedUrls(new Set());
       if (photosToDownload.length > 1) {
-        toast.info('Your browser may ask to allow multiple downloads.');
+        toast.info(
+          photosToDownload.length > 100
+            ? `Downloading ${photosToDownload.length} photos may take several minutes; your browser may ask to allow multiple downloads.`
+            : 'Your browser may ask to allow multiple downloads.',
+        );
       }
 
       try {
@@ -300,8 +302,12 @@ export function usePhotoSelection(
         }
 
         if (result.failedPhotos.length > 0) {
+          const failedUrls = new Set(
+            result.failedPhotos.map((photo) => photo.url),
+          );
+          setDownloadFailedUrls(failedUrls);
           setIsSelecting(true);
-          setSelected(new Set(result.failedPhotos.map((photo) => photo.url)));
+          setSelected(failedUrls);
           toast.error(
             `${result.failedPhotos.length} ${result.failedPhotos.length === 1 ? 'photo' : 'photos'} could not be downloaded. Try again.`,
           );
@@ -309,6 +315,11 @@ export function usePhotoSelection(
         }
 
         return true;
+      } catch {
+        if (mountedRef.current) {
+          toast.error('Could not download the photos. Try again.');
+        }
+        return false;
       } finally {
         savingRef.current = false;
         downloadControllerRef.current = null;
@@ -320,6 +331,34 @@ export function usePhotoSelection(
     },
     [],
   );
+
+  const retryFailed = useCallback(() => {
+    if (saveMode === 'download') {
+      const failed = selectedPhotos.filter((photo) =>
+        downloadFailedUrls.has(photo.url),
+      );
+      if (failed.length === 0) return;
+
+      void runDownload(failed).then((completed) => {
+        if (completed) stopSelecting();
+      });
+      return;
+    }
+
+    selectedPhotos.forEach((photo) => {
+      if (prepared.get(photo.url)?.status !== 'failed') return;
+      requestsRef.current.delete(photo.url);
+      preparePhoto(photo);
+    });
+  }, [
+    downloadFailedUrls,
+    prepared,
+    preparePhoto,
+    runDownload,
+    saveMode,
+    selectedPhotos,
+    stopSelecting,
+  ]);
 
   const downloadAll = useCallback(async () => {
     if (saveMode !== 'download' || photos.length === 0) return;
@@ -385,6 +424,10 @@ export function usePhotoSelection(
       }
 
       stopSelecting();
+    } catch {
+      if (mountedRef.current) {
+        toast.error('Could not save the photos. Try again.');
+      }
     } finally {
       savingRef.current = false;
       if (mountedRef.current) setIsSaving(false);

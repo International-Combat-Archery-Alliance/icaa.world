@@ -34,6 +34,7 @@ import { cn } from '@/lib/utils';
 type GalleryViewMode = 'carousel' | 'gallery';
 
 const EMPTY_PHOTOS: EventFileAsset[] = [];
+const GALLERY_CAROUSEL_LIMIT = 100;
 
 interface EventFolderCardProps {
   item: EventMediaItem;
@@ -45,6 +46,10 @@ function EventFolderCard({ item }: EventFolderCardProps) {
   const [pageIndex, setPageIndex] = useState(0);
   const [pendingDownloadAll, setPendingDownloadAll] = useState(false);
   const loadingAllRef = useRef(false);
+  const loadAllAttemptRef = useRef(0);
+  const loadAllTimerRef = useRef<number | null>(null);
+  const loadAllAbortedRef = useRef(false);
+  const mountedRef = useRef(true);
   const copyPhotoLink = useCopyPhotoLink();
   const {
     data,
@@ -124,46 +129,75 @@ function EventFolderCard({ item }: EventFolderCardProps) {
   }, [photoSelection.isSelecting, viewMode]);
 
   useEffect(() => {
-    if (!pendingDownloadAll) return;
+    mountedRef.current = true;
 
-    if (error) {
-      setPendingDownloadAll(false);
-      toast.error(
-        'Could not load every photo. Downloading the photos that loaded.',
-      );
-      void photoSelection.downloadAll();
-      return;
-    }
-
-    if (isFetchingNextPage) return;
-
-    if (hasNextPage) {
-      if (!loadingAllRef.current) {
-        loadingAllRef.current = true;
-        fetchNextPage()
-          .catch(() => {
-            setPendingDownloadAll(false);
-            toast.error(
-              'Could not load every photo. Downloading the photos that loaded.',
-            );
-            void photoSelection.downloadAll();
-          })
-          .finally(() => {
-            loadingAllRef.current = false;
-          });
+    return () => {
+      mountedRef.current = false;
+      loadAllAbortedRef.current = true;
+      if (loadAllTimerRef.current !== null) {
+        window.clearTimeout(loadAllTimerRef.current);
+        loadAllTimerRef.current = null;
       }
+    };
+  }, []);
+
+  const downloadAll = photoSelection.downloadAll;
+
+  useEffect(() => {
+    if (!pendingDownloadAll) return;
+    if (isFetchingNextPage || loadingAllRef.current) return;
+
+    if (!hasNextPage) {
+      setPendingDownloadAll(false);
+      if (mountedRef.current) void downloadAll();
       return;
     }
 
-    setPendingDownloadAll(false);
-    void photoSelection.downloadAll();
+    const attempt = ++loadAllAttemptRef.current;
+    loadAllAbortedRef.current = false;
+    loadingAllRef.current = true;
+    loadAllTimerRef.current = window.setTimeout(() => {
+      loadAllAbortedRef.current = true;
+      loadAllAttemptRef.current += 1;
+      loadingAllRef.current = false;
+      loadAllTimerRef.current = null;
+      setPendingDownloadAll(false);
+      if (!mountedRef.current) return;
+      toast.error(
+        'Photo loading is taking too long. Downloading the photos that loaded.',
+      );
+      void downloadAll();
+    }, 20_000);
+
+    fetchNextPage()
+      .catch(() => {
+        if (
+          loadAllAbortedRef.current ||
+          !mountedRef.current ||
+          loadAllAttemptRef.current !== attempt
+        ) {
+          return;
+        }
+        setPendingDownloadAll(false);
+        toast.error(
+          'Could not load every photo. Downloading the photos that loaded.',
+        );
+        void downloadAll();
+      })
+      .finally(() => {
+        if (loadAllAttemptRef.current !== attempt) return;
+        if (loadAllTimerRef.current !== null) {
+          window.clearTimeout(loadAllTimerRef.current);
+          loadAllTimerRef.current = null;
+        }
+        loadingAllRef.current = false;
+      });
   }, [
-    error,
+    downloadAll,
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
     pendingDownloadAll,
-    photoSelection,
   ]);
 
   useEffect(() => {
@@ -345,7 +379,8 @@ function EventFolderCard({ item }: EventFolderCardProps) {
             {carouselImage && (
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <p className="text-muted-foreground text-sm tabular-nums">
-                  Photo {carouselIndex + 1} of {render.images.length}
+                  Photo {carouselIndex + 1} of{' '}
+                  {Math.min(render.images.length, GALLERY_CAROUSEL_LIMIT)}
                 </p>
                 <div className="flex flex-wrap items-center gap-2">
                   <Button
@@ -384,6 +419,7 @@ function EventFolderCard({ item }: EventFolderCardProps) {
                 totalCount={imageCount}
                 isPreparing={photoSelection.isPreparing}
                 isSaving={photoSelection.isSaving}
+                downloadProgress={photoSelection.downloadProgress}
                 saveMode={photoSelection.saveMode}
                 onSelectAll={photoSelection.selectAll}
                 onClear={photoSelection.clearSelection}

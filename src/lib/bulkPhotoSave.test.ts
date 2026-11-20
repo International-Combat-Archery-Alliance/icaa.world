@@ -15,8 +15,33 @@ function resetNavigator(): void {
   clearNavigatorProperty('maxTouchPoints');
 }
 
-beforeEach(resetNavigator);
-afterEach(resetNavigator);
+const originalWindow = (globalThis as { window?: unknown }).window;
+
+function setWindow(value: unknown): void {
+  Object.defineProperty(globalThis, 'window', {
+    configurable: true,
+    value,
+  });
+}
+
+function restoreWindow(): void {
+  if (originalWindow === undefined) {
+    Reflect.deleteProperty(globalThis, 'window');
+    return;
+  }
+  Object.defineProperty(globalThis, 'window', {
+    configurable: true,
+    value: originalWindow,
+  });
+}
+
+function resetEnvironment(): void {
+  resetNavigator();
+  restoreWindow();
+}
+
+beforeEach(resetEnvironment);
+afterEach(resetEnvironment);
 
 describe('resolveBulkSaveMode', () => {
   it('falls back to downloads without Web Share support', () => {
@@ -31,12 +56,22 @@ describe('resolveBulkSaveMode', () => {
     expect(resolveBulkSaveMode()).toBe('download');
   });
 
-  it('uses the share sheet when files are shareable', () => {
+  it('uses the share sheet on a coarse-pointer touch device', () => {
     setNavigatorProperty('share', () => Promise.resolve());
     setNavigatorProperty('canShare', () => true);
     setNavigatorProperty('maxTouchPoints', 5);
+    setWindow({ matchMedia: () => ({ matches: true }) });
 
     expect(resolveBulkSaveMode()).toBe('share');
+  });
+
+  it('uses downloads on a touch device with a fine pointer', () => {
+    setNavigatorProperty('share', () => Promise.resolve());
+    setNavigatorProperty('canShare', () => true);
+    setNavigatorProperty('maxTouchPoints', 5);
+    setWindow({ matchMedia: () => ({ matches: false }) });
+
+    expect(resolveBulkSaveMode()).toBe('download');
   });
 
   it('falls back when files are not shareable', () => {

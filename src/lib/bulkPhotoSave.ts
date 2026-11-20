@@ -1,9 +1,10 @@
 import { isAbortError } from '@/lib/assetUtils';
+import { hasCoarsePointer } from '@/lib/device';
 
 export const MAX_BULK_PHOTO_COUNT = 50;
 
 const DOWNLOAD_INTERVAL_MS = 250;
-const OBJECT_URL_REVOKE_DELAY_MS = 60_000;
+const OBJECT_URL_REVOKE_DELAY_MS = 5000;
 
 export type BulkSaveMode = 'share' | 'download';
 
@@ -25,15 +26,10 @@ export interface DownloadPhotoUrlsOptions {
 }
 
 export function resolveBulkSaveMode(): BulkSaveMode {
-  const coarsePointer =
-    typeof window === 'undefined' ||
-    typeof window.matchMedia !== 'function' ||
-    window.matchMedia('(pointer: coarse)').matches;
-
   if (
     typeof navigator === 'undefined' ||
     navigator.maxTouchPoints === 0 ||
-    !coarsePointer ||
+    !hasCoarsePointer() ||
     typeof navigator.share !== 'function' ||
     typeof navigator.canShare !== 'function'
   ) {

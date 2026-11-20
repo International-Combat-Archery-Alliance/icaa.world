@@ -9,6 +9,7 @@ interface GallerySelectionBarProps {
   totalCount: number;
   isPreparing: boolean;
   isSaving: boolean;
+  downloadProgress: { completed: number; total: number } | null;
   saveMode: BulkSaveMode;
   onSelectAll: () => void;
   onClear: () => void;
@@ -24,6 +25,7 @@ function GallerySelectionBar({
   totalCount,
   isPreparing,
   isSaving,
+  downloadProgress,
   saveMode,
   onSelectAll,
   onClear,
@@ -38,7 +40,9 @@ function GallerySelectionBar({
 
   const actionLabel = isSaving
     ? saveMode === 'download'
-      ? 'Downloading…'
+      ? downloadProgress
+        ? `Downloading ${downloadProgress.completed}/${downloadProgress.total}…`
+        : 'Downloading…'
       : 'Saving…'
     : isPreparing
       ? 'Preparing…'
@@ -56,7 +60,9 @@ function GallerySelectionBar({
             variant="outline"
             size="sm"
             disabled={
-              selectedCount === totalCount || selectedCount >= maxSelectable
+              isSaving ||
+              selectedCount === totalCount ||
+              selectedCount >= maxSelectable
             }
             onClick={onSelectAll}
           >
@@ -67,7 +73,7 @@ function GallerySelectionBar({
             type="button"
             variant="outline"
             size="sm"
-            disabled={selectedCount === 0}
+            disabled={isSaving || selectedCount === 0}
             onClick={onClear}
           >
             <X aria-hidden="true" className="size-4" />
@@ -94,7 +100,13 @@ function GallerySelectionBar({
             )}
             {actionLabel}
           </Button>
-          <Button type="button" variant="ghost" size="sm" onClick={onDone}>
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            disabled={isSaving}
+            onClick={onDone}
+          >
             Done
           </Button>
         </div>
@@ -102,10 +114,16 @@ function GallerySelectionBar({
       {failedCount > 0 && (
         <div className="flex flex-wrap items-center gap-2">
           <output className="text-destructive text-xs">
-            {failedCount} {failedCount === 1 ? 'photo' : 'photos'} could not be
-            loaded for saving.
+            {failedCount} {failedCount === 1 ? 'photo' : 'photos'} could not be{' '}
+            {saveMode === 'share' ? 'loaded for saving' : 'downloaded'}.
           </output>
-          <Button type="button" variant="outline" size="sm" onClick={onRetry}>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            disabled={isSaving}
+            onClick={onRetry}
+          >
             Retry
           </Button>
         </div>
