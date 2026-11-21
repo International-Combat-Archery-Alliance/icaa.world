@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { AssetImage } from '@/components/AssetImage';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { EventMediaIconView } from '@/components/EventMediaIconView';
+import { LinkifiedText } from '@/components/LinkifiedText';
 import { PdfEmbed } from '@/components/PdfEmbed';
 import {
   resolveMediaRender,
@@ -42,9 +43,10 @@ function ResourceLinkRow({ item, url }: { item: EventMediaItem; url: string }) {
           {resourceLabel(item, url)}
         </a>
         {item.description && (
-          <p className="text-muted-foreground mt-1 text-sm">
-            {item.description}
-          </p>
+          <LinkifiedText
+            text={item.description}
+            className="text-muted-foreground mt-1 block text-sm"
+          />
         )}
       </div>
     </div>
@@ -99,9 +101,10 @@ function EventResourcesCard({ items }: EventResourcesCardProps) {
                       <p className="text-sm font-medium">{item.title}</p>
                     )}
                     {item.description && (
-                      <p className="text-muted-foreground text-sm">
-                        {item.description}
-                      </p>
+                      <LinkifiedText
+                        text={item.description}
+                        className="text-muted-foreground block text-sm"
+                      />
                     )}
                   </figcaption>
                 )}
@@ -123,9 +126,10 @@ function EventResourcesCard({ items }: EventResourcesCardProps) {
                       <p className="text-sm font-medium">{item.title}</p>
                     )}
                     {item.description && (
-                      <p className="text-muted-foreground text-sm">
-                        {item.description}
-                      </p>
+                      <LinkifiedText
+                        text={item.description}
+                        className="text-muted-foreground block text-sm"
+                      />
                     )}
                   </div>
                 )}
