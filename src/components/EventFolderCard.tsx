@@ -16,6 +16,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { CarouselImages } from '@/components/CarouselImages';
+import { LinkifiedText } from '@/components/LinkifiedText';
 import { EventFileRows } from '@/components/EventFileRows';
 import { GallerySelectionBar } from '@/components/GallerySelectionBar';
 import { MediaLightbox } from '@/components/MediaLightbox';
@@ -308,7 +309,10 @@ function EventFolderCard({ item }: EventFolderCardProps) {
         <div className="space-y-1">
           <CardTitle className="text-primary">{galleryTitle}</CardTitle>
           {item.description && (
-            <p className="text-muted-foreground text-sm">{item.description}</p>
+            <LinkifiedText
+              text={item.description}
+              className="text-muted-foreground block text-sm"
+            />
           )}
         </div>
         {render.images.length > 0 && (
